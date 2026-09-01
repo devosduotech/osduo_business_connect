@@ -88,7 +88,7 @@ def create_crm_custom_fields():
 def create_custom_field_if_not_exists(dt, field):
     """
     Create a custom field if it doesn't already exist.
-    
+
     Args:
         dt: DocType name
         field: Dict with field properties
@@ -97,24 +97,36 @@ def create_custom_field_if_not_exists(dt, field):
         "Custom Field",
         {"dt": dt, "fieldname": field["fieldname"]},
     )
-    
-    if not exists:
-        custom_field = frappe.get_doc({
-            "doctype": "Custom Field",
-            "dt": dt,
-            "fieldname": field["fieldname"],
-            "fieldtype": field["fieldtype"],
-            "label": field["label"],
-            "options": field.get("options"),
-            "insert_after": field.get("insert_after"),
-            "description": field.get("description"),
-            "unique": 0,
-            "read_only": 0,
-            "in_list_view": 0,
-            "in_standard_filter": 0,
-        })
-        custom_field.insert(ignore_permissions=True)
-        frappe.db.commit()
+
+    if exists:
+        return
+
+    # If the field has a Link option, verify the target DocType exists
+    options = field.get("options")
+    if options and field.get("fieldtype") == "Link":
+        if not frappe.db.exists("DocType", options):
+            frappe.log_error(
+                f"Skipping custom field {field['fieldname']}: "
+                f"DocType '{options}' not found. Run 'bench migrate' after installation."
+            )
+            return
+
+    custom_field = frappe.get_doc({
+        "doctype": "Custom Field",
+        "dt": dt,
+        "fieldname": field["fieldname"],
+        "fieldtype": field["fieldtype"],
+        "label": field["label"],
+        "options": options,
+        "insert_after": field.get("insert_after"),
+        "description": field.get("description"),
+        "unique": 0,
+        "read_only": 0,
+        "in_list_view": 0,
+        "in_standard_filter": 0,
+    })
+    custom_field.insert(ignore_permissions=True)
+    frappe.db.commit()
 
 
 def create_default_roles():
@@ -127,7 +139,7 @@ def create_default_roles():
         "OSDuo CRM User",
         "OSDuo System Manager",
     ]
-    
+
     for role_name in roles:
         if not frappe.db.exists("Role", role_name):
             role = frappe.get_doc({
@@ -138,3 +150,9 @@ def create_default_roles():
             })
             role.insert(ignore_permissions=True)
             frappe.db.commit()
+
+
+def after_migrate():
+    """Run after bench migrate to ensure CRM custom fields are created."""
+    create_crm_custom_fields()
+    create_default_roles()

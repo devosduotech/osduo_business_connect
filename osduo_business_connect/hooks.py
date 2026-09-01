@@ -168,6 +168,7 @@ permission_query_conditions = {
 
 before_install = "osduo_business_connect.install.before_install"
 after_install = "osduo_business_connect.install.after_install"
+after_migrate = "osduo_business_connect.install.after_migrate"
 
 # Uninstallation
 # ------------
