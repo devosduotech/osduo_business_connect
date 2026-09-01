@@ -2,175 +2,162 @@
 
 {%- block page_content -%}
 <style>
-.profile-header { text-align: center; padding: 2rem 0; border-bottom: 1px solid #eee; margin-bottom: 2rem; }
-.profile-header img.logo { max-height: 80px; border-radius: 8px; margin-bottom: 1rem; }
-.profile-header h1 { margin: 0.5rem 0 0.25rem; }
-.profile-header .tagline { color: #666; font-size: 1.1rem; }
-.contact-info { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; margin: 1rem 0; }
-.contact-info a { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.5rem 1rem; background: #f5f5f5; border-radius: 6px; text-decoration: none; color: #333; }
-.contact-info a:hover { background: #e8e8e8; }
-.social-links { display: flex; gap: 0.75rem; justify-content: center; margin: 1rem 0; }
-.social-links a { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.5rem 1rem; background: #f0f0f0; border-radius: 20px; text-decoration: none; color: #555; font-size: 0.9rem; }
-.social-links a:hover { background: #e0e0e0; }
-.section-title { font-size: 1.25rem; font-weight: 600; margin: 2rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid #eee; }
-.showcase-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
-.showcase-card { border: 1px solid #eee; border-radius: 8px; padding: 1.25rem; text-decoration: none; color: inherit; transition: box-shadow 0.2s; }
-.showcase-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
-.showcase-card img { width: 100%; height: 160px; object-fit: cover; border-radius: 6px; margin-bottom: 0.75rem; }
-.showcase-card h3 { margin: 0.5rem 0 0.25rem; font-size: 1.1rem; }
-.showcase-card p { color: #666; font-size: 0.9rem; margin: 0; }
-.business-hours { max-width: 400px; }
-.business-hours .day { display: flex; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px solid #f0f0f0; }
+.business-profile { max-width: 960px; margin: 0 auto; }
+.business-hero { position: relative; margin-bottom: 2rem; }
+.business-hero .cover { width: 100%; height: 300px; object-fit: cover; border-radius: 12px; }
+.business-hero .logo { width: 100px; height: 100px; border-radius: 12px; object-fit: cover; border: 3px solid #fff; position: absolute; bottom: -40px; left: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
+.business-header { padding: 50px 24px 1rem; }
+.business-header h1 { margin: 0; font-size: 1.75rem; }
+.business-header .industry { color: #666; font-size: 0.95rem; }
+.business-header .description { color: #555; line-height: 1.7; margin: 1rem 0; }
+
+.contact-section { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin: 2rem 0; }
+.contact-section .info { padding: 1.5rem; background: #f9f9f9; border-radius: 12px; }
+.contact-section .info h2 { margin: 0 0 1rem; font-size: 1.1rem; }
+.contact-section .info a { display: block; color: #4C5AE5; text-decoration: none; margin-bottom: 0.5rem; }
+.contact-section .hours { padding: 1.5rem; background: #f9f9f9; border-radius: 12px; }
+.contact-section .hours h2 { margin: 0 0 1rem; font-size: 1.1rem; }
+.hours-row { display: flex; justify-content: space-between; padding: 0.35rem 0; border-bottom: 1px solid #eee; }
+
+.cards-section, .products-section, .services-section { margin: 3rem 0; }
+.section-title { font-size: 1.25rem; margin-bottom: 1.5rem; }
+.cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+.card-item { text-align: center; padding: 1.5rem; background: #fff; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); text-decoration: none; color: inherit; }
+.card-item img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 0.75rem; }
+.card-item h3 { margin: 0; font-size: 1rem; }
+.card-item p { margin: 0.25rem 0 0; color: #666; font-size: 0.85rem; }
+
+.products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
+.product-item { padding: 1rem; background: #fff; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); text-decoration: none; color: inherit; }
+.product-item img { width: 100%; height: 160px; object-fit: cover; border-radius: 8px; margin-bottom: 0.75rem; }
+.product-item h3 { margin: 0; font-size: 1rem; }
+.product-item p { margin: 0.25rem 0 0; color: #666; font-size: 0.85rem; }
+.product-item .price { color: #4C5AE5; font-weight: 600; margin-top: 0.5rem; }
 </style>
 
-<div class="container">
-    {# Profile Header #}
-    <div class="profile-header">
+<div class="business-profile">
+    {# Hero Section #}
+    <div class="business-hero">
+        {% if doc.cover_image %}
+        <img src="{{ doc.cover_image }}" alt="" class="cover">
+        {% else %}
+        <div style="height:300px; background:linear-gradient(135deg, #4C5AE5 0%, #667eea 100%); border-radius:12px;"></div>
+        {% endif %}
         {% if doc.logo %}
         <img src="{{ doc.logo }}" alt="{{ doc.business_name }}" class="logo">
         {% endif %}
+    </div>
+
+    <div class="business-header">
         <h1>{{ doc.business_name }}</h1>
-        {% if doc.tagline %}
-        <p class="tagline">{{ doc.tagline }}</p>
+        {% if doc.industry %}
+        <p class="industry">{{ doc.industry }}</p>
         {% endif %}
         {% if doc.description %}
-        <p>{{ doc.description }}</p>
+        <div class="description">{{ doc.description }}</div>
         {% endif %}
     </div>
 
-    {# Contact Information #}
-    <div class="contact-info">
-        {% if doc.phone %}
-        <a href="tel:{{ doc.phone }}">📞 {{ doc.phone }}</a>
-        {% endif %}
-        {% if doc.email %}
-        <a href="mailto:{{ doc.email }}">✉️ {{ doc.email }}</a>
-        {% endif %}
-        {% if doc.whatsapp %}
-        <a href="https://wa.me/{{ doc.whatsapp|replace('+','')|replace(' ','') }}">💬 WhatsApp</a>
-        {% endif %}
-        {% if doc.website %}
-        <a href="{{ doc.website }}" target="_blank">🌐 Website</a>
-        {% endif %}
+    {# Contact & Hours #}
+    <div class="contact-section">
+        <div class="info">
+            <h2>Contact</h2>
+            {% if doc.phone %}<a href="tel:{{ doc.phone }}">📞 {{ doc.phone }}</a>{% endif %}
+            {% if doc.email %}<a href="mailto:{{ doc.email }}">✉️ {{ doc.email }}</a>{% endif %}
+            {% if doc.website %}<a href="{{ doc.website }}" target="_blank">🌐 {{ doc.website }}</a>{% endif %}
+            {% if doc.address %}
+            <p style="margin:0.5rem 0 0; color:#555;">📍 {{ doc.address }}{% if doc.city %}, {{ doc.city }}{% endif %}{% if doc.state %}, {{ doc.state }}{% endif %}</p>
+            {% endif %}
+        </div>
+        <div class="hours">
+            <h2>Business Hours</h2>
+            {% for hour in business_hours %}
+            <div class="hours-row">
+                <span>{{ hour.day }}</span>
+                <span>{% if hour.is_closed %}Closed{% else %}{{ hour.open_time }} - {{ hour.close_time }}{% endif %}</span>
+            </div>
+            {% endfor %}
+            {% if not business_hours %}
+            <p style="color:#666;">Not specified</p>
+            {% endif %}
+        </div>
     </div>
-
-    {# Address #}
-    {% if doc.address or doc.city or doc.state %}
-    <p style="text-align:center; color:#666;">
-        📍 {{ [doc.address, doc.city, doc.state, doc.country].select('data-join=", ") }}
-    </p>
-    {% endif %}
 
     {# Social Links #}
-    {% if doc.social_links %}
-    <div class="social-links">
-        {% for link in doc.social_links %}
-        <a href="{{ link.url }}" target="_blank">{{ link.platform }}: {{ link.username or link.url }}</a>
+    {% if social_links %}
+    <div style="margin: 2rem 0; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+        {% for link in social_links %}
+        <a href="{{ link.url }}" target="_blank" style="padding: 0.5rem 1rem; background: #f0f0f0; border-radius: 20px; text-decoration: none; color: #555; font-size: 0.85rem;">{{ link.platform }}</a>
         {% endfor %}
     </div>
     {% endif %}
 
-    {# Digital Cards #}
+    {# Cards #}
     {% if cards %}
-    <h2 class="section-title">Digital Cards</h2>
-    <div class="showcase-grid">
-        {% for card in cards %}
-        <a href="/c/{{ card.slug }}" class="showcase-card">
-            {% if card.profile_image %}
-            <img src="{{ card.profile_image }}" alt="{{ card.display_name }}">
-            {% endif %}
-            <h3>{{ card.display_name }}</h3>
-            {% if card.designation %}
-            <p>{{ card.designation }}</p>
-            {% endif %}
-        </a>
-        {% endfor %}
+    <div class="cards-section">
+        <h2 class="section-title">Team</h2>
+        <div class="cards-grid">
+            {% for card in cards %}
+            <a href="/c/{{ card.slug }}" class="card-item">
+                {% if card.profile_image %}
+                <img src="{{ card.profile_image }}" alt="{{ card.display_name }}">
+                {% else %}
+                <div style="width:80px;height:80px;border-radius:50%;background:#4C5AE5;color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin:0 auto 0.75rem;">{{ card.display_name[0] }}</div>
+                {% endif %}
+                <h3>{{ card.display_name }}</h3>
+                {% if card.designation %}
+                <p>{{ card.designation }}</p>
+                {% endif %}
+            </a>
+            {% endfor %}
+        </div>
     </div>
     {% endif %}
 
     {# Products #}
     {% if products %}
-    <h2 class="section-title">Products</h2>
-    <div class="showcase-grid">
-        {% for product in products %}
-        <a href="/b/{{ doc.slug }}/p/{{ product.slug }}" class="showcase-card">
-            {% if product.image %}
-            <img src="{{ product.image }}" alt="{{ product.product_name }}">
-            {% endif %}
-            <h3>{{ product.product_name }}</h3>
-            {% if product.short_description %}
-            <p>{{ product.short_description }}</p>
-            {% endif %}
-        </a>
-        {% endfor %}
+    <div class="products-section">
+        <h2 class="section-title">Products</h2>
+        <div class="products-grid">
+            {% for product in products %}
+            <a href="/b/{{ doc.slug }}/p/{{ product.slug }}" class="product-item">
+                {% if product.image %}
+                <img src="{{ product.image }}" alt="{{ product.product_name }}">
+                {% else %}
+                <div style="height:160px;background:#f0f0f0;border-radius:8px;margin-bottom:0.75rem;"></div>
+                {% endif %}
+                <h3>{{ product.product_name }}</h3>
+                <p>{{ product.short_description[:80] }}{% if product.short_description|length > 80 %}...{% endif %}</p>
+                {% if product.price %}
+                <div class="price">{% if product.currency %}{{ product.currency }} {% endif %}{{ product.price }}</div>
+                {% endif %}
+            </a>
+            {% endfor %}
+        </div>
     </div>
     {% endif %}
 
     {# Services #}
     {% if services %}
-    <h2 class="section-title">Services</h2>
-    <div class="showcase-grid">
-        {% for service in services %}
-        <a href="/b/{{ doc.slug }}/s/{{ service.slug }}" class="showcase-card">
-            {% if service.image %}
-            <img src="{{ service.image }}" alt="{{ service.service_name }}">
-            {% endif %}
-            <h3>{{ service.service_name }}</h3>
-            {% if service.short_description %}
-            <p>{{ service.short_description }}</p>
-            {% endif %}
-        </a>
-        {% endfor %}
+    <div class="services-section">
+        <h2 class="section-title">Services</h2>
+        <div class="products-grid">
+            {% for service in services %}
+            <a href="/b/{{ doc.slug }}/s/{{ service.slug }}" class="product-item">
+                {% if service.image %}
+                <img src="{{ service.image }}" alt="{{ service.service_name }}">
+                {% else %}
+                <div style="height:160px;background:#f0f0f0;border-radius:8px;margin-bottom:0.75rem;"></div>
+                {% endif %}
+                <h3>{{ service.service_name }}</h3>
+                <p>{{ service.short_description[:80] }}{% if service.short_description|length > 80 %}...{% endif %}</p>
+                {% if service.price %}
+                <div class="price">{% if service.currency %}{{ service.currency }} {% endif %}{{ service.price }}</div>
+                {% endif %}
+            </a>
+            {% endfor %}
+        </div>
     </div>
     {% endif %}
-
-    {# Enquiry Form #}
-    <h2 class="section-title">Contact Us</h2>
-    <form id="enquiry-form" style="max-width: 600px;">
-        <input type="hidden" name="business" value="{{ doc.name }}">
-        <div style="margin-bottom: 1rem;">
-            <input type="text" name="visitor_name" placeholder="Your Name" required style="width:100%; padding:0.75rem; border:1px solid #ddd; border-radius:6px;">
-        </div>
-        <div style="margin-bottom: 1rem;">
-            <input type="email" name="visitor_email" placeholder="Email Address" required style="width:100%; padding:0.75rem; border:1px solid #ddd; border-radius:6px;">
-        </div>
-        <div style="margin-bottom: 1rem;">
-            <input type="tel" name="visitor_phone" placeholder="Phone Number" style="width:100%; padding:0.75rem; border:1px solid #ddd; border-radius:6px;">
-        </div>
-        <div style="margin-bottom: 1rem;">
-            <textarea name="message" placeholder="Your Message" rows="4" required style="width:100%; padding:0.75rem; border:1px solid #ddd; border-radius:6px;"></textarea>
-        </div>
-        <div style="margin-bottom: 1rem;">
-            <label style="display:flex; align-items:center; gap:0.5rem;">
-                <input type="checkbox" name="consent" value="1" required>
-                I consent to the processing of my data
-            </label>
-        </div>
-        <button type="submit" style="padding:0.75rem 2rem; background:#4C5AE5; color:white; border:none; border-radius:6px; cursor:pointer; font-size:1rem;">Send Enquiry</button>
-    </form>
 </div>
-
-<script>
-document.getElementById('enquiry-form').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const form = e.target;
-    const data = Object.fromEntries(new FormData(form));
-    data.doctype = 'Enquiry';
-    try {
-        const res = await fetch('/api/resource/Enquiry', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-        if (res.ok) {
-            form.innerHTML = '<div style="text-align:center; padding:2rem;"><h3>Thank you!</h3><p>Your enquiry has been submitted. We will get back to you soon.</p></div>';
-        } else {
-            const err = await res.json();
-            alert(err.message || 'Error submitting enquiry');
-        }
-    } catch(err) {
-        alert('Error submitting enquiry');
-    }
-});
-</script>
 {%- endblock -%}

@@ -9,7 +9,12 @@ def get_context(context):
     card = frappe.get_all(
         "Digital Card",
         filters={"slug": slug, "status": "Published", "public_profile_enabled": 1},
-        fields=["*"],
+        fields=[
+            "name", "business", "member", "display_name", "slug",
+            "designation", "profile_image", "bio", "phone", "email",
+            "whatsapp", "website", "qr_enabled", "qr_image",
+            "theme", "status", "show_business"
+        ],
         limit=1,
     )
 
@@ -21,6 +26,14 @@ def get_context(context):
     context.title = doc.get("display_name") or doc.get("name")
     context.no_breadcrumbs = 1
     context.no_header = 1
+
+    # Fetch social links separately
+    context.links = frappe.get_all(
+        "Social Link",
+        filters={"parent": doc.name},
+        fields=["platform", "url"],
+        order_by="idx asc",
+    )
 
     # Fetch business info for the link
     if doc.get("business"):

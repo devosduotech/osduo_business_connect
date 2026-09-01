@@ -34,7 +34,7 @@
         {% if doc.profile_image %}
         <img src="{{ doc.profile_image }}" alt="{{ doc.display_name }}" class="profile">
         {% else %}
-        <div class="profile" style="width:120px;height:120px;border-radius:50%;background:#4C5AE5;color:#fff;display:flex;align-items:center;justify-content:center;font-size:2.5rem;margin:0 auto 1rem;">
+        <div style="width:120px;height:120px;border-radius:50%;background:#4C5AE5;color:#fff;display:flex;align-items:center;justify-content:center;font-size:2.5rem;margin:0 auto 1rem;">
             {{ doc.display_name[0] if doc.display_name else '?' }}
         </div>
         {% endif %}
@@ -53,23 +53,23 @@
         {# Contact Links #}
         <div class="contact-links">
             {% if doc.phone %}
-            <a href="tel:{{ doc.phone }}" class="phone">📞 Call {{ doc.phone }}</a>
+            <a href="tel:{{ doc.phone }}" class="phone">Call {{ doc.phone }}</a>
             {% endif %}
             {% if doc.whatsapp %}
-            <a href="https://wa.me/{{ doc.whatsapp|replace('+','')|replace(' ','') }}" class="whatsapp">💬 WhatsApp</a>
+            <a href="https://wa.me/{{ doc.whatsapp|replace('+','')|replace(' ','') }}" class="whatsapp">WhatsApp</a>
             {% endif %}
             {% if doc.email %}
-            <a href="mailto:{{ doc.email }}" class="email">✉️ Send Email</a>
+            <a href="mailto:{{ doc.email }}" class="email">Send Email</a>
             {% endif %}
             {% if doc.website %}
-            <a href="{{ doc.website }}" target="_blank" class="website">🌐 Visit Website</a>
+            <a href="{{ doc.website }}" target="_blank" class="website">Visit Website</a>
             {% endif %}
         </div>
 
         {# Social Links #}
-        {% if doc.links %}
+        {% if links %}
         <div class="social-links">
-            {% for link in doc.links %}
+            {% for link in links %}
             <a href="{{ link.url }}" target="_blank">{{ link.platform }}</a>
             {% endfor %}
         </div>
@@ -78,7 +78,7 @@
         {# Business Link #}
         {% if doc.show_business and doc.business_name %}
         <div class="business-link">
-            <a href="/b/{{ doc.business_slug }}">{{ doc.business_name }} →</a>
+            <a href="/b/{{ doc.business_slug }}">{{ doc.business_name }}</a>
         </div>
         {% endif %}
 
@@ -93,7 +93,7 @@
 
     {# Enquiry Form #}
     <div style="margin-top:2rem; text-align:left;">
-        <h2 class="section-title" style="font-size:1.1rem; text-align:center;">Send a Message</h2>
+        <h2 style="font-size:1.1rem; text-align:center;">Send a Message</h2>
         <form id="card-enquiry-form" style="background:#fff; padding:1.5rem; border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
             <input type="hidden" name="business" value="{{ doc.business }}">
             <input type="hidden" name="card" value="{{ doc.name }}">
