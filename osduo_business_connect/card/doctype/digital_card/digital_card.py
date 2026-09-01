@@ -136,9 +136,14 @@ def get_permission_query_conditions(user):
     Return SQL conditions for filtering Digital Card records.
 
     Users can only see cards of businesses they belong to.
+    Guest can see published cards with public profile enabled.
     """
     if not user:
         user = frappe.session.user
+
+    # Guest can see published cards
+    if user == "Guest":
+        return "`tabDigital Card`.status = 'Published' AND `tabDigital Card`.public_profile_enabled = 1"
 
     # System Manager can see all cards
     if "System Manager" in frappe.get_roles(user):
@@ -161,8 +166,15 @@ def has_permission(doc, ptype):
 
     Business Owner/Manager can manage all cards.
     Business Members can manage their own cards.
+    Guest can read published cards.
     """
     user = frappe.session.user
+
+    # Guest can only read published cards with public profile enabled
+    if user == "Guest":
+        if ptype == "read":
+            return doc.status == "Published" and doc.public_profile_enabled
+        return False
 
     # System Manager has full access
     if "System Manager" in frappe.get_roles(user):

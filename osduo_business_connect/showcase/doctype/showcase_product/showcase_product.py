@@ -109,9 +109,14 @@ def get_permission_query_conditions(user):
     Return SQL conditions for filtering Showcase Product records.
 
     Users can only see products of businesses they belong to.
+    Guest can see published products.
     """
     if not user:
         user = frappe.session.user
+
+    # Guest can see published products
+    if user == "Guest":
+        return "`tabShowcase Product`.status = 'Published'"
 
     # System Manager can see all products
     if "System Manager" in frappe.get_roles(user):
@@ -133,8 +138,15 @@ def has_permission(doc, ptype):
     Check if user has permission on Showcase Product document.
 
     Business Owner/Manager/Marketing can manage products.
+    Guest can read published products.
     """
     user = frappe.session.user
+
+    # Guest can only read published products
+    if user == "Guest":
+        if ptype == "read":
+            return doc.status == "Published"
+        return False
 
     # System Manager has full access
     if "System Manager" in frappe.get_roles(user):

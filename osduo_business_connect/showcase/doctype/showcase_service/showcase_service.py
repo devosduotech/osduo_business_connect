@@ -100,9 +100,14 @@ def get_permission_query_conditions(user):
     Return SQL conditions for filtering Showcase Service records.
 
     Users can only see services of businesses they belong to.
+    Guest can see published services.
     """
     if not user:
         user = frappe.session.user
+
+    # Guest can see published services
+    if user == "Guest":
+        return "`tabShowcase Service`.status = 'Published'"
 
     # System Manager can see all services
     if "System Manager" in frappe.get_roles(user):
@@ -124,8 +129,15 @@ def has_permission(doc, ptype):
     Check if user has permission on Showcase Service document.
 
     Business Owner/Manager/Marketing can manage services.
+    Guest can read published services.
     """
     user = frappe.session.user
+
+    # Guest can only read published services
+    if user == "Guest":
+        if ptype == "read":
+            return doc.status == "Published"
+        return False
 
     # System Manager has full access
     if "System Manager" in frappe.get_roles(user):

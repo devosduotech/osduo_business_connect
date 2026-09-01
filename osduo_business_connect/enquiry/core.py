@@ -171,9 +171,14 @@ def get_permission_query_conditions(user):
     Return SQL conditions for filtering Enquiry records.
 
     Users can only see enquiries of businesses they belong to.
+    Guest cannot see enquiries (only create).
     """
     if not user:
         user = frappe.session.user
+
+    # Guest cannot see enquiries
+    if user == "Guest":
+        return "1=0"
 
     # System Manager can see all enquiries
     if "System Manager" in frappe.get_roles(user):
@@ -195,9 +200,15 @@ def has_permission(doc, ptype):
     Check if user has permission on Enquiry document.
 
     Business Owner/Manager can manage enquiries.
-    CRM User can read enquiries.
+    Guest can create enquiries (public forms).
     """
     user = frappe.session.user
+
+    # Guest can only create enquiries
+    if user == "Guest":
+        if ptype == "create":
+            return True
+        return False
 
     # System Manager has full access
     if "System Manager" in frappe.get_roles(user):

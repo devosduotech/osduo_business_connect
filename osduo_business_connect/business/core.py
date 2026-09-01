@@ -196,6 +196,12 @@ def has_permission(doc, ptype):
     """
     user = frappe.session.user
 
+    # Guest can only read published businesses with public profile enabled
+    if user == "Guest":
+        if ptype == "read":
+            return doc.status == "Published" and doc.public_profile_enabled
+        return False
+
     # System Manager has full access
     if "System Manager" in frappe.get_roles(user):
         return True
