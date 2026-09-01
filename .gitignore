@@ -1,0 +1,81 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+*.egg
+dist/
+build/
+eggs/
+*.whl
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Virtual Environment
+env/
+venv/
+.env/
+.python-version
+
+# Frappe
+*.pyc
+*.log
+*.pid
+*.sock
+*.pid.lock
+node_modules/
+assets/
+public/
+sites/*/private/backups/
+sites/*/logs/
+sites/*/site_config.json
+sites/common_site_config.json
+Procfile
+*.bak
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+*.tmp
+
+# Coverage
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+
+# Distribution
+*.tar.gz
+*.whl
+*.zip
+
+# Temp files
+*.log
+*.tmp
+*.temp
+
+# Project documentation (not for repo)
+ARCHITECTURE_DECISIONS.md
+DEPENDENCY_GRAPH.md
+DEVELOPMENT_PLAN.md
+IMPLEMENTATION_BACKLOG.md
+RISK_REGISTER.md
+Development Document/
+VM_SETUP_GUIDE.md
+setup-frappe-v16.sh
+osduo_business_connect.zip

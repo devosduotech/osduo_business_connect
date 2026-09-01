@@ -1,0 +1,2 @@
+# No additional dependencies required for v1.0.1
+# Frappe Framework and Frappe CRM are declared as dependencies in pyproject.toml

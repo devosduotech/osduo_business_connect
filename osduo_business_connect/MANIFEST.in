@@ -1,0 +1,17 @@
+include MANIFEST.in
+include requirements.txt
+include *.md
+include license.txt
+include pyproject.toml
+recursive-include osduo_business_connect *.py
+recursive-include osduo_business_connect *.json
+recursive-include osduo_business_connect *.html
+recursive-include osduo_business_connect *.css
+recursive-include osduo_business_connect *.js
+recursive-include osduo_business_connect *.svg
+recursive-include osduo_business_connect *.png
+recursive-include osduo_business_connect *.jpg
+recursive-include osduo_business_connect *.gif
+recursive-include osduo_business_connect *.md
+recursive-include osduo_business_connect/templates *
+recursive-include osduo_business_connect/public *

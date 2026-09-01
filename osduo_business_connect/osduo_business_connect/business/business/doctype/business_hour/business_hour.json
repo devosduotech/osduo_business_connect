@@ -1,0 +1,44 @@
+{
+    "name": "Business Hour",
+    "module": "Business",
+    "doctype": "DocType",
+    "document_type": "Document",
+    "engine": "InnoDB",
+    "istable": 1,
+    "fields": [
+        {
+            "fieldname": "day",
+            "fieldtype": "Select",
+            "label": "Day",
+            "reqd": 1,
+            "options": "Monday\nTuesday\nWednesday\nThursday\nFriday\nSaturday\nSunday",
+            "in_list_view": 1
+        },
+        {
+            "fieldname": "enabled",
+            "fieldtype": "Check",
+            "label": "Enabled",
+            "default": 1,
+            "in_list_view": 1
+        },
+        {
+            "fieldname": "open_time",
+            "fieldtype": "Time",
+            "label": "Open Time",
+            "depends_on": "enabled"
+        },
+        {
+            "fieldname": "close_time",
+            "fieldtype": "Time",
+            "label": "Close Time",
+            "depends_on": "enabled"
+        },
+        {
+            "fieldname": "is_24_hours",
+            "fieldtype": "Check",
+            "label": "Open 24 Hours",
+            "depends_on": "enabled"
+        }
+    ],
+    "permissions": []
+}

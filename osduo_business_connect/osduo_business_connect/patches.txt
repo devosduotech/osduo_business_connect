@@ -1,0 +1,4 @@
+# patches.txt
+# 
+# Patches are now handled by install.py
+# See osduo_business_connect/install.py for role and custom field setup

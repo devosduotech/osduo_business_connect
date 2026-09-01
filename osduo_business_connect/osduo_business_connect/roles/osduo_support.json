@@ -1,0 +1,9 @@
+{
+    "role": "OSDuo Support",
+    "role_name": "OSDuo Support",
+    "description": "Controlled support access",
+    "is_custom": 1,
+    "is_standard": 0,
+    "desk_access": 1,
+    "app_name": "osduo_business_connect"
+}

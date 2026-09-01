@@ -1,0 +1,9 @@
+{
+    "role": "OSDuo CRM User",
+    "role_name": "OSDuo CRM User",
+    "description": "CRM-related access where required",
+    "is_custom": 1,
+    "is_standard": 0,
+    "desk_access": 1,
+    "app_name": "osduo_business_connect"
+}

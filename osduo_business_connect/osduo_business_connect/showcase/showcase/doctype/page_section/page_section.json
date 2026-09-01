@@ -1,0 +1,230 @@
+{
+    "name": "Page Section",
+    "module": "Showcase",
+    "doctype": "DocType",
+    "document_type": "Document",
+    "engine": "InnoDB",
+    "naming_rule": "Expression",
+    "autoname": "format:SEC-.#####",
+    "title_field": "section_type",
+    "search_fields": "section_type,title",
+    "is_submittable": 0,
+    "issingle": 0,
+    "istable": 0,
+    "is_tree": 0,
+    "track_changes": 1,
+    "allow_rename": 0,
+    "sort_field": "sequence",
+    "sort_order": "ASC",
+    "fields": [
+        {
+            "fieldname": "business",
+            "fieldtype": "Link",
+            "label": "Business",
+            "options": "Business",
+            "reqd": 1,
+            "in_list_view": 1,
+            "in_standard_filter": 1
+        },
+        {
+            "fieldname": "section_type",
+            "fieldtype": "Select",
+            "label": "Section Type",
+            "reqd": 1,
+            "options": "Hero\nAbout\nProducts\nServices\nTestimonials\nContact\nGallery\nCustom",
+            "in_list_view": 1
+        },
+        {
+            "fieldname": "title",
+            "fieldtype": "Data",
+            "label": "Title"
+        },
+        {
+            "fieldname": "enabled",
+            "fieldtype": "Check",
+            "label": "Enabled",
+            "default": 1,
+            "in_list_view": 1
+        },
+        {
+            "fieldname": "sequence",
+            "fieldtype": "Int",
+            "label": "Sequence",
+            "reqd": 1,
+            "default": 0,
+            "in_list_view": 1
+        },
+        {
+            "fieldname": "visibility",
+            "fieldtype": "Select",
+            "label": "Visibility",
+            "reqd": 1,
+            "default": "Public",
+            "options": "Public\nMembers Only",
+            "in_list_view": 1
+        },
+        {
+            "fieldname": "section_config",
+            "fieldtype": "Section Break",
+            "label": "Configuration"
+        },
+        {
+            "fieldname": "config_hero_title",
+            "fieldtype": "Data",
+            "label": "Hero Title",
+            "depends_on": "eval:doc.section_type === 'Hero'"
+        },
+        {
+            "fieldname": "config_hero_subtitle",
+            "fieldtype": "Small Text",
+            "label": "Hero Subtitle",
+            "depends_on": "eval:doc.section_type === 'Hero'"
+        },
+        {
+            "fieldname": "config_hero_image",
+            "fieldtype": "Attach Image",
+            "label": "Hero Background Image",
+            "depends_on": "eval:doc.section_type === 'Hero'"
+        },
+        {
+            "fieldname": "config_hero_cta_text",
+            "fieldtype": "Data",
+            "label": "Call to Action Text",
+            "depends_on": "eval:doc.section_type === 'Hero'"
+        },
+        {
+            "fieldname": "config_hero_cta_url",
+            "fieldtype": "Data",
+            "label": "Call to Action URL",
+            "options": "URL",
+            "depends_on": "eval:doc.section_type === 'Hero'"
+        },
+        {
+            "fieldname": "column_break_config",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "config_about_text",
+            "fieldtype": "Text Editor",
+            "label": "About Text",
+            "depends_on": "eval:doc.section_type === 'About'"
+        },
+        {
+            "fieldname": "config_about_image",
+            "fieldtype": "Attach Image",
+            "label": "About Image",
+            "depends_on": "eval:doc.section_type === 'About'"
+        },
+        {
+            "fieldname": "config_show_products",
+            "fieldtype": "Check",
+            "label": "Show Products",
+            "default": 1,
+            "depends_on": "eval:doc.section_type === 'Products'"
+        },
+        {
+            "fieldname": "config_show_services",
+            "fieldtype": "Check",
+            "label": "Show Services",
+            "default": 1,
+            "depends_on": "eval:doc.section_type === 'Services'"
+        },
+        {
+            "fieldname": "config_contact_email",
+            "fieldtype": "Data",
+            "label": "Contact Email",
+            "options": "Email",
+            "depends_on": "eval:doc.section_type === 'Contact'"
+        },
+        {
+            "fieldname": "config_contact_phone",
+            "fieldtype": "Data",
+            "label": "Contact Phone",
+            "options": "Phone",
+            "depends_on": "eval:doc.section_type === 'Contact'"
+        },
+        {
+            "fieldname": "config_contact_address",
+            "fieldtype": "Small Text",
+            "label": "Contact Address",
+            "depends_on": "eval:doc.section_type === 'Contact'"
+        },
+        {
+            "fieldname": "config_custom_html",
+            "fieldtype": "Code",
+            "label": "Custom HTML",
+            "options": "HTML",
+            "depends_on": "eval:doc.section_type === 'Custom'"
+        }
+    ],
+    "permissions": [
+        {
+            "role": "OSDuo Business Owner",
+            "read": 1,
+            "write": 1,
+            "create": 1,
+            "delete": 1,
+            "submit": 0,
+            "cancel": 0,
+            "amend": 0,
+            "report": 1,
+            "export": 1,
+            "import": 0,
+            "print": 1,
+            "email": 1,
+            "share": 1,
+            "user_permission": 1
+        },
+        {
+            "role": "OSDuo Business Manager",
+            "read": 1,
+            "write": 1,
+            "create": 1,
+            "delete": 0,
+            "submit": 0,
+            "cancel": 0,
+            "amend": 0,
+            "report": 1,
+            "export": 1,
+            "import": 0,
+            "print": 1,
+            "email": 1,
+            "share": 1,
+            "user_permission": 1
+        },
+        {
+            "role": "OSDuo Marketing Manager",
+            "read": 1,
+            "write": 1,
+            "create": 1,
+            "delete": 0,
+            "submit": 0,
+            "cancel": 0,
+            "amend": 0,
+            "report": 1,
+            "export": 1,
+            "import": 0,
+            "print": 1,
+            "email": 1,
+            "share": 1,
+            "user_permission": 0
+        },
+        {
+            "role": "OSDuo System Manager",
+            "read": 1,
+            "write": 1,
+            "create": 1,
+            "delete": 1,
+            "submit": 0,
+            "cancel": 0,
+            "amend": 0,
+            "report": 1,
+            "export": 1,
+            "import": 1,
+            "print": 1,
+            "email": 1,
+            "share": 1,
+            "user_permission": 1
+        }
+    ]
+}

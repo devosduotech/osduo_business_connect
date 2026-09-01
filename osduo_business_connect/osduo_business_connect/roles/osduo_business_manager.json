@@ -1,0 +1,9 @@
+{
+    "role": "OSDuo Business Manager",
+    "role_name": "OSDuo Business Manager",
+    "description": "Manage business content/team",
+    "is_custom": 1,
+    "is_standard": 0,
+    "desk_access": 1,
+    "app_name": "osduo_business_connect"
+}

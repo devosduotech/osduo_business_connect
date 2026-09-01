@@ -1,0 +1,52 @@
+{
+    "name": "Digital Card Link",
+    "module": "Card",
+    "doctype": "DocType",
+    "document_type": "Document",
+    "engine": "InnoDB",
+    "istable": 1,
+    "fields": [
+        {
+            "fieldname": "link_type",
+            "fieldtype": "Select",
+            "label": "Link Type",
+            "reqd": 1,
+            "options": "LinkedIn\nInstagram\nFacebook\nX\nYouTube\nTelegram\nWebsite\nPortfolio\nOther",
+            "in_list_view": 1
+        },
+        {
+            "fieldname": "label",
+            "fieldtype": "Data",
+            "label": "Label",
+            "description": "Custom label for this link"
+        },
+        {
+            "fieldname": "value",
+            "fieldtype": "Data",
+            "label": "Value",
+            "reqd": 1,
+            "in_list_view": 1,
+            "description": "Username or value for this link"
+        },
+        {
+            "fieldname": "url",
+            "fieldtype": "Data",
+            "label": "URL",
+            "options": "URL",
+            "description": "Full URL (auto-generated if not provided)"
+        },
+        {
+            "fieldname": "enabled",
+            "fieldtype": "Check",
+            "label": "Enabled",
+            "default": 1,
+            "in_list_view": 1
+        },
+        {
+            "fieldname": "sort_order",
+            "fieldtype": "Int",
+            "label": "Sort Order"
+        }
+    ],
+    "permissions": []
+}

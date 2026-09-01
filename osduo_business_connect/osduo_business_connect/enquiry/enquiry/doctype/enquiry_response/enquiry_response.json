@@ -1,0 +1,41 @@
+{
+    "name": "Enquiry Response",
+    "module": "Enquiry",
+    "doctype": "DocType",
+    "document_type": "Document",
+    "engine": "InnoDB",
+    "istable": 1,
+    "fields": [
+        {
+            "fieldname": "responder",
+            "fieldtype": "Link",
+            "label": "Responder",
+            "options": "User",
+            "reqd": 1,
+            "in_list_view": 1
+        },
+        {
+            "fieldname": "response_type",
+            "fieldtype": "Select",
+            "label": "Response Type",
+            "reqd": 1,
+            "options": "Email\nPhone\nWhatsApp\nNote",
+            "in_list_view": 1
+        },
+        {
+            "fieldname": "response_message",
+            "fieldtype": "Small Text",
+            "label": "Response Message",
+            "reqd": 1,
+            "in_list_view": 1
+        },
+        {
+            "fieldname": "response_at",
+            "fieldtype": "Datetime",
+            "label": "Response At",
+            "reqd": 1,
+            "in_list_view": 1
+        }
+    ],
+    "permissions": []
+}
