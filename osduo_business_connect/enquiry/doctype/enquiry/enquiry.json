@@ -5,7 +5,7 @@
   "document_type": "Document",
   "engine": "InnoDB",
   "naming_rule": "Expression",
-  "autoname": "format:ENQ-.#####.",
+  "autoname": "format:ENQ-.#####",
   "title_field": "visitor_name",
   "search_fields": "visitor_name,visitor_email,visitor_company",
   "is_submittable": 0,

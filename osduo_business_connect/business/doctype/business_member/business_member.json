@@ -5,7 +5,7 @@
   "document_type": "Document",
   "engine": "InnoDB",
   "naming_rule": "Expression",
-  "autoname": "format:BM-.#####.",
+  "autoname": "format:BM-.#####",
   "title_field": "person_name",
   "search_fields": "person_name,email,business",
   "is_submittable": 0,

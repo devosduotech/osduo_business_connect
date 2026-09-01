@@ -5,7 +5,7 @@
   "document_type": "Document",
   "engine": "InnoDB",
   "naming_rule": "Expression",
-  "autoname": "format:PROD-.#####.",
+  "autoname": "format:PROD-.#####",
   "title_field": "product_name",
   "search_fields": "product_name,short_description,category",
   "is_submittable": 0,

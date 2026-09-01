@@ -5,7 +5,7 @@
   "document_type": "Document",
   "engine": "InnoDB",
   "naming_rule": "Expression",
-  "autoname": "format:CARD-.#####.",
+  "autoname": "format:CARD-.#####",
   "title_field": "display_name",
   "search_fields": "display_name,slug,business",
   "is_submittable": 0,

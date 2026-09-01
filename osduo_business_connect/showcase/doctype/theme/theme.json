@@ -5,7 +5,7 @@
   "document_type": "Document",
   "engine": "InnoDB",
   "naming_rule": "Expression",
-  "autoname": "format:THEME-.#####.",
+  "autoname": "format:THEME-.#####",
   "title_field": "business",
   "search_fields": "business,template",
   "is_submittable": 0,

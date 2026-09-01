@@ -5,7 +5,7 @@
   "document_type": "Document",
   "engine": "InnoDB",
   "naming_rule": "Expression",
-  "autoname": "format:SEC-.#####.",
+  "autoname": "format:SEC-.#####",
   "title_field": "section_type",
   "search_fields": "section_type,title",
   "is_submittable": 0,
