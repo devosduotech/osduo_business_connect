@@ -34,7 +34,7 @@ def retry_failed_crm_sync():
     This is a safe background operation that doesn't require user interaction.
     """
     try:
-        from osduo_business_connect.enquiry.enquiry.enquiry_service import retry_failed_sync
+        from osduo_business_connect.enquiry.enquiry_service import retry_failed_sync
         
         synced_count = retry_failed_sync()
         if synced_count > 0:
