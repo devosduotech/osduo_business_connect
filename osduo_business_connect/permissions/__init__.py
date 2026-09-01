@@ -97,24 +97,8 @@ def get_permission_query_conditions(user):
         return "1=0"
 
     business_names = [b["name"] for b in businesses]
-    business_list = ", ".join(["%s"] * len(business_names))
+    business_list = ", ".join(["'" + b.replace("'", "''") + "'" for b in business_names])
 
-    # Return conditions for all business-owned DocTypes
-    # The actual DocType is determined by Frappe based on which list view is being queried
-    conditions = [
-        f"`tabBusiness`.name IN ({business_list})",
-        f"`tabBusiness Member`.business IN ({business_list})",
-        f"`tabDigital Card`.business IN ({business_list})",
-        f"`tabShowcase Product`.business IN ({business_list})",
-        f"`tabShowcase Service`.business IN ({business_list})",
-        f"`tabTheme`.business IN ({business_list})",
-        f"`tabPage Section`.business IN ({business_list})",
-        f"`tabEnquiry`.business IN ({business_list})",
-        f"`tabEngagement Event`.business IN ({business_list})",
-    ]
-
-    # Note: Frappe will apply this to the specific DocType being queried
-    # We return a generic condition that works for business-owned DocTypes
-    # For non-business DocTypes, this will be overridden by their own hooks
-
-    return f"`tabBusiness`.name IN ({business_list})"
+    # Return empty condition - individual DocType permission_query_conditions
+    # in hooks.py handle the actual filtering per DocType
+    return ""

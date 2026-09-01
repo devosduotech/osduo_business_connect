@@ -15,7 +15,7 @@ add_to_apps_screen = [
         "name": "osduo_business_connect",
         "logo": "/assets/osduo_business_connect/images/logo.png",
         "title": "Business Connect",
-        "route": "/app/business-connect",
+        "route": "/app/business",
     }
 ]
 
@@ -151,15 +151,6 @@ has_permission = {
 }
 
 permission_query_conditions = {
-    "Business": "osduo_business_connect.permissions.get_permission_query_conditions",
-    "Business Member": "osduo_business_connect.permissions.get_permission_query_conditions",
-    "Digital Card": "osduo_business_connect.permissions.get_permission_query_conditions",
-    "Showcase Product": "osduo_business_connect.permissions.get_permission_query_conditions",
-    "Showcase Service": "osduo_business_connect.permissions.get_permission_query_conditions",
-    "Theme": "osduo_business_connect.permissions.get_permission_query_conditions",
-    "Page Section": "osduo_business_connect.permissions.get_permission_query_conditions",
-    "Enquiry": "osduo_business_connect.permissions.get_permission_query_conditions",
-    "Engagement Event": "osduo_business_connect.permissions.get_permission_query_conditions",
     # CRM Lead isolation - critical for multi-business security
     "CRM Lead": "osduo_business_connect.crm_integration.crm_permissions.get_lead_permission_query_conditions",
 }
