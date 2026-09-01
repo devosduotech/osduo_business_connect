@@ -1,244 +1,244 @@
 {
-    "name": "Showcase Product",
-    "module": "Showcase",
-    "doctype": "DocType",
-    "document_type": "Document",
-    "engine": "InnoDB",
-    "naming_rule": "Expression",
-    "autoname": "format:PROD-.#####",
-    "title_field": "product_name",
-    "search_fields": "product_name,short_description,category",
-    "is_submittable": 0,
-    "issingle": 0,
-    "istable": 0,
-    "is_tree": 0,
-    "track_changes": 1,
-    "allow_rename": 0,
-    "sort_field": "sort_order",
-    "sort_order": "ASC",
-    "fields": [
-        {
-            "fieldname": "business",
-            "fieldtype": "Link",
-            "label": "Business",
-            "options": "Business",
-            "reqd": 1,
-            "in_list_view": 1,
-            "in_standard_filter": 1
-        },
-        {
-            "fieldname": "product_name",
-            "fieldtype": "Data",
-            "label": "Product Name",
-            "reqd": 1,
-            "in_list_view": 1
-        },
-        {
-            "fieldname": "slug",
-            "fieldtype": "Data",
-            "label": "Slug",
-            "reqd": 1,
-            "unique": 0,
-            "in_list_view": 1,
-            "description": "URL-friendly identifier"
-        },
-        {
-            "fieldname": "section_description",
-            "fieldtype": "Section Break",
-            "label": "Description"
-        },
-        {
-            "fieldname": "short_description",
-            "fieldtype": "Small Text",
-            "label": "Short Description",
-            "in_list_view": 1
-        },
-        {
-            "fieldname": "description",
-            "fieldtype": "Text Editor",
-            "label": "Description"
-        },
-        {
-            "fieldname": "section_media",
-            "fieldtype": "Section Break",
-            "label": "Media"
-        },
-        {
-            "fieldname": "image",
-            "fieldtype": "Attach Image",
-            "label": "Image"
-        },
-        {
-            "fieldname": "column_break_media",
-            "fieldtype": "Column Break"
-        },
-        {
-            "fieldname": "video_url",
-            "fieldtype": "Data",
-            "label": "Video URL",
-            "options": "URL"
-        },
-        {
-            "fieldname": "brochure",
-            "fieldtype": "Attach",
-            "label": "Brochure",
-            "description": "PDF files only"
-        },
-        {
-            "fieldname": "gallery",
-            "fieldtype": "Table",
-            "label": "Gallery",
-            "options": "Product Gallery Item"
-        },
-        {
-            "fieldname": "section_pricing",
-            "fieldtype": "Section Break",
-            "label": "Pricing"
-        },
-        {
-            "fieldname": "price_display_mode",
-            "fieldtype": "Select",
-            "label": "Price Display Mode",
-            "reqd": 1,
-            "default": "Hidden",
-            "options": "Hidden\nContact\nFixed",
-            "in_list_view": 1
-        },
-        {
-            "fieldname": "price",
-            "fieldtype": "Currency",
-            "label": "Price",
-            "depends_on": "eval:doc.price_display_mode === 'Fixed'"
-        },
-        {
-            "fieldname": "column_break_pricing",
-            "fieldtype": "Column Break"
-        },
-        {
-            "fieldname": "currency",
-            "fieldtype": "Link",
-            "label": "Currency",
-            "options": "Currency",
-            "depends_on": "eval:doc.price_display_mode === 'Fixed'"
-        },
-        {
-            "fieldname": "category",
-            "fieldtype": "Data",
-            "label": "Category"
-        },
-        {
-            "fieldname": "section_enquiry",
-            "fieldtype": "Section Break",
-            "label": "Enquiry"
-        },
-        {
-            "fieldname": "enquiry_enabled",
-            "fieldtype": "Check",
-            "label": "Enquiry Enabled",
-            "default": 1,
-            "in_list_view": 1
-        },
-        {
-            "fieldname": "column_break_enquiry",
-            "fieldtype": "Column Break"
-        },
-        {
-            "fieldname": "featured",
-            "fieldtype": "Check",
-            "label": "Featured",
-            "default": 0,
-            "in_list_view": 1
-        },
-        {
-            "fieldname": "section_status",
-            "fieldtype": "Section Break",
-            "label": "Status"
-        },
-        {
-            "fieldname": "status",
-            "fieldtype": "Select",
-            "label": "Status",
-            "reqd": 1,
-            "default": "Draft",
-            "options": "Draft\nPublished\nArchived",
-            "in_list_view": 1,
-            "in_standard_filter": 1
-        },
-        {
-            "fieldname": "sort_order",
-            "fieldtype": "Int",
-            "label": "Sort Order",
-            "default": 0
-        }
-    ],
-    "permissions": [
-        {
-            "role": "OSDuo Business Owner",
-            "read": 1,
-            "write": 1,
-            "create": 1,
-            "delete": 1,
-            "submit": 0,
-            "cancel": 0,
-            "amend": 0,
-            "report": 1,
-            "export": 1,
-            "import": 0,
-            "print": 1,
-            "email": 1,
-            "share": 1,
-            "user_permission": 1
-        },
-        {
-            "role": "OSDuo Business Manager",
-            "read": 1,
-            "write": 1,
-            "create": 1,
-            "delete": 0,
-            "submit": 0,
-            "cancel": 0,
-            "amend": 0,
-            "report": 1,
-            "export": 1,
-            "import": 0,
-            "print": 1,
-            "email": 1,
-            "share": 1,
-            "user_permission": 1
-        },
-        {
-            "role": "OSDuo Marketing Manager",
-            "read": 1,
-            "write": 1,
-            "create": 1,
-            "delete": 0,
-            "submit": 0,
-            "cancel": 0,
-            "amend": 0,
-            "report": 1,
-            "export": 1,
-            "import": 0,
-            "print": 1,
-            "email": 1,
-            "share": 1,
-            "user_permission": 0
-        },
-        {
-            "role": "OSDuo System Manager",
-            "read": 1,
-            "write": 1,
-            "create": 1,
-            "delete": 1,
-            "submit": 0,
-            "cancel": 0,
-            "amend": 0,
-            "report": 1,
-            "export": 1,
-            "import": 1,
-            "print": 1,
-            "email": 1,
-            "share": 1,
-            "user_permission": 1
-        }
-    ]
+  "name": "Showcase Product",
+  "module": "Showcase",
+  "doctype": "DocType",
+  "document_type": "Document",
+  "engine": "InnoDB",
+  "naming_rule": "Expression",
+  "autoname": "format:PROD-.#####.",
+  "title_field": "product_name",
+  "search_fields": "product_name,short_description,category",
+  "is_submittable": 0,
+  "issingle": 0,
+  "istable": 0,
+  "is_tree": 0,
+  "track_changes": 1,
+  "allow_rename": 0,
+  "sort_field": "sort_order",
+  "sort_order": "ASC",
+  "fields": [
+    {
+      "fieldname": "business",
+      "fieldtype": "Link",
+      "label": "Business",
+      "options": "Business",
+      "reqd": 1,
+      "in_list_view": 1,
+      "in_standard_filter": 1
+    },
+    {
+      "fieldname": "product_name",
+      "fieldtype": "Data",
+      "label": "Product Name",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "slug",
+      "fieldtype": "Data",
+      "label": "Slug",
+      "reqd": 1,
+      "unique": 0,
+      "in_list_view": 1,
+      "description": "URL-friendly identifier"
+    },
+    {
+      "fieldname": "section_description",
+      "fieldtype": "Section Break",
+      "label": "Description"
+    },
+    {
+      "fieldname": "short_description",
+      "fieldtype": "Small Text",
+      "label": "Short Description",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "description",
+      "fieldtype": "Text Editor",
+      "label": "Description"
+    },
+    {
+      "fieldname": "section_media",
+      "fieldtype": "Section Break",
+      "label": "Media"
+    },
+    {
+      "fieldname": "image",
+      "fieldtype": "Attach Image",
+      "label": "Image"
+    },
+    {
+      "fieldname": "column_break_media",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "video_url",
+      "fieldtype": "Data",
+      "label": "Video URL",
+      "options": "URL"
+    },
+    {
+      "fieldname": "brochure",
+      "fieldtype": "Attach",
+      "label": "Brochure",
+      "description": "PDF files only"
+    },
+    {
+      "fieldname": "gallery",
+      "fieldtype": "Table",
+      "label": "Gallery",
+      "options": "Product Gallery Item"
+    },
+    {
+      "fieldname": "section_pricing",
+      "fieldtype": "Section Break",
+      "label": "Pricing"
+    },
+    {
+      "fieldname": "price_display_mode",
+      "fieldtype": "Select",
+      "label": "Price Display Mode",
+      "reqd": 1,
+      "default": "Hidden",
+      "options": "Hidden\nContact\nFixed",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "price",
+      "fieldtype": "Currency",
+      "label": "Price",
+      "depends_on": "eval:doc.price_display_mode === 'Fixed'"
+    },
+    {
+      "fieldname": "column_break_pricing",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "currency",
+      "fieldtype": "Link",
+      "label": "Currency",
+      "options": "Currency",
+      "depends_on": "eval:doc.price_display_mode === 'Fixed'"
+    },
+    {
+      "fieldname": "category",
+      "fieldtype": "Data",
+      "label": "Category"
+    },
+    {
+      "fieldname": "section_enquiry",
+      "fieldtype": "Section Break",
+      "label": "Enquiry"
+    },
+    {
+      "fieldname": "enquiry_enabled",
+      "fieldtype": "Check",
+      "label": "Enquiry Enabled",
+      "default": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "column_break_enquiry",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "featured",
+      "fieldtype": "Check",
+      "label": "Featured",
+      "default": 0,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "section_status",
+      "fieldtype": "Section Break",
+      "label": "Status"
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Select",
+      "label": "Status",
+      "reqd": 1,
+      "default": "Draft",
+      "options": "Draft\nPublished\nArchived",
+      "in_list_view": 1,
+      "in_standard_filter": 1
+    },
+    {
+      "fieldname": "sort_order",
+      "fieldtype": "Int",
+      "label": "Sort Order",
+      "default": 0
+    }
+  ],
+  "permissions": [
+    {
+      "role": "OSDuo Business Owner",
+      "read": 1,
+      "write": 1,
+      "create": 1,
+      "delete": 1,
+      "submit": 0,
+      "cancel": 0,
+      "amend": 0,
+      "report": 1,
+      "export": 1,
+      "import": 0,
+      "print": 1,
+      "email": 1,
+      "share": 1,
+      "user_permission": 1
+    },
+    {
+      "role": "OSDuo Business Manager",
+      "read": 1,
+      "write": 1,
+      "create": 1,
+      "delete": 0,
+      "submit": 0,
+      "cancel": 0,
+      "amend": 0,
+      "report": 1,
+      "export": 1,
+      "import": 0,
+      "print": 1,
+      "email": 1,
+      "share": 1,
+      "user_permission": 1
+    },
+    {
+      "role": "OSDuo Marketing Manager",
+      "read": 1,
+      "write": 1,
+      "create": 1,
+      "delete": 0,
+      "submit": 0,
+      "cancel": 0,
+      "amend": 0,
+      "report": 1,
+      "export": 1,
+      "import": 0,
+      "print": 1,
+      "email": 1,
+      "share": 1,
+      "user_permission": 0
+    },
+    {
+      "role": "OSDuo System Manager",
+      "read": 1,
+      "write": 1,
+      "create": 1,
+      "delete": 1,
+      "submit": 0,
+      "cancel": 0,
+      "amend": 0,
+      "report": 1,
+      "export": 1,
+      "import": 1,
+      "print": 1,
+      "email": 1,
+      "share": 1,
+      "user_permission": 1
+    }
+  ]
 }

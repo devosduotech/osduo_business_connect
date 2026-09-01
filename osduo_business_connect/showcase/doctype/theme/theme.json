@@ -1,192 +1,192 @@
 {
-    "name": "Theme",
-    "module": "Showcase",
-    "doctype": "DocType",
-    "document_type": "Document",
-    "engine": "InnoDB",
-    "naming_rule": "Expression",
-    "autoname": "format:THEME-.#####",
-    "title_field": "business",
-    "search_fields": "business,template",
-    "is_submittable": 0,
-    "issingle": 0,
-    "istable": 0,
-    "is_tree": 0,
-    "track_changes": 1,
-    "allow_rename": 0,
-    "sort_field": "modified",
-    "sort_order": "DESC",
-    "fields": [
-        {
-            "fieldname": "business",
-            "fieldtype": "Link",
-            "label": "Business",
-            "options": "Business",
-            "in_list_view": 1,
-            "in_standard_filter": 1
-        },
-        {
-            "fieldname": "template",
-            "fieldtype": "Select",
-            "label": "Template",
-            "reqd": 1,
-            "default": "Modern",
-            "options": "Modern\nProfessional\nMinimal\nClassic",
-            "in_list_view": 1
-        },
-        {
-            "fieldname": "section_colors",
-            "fieldtype": "Section Break",
-            "label": "Colors"
-        },
-        {
-            "fieldname": "primary_color",
-            "fieldtype": "Color",
-            "label": "Primary Color",
-            "reqd": 1,
-            "default": "#000000",
-            "in_list_view": 1
-        },
-        {
-            "fieldname": "secondary_color",
-            "fieldtype": "Color",
-            "label": "Secondary Color",
-            "reqd": 1,
-            "default": "#FFFFFF",
-            "in_list_view": 1
-        },
-        {
-            "fieldname": "accent_color",
-            "fieldtype": "Color",
-            "label": "Accent Color"
-        },
-        {
-            "fieldname": "section_style",
-            "fieldtype": "Section Break",
-            "label": "Style Settings"
-        },
-        {
-            "fieldname": "button_style",
-            "fieldtype": "Select",
-            "label": "Button Style",
-            "reqd": 1,
-            "default": "Filled",
-            "options": "Filled\nOutline\nRounded\nPill",
-            "in_list_view": 1
-        },
-        {
-            "fieldname": "card_style",
-            "fieldtype": "Select",
-            "label": "Card Style",
-            "reqd": 1,
-            "default": "Modern",
-            "options": "Modern\nProfessional\nMinimal\nClassic",
-            "in_list_view": 1
-        },
-        {
-            "fieldname": "column_break_style",
-            "fieldtype": "Column Break"
-        },
-        {
-            "fieldname": "font_family",
-            "fieldtype": "Data",
-            "label": "Font Family",
-            "description": "Custom font family name (e.g., 'Roboto', 'Open Sans')"
-        },
-        {
-            "fieldname": "section_advanced",
-            "fieldtype": "Section Break",
-            "label": "Advanced Settings"
-        },
-        {
-            "fieldname": "custom_settings",
-            "fieldtype": "Code",
-            "label": "Custom Settings",
-            "options": "JSON",
-            "description": "JSON configuration for advanced theme customization"
-        },
-        {
-            "fieldname": "section_activation",
-            "fieldtype": "Section Break",
-            "label": "Activation"
-        },
-        {
-            "fieldname": "active",
-            "fieldtype": "Check",
-            "label": "Active",
-            "default": 0,
-            "in_list_view": 1,
-            "description": "Only one theme can be active per business"
-        }
-    ],
-    "permissions": [
-        {
-            "role": "OSDuo Business Owner",
-            "read": 1,
-            "write": 1,
-            "create": 1,
-            "delete": 1,
-            "submit": 0,
-            "cancel": 0,
-            "amend": 0,
-            "report": 1,
-            "export": 1,
-            "import": 0,
-            "print": 1,
-            "email": 1,
-            "share": 1,
-            "user_permission": 1
-        },
-        {
-            "role": "OSDuo Business Manager",
-            "read": 1,
-            "write": 1,
-            "create": 1,
-            "delete": 0,
-            "submit": 0,
-            "cancel": 0,
-            "amend": 0,
-            "report": 1,
-            "export": 1,
-            "import": 0,
-            "print": 1,
-            "email": 1,
-            "share": 1,
-            "user_permission": 1
-        },
-        {
-            "role": "OSDuo Marketing Manager",
-            "read": 1,
-            "write": 1,
-            "create": 1,
-            "delete": 0,
-            "submit": 0,
-            "cancel": 0,
-            "amend": 0,
-            "report": 1,
-            "export": 1,
-            "import": 0,
-            "print": 1,
-            "email": 1,
-            "share": 1,
-            "user_permission": 0
-        },
-        {
-            "role": "OSDuo System Manager",
-            "read": 1,
-            "write": 1,
-            "create": 1,
-            "delete": 1,
-            "submit": 0,
-            "cancel": 0,
-            "amend": 0,
-            "report": 1,
-            "export": 1,
-            "import": 1,
-            "print": 1,
-            "email": 1,
-            "share": 1,
-            "user_permission": 1
-        }
-    ]
+  "name": "Theme",
+  "module": "Showcase",
+  "doctype": "DocType",
+  "document_type": "Document",
+  "engine": "InnoDB",
+  "naming_rule": "Expression",
+  "autoname": "format:THEME-.#####.",
+  "title_field": "business",
+  "search_fields": "business,template",
+  "is_submittable": 0,
+  "issingle": 0,
+  "istable": 0,
+  "is_tree": 0,
+  "track_changes": 1,
+  "allow_rename": 0,
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "fields": [
+    {
+      "fieldname": "business",
+      "fieldtype": "Link",
+      "label": "Business",
+      "options": "Business",
+      "in_list_view": 1,
+      "in_standard_filter": 1
+    },
+    {
+      "fieldname": "template",
+      "fieldtype": "Select",
+      "label": "Template",
+      "reqd": 1,
+      "default": "Modern",
+      "options": "Modern\nProfessional\nMinimal\nClassic",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "section_colors",
+      "fieldtype": "Section Break",
+      "label": "Colors"
+    },
+    {
+      "fieldname": "primary_color",
+      "fieldtype": "Color",
+      "label": "Primary Color",
+      "reqd": 1,
+      "default": "#000000",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "secondary_color",
+      "fieldtype": "Color",
+      "label": "Secondary Color",
+      "reqd": 1,
+      "default": "#FFFFFF",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "accent_color",
+      "fieldtype": "Color",
+      "label": "Accent Color"
+    },
+    {
+      "fieldname": "section_style",
+      "fieldtype": "Section Break",
+      "label": "Style Settings"
+    },
+    {
+      "fieldname": "button_style",
+      "fieldtype": "Select",
+      "label": "Button Style",
+      "reqd": 1,
+      "default": "Filled",
+      "options": "Filled\nOutline\nRounded\nPill",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "card_style",
+      "fieldtype": "Select",
+      "label": "Card Style",
+      "reqd": 1,
+      "default": "Modern",
+      "options": "Modern\nProfessional\nMinimal\nClassic",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "column_break_style",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "font_family",
+      "fieldtype": "Data",
+      "label": "Font Family",
+      "description": "Custom font family name (e.g., 'Roboto', 'Open Sans')"
+    },
+    {
+      "fieldname": "section_advanced",
+      "fieldtype": "Section Break",
+      "label": "Advanced Settings"
+    },
+    {
+      "fieldname": "custom_settings",
+      "fieldtype": "Code",
+      "label": "Custom Settings",
+      "options": "JSON",
+      "description": "JSON configuration for advanced theme customization"
+    },
+    {
+      "fieldname": "section_activation",
+      "fieldtype": "Section Break",
+      "label": "Activation"
+    },
+    {
+      "fieldname": "active",
+      "fieldtype": "Check",
+      "label": "Active",
+      "default": 0,
+      "in_list_view": 1,
+      "description": "Only one theme can be active per business"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "OSDuo Business Owner",
+      "read": 1,
+      "write": 1,
+      "create": 1,
+      "delete": 1,
+      "submit": 0,
+      "cancel": 0,
+      "amend": 0,
+      "report": 1,
+      "export": 1,
+      "import": 0,
+      "print": 1,
+      "email": 1,
+      "share": 1,
+      "user_permission": 1
+    },
+    {
+      "role": "OSDuo Business Manager",
+      "read": 1,
+      "write": 1,
+      "create": 1,
+      "delete": 0,
+      "submit": 0,
+      "cancel": 0,
+      "amend": 0,
+      "report": 1,
+      "export": 1,
+      "import": 0,
+      "print": 1,
+      "email": 1,
+      "share": 1,
+      "user_permission": 1
+    },
+    {
+      "role": "OSDuo Marketing Manager",
+      "read": 1,
+      "write": 1,
+      "create": 1,
+      "delete": 0,
+      "submit": 0,
+      "cancel": 0,
+      "amend": 0,
+      "report": 1,
+      "export": 1,
+      "import": 0,
+      "print": 1,
+      "email": 1,
+      "share": 1,
+      "user_permission": 0
+    },
+    {
+      "role": "OSDuo System Manager",
+      "read": 1,
+      "write": 1,
+      "create": 1,
+      "delete": 1,
+      "submit": 0,
+      "cancel": 0,
+      "amend": 0,
+      "report": 1,
+      "export": 1,
+      "import": 1,
+      "print": 1,
+      "email": 1,
+      "share": 1,
+      "user_permission": 1
+    }
+  ]
 }

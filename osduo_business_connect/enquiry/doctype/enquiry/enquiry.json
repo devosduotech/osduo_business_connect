@@ -1,273 +1,273 @@
 {
-    "name": "Enquiry",
-    "module": "Enquiry",
-    "doctype": "DocType",
-    "document_type": "Document",
-    "engine": "InnoDB",
-    "naming_rule": "Expression",
-    "autoname": "format:ENQ-.#####",
-    "title_field": "visitor_name",
-    "search_fields": "visitor_name,visitor_email,visitor_company",
-    "is_submittable": 0,
-    "issingle": 0,
-    "istable": 0,
-    "is_tree": 0,
-    "track_changes": 1,
-    "allow_rename": 0,
-    "sort_field": "submitted_at",
-    "sort_order": "DESC",
-    "fields": [
-        {
-            "fieldname": "business",
-            "fieldtype": "Link",
-            "label": "Business",
-            "options": "Business",
-            "reqd": 1,
-            "in_list_view": 1,
-            "in_standard_filter": 1
-        },
-        {
-            "fieldname": "section_source",
-            "fieldtype": "Section Break",
-            "label": "Source"
-        },
-        {
-            "fieldname": "source",
-            "fieldtype": "Select",
-            "label": "Source",
-            "reqd": 1,
-            "default": "Other",
-            "options": "Digital Card\nBusiness Profile\nProduct\nService\nQR\nCampaign\nOther",
-            "in_list_view": 1,
-            "in_standard_filter": 1
-        },
-        {
-            "fieldname": "campaign",
-            "fieldtype": "Data",
-            "label": "Campaign"
-        },
-        {
-            "fieldname": "column_break_source",
-            "fieldtype": "Column Break"
-        },
-        {
-            "fieldname": "landing_url",
-            "fieldtype": "Data",
-            "label": "Landing URL",
-            "options": "URL"
-        },
-        {
-            "fieldname": "section_reference",
-            "fieldtype": "Section Break",
-            "label": "Reference"
-        },
-        {
-            "fieldname": "card",
-            "fieldtype": "Link",
-            "label": "Digital Card",
-            "options": "Digital Card"
-        },
-        {
-            "fieldname": "product",
-            "fieldtype": "Link",
-            "label": "Product",
-            "options": "Showcase Product"
-        },
-        {
-            "fieldname": "column_break_reference",
-            "fieldtype": "Column Break"
-        },
-        {
-            "fieldname": "service",
-            "fieldtype": "Link",
-            "label": "Service",
-            "options": "Showcase Service"
-        },
-        {
-            "fieldname": "section_visitor",
-            "fieldtype": "Section Break",
-            "label": "Visitor Information"
-        },
-        {
-            "fieldname": "visitor_name",
-            "fieldtype": "Data",
-            "label": "Visitor Name",
-            "reqd": 1,
-            "in_list_view": 1
-        },
-        {
-            "fieldname": "visitor_email",
-            "fieldtype": "Data",
-            "label": "Visitor Email",
-            "options": "Email",
-            "in_list_view": 1
-        },
-        {
-            "fieldname": "column_break_visitor",
-            "fieldtype": "Column Break"
-        },
-        {
-            "fieldname": "visitor_phone",
-            "fieldtype": "Data",
-            "label": "Visitor Phone",
-            "options": "Phone",
-            "in_list_view": 1
-        },
-        {
-            "fieldname": "visitor_company",
-            "fieldtype": "Data",
-            "label": "Visitor Company"
-        },
-        {
-            "fieldname": "section_message",
-            "fieldtype": "Section Break",
-            "label": "Message"
-        },
-        {
-            "fieldname": "message",
-            "fieldtype": "Small Text",
-            "label": "Message"
-        },
-        {
-            "fieldname": "section_status",
-            "fieldtype": "Section Break",
-            "label": "Status"
-        },
-        {
-            "fieldname": "status",
-            "fieldtype": "Select",
-            "label": "Status",
-            "reqd": 1,
-            "default": "New",
-            "options": "New\nSync Pending\nSynced\nSync Failed\nConverted\nClosed\nSpam",
-            "in_list_view": 1,
-            "in_standard_filter": 1
-        },
-        {
-            "fieldname": "column_break_status",
-            "fieldtype": "Column Break"
-        },
-        {
-            "fieldname": "submitted_at",
-            "fieldtype": "Datetime",
-            "label": "Submitted At",
-            "reqd": 1,
-            "in_list_view": 1
-        },
-        {
-            "fieldname": "section_crm",
-            "fieldtype": "Section Break",
-            "label": "CRM Synchronization"
-        },
-        {
-            "fieldname": "crm_lead",
-            "fieldtype": "Link",
-            "label": "CRM Lead",
-            "options": "CRM Lead",
-            "read_only": 1
-        },
-        {
-            "fieldname": "column_break_crm",
-            "fieldtype": "Column Break"
-        },
-        {
-            "fieldname": "crm_sync_attempts",
-            "fieldtype": "Int",
-            "label": "CRM Sync Attempts",
-            "default": 0,
-            "read_only": 1
-        },
-        {
-            "fieldname": "last_sync_error",
-            "fieldtype": "Small Text",
-            "label": "Last Sync Error",
-            "read_only": 1
-        },
-        {
-            "fieldname": "section_consent",
-            "fieldtype": "Section Break",
-            "label": "Consent"
-        },
-        {
-            "fieldname": "consent",
-            "fieldtype": "Check",
-            "label": "Consent Given"
-        },
-        {
-            "fieldname": "consent_text",
-            "fieldtype": "Small Text",
-            "label": "Consent Text",
-            "read_only": 1
-        }
-    ],
-    "permissions": [
-        {
-            "role": "OSDuo Business Owner",
-            "read": 1,
-            "write": 1,
-            "create": 0,
-            "delete": 1,
-            "submit": 0,
-            "cancel": 0,
-            "amend": 0,
-            "report": 1,
-            "export": 1,
-            "import": 0,
-            "print": 1,
-            "email": 1,
-            "share": 1,
-            "user_permission": 1
-        },
-        {
-            "role": "OSDuo Business Manager",
-            "read": 1,
-            "write": 1,
-            "create": 0,
-            "delete": 0,
-            "submit": 0,
-            "cancel": 0,
-            "amend": 0,
-            "report": 1,
-            "export": 1,
-            "import": 0,
-            "print": 1,
-            "email": 1,
-            "share": 1,
-            "user_permission": 1
-        },
-        {
-            "role": "OSDuo CRM User",
-            "read": 1,
-            "write": 0,
-            "create": 0,
-            "delete": 0,
-            "submit": 0,
-            "cancel": 0,
-            "amend": 0,
-            "report": 1,
-            "export": 0,
-            "import": 0,
-            "print": 0,
-            "email": 0,
-            "share": 0,
-            "user_permission": 0
-        },
-        {
-            "role": "OSDuo System Manager",
-            "read": 1,
-            "write": 1,
-            "create": 0,
-            "delete": 1,
-            "submit": 0,
-            "cancel": 0,
-            "amend": 0,
-            "report": 1,
-            "export": 1,
-            "import": 1,
-            "print": 1,
-            "email": 1,
-            "share": 1,
-            "user_permission": 1
-        }
-    ]
+  "name": "Enquiry",
+  "module": "Enquiry",
+  "doctype": "DocType",
+  "document_type": "Document",
+  "engine": "InnoDB",
+  "naming_rule": "Expression",
+  "autoname": "format:ENQ-.#####.",
+  "title_field": "visitor_name",
+  "search_fields": "visitor_name,visitor_email,visitor_company",
+  "is_submittable": 0,
+  "issingle": 0,
+  "istable": 0,
+  "is_tree": 0,
+  "track_changes": 1,
+  "allow_rename": 0,
+  "sort_field": "submitted_at",
+  "sort_order": "DESC",
+  "fields": [
+    {
+      "fieldname": "business",
+      "fieldtype": "Link",
+      "label": "Business",
+      "options": "Business",
+      "reqd": 1,
+      "in_list_view": 1,
+      "in_standard_filter": 1
+    },
+    {
+      "fieldname": "section_source",
+      "fieldtype": "Section Break",
+      "label": "Source"
+    },
+    {
+      "fieldname": "source",
+      "fieldtype": "Select",
+      "label": "Source",
+      "reqd": 1,
+      "default": "Other",
+      "options": "Digital Card\nBusiness Profile\nProduct\nService\nQR\nCampaign\nOther",
+      "in_list_view": 1,
+      "in_standard_filter": 1
+    },
+    {
+      "fieldname": "campaign",
+      "fieldtype": "Data",
+      "label": "Campaign"
+    },
+    {
+      "fieldname": "column_break_source",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "landing_url",
+      "fieldtype": "Data",
+      "label": "Landing URL",
+      "options": "URL"
+    },
+    {
+      "fieldname": "section_reference",
+      "fieldtype": "Section Break",
+      "label": "Reference"
+    },
+    {
+      "fieldname": "card",
+      "fieldtype": "Link",
+      "label": "Digital Card",
+      "options": "Digital Card"
+    },
+    {
+      "fieldname": "product",
+      "fieldtype": "Link",
+      "label": "Product",
+      "options": "Showcase Product"
+    },
+    {
+      "fieldname": "column_break_reference",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "service",
+      "fieldtype": "Link",
+      "label": "Service",
+      "options": "Showcase Service"
+    },
+    {
+      "fieldname": "section_visitor",
+      "fieldtype": "Section Break",
+      "label": "Visitor Information"
+    },
+    {
+      "fieldname": "visitor_name",
+      "fieldtype": "Data",
+      "label": "Visitor Name",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "visitor_email",
+      "fieldtype": "Data",
+      "label": "Visitor Email",
+      "options": "Email",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "column_break_visitor",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "visitor_phone",
+      "fieldtype": "Data",
+      "label": "Visitor Phone",
+      "options": "Phone",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "visitor_company",
+      "fieldtype": "Data",
+      "label": "Visitor Company"
+    },
+    {
+      "fieldname": "section_message",
+      "fieldtype": "Section Break",
+      "label": "Message"
+    },
+    {
+      "fieldname": "message",
+      "fieldtype": "Small Text",
+      "label": "Message"
+    },
+    {
+      "fieldname": "section_status",
+      "fieldtype": "Section Break",
+      "label": "Status"
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Select",
+      "label": "Status",
+      "reqd": 1,
+      "default": "New",
+      "options": "New\nSync Pending\nSynced\nSync Failed\nConverted\nClosed\nSpam",
+      "in_list_view": 1,
+      "in_standard_filter": 1
+    },
+    {
+      "fieldname": "column_break_status",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "submitted_at",
+      "fieldtype": "Datetime",
+      "label": "Submitted At",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "section_crm",
+      "fieldtype": "Section Break",
+      "label": "CRM Synchronization"
+    },
+    {
+      "fieldname": "crm_lead",
+      "fieldtype": "Link",
+      "label": "CRM Lead",
+      "options": "CRM Lead",
+      "read_only": 1
+    },
+    {
+      "fieldname": "column_break_crm",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "crm_sync_attempts",
+      "fieldtype": "Int",
+      "label": "CRM Sync Attempts",
+      "default": 0,
+      "read_only": 1
+    },
+    {
+      "fieldname": "last_sync_error",
+      "fieldtype": "Small Text",
+      "label": "Last Sync Error",
+      "read_only": 1
+    },
+    {
+      "fieldname": "section_consent",
+      "fieldtype": "Section Break",
+      "label": "Consent"
+    },
+    {
+      "fieldname": "consent",
+      "fieldtype": "Check",
+      "label": "Consent Given"
+    },
+    {
+      "fieldname": "consent_text",
+      "fieldtype": "Small Text",
+      "label": "Consent Text",
+      "read_only": 1
+    }
+  ],
+  "permissions": [
+    {
+      "role": "OSDuo Business Owner",
+      "read": 1,
+      "write": 1,
+      "create": 0,
+      "delete": 1,
+      "submit": 0,
+      "cancel": 0,
+      "amend": 0,
+      "report": 1,
+      "export": 1,
+      "import": 0,
+      "print": 1,
+      "email": 1,
+      "share": 1,
+      "user_permission": 1
+    },
+    {
+      "role": "OSDuo Business Manager",
+      "read": 1,
+      "write": 1,
+      "create": 0,
+      "delete": 0,
+      "submit": 0,
+      "cancel": 0,
+      "amend": 0,
+      "report": 1,
+      "export": 1,
+      "import": 0,
+      "print": 1,
+      "email": 1,
+      "share": 1,
+      "user_permission": 1
+    },
+    {
+      "role": "OSDuo CRM User",
+      "read": 1,
+      "write": 0,
+      "create": 0,
+      "delete": 0,
+      "submit": 0,
+      "cancel": 0,
+      "amend": 0,
+      "report": 1,
+      "export": 0,
+      "import": 0,
+      "print": 0,
+      "email": 0,
+      "share": 0,
+      "user_permission": 0
+    },
+    {
+      "role": "OSDuo System Manager",
+      "read": 1,
+      "write": 1,
+      "create": 0,
+      "delete": 1,
+      "submit": 0,
+      "cancel": 0,
+      "amend": 0,
+      "report": 1,
+      "export": 1,
+      "import": 1,
+      "print": 1,
+      "email": 1,
+      "share": 1,
+      "user_permission": 1
+    }
+  ]
 }
