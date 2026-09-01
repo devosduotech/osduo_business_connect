@@ -1,0 +1,102 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"bct1\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h5\\\"><b>BUSINESS CONNECT</b></span>\",\"col\":12}},{\"id\":\"bct2\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"bct3\",\"type\":\"paragraph\",\"data\":{\"text\":\"<b>SHORTCUTS</b>\",\"col\":12}},{\"id\":\"bct4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Businesses\",\"col\":3}},{\"id\":\"bct5\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Digital Cards\",\"col\":3}},{\"id\":\"bct6\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Products\",\"col\":3}},{\"id\":\"bct7\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Services\",\"col\":3}},{\"id\":\"bct8\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Enquiries\",\"col\":3}},{\"id\":\"bct9\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"bct10\",\"type\":\"paragraph\",\"data\":{\"text\":\"<b>CONFIGURATION</b>\",\"col\":12}},{\"id\":\"bct11\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Themes\",\"col\":3}},{\"id\":\"bct12\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Page Sections\",\"col\":3}},{\"id\":\"bct13\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Business Members\",\"col\":3}},{\"id\":\"bct14\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Engagement Events\",\"col\":3}}]",
+ "creation": "2023-11-27 13:55:17.090361",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "company",
+ "idx": 0,
+ "indicator_color": "",
+ "is_hidden": 0,
+ "label": "Business Connect",
+ "links": [],
+ "modified": "2024-01-04 19:08:27.799960",
+ "modified_by": "Administrator",
+ "module": "Business",
+ "name": "Business Connect",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 1.0,
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Businesses",
+   "link_to": "Business",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Digital Cards",
+   "link_to": "Digital Card",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Products",
+   "link_to": "Showcase Product",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Services",
+   "link_to": "Showcase Service",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Enquiries",
+   "link_to": "Enquiry",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Themes",
+   "link_to": "Theme",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Page Sections",
+   "link_to": "Page Section",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Business Members",
+   "link_to": "Business Member",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Engagement Events",
+   "link_to": "Engagement Event",
+   "stats_filter": "[]",
+   "type": "DocType"
+  }
+ ],
+ "title": "Business Connect"
+}
