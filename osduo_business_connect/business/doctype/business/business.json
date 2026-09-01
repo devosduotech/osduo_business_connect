@@ -22,7 +22,7 @@
       "fieldtype": "Select",
       "label": "Naming Series",
       "default": "BIZ-.#####",
-      "options": "BIZ-.#####, BIZ-.YYYY.-.#####, BIZ-.YYYY.-.MM.-.#####",
+      "options": "BIZ-.#####",
       "reqd": 1,
       "set_only_once": 1
     },

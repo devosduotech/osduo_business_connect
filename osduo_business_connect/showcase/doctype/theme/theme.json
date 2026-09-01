@@ -22,7 +22,7 @@
       "fieldtype": "Select",
       "label": "Naming Series",
       "default": "THEME-.#####",
-      "options": "THEME-.#####, THEME-.YYYY.-.#####, THEME-.YYYY.-.MM.-.#####",
+      "options": "THEME-.#####",
       "reqd": 1,
       "set_only_once": 1
     },

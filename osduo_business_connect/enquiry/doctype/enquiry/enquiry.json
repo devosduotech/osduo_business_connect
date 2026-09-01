@@ -22,7 +22,7 @@
       "fieldtype": "Select",
       "label": "Naming Series",
       "default": "ENQ-.#####",
-      "options": "ENQ-.#####, ENQ-.YYYY.-.#####, ENQ-.YYYY.-.MM.-.#####",
+      "options": "ENQ-.#####",
       "reqd": 1,
       "set_only_once": 1
     },

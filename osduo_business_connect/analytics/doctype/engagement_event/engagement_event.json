@@ -22,7 +22,7 @@
       "fieldtype": "Select",
       "label": "Naming Series",
       "default": "EVT-.#####",
-      "options": "EVT-.#####, EVT-.YYYY.-.#####, EVT-.YYYY.-.MM.-.#####",
+      "options": "EVT-.#####",
       "reqd": 1,
       "set_only_once": 1
     },
