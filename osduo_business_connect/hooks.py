@@ -10,6 +10,15 @@ app_license = "MIT"
 
 required_apps = ["crm"]
 
+add_to_apps_screen = [
+    {
+        "name": "osduo_business_connect",
+        "logo": "/assets/osduo_business_connect/images/logo.png",
+        "title": "Business Connect",
+        "route": "/app/business-connect",
+    }
+]
+
 # Includes in <head>
 # ------------------
 
