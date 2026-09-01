@@ -26,7 +26,6 @@ venv/
 *.pid.lock
 node_modules/
 assets/
-public/
 sites/*/private/backups/
 sites/*/logs/
 sites/*/site_config.json

@@ -13,9 +13,10 @@ required_apps = ["crm"]
 add_to_apps_screen = [
     {
         "name": "osduo_business_connect",
-        "logo": "/assets/osduo_business_connect/images/logo.png",
+        "logo": "/assets/osduo_business_connect/images/logo.svg",
         "title": "Business Connect",
-        "route": "/app/business",
+        "route": "/app/business-connect",
+        "type": "Workspace",
     }
 ]
 
