@@ -9,31 +9,30 @@ def get_context(context):
         frappe.throw("Product not found", frappe.DoesNotExistError)
 
     # Find business
-    business = frappe.get_all(
+    business = frappe.db.get_value(
         "Business",
-        filters={"slug": business_slug, "status": "Published"},
-        fields=["name", "business_name", "email"],
-        limit=1,
+        {"slug": business_slug, "status": "Published"},
+        ["name", "business_name", "email"],
+        as_dict=True,
     )
     if not business:
         frappe.throw("Business not found", frappe.DoesNotExistError)
 
     # Find product
-    product = frappe.get_all(
+    doc = frappe.db.get_value(
         "Showcase Product",
-        filters={"slug": slug, "business": business[0].name, "status": "Published"},
-        fields=["*"],
-        limit=1,
+        {"slug": slug, "business": business.name, "status": "Published"},
+        ["*"],
+        as_dict=True,
     )
-    if not product:
+    if not doc:
         frappe.throw("Product not found", frappe.DoesNotExistError)
 
-    doc = product[0]
     context.doc = doc
     context.title = doc.get("product_name") or doc.get("name")
     context.business_slug = business_slug
-    context.business_name = business[0].get("business_name")
-    context.business_email = business[0].get("email")
+    context.business_name = business.get("business_name")
+    context.business_email = business.get("email")
     context.no_breadcrumbs = 1
     context.no_header = 1
 

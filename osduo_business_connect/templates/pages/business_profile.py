@@ -6,29 +6,26 @@ def get_context(context):
     if not slug:
         frappe.throw("Business not found", frappe.DoesNotExistError)
 
-    business = frappe.get_all(
+    doc = frappe.db.get_value(
         "Business",
-        filters={"slug": slug, "status": "Published", "public_profile_enabled": 1},
-        fields=[
-            "name", "business_name", "legal_name", "slug", "status",
-            "industry", "description", "logo", "cover_image",
-            "website", "email", "phone", "whatsapp", "address",
-            "city", "state", "country", "postal_code", "timezone",
-            "public_profile_enabled", "seo_title", "seo_description"
-        ],
-        limit=1,
+        {"slug": slug, "status": "Published", "public_profile_enabled": 1},
+        ["name", "business_name", "legal_name", "slug", "status",
+         "industry", "description", "logo", "cover_image",
+         "website", "email", "phone", "whatsapp", "address",
+         "city", "state", "country", "postal_code", "timezone",
+         "public_profile_enabled", "seo_title", "seo_description"],
+        as_dict=True,
     )
 
-    if not business:
+    if not doc:
         frappe.throw("Business not found", frappe.DoesNotExistError)
 
-    doc = business[0]
     context.doc = doc
     context.title = doc.get("business_name") or doc.get("name")
     context.no_breadcrumbs = 1
     context.no_header = 1
 
-    # Fetch social links separately
+    # Fetch social links separately (child table - no permission check needed)
     context.social_links = frappe.get_all(
         "Business Social Link",
         filters={"parent": doc.name},
@@ -44,8 +41,8 @@ def get_context(context):
         order_by="idx asc",
     )
 
-    # Fetch cards
-    context.cards = frappe.get_all(
+    # Fetch cards using db.get_list to bypass permission hooks
+    context.cards = frappe.db.get_list(
         "Digital Card",
         filters={"business": doc.name, "status": "Published", "public_profile_enabled": 1},
         fields=["name", "display_name", "slug", "designation", "profile_image"],
@@ -53,7 +50,7 @@ def get_context(context):
     )
 
     # Fetch products
-    context.products = frappe.get_all(
+    context.products = frappe.db.get_list(
         "Showcase Product",
         filters={"business": doc.name, "status": "Published"},
         fields=["name", "product_name", "slug", "image", "short_description", "price", "currency"],
@@ -61,7 +58,7 @@ def get_context(context):
     )
 
     # Fetch services
-    context.services = frappe.get_all(
+    context.services = frappe.db.get_list(
         "Showcase Service",
         filters={"business": doc.name, "status": "Published"},
         fields=["name", "service_name", "slug", "image", "short_description", "price", "currency"],
