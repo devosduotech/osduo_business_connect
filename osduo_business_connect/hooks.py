@@ -74,33 +74,33 @@ website_route_rules = [
 
 doc_events = {
     "Business": {
-        "validate": "osduo_business_connect.business.business.Business.validate",
-        "on_update": "osduo_business_connect.business.business.Business.on_update",
-        "after_insert": "osduo_business_connect.business.business.Business.after_insert",
+        "validate": "osduo_business_connect.business.doctype.business.business.Business.validate",
+        "on_update": "osduo_business_connect.business.doctype.business.business.Business.on_update",
+        "after_insert": "osduo_business_connect.business.doctype.business.business.Business.after_insert",
     },
     "Digital Card": {
-        "validate": "osduo_business_connect.card.digital_card.DigitalCard.validate",
-        "on_update": "osduo_business_connect.card.digital_card.DigitalCard.on_update",
+        "validate": "osduo_business_connect.card.doctype.digital_card.digital_card.DigitalCard.validate",
+        "on_update": "osduo_business_connect.card.doctype.digital_card.digital_card.DigitalCard.on_update",
     },
     "Showcase Product": {
-        "validate": "osduo_business_connect.showcase.showcase_product.ShowcaseProduct.validate",
+        "validate": "osduo_business_connect.showcase.doctype.showcase_product.showcase_product.ShowcaseProduct.validate",
     },
     "Showcase Service": {
-        "validate": "osduo_business_connect.showcase.showcase_service.ShowcaseService.validate",
+        "validate": "osduo_business_connect.showcase.doctype.showcase_service.showcase_service.ShowcaseService.validate",
     },
     "Theme": {
-        "validate": "osduo_business_connect.showcase.theme.Theme.validate",
-        "on_update": "osduo_business_connect.showcase.theme.Theme.on_update",
+        "validate": "osduo_business_connect.showcase.doctype.theme.theme.Theme.validate",
+        "on_update": "osduo_business_connect.showcase.doctype.theme.theme.Theme.on_update",
     },
     "Enquiry": {
-        "validate": "osduo_business_connect.enquiry.enquiry.Enquiry.validate",
-        "after_insert": "osduo_business_connect.enquiry.enquiry.Enquiry.after_insert",
+        "validate": "osduo_business_connect.enquiry.doctype.enquiry.enquiry.Enquiry.validate",
+        "after_insert": "osduo_business_connect.enquiry.doctype.enquiry.enquiry.Enquiry.after_insert",
     },
     "Engagement Event": {
-        "validate": "osduo_business_connect.analytics.engagement_event.EngagementEvent.validate",
+        "validate": "osduo_business_connect.analytics.doctype.engagement_event.engagement_event.EngagementEvent.validate",
     },
     "Page Section": {
-        "validate": "osduo_business_connect.showcase.page_section.PageSection.validate",
+        "validate": "osduo_business_connect.showcase.doctype.page_section.page_section.PageSection.validate",
     },
 }
 

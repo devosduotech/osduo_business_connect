@@ -32,7 +32,7 @@ def get_lead_permission_query_conditions(user):
         return ""
 
     # Get businesses where user is a member
-    from osduo_business_connect.business.business import get_user_businesses
+    from osduo_business_connect.business.doctype.business.business import get_user_businesses
     businesses = get_user_businesses(user)
 
     if not businesses:

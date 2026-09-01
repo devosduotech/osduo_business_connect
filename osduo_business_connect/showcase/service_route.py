@@ -46,7 +46,7 @@ def get_context(context):
     context.title = service.get("service_name", "Service")
 
     # Get business data for header
-    from osduo_business_connect.business.business import get_business_by_slug
+    from osduo_business_connect.business.doctype.business.business import get_business_by_slug
     business = get_business_by_slug(business_slug)
     if business:
         context.business = business
