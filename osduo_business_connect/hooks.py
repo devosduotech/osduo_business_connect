@@ -72,12 +72,10 @@ website_route_rules = [
 # ------------------
 # Hook on document methods and events
 
+# Note: Business and Enquiry are our own DocTypes, so Frappe automatically
+# calls their controller methods (validate, on_update, after_insert) from
+# the controller files. No need to register them in doc_events.
 doc_events = {
-    "Business": {
-        "validate": "osduo_business_connect.business.core.Business.validate",
-        "on_update": "osduo_business_connect.business.core.Business.on_update",
-        "after_insert": "osduo_business_connect.business.core.Business.after_insert",
-    },
     "Digital Card": {
         "validate": "osduo_business_connect.card.doctype.digital_card.digital_card.DigitalCard.validate",
         "on_update": "osduo_business_connect.card.doctype.digital_card.digital_card.DigitalCard.on_update",
@@ -91,10 +89,6 @@ doc_events = {
     "Theme": {
         "validate": "osduo_business_connect.showcase.doctype.theme.theme.Theme.validate",
         "on_update": "osduo_business_connect.showcase.doctype.theme.theme.Theme.on_update",
-    },
-    "Enquiry": {
-        "validate": "osduo_business_connect.enquiry.core.Enquiry.validate",
-        "after_insert": "osduo_business_connect.enquiry.core.Enquiry.after_insert",
     },
     "Engagement Event": {
         "validate": "osduo_business_connect.analytics.doctype.engagement_event.engagement_event.EngagementEvent.validate",
