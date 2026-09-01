@@ -1,4 +1,6 @@
 {
+ "doctype": "Workspace",
+ "name": "Business Connect",
  "charts": [],
  "content": [
   {
@@ -12,14 +14,6 @@
    "type": "paragraph",
    "data": {
     "text": "Manage your businesses, digital cards, products, services, and enquiries."
-   }
-  },
-  {
-   "type": "shortcut",
-   "data": {
-    "shortcut_name": "Business",
-    "type": "DocType",
-    "link": "/app/business/new-business-1"
    }
   },
   {
@@ -119,5 +113,7 @@
  "type": "Workspace",
  "extends": [],
  "engine": "Javascript",
- "is_hidden": 0
+ "is_hidden": 0,
+ "modified": "",
+ "owner": "Administrator"
 }
