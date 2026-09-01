@@ -37,35 +37,23 @@ add_to_apps_screen = [
 website_route_rules = [
     # Public business profile
     {
-        "from_route": "/b/<path:business_slug>",
+        "from_route": "/b/<business_slug>",
         "to_route": "business_profile",
-        "defaults": {
-            "doctype": "Business",
-        },
     },
     # Public card
     {
-        "from_route": "/c/<path:card_slug>",
+        "from_route": "/c/<card_slug>",
         "to_route": "card_profile",
-        "defaults": {
-            "doctype": "Digital Card",
-        },
     },
     # Public product
     {
-        "from_route": "/b/<path:business_slug>/p/<path:product_slug>",
+        "from_route": "/b/<business_slug>/p/<product_slug>",
         "to_route": "product_profile",
-        "defaults": {
-            "doctype": "Showcase Product",
-        },
     },
     # Public service
     {
-        "from_route": "/b/<path:business_slug>/s/<path:service_slug>",
+        "from_route": "/b/<business_slug>/s/<service_slug>",
         "to_route": "service_profile",
-        "defaults": {
-            "doctype": "Showcase Service",
-        },
     },
 ]
 
