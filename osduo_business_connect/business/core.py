@@ -69,10 +69,13 @@ class Business(Document):
         )
         
         if not existing:
+            user_doc = frappe.get_doc("User", self.owner_user)
             member = frappe.get_doc({
                 "doctype": "Business Member",
                 "business": self.name,
                 "user": self.owner_user,
+                "person_name": user_doc.full_name or self.owner_user,
+                "email": self.owner_user,
                 "role": "Owner",
                 "is_owner": 1,
                 "status": "Active",
