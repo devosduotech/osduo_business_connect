@@ -82,7 +82,7 @@ class BusinessMember(Document):
         # Prevent Manager from creating Owner role
         if self.role == "Owner" and not self.is_new():
             user = frappe.session.user
-            from osduo_business_connect.business.doctype.business.business import get_user_role_in_business
+            from osduo_business_connect.business.core import get_user_role_in_business
             current_role = get_user_role_in_business(user, self.business)
             if current_role == "Manager":
                 frappe.throw("Managers cannot create or modify Owner role")
@@ -129,7 +129,7 @@ def get_permission_query_conditions(user):
         return ""
 
     # Get businesses where user is a member
-    from osduo_business_connect.business.doctype.business.business import get_user_businesses
+    from osduo_business_connect.business.core import get_user_businesses
     businesses = get_user_businesses(user)
     if not businesses:
         return "1=0"  # No access
@@ -152,7 +152,7 @@ def has_permission(doc, ptype):
         return True
 
     # Check if user is a member of this business
-    from osduo_business_connect.business.doctype.business.business import get_user_businesses
+    from osduo_business_connect.business.core import get_user_businesses
     businesses = get_user_businesses(user)
     business_names = [b["name"] for b in businesses]
 
@@ -160,7 +160,7 @@ def has_permission(doc, ptype):
         return False
 
     # Get user's role in this business
-    from osduo_business_connect.business.doctype.business.business import get_user_role_in_business
+    from osduo_business_connect.business.core import get_user_role_in_business
     member_role = get_user_role_in_business(user, doc.business)
 
     if not member_role:

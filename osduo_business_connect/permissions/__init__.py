@@ -20,7 +20,7 @@ def has_permission(doc, ptype):
     doctype = doc.doctype
 
     if doctype == "Business":
-        from osduo_business_connect.business.doctype.business.business import (
+        from osduo_business_connect.business.core import (
             has_permission as business_has_permission,
         )
         return business_has_permission(doc, ptype)
@@ -50,7 +50,7 @@ def has_permission(doc, ptype):
         return service_has_permission(doc, ptype)
 
     elif doctype == "Enquiry":
-        from osduo_business_connect.enquiry.doctype.enquiry.enquiry import (
+        from osduo_business_connect.enquiry.core import (
             has_permission as enquiry_has_permission,
         )
         return enquiry_has_permission(doc, ptype)

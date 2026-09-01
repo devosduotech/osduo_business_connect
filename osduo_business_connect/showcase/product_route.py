@@ -46,7 +46,7 @@ def get_context(context):
     context.title = product.get("product_name", "Product")
 
     # Get business data for header
-    from osduo_business_connect.business.doctype.business.business import get_business_by_slug
+    from osduo_business_connect.business.core import get_business_by_slug
     business = get_business_by_slug(business_slug)
     if business:
         context.business = business
