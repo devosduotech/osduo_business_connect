@@ -4,8 +4,8 @@
   "doctype": "DocType",
   "document_type": "Document",
   "engine": "InnoDB",
-  "naming_rule": "By \"Format\" field",
-  "autoname": "format:THEME-.#####",
+  "naming_rule": "By \"Series\" field",
+  "autoname": "naming_series:",
   "title_field": "business",
   "search_fields": "business,template",
   "is_submittable": 0,
@@ -17,6 +17,15 @@
   "sort_field": "modified",
   "sort_order": "DESC",
   "fields": [
+    {
+      "fieldname": "naming_series",
+      "fieldtype": "Select",
+      "label": "Naming Series",
+      "default": "THEME-.#####",
+      "options": "THEME-.#####, THEME-.YYYY.-.#####, THEME-.YYYY.-.MM.-.#####",
+      "reqd": 1,
+      "set_only_once": 1
+    },
     {
       "fieldname": "business",
       "fieldtype": "Link",

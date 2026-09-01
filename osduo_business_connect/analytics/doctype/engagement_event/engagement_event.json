@@ -4,8 +4,8 @@
   "doctype": "DocType",
   "document_type": "Document",
   "engine": "InnoDB",
-  "naming_rule": "By \"Format\" field",
-  "autoname": "format:EVT-.#####",
+  "naming_rule": "By \"Series\" field",
+  "autoname": "naming_series:",
   "title_field": "event_type",
   "search_fields": "event_type,business",
   "is_submittable": 0,
@@ -17,6 +17,15 @@
   "sort_field": "event_time",
   "sort_order": "DESC",
   "fields": [
+    {
+      "fieldname": "naming_series",
+      "fieldtype": "Select",
+      "label": "Naming Series",
+      "default": "EVT-.#####",
+      "options": "EVT-.#####, EVT-.YYYY.-.#####, EVT-.YYYY.-.MM.-.#####",
+      "reqd": 1,
+      "set_only_once": 1
+    },
     {
       "fieldname": "business",
       "fieldtype": "Link",

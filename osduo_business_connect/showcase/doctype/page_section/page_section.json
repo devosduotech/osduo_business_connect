@@ -4,8 +4,8 @@
   "doctype": "DocType",
   "document_type": "Document",
   "engine": "InnoDB",
-  "naming_rule": "By \"Format\" field",
-  "autoname": "format:SEC-.#####",
+  "naming_rule": "By \"Series\" field",
+  "autoname": "naming_series:",
   "title_field": "section_type",
   "search_fields": "section_type,title",
   "is_submittable": 0,
@@ -17,6 +17,15 @@
   "sort_field": "sequence",
   "sort_order": "ASC",
   "fields": [
+    {
+      "fieldname": "naming_series",
+      "fieldtype": "Select",
+      "label": "Naming Series",
+      "default": "SEC-.#####",
+      "options": "SEC-.#####, SEC-.YYYY.-.#####, SEC-.YYYY.-.MM.-.#####",
+      "reqd": 1,
+      "set_only_once": 1
+    },
     {
       "fieldname": "business",
       "fieldtype": "Link",

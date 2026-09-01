@@ -4,8 +4,8 @@
   "doctype": "DocType",
   "document_type": "Document",
   "engine": "InnoDB",
-  "naming_rule": "By \"Format\" field",
-  "autoname": "format:CARD-.#####",
+  "naming_rule": "By \"Series\" field",
+  "autoname": "naming_series:",
   "title_field": "display_name",
   "search_fields": "display_name,slug,business",
   "is_submittable": 0,
@@ -17,6 +17,15 @@
   "sort_field": "modified",
   "sort_order": "DESC",
   "fields": [
+    {
+      "fieldname": "naming_series",
+      "fieldtype": "Select",
+      "label": "Naming Series",
+      "default": "CARD-.#####",
+      "options": "CARD-.#####, CARD-.YYYY.-.#####, CARD-.YYYY.-.MM.-.#####",
+      "reqd": 1,
+      "set_only_once": 1
+    },
     {
       "fieldname": "business",
       "fieldtype": "Link",

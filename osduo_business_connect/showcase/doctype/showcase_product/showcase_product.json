@@ -4,8 +4,8 @@
   "doctype": "DocType",
   "document_type": "Document",
   "engine": "InnoDB",
-  "naming_rule": "By \"Format\" field",
-  "autoname": "format:PROD-.#####",
+  "naming_rule": "By \"Series\" field",
+  "autoname": "naming_series:",
   "title_field": "product_name",
   "search_fields": "product_name,short_description,category",
   "is_submittable": 0,
@@ -17,6 +17,15 @@
   "sort_field": "sort_order",
   "sort_order": "ASC",
   "fields": [
+    {
+      "fieldname": "naming_series",
+      "fieldtype": "Select",
+      "label": "Naming Series",
+      "default": "PROD-.#####",
+      "options": "PROD-.#####, PROD-.YYYY.-.#####, PROD-.YYYY.-.MM.-.#####",
+      "reqd": 1,
+      "set_only_once": 1
+    },
     {
       "fieldname": "business",
       "fieldtype": "Link",

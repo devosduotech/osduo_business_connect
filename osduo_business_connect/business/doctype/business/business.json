@@ -4,8 +4,8 @@
   "doctype": "DocType",
   "document_type": "Document",
   "engine": "InnoDB",
-  "naming_rule": "By \"Format\" field",
-  "autoname": "format:BIZ-.#####",
+  "naming_rule": "By \"Series\" field",
+  "autoname": "naming_series:",
   "title_field": "business_name",
   "search_fields": "business_name,slug,industry",
   "is_submittable": 0,
@@ -17,6 +17,15 @@
   "sort_field": "modified",
   "sort_order": "DESC",
   "fields": [
+    {
+      "fieldname": "naming_series",
+      "fieldtype": "Select",
+      "label": "Naming Series",
+      "default": "BIZ-.#####",
+      "options": "BIZ-.#####, BIZ-.YYYY.-.#####, BIZ-.YYYY.-.MM.-.#####",
+      "reqd": 1,
+      "set_only_once": 1
+    },
     {
       "fieldname": "business_name",
       "fieldtype": "Data",
