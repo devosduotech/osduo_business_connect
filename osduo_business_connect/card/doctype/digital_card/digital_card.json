@@ -4,7 +4,7 @@
   "doctype": "DocType",
   "document_type": "Document",
   "engine": "InnoDB",
-  "naming_rule": "Expression",
+  "naming_rule": "By \"Format\" field",
   "autoname": "format:CARD-.#####",
   "title_field": "display_name",
   "search_fields": "display_name,slug,business",

@@ -4,7 +4,7 @@
   "doctype": "DocType",
   "document_type": "Document",
   "engine": "InnoDB",
-  "naming_rule": "Expression",
+  "naming_rule": "By \"Format\" field",
   "autoname": "format:PROD-.#####",
   "title_field": "product_name",
   "search_fields": "product_name,short_description,category",

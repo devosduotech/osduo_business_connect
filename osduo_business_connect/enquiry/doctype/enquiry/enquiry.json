@@ -4,7 +4,7 @@
   "doctype": "DocType",
   "document_type": "Document",
   "engine": "InnoDB",
-  "naming_rule": "Expression",
+  "naming_rule": "By \"Format\" field",
   "autoname": "format:ENQ-.#####",
   "title_field": "visitor_name",
   "search_fields": "visitor_name,visitor_email,visitor_company",

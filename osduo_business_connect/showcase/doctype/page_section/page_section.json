@@ -4,7 +4,7 @@
   "doctype": "DocType",
   "document_type": "Document",
   "engine": "InnoDB",
-  "naming_rule": "Expression",
+  "naming_rule": "By \"Format\" field",
   "autoname": "format:SEC-.#####",
   "title_field": "section_type",
   "search_fields": "section_type,title",

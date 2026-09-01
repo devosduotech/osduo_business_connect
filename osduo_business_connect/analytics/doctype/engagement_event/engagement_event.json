@@ -4,7 +4,7 @@
   "doctype": "DocType",
   "document_type": "Document",
   "engine": "InnoDB",
-  "naming_rule": "Expression",
+  "naming_rule": "By \"Format\" field",
   "autoname": "format:EVT-.#####",
   "title_field": "event_type",
   "search_fields": "event_type,business",
