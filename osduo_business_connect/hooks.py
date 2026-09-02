@@ -34,25 +34,30 @@ web_include_css = "/assets/osduo_business_connect/css/business_connect.css"
 # ------------------
 
 website_route_rules = [
-    # Public business profile
+    # Business landing page
     {
         "from_route": "/b/<business_slug>",
-        "to_route": "business_profile",
+        "to_route": "business",
     },
-    # Public card
+    # Team member page (under business)
+    {
+        "from_route": "/b/<business_slug>/team/<member_slug>",
+        "to_route": "team_member",
+    },
+    # Digital Card (short URL)
     {
         "from_route": "/c/<card_slug>",
-        "to_route": "card_profile",
+        "to_route": "card",
     },
-    # Public product
+    # Product page (under business)
     {
-        "from_route": "/b/<business_slug>/p/<product_slug>",
-        "to_route": "product_profile",
+        "from_route": "/b/<business_slug>/products/<product_slug>",
+        "to_route": "product",
     },
-    # Public service
+    # Service page (under business)
     {
-        "from_route": "/b/<business_slug>/s/<service_slug>",
-        "to_route": "service_profile",
+        "from_route": "/b/<business_slug>/services/<service_slug>",
+        "to_route": "service",
     },
 ]
 

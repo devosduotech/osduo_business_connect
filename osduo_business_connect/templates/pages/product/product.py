@@ -1,28 +1,29 @@
 import frappe
-from ...services.theme_service import get_business_theme, get_theme_variables
+from ....services.theme_service import get_business_theme, get_theme_variables
+
 
 def get_context(context):
-    """Provide context for product profile page."""
-    slug = frappe.form_dict.get("product_slug")
+    """Product page — /b/<business_slug>/products/<product_slug>"""
     business_slug = frappe.form_dict.get("business_slug")
+    product_slug = frappe.form_dict.get("product_slug")
 
-    if not slug or not business_slug:
+    if not business_slug or not product_slug:
         frappe.throw("Product not found", frappe.DoesNotExistError)
 
     # Find business
     business = frappe.db.get_value(
         "Business",
         {"slug": business_slug, "status": "Published"},
-        ["name", "business_name", "email", "phone", "whatsapp"],
+        ["name", "business_name", "slug", "email", "phone", "whatsapp"],
         as_dict=True,
     )
     if not business:
         frappe.throw("Business not found", frappe.DoesNotExistError)
 
-    # Find product - use frappe.get_doc to get child tables (gallery)
+    # Find product
     product_name = frappe.db.get_value(
         "Showcase Product",
-        {"slug": slug, "business": business.name, "status": "Published"},
+        {"slug": product_slug, "business": business.name, "status": "Published"},
         "name",
     )
     if not product_name:
@@ -32,19 +33,20 @@ def get_context(context):
 
     context.doc = doc
     context.title = doc.product_name or doc.name
-    context.business_slug = business_slug
+    context.business = business
     context.business_name = business.business_name
+    context.business_slug = business.slug
     context.business_email = business.email
     context.business_phone = business.phone
     context.business_whatsapp = business.whatsapp
 
-    # Fetch theme and generate CSS variables
+    # Theme
     theme_data = get_business_theme(business.name)
     context.theme = theme_data
     context.theme_vars = get_theme_variables(theme_data)
 
     # SEO
-    if getattr(doc, 'seo_title', None):
+    if getattr(doc, "seo_title", None):
         context.title = doc.seo_title
-    if getattr(doc, 'seo_description', None):
+    if getattr(doc, "seo_description", None):
         context.meta_description = doc.seo_description
