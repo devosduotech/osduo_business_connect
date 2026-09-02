@@ -78,7 +78,7 @@ def create_lead_from_enquiry(enquiry_doc):
 
         try:
             enquiry_doc.status = "Sync Failed"
-            enquiry_doc.error_message = str(e)[:500]
+            enquiry_doc.last_sync_error = str(e)[:500]
             enquiry_doc.save(ignore_permissions=True)
             frappe.db.commit()
         except Exception:

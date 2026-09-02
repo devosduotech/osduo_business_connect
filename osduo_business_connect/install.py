@@ -183,12 +183,15 @@ def after_migrate():
 
 def create_crm_lead_source():
     """Create 'Business Connect' CRM Lead Source if it doesn't exist."""
-    if not frappe.db.exists("CRM Lead Source", "Business Connect"):
-        frappe.get_doc({
-            "doctype": "CRM Lead Source",
-            "source_name": "Business Connect",
-        }).insert(ignore_permissions=True)
-        frappe.db.commit()
+    try:
+        if not frappe.db.exists("CRM Lead Source", "Business Connect"):
+            frappe.get_doc({
+                "doctype": "CRM Lead Source",
+                "source_name": "Business Connect",
+            }).insert(ignore_permissions=True)
+            frappe.db.commit()
+    except Exception:
+        pass  # CRM Lead Source DocType may not exist in this CRM version
 
 
 def create_builtin_themes():
