@@ -74,6 +74,9 @@ def generate_qr_code(card_doc):
         frappe.db.set_value("Digital Card", card_doc.name, "qr_image", f"/files/{file_name}")
         frappe.db.commit()
 
+        # Update in-memory doc so on_update check sees it
+        card_doc.qr_image = f"/files/{file_name}"
+
         return f"/files/{file_name}"
 
     except ImportError:

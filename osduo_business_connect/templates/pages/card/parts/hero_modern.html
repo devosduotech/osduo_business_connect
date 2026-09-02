@@ -20,6 +20,17 @@
     <div class="bc-card-bio">{{ doc.bio }}</div>
     {% endif %}
 
+    {% if doc.phone or doc.email %}
+    <div class="bc-card-contact-details" style="margin:0.75rem 0;font-size:0.85rem;color:#64748b;">
+        {% if doc.phone %}
+        <p style="margin:0.2rem 0;">&#9742; {{ doc.phone }}</p>
+        {% endif %}
+        {% if doc.email %}
+        <p style="margin:0.2rem 0;">&#9993; {{ doc.email }}</p>
+        {% endif %}
+    </div>
+    {% endif %}
+
     <div class="bc-card-actions">
         {% if doc.phone %}
         <a href="tel:{{ doc.phone }}" class="bc-card-action-btn" style="background:var(--bc-primary);color:white;">
