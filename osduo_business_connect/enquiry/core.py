@@ -38,8 +38,13 @@ class Enquiry(Document):
         self.set_submitted_at()
 
     def on_update(self):
-        """Post-save operations."""
-        pass
+        """Post-save operations — trigger CRM sync."""
+        if self.status == "New" and not self.crm_lead:
+            try:
+                from osduo_business_connect.crm_integration.crm_sync import enqueue_sync
+                enqueue_sync(self.name)
+            except Exception:
+                pass  # Don't fail enquiry save if sync enqueue fails
 
     def normalize_fields(self):
         """Normalize field values."""
