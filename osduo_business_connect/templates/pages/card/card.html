@@ -4,69 +4,15 @@
 <div class="bc-page bc-template-{{ theme.template|lower }}" style="{{ theme_vars }}">
     <div class="bc-card-page">
 
-        {# Profile Image #}
-        {% if doc.profile_image %}
-        <img src="{{ doc.profile_image }}" alt="{{ doc.display_name }}" style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid var(--bc-accent);margin:1.5rem auto 0.75rem;display:block;">
+        {# ===== CARD HERO (varies by template) ===== #}
+        {% if template_type == "Professional" %}
+            {% include "osduo_business_connect/templates/pages/card/parts/hero_professional.html" %}
+        {% elif template_type == "Minimal" %}
+            {% include "osduo_business_connect/templates/pages/card/parts/hero_minimal.html" %}
+        {% elif template_type == "Classic" %}
+            {% include "osduo_business_connect/templates/pages/card/parts/hero_classic.html" %}
         {% else %}
-        <div style="width:100px;height:100px;border-radius:50%;background:var(--bc-primary);color:white;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:1.5rem auto 0.75rem;">
-            {{ doc.display_name[0] if doc.display_name else '?' }}
-        </div>
-        {% endif %}
-
-        {# Name & Designation #}
-        <div style="text-align:center;">
-            <h1 style="margin:0.4rem 0 0.2rem;font-size:1.35rem;">{{ doc.display_name }}</h1>
-            {% if doc.designation %}
-            <p style="color:#666;margin:0 0 0.3rem;font-size:0.9rem;">{{ doc.designation }}</p>
-            {% endif %}
-            {% if doc.show_business and doc.business_name %}
-            <p style="color:#94a3b8;margin:0 0 0.75rem;font-size:0.85rem;">{{ doc.business_name }}</p>
-            {% endif %}
-        </div>
-
-        {# Bio #}
-        {% if doc.bio %}
-        <div style="color:#555;font-size:0.9rem;line-height:1.6;margin:0.75rem 0;padding:0.75rem;background:var(--bc-background);border-radius:var(--bc-card-radius);">{{ doc.bio }}</div>
-        {% endif %}
-
-        {# Action Buttons #}
-        <div style="display:flex;flex-direction:column;gap:0.6rem;margin:1.25rem 0;">
-            {% if doc.phone %}
-            <a href="tel:{{ doc.phone }}" class="bc-btn bc-btn-primary">&#9742; Call {{ doc.phone }}</a>
-            {% endif %}
-            {% if doc.whatsapp %}
-            <a href="https://wa.me/{{ doc.whatsapp|replace('+','')|replace(' ','') }}" class="bc-btn" style="background:#25D366;color:white;">&#128172; WhatsApp</a>
-            {% endif %}
-            {% if doc.email %}
-            <a href="mailto:{{ doc.email }}" class="bc-btn" style="background:#EA4335;color:white;">&#9993; Send Email</a>
-            {% endif %}
-            {% if doc.website %}
-            <a href="{{ doc.website }}" target="_blank" class="bc-btn" style="background:var(--bc-text);color:white;">&#127760; Visit Website</a>
-            {% endif %}
-        </div>
-
-        {# Social Links #}
-        {% if links %}
-        <div style="display:flex;gap:0.4rem;justify-content:center;flex-wrap:wrap;margin:1.25rem 0;">
-            {% for link in links %}
-            <a href="{{ link.url }}" target="_blank" class="bc-btn bc-btn-secondary" style="font-size:0.75rem;padding:0.4rem 0.75rem;">{{ link.label or link.link_type }}</a>
-            {% endfor %}
-        </div>
-        {% endif %}
-
-        {# Business Link #}
-        {% if doc.show_business and doc.business_slug %}
-        <div style="margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid #eee;text-align:center;">
-            <a href="/b/{{ doc.business_slug }}" style="color:var(--bc-primary);text-decoration:none;font-size:0.85rem;">{{ doc.business_name }}</a>
-        </div>
-        {% endif %}
-
-        {# QR Code #}
-        {% if doc.qr_enabled and doc.qr_image %}
-        <div style="margin-top:1.25rem;text-align:center;">
-            <img src="{{ doc.qr_image }}" alt="QR Code" style="width:100px;height:100px;">
-            <p style="color:#999;font-size:0.75rem;margin-top:0.4rem;">Scan to view card</p>
-        </div>
+            {% include "osduo_business_connect/templates/pages/card/parts/hero_modern.html" %}
         {% endif %}
     </div>
 

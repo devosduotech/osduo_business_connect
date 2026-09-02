@@ -44,6 +44,7 @@ def get_context(context):
     theme_data = get_business_theme(business.name)
     context.theme = theme_data
     context.theme_vars = get_theme_variables(theme_data)
+    context.template_type = theme_data.get("template", "Modern")
 
     # SEO
     if getattr(doc, "seo_title", None):

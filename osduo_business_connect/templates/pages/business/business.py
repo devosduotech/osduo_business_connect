@@ -30,6 +30,7 @@ def get_context(context):
     theme_data = get_business_theme(doc.name)
     context.theme = theme_data
     context.theme_vars = get_theme_variables(theme_data)
+    context.template_type = theme_data.get("template", "Modern")
 
     # Social links
     context.social_links = frappe.get_all(
@@ -47,7 +48,7 @@ def get_context(context):
         order_by="idx asc",
     )
 
-    # Team members
+    # Members (optional)
     context.members = frappe.db.get_list(
         "Digital Card",
         filters={"business": doc.name, "status": "Published", "public_profile_enabled": 1},

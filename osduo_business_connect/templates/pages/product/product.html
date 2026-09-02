@@ -8,42 +8,16 @@
         <a href="/b/{{ business_slug }}" class="bc-back-link">&larr; {{ business_name }}</a>
     </div>
 
-    {# ===== PRODUCT HERO ===== #}
-    <div class="bc-header">
-        <div class="bc-detail">
-            {% if doc.image %}
-            <img src="{{ doc.image }}" alt="{{ doc.product_name }}" class="bc-cover-img">
-            {% endif %}
-
-            <h1>{{ doc.product_name }}</h1>
-
-            {% if doc.category %}
-            <span style="display:inline-block;padding:0.3rem 0.75rem;background:rgba(255,255,255,0.2);border-radius:20px;font-size:0.8rem;margin-bottom:0.5rem;">{{ doc.category }}</span>
-            {% endif %}
-
-            {% if doc.price_display_mode != "Hidden" and doc.price %}
-            <div style="font-size:1.4rem;font-weight:700;margin:0.75rem 0;">
-                {% if doc.price_display_mode == "Contact" %}
-                    Contact for pricing
-                {% else %}
-                    {% if doc.currency %}{{ doc.currency }} {% endif %}{{ doc.price }}
-                {% endif %}
-            </div>
-            {% endif %}
-
-            <div style="margin-top:1.25rem;display:flex;gap:0.6rem;justify-content:center;flex-wrap:wrap;">
-                {% if doc.enquiry_enabled %}
-                <a href="mailto:{{ business_email }}?subject=Enquiry: {{ doc.product_name }}" class="bc-btn bc-btn-secondary">&#9993; Send Enquiry</a>
-                {% endif %}
-                {% if business_phone %}
-                <a href="tel:{{ business_phone }}" class="bc-btn bc-btn-secondary">&#9742; Call</a>
-                {% endif %}
-                {% if business_whatsapp %}
-                <a href="https://wa.me/{{ business_whatsapp }}?text=Hi, I'm interested in {{ doc.product_name }}" class="bc-btn bc-btn-accent">&#128172; WhatsApp</a>
-                {% endif %}
-            </div>
-        </div>
-    </div>
+    {# ===== PRODUCT HERO (varies by template) ===== #}
+    {% if template_type == "Professional" %}
+        {% include "osduo_business_connect/templates/pages/product/parts/hero_professional.html" %}
+    {% elif template_type == "Minimal" %}
+        {% include "osduo_business_connect/templates/pages/product/parts/hero_minimal.html" %}
+    {% elif template_type == "Classic" %}
+        {% include "osduo_business_connect/templates/pages/product/parts/hero_classic.html" %}
+    {% else %}
+        {% include "osduo_business_connect/templates/pages/product/parts/hero_modern.html" %}
+    {% endif %}
 
     {# ===== ABOUT ===== #}
     {% if doc.short_description or doc.description %}

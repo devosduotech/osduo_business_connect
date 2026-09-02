@@ -33,6 +33,7 @@ def get_context(context):
 
     context.theme = theme_data
     context.theme_vars = get_theme_variables(theme_data)
+    context.template_type = theme_data.get("template", "Modern")
 
     # Social links
     context.links = frappe.get_all(
