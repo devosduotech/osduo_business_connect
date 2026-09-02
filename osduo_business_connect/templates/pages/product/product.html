@@ -47,7 +47,7 @@
 
     {# ===== ABOUT ===== #}
     {% if doc.short_description or doc.description %}
-    <div class="bc-section">
+    <div class="bc-section bc-section-alt">
         <div class="bc-reading">
             <h2 class="bc-section-title">About This Product</h2>
             <div style="line-height:1.8;color:#475569;">
@@ -71,7 +71,7 @@
 
     {# ===== GALLERY ===== #}
     {% if doc.gallery %}
-    <div class="bc-section">
+    <div class="bc-section bc-section-alt">
         <div class="bc-detail">
             <h2 class="bc-section-title">Gallery</h2>
             <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:0.75rem;">
@@ -93,7 +93,7 @@
     {% endif %}
 
     {# ===== BUSINESS INFO ===== #}
-    <div class="bc-section">
+    <div class="bc-section bc-section-alt">
         <div class="bc-reading">
             <h2 class="bc-section-title">About {{ business_name }}</h2>
             <div class="bc-card" style="text-align:center;">
