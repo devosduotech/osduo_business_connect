@@ -69,6 +69,7 @@ def get_theme_data(theme_name):
 
     return {
         "name": theme.name,
+        "theme_name": theme.theme_name or theme.name,
         "template": theme.template or "Modern",
         "color_scheme": scheme,
         "primary_color": scheme_colors["primary"],
@@ -91,6 +92,7 @@ def get_default_theme():
     """
     return {
         "name": None,
+        "theme_name": "Default",
         "template": "Modern",
         "color_scheme": "Blue",
         "primary_color": "#2563EB",

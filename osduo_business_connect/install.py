@@ -196,14 +196,46 @@ def create_builtin_themes():
     schemes = ["Violet", "Indigo", "Blue", "Green", "Yellow", "Orange", "Red"]
 
     for scheme in schemes:
-        theme_name = f"Default {scheme}"
-        if not frappe.db.exists("Theme", theme_name):
+        display_name = f"Default {scheme}"
+        if not frappe.db.exists("Theme", {"theme_name": display_name}):
             frappe.get_doc({
                 "doctype": "Theme",
+                "theme_name": display_name,
                 "template": "Modern",
                 "color_scheme": scheme,
+                "primary_color": _get_scheme_primary(scheme),
+                "secondary_color": "#FFFFFF",
+                "accent_color": _get_scheme_accent(scheme),
                 "button_style": "Filled",
                 "card_style": "Modern",
                 "active": 0,
             }).insert(ignore_permissions=True)
             frappe.db.commit()
+
+
+def _get_scheme_primary(scheme):
+    """Get primary color for a color scheme."""
+    colors = {
+        "Violet": "#7C3AED",
+        "Indigo": "#4F46E5",
+        "Blue": "#2563EB",
+        "Green": "#16A34A",
+        "Yellow": "#EAB308",
+        "Orange": "#EA580C",
+        "Red": "#DC2626",
+    }
+    return colors.get(scheme, "#2563EB")
+
+
+def _get_scheme_accent(scheme):
+    """Get accent color for a color scheme."""
+    colors = {
+        "Violet": "#A78BFA",
+        "Indigo": "#818CF8",
+        "Blue": "#60A5FA",
+        "Green": "#4ADE80",
+        "Yellow": "#FDE047",
+        "Orange": "#FB923C",
+        "Red": "#F87171",
+    }
+    return colors.get(scheme, "#60A5FA")
