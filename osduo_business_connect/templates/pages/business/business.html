@@ -14,7 +14,128 @@
         {% include "osduo_business_connect/templates/pages/business/parts/hero_modern.html" %}
     {% endif %}
 
-    {# ===== ABOUT ===== #}
+    {# ===== SECTIONS (ordered by Page Section records) ===== #}
+    {% for section in sections %}
+    {% if section.section_type == "About" %}
+    <div class="bc-section{% if loop.index % 2 == 0 %} bc-section-alt{% endif %}" id="bc-about">
+        <div class="bc-container">
+            <h2 class="bc-section-title">{{ section.title or "About Us" }}</h2>
+            <div class="bc-reading">
+                <p style="line-height:1.8;color:#475569;">{{ section.about.text or doc.description }}</p>
+            </div>
+        </div>
+    </div>
+
+    {% elif section.section_type == "Products" and products %}
+    <div class="bc-section{% if loop.index % 2 == 0 %} bc-section-alt{% endif %}" id="bc-products">
+        <div class="bc-container">
+            <h2 class="bc-section-title">{{ section.title or "Products" }}</h2>
+            <div class="bc-product-grid">
+                {% for product in products %}
+                <a href="/b/{{ doc.slug }}/products/{{ product.slug }}" class="bc-card bc-product-card">
+                    {% if product.image %}
+                    <img src="{{ product.image }}" alt="{{ product.product_name }}">
+                    {% else %}
+                    <div style="height:160px;background:#f1f5f9;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#94a3b8;">&#128230;</div>
+                    {% endif %}
+                    <div class="bc-card-body">
+                        <h3>{{ product.product_name }}</h3>
+                        <p>{{ product.short_description[:80] }}{% if product.short_description|length > 80 %}...{% endif %}</p>
+                        <span class="bc-card-link">View Product &rarr;</span>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    {% elif section.section_type == "Services" and services %}
+    <div class="bc-section{% if loop.index % 2 == 0 %} bc-section-alt{% endif %}" id="bc-services">
+        <div class="bc-container">
+            <h2 class="bc-section-title">{{ section.title or "Services" }}</h2>
+            <div class="bc-product-grid">
+                {% for service in services %}
+                <a href="/b/{{ doc.slug }}/services/{{ service.slug }}" class="bc-card bc-product-card">
+                    {% if service.image %}
+                    <img src="{{ service.image }}" alt="{{ service.service_name }}">
+                    {% else %}
+                    <div style="height:160px;background:#f1f5f9;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#94a3b8;">&#128295;</div>
+                    {% endif %}
+                    <div class="bc-card-body">
+                        <h3>{{ service.service_name }}</h3>
+                        <p>{{ service.short_description[:80] }}{% if service.short_description|length > 80 %}...{% endif %}</p>
+                        <span class="bc-card-link">View Service &rarr;</span>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    {% elif section.section_type == "Contact" %}
+    <div class="bc-section{% if loop.index % 2 == 0 %} bc-section-alt{% endif %}" id="bc-contact">
+        <div class="bc-container">
+            <h2 class="bc-section-title">{{ section.title or "Contact" }}</h2>
+            <div class="bc-contact-grid">
+                {% if section.contact.phone or doc.phone %}
+                <a href="tel:{{ section.contact.phone or doc.phone }}" class="bc-contact-card">
+                    <span class="bc-contact-icon">&#9742;</span>
+                    <span class="bc-contact-label">Phone</span>
+                    <span class="bc-contact-value">{{ section.contact.phone or doc.phone }}</span>
+                </a>
+                {% endif %}
+                {% if section.contact.email or doc.email %}
+                <a href="mailto:{{ section.contact.email or doc.email }}" class="bc-contact-card">
+                    <span class="bc-contact-icon">&#9993;</span>
+                    <span class="bc-contact-label">Email</span>
+                    <span class="bc-contact-value">{{ section.contact.email or doc.email }}</span>
+                </a>
+                {% endif %}
+                {% if doc.website %}
+                <a href="{{ doc.website }}" target="_blank" class="bc-contact-card">
+                    <span class="bc-contact-icon">&#127760;</span>
+                    <span class="bc-contact-label">Website</span>
+                    <span class="bc-contact-value">{{ doc.website }}</span>
+                </a>
+                {% endif %}
+                {% if section.contact.address or doc.address %}
+                <div class="bc-contact-card">
+                    <span class="bc-contact-icon">&#128205;</span>
+                    <span class="bc-contact-label">Address</span>
+                    <span class="bc-contact-value">{{ section.contact.address or doc.address }}{% if doc.city %}, {{ doc.city }}{% endif %}{% if doc.state %}, {{ doc.state }}{% endif %}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% elif section.section_type == "Testimonials" %}
+    <div class="bc-section{% if loop.index % 2 == 0 %} bc-section-alt{% endif %}" id="bc-testimonials">
+        <div class="bc-container">
+            <h2 class="bc-section-title">{{ section.title or "Testimonials" }}</h2>
+            <div class="bc-reading"><p style="color:#64748b;">Coming soon.</p></div>
+        </div>
+    </div>
+
+    {% elif section.section_type == "Gallery" %}
+    <div class="bc-section{% if loop.index % 2 == 0 %} bc-section-alt{% endif %}" id="bc-gallery">
+        <div class="bc-container">
+            <h2 class="bc-section-title">{{ section.title or "Gallery" }}</h2>
+            <div class="bc-reading"><p style="color:#64748b;">Coming soon.</p></div>
+        </div>
+    </div>
+
+    {% elif section.section_type == "Custom" and section.custom.html %}
+    <div class="bc-section{% if loop.index % 2 == 0 %} bc-section-alt{% endif %}">
+        <div class="bc-container">
+            {{ section.custom.html }}
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+
+    {# ===== FALLBACK: show sections if no Page Section records ===== #}
+    {% if not sections %}
     {% if doc.description %}
     <div class="bc-section" id="bc-about">
         <div class="bc-container">
@@ -25,8 +146,6 @@
         </div>
     </div>
     {% endif %}
-
-    {# ===== PRODUCTS ===== #}
     {% if products %}
     <div class="bc-section bc-section-alt" id="bc-products">
         <div class="bc-container">
@@ -50,8 +169,6 @@
         </div>
     </div>
     {% endif %}
-
-    {# ===== SERVICES ===== #}
     {% if services %}
     <div class="bc-section" id="bc-services">
         <div class="bc-container">
@@ -75,8 +192,6 @@
         </div>
     </div>
     {% endif %}
-
-    {# ===== CONTACT ===== #}
     <div class="bc-section" id="bc-contact">
         <div class="bc-container">
             <h2 class="bc-section-title">Contact</h2>
@@ -112,8 +227,6 @@
             </div>
         </div>
     </div>
-
-    {# ===== SOCIAL LINKS ===== #}
     {% if social_links %}
     <div class="bc-section bc-section-alt">
         <div class="bc-container">
@@ -125,6 +238,7 @@
             </div>
         </div>
     </div>
+    {% endif %}
     {% endif %}
 
     <div class="bc-footer">

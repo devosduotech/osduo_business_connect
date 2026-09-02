@@ -72,6 +72,18 @@ def get_context(context):
         order_by="sort_order asc",
     )
 
+    # Page Sections (ordered, enabled, public-only)
+    section_names = frappe.get_all(
+        "Page Section",
+        filters={"business": doc.name, "enabled": 1, "visibility": "Public"},
+        fields=["name"],
+        order_by="sequence asc",
+    )
+    context.sections = []
+    for sn in section_names:
+        sec = frappe.get_doc("Page Section", sn.name)
+        context.sections.append(sec.get_section_data())
+
     # SEO
     if doc.get("seo_title"):
         context.title = doc["seo_title"]
