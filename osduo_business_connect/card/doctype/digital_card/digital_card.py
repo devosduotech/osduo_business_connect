@@ -133,8 +133,8 @@ class DigitalCard(Document):
 
     def generate_qr_code(self):
         """Generate QR code for this card."""
-        # This will be implemented in the QR service
-        pass
+        from osduo_business_connect.services.qr_service import generate_qr_code
+        generate_qr_code(self)
 
 
 def get_permission_query_conditions(user):
