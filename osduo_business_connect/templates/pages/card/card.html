@@ -46,7 +46,7 @@
         {% endif %}
 
         {# ===== ENQUIRY FORM ===== #}
-        <div class="bc-card-page" style="padding:1.25rem 0;">
+        <div class="bc-card-page" style="padding:1.25rem 0;" id="bc-enquiry">
             <h2 style="font-size:1rem;text-align:center;color:var(--bc-primary);margin-bottom:0.75rem;">Send a Message</h2>
             <form id="card-enquiry-form" class="bc-card bc-enquiry-form" style="padding:1.25rem;">
                 <input type="hidden" name="business" value="{{ doc.business }}">
@@ -100,29 +100,21 @@
 
 {# ===== BOTTOM NAV ===== #}
 <nav class="bc-card-bottom-nav">
-    <a href="#bc-top">
+    {% if doc.show_business and doc.business_slug %}
+    <a href="/b/{{ doc.business_slug }}">
         <span class="bc-nav-icon">&#127968;</span>
         <span>Home</span>
     </a>
-    {% if links %}
-    <a href="#bc-links">
-        <span class="bc-nav-icon">&#128279;</span>
-        <span>Links</span>
-    </a>
     {% endif %}
-    {% if doc.bio %}
-    <a href="#bc-about">
-        <span class="bc-nav-icon">&#128100;</span>
-        <span>About</span>
+    {% if doc.show_business and doc.business_slug %}
+    <a href="/b/{{ doc.business_slug }}#bc-products">
+        <span class="bc-nav-icon">&#128230;</span>
+        <span>Products</span>
     </a>
     {% endif %}
     <a href="#bc-enquiry">
         <span class="bc-nav-icon">&#128172;</span>
         <span>Enquiry</span>
-    </a>
-    <a href="#bc-share">
-        <span class="bc-nav-icon">&#128228;</span>
-        <span>Share</span>
     </a>
 </nav>
 
