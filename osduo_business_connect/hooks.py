@@ -37,27 +37,27 @@ website_route_rules = [
     # Business landing page
     {
         "from_route": "/b/<business_slug>",
-        "to_route": "business",
+        "to_route": "business/business",
     },
     # Team member page (under business)
     {
         "from_route": "/b/<business_slug>/team/<member_slug>",
-        "to_route": "team_member",
+        "to_route": "card/team_member",
     },
     # Digital Card (short URL)
     {
         "from_route": "/c/<card_slug>",
-        "to_route": "card",
+        "to_route": "card/card",
     },
     # Product page (under business)
     {
         "from_route": "/b/<business_slug>/products/<product_slug>",
-        "to_route": "product",
+        "to_route": "product/product",
     },
     # Service page (under business)
     {
         "from_route": "/b/<business_slug>/services/<service_slug>",
-        "to_route": "service",
+        "to_route": "service/service",
     },
 ]
 
