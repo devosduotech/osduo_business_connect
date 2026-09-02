@@ -4,80 +4,57 @@
 """
 CRM Lead Mapper
 
-This module handles the mapping between OSDuo Business Enquiry and Frappe CRM Lead.
-It provides functions for creating CRM Leads from enquiries and filtering leads by business.
+Maps OSDuo Business Enquiry to Frappe CRM Lead.
+Single source of truth for CRM Lead creation.
 """
 
 import frappe
 from frappe import _
 
 
-def get_lead_permission_query_conditions(user):
-    """
-    Return SQL conditions for filtering CRM Lead records by OSDuo Business.
-
-    This ensures users can only see leads belonging to businesses they have access to.
-
-    Args:
-        user: User email
-
-    Returns:
-        str: SQL WHERE condition
-    """
-    if not user:
-        user = frappe.session.user
-
-    # System Manager can see all leads
-    if "System Manager" in frappe.get_roles(user):
-        return ""
-
-    # Get businesses where user is a member
-    from osduo_business_connect.business.core import get_user_businesses
-    businesses = get_user_businesses(user)
-
-    if not businesses:
-        return "1=0"  # No access
-
-    business_names = [b["name"] for b in businesses]
-    return f"`tabCRM Lead`.osduo_business IN ({', '.join(['%s'] * len(business_names))})"
-
-
 def create_lead_from_enquiry(enquiry_doc):
     """
     Create a CRM Lead from a Business Enquiry.
 
-    This function is called as a background job to ensure enquiries are never lost.
-
     Args:
-        enquiry_doc: Business Enquiry document
+        enquiry_doc: Enquiry document
 
     Returns:
-        dict: Result with status and lead name if successful
+        dict: Result with status and lead name
     """
     try:
-        # Validate enquiry
         if not enquiry_doc:
             return {"status": "error", "message": "Enquiry document is required"}
 
-        if enquiry_doc.status != "Sync Pending":
-            return {"status": "error", "message": f"Enquiry status is {enquiry_doc.status}, expected 'Sync Pending'"}
+        # Split name for CRM Lead (first_name is mandatory)
+        full_name = enquiry_doc.visitor_name or "Unknown"
+        name_parts = full_name.strip().split(" ", 1)
+        first_name = name_parts[0]
+        last_name = name_parts[1] if len(name_parts) > 1 else ""
 
-        # Create CRM Lead
-        lead = frappe.get_doc({
+        # Build lead data with correct CRM field names
+        lead_data = {
             "doctype": "CRM Lead",
-            "lead_name": enquiry_doc.visitor_name,
-            "email_id": enquiry_doc.visitor_email,
+            "first_name": first_name,
+            "last_name": last_name,
+            "lead_name": full_name,
+            "email": enquiry_doc.visitor_email,
             "mobile_no": enquiry_doc.visitor_phone,
-            "organization": enquiry_doc.visitor_company,
-            "lead_source": "OSDuo Business Enquiry",
+            "organization": enquiry_doc.visitor_company or "",
+            "source": "Business Connect",  # CRM Lead Source (Link field)
+            "status": "New",
+            # OSDuo custom fields
             "osduo_business": enquiry_doc.business,
             "osduo_card": enquiry_doc.card,
             "osduo_product": enquiry_doc.product,
             "osduo_service": enquiry_doc.service,
             "osduo_enquiry": enquiry_doc.name,
-            "osduo_campaign": enquiry_doc.campaign,
-        })
+            "osduo_campaign": enquiry_doc.campaign or "",
+            "osduo_source": enquiry_doc.source or "Business Profile",
+            "osduo_landing_url": enquiry_doc.landing_url or "",
+        }
 
+        lead = frappe.get_doc(lead_data)
         lead.insert(ignore_permissions=True)
 
         # Update enquiry status
@@ -90,58 +67,54 @@ def create_lead_from_enquiry(enquiry_doc):
         return {
             "status": "success",
             "lead": lead.name,
-            "message": f"Lead {lead.name} created successfully"
+            "message": f"Lead {lead.name} created successfully",
         }
 
     except Exception as e:
-        # Log error and update enquiry status
         frappe.log_error(
             message=f"Failed to create CRM Lead from Enquiry {enquiry_doc.name}: {str(e)}",
-            title="CRM Lead Creation Failed"
+            title="CRM Lead Creation Failed",
         )
 
-        # Update enquiry status to failed
         try:
             enquiry_doc.status = "Sync Failed"
-            enquiry_doc.error_message = str(e)
+            enquiry_doc.error_message = str(e)[:500]
             enquiry_doc.save(ignore_permissions=True)
             frappe.db.commit()
         except Exception:
             pass
 
-        return {
-            "status": "error",
-            "message": str(e)
-        }
+        return {"status": "error", "message": str(e)}
 
 
 def retry_failed_enquiries():
     """
     Retry creating CRM Leads for enquiries that failed to sync.
-
-    This function is called by the scheduler (hourly).
+    Called by scheduler (hourly).
     """
-    # Get enquiries that failed to sync
     enquiries = frappe.get_all(
-        "Business Enquiry",
-        filters={
-            "status": "Sync Failed",
-        },
+        "Enquiry",
+        filters={"status": "Sync Failed"},
         fields=["name"],
-        limit=100,  # Process in batches
+        limit=100,
     )
-
-    if not enquiries:
-        return
-
-    frappe.logger().info(f"Retrying {len(enquiries)} failed enquiries")
 
     for enquiry in enquiries:
         try:
-            enquiry_doc = frappe.get_doc("Business Enquiry", enquiry.name)
+            enquiry_doc = frappe.get_doc("Enquiry", enquiry.name)
             create_lead_from_enquiry(enquiry_doc)
         except Exception as e:
             frappe.log_error(
                 message=f"Failed to retry enquiry {enquiry.name}: {str(e)}",
-                title="Enquiry Retry Failed"
+                title="Enquiry Retry Failed",
             )
+
+
+def ensure_crm_lead_source():
+    """Ensure 'Business Connect' CRM Lead Source exists."""
+    if not frappe.db.exists("CRM Lead Source", "Business Connect"):
+        frappe.get_doc({
+            "doctype": "CRM Lead Source",
+            "source_name": "Business Connect",
+        }).insert(ignore_permissions=True)
+        frappe.db.commit()

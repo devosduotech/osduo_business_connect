@@ -23,16 +23,21 @@
         <span style="display:inline-block;padding:0.35rem 0.75rem;background:rgba(255,255,255,0.2);border-radius:20px;font-size:0.85rem;margin-bottom:0.5rem;">{{ doc.category }}</span>
         {% endif %}
 
-        {% if doc.price %}
+        {% if doc.price_display_mode != "Hidden" and doc.price %}
         <div style="font-size:1.5rem;font-weight:700;margin:1rem 0;">
-            {% if doc.currency %}{{ doc.currency }} {% endif %}{{ doc.price }}
-            {% if doc.unit %}/ {{ doc.unit }}{% endif %}
+            {% if doc.price_display_mode == "Contact" %}
+                Contact for pricing
+            {% else %}
+                {% if doc.currency %}{{ doc.currency }} {% endif %}{{ doc.price }}
+            {% endif %}
         </div>
         {% endif %}
 
         {# Quick Actions #}
         <div style="margin-top:1.5rem;display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+            {% if doc.enquiry_enabled %}
             <a href="mailto:{{ business_email }}?subject=Enquiry: {{ doc.product_name }}" class="bc-btn bc-btn-secondary">&#9993; Send Enquiry</a>
+            {% endif %}
             {% if business_phone %}
             <a href="tel:{{ business_phone }}" class="bc-btn bc-btn-secondary">&#9742; Call</a>
             {% endif %}
@@ -56,32 +61,12 @@
     </div>
     {% endif %}
 
-    {# Features #}
-    {% if doc.features %}
+    {# Video #}
+    {% if doc.video_url %}
     <div class="bc-section">
-        <h2 class="bc-section-title">Features</h2>
-        <ul style="list-style:none;padding:0;margin:0;">
-            {% for feature in doc.features %}
-            <li style="padding:0.5rem 0;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;gap:0.5rem;">
-                <span style="color:{{ theme.primary_color }};">&#10003;</span>
-                {{ feature.feature }}
-            </li>
-            {% endfor %}
-        </ul>
-    </div>
-    {% endif %}
-
-    {# Specifications #}
-    {% if doc.specifications %}
-    <div class="bc-section">
-        <h2 class="bc-section-title">Specifications</h2>
-        <div class="bc-card">
-            {% for spec in doc.specifications %}
-            <div style="display:flex;justify-content:space-between;padding:0.75rem 0;border-bottom:1px solid #e2e8f0;">
-                <span style="color:#64748b;">{{ spec.spec_label }}</span>
-                <span style="font-weight:500;">{{ spec.spec_value }}</span>
-            </div>
-            {% endfor %}
+        <h2 class="bc-section-title">Video</h2>
+        <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:8px;">
+            <iframe src="{{ doc.video_url }}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allowfullscreen></iframe>
         </div>
     </div>
     {% endif %}
@@ -98,6 +83,13 @@
     </div>
     {% endif %}
 
+    {# Brochure #}
+    {% if doc.brochure %}
+    <div class="bc-section">
+        <a href="{{ doc.brochure }}" class="bc-btn bc-btn-primary" target="_blank">&#128196; Download Brochure</a>
+    </div>
+    {% endif %}
+
     {# Footer #}
     <div class="bc-footer">
         <p>Powered by OSDuo Business Connect</p>
@@ -106,7 +98,9 @@
 
 {# Sticky Action Bar #}
 <div class="bc-action-bar" style="display:none;">
+    {% if doc.enquiry_enabled %}
     <a href="mailto:{{ business_email }}?subject=Enquiry: {{ doc.product_name }}" class="bc-btn bc-btn-primary">&#9993; Enquiry</a>
+    {% endif %}
     {% if business_phone %}
     <a href="tel:{{ business_phone }}" class="bc-btn bc-btn-primary" style="background:#334155;">&#9742; Call</a>
     {% endif %}

@@ -4,39 +4,44 @@
 """
 Theme Service
 
-This module handles theme-related operations for businesses.
-Activation is handled by the Theme controller to ensure validation.
+Handles theme resolution and CSS generation for Business Connect.
+Template = layout structure (Modern, Professional, Minimal, Classic)
+Color Scheme = color palette (Violet, Indigo, Blue, etc.)
 """
 
 import frappe
 from frappe import _
 
 
+# Color scheme definitions
+COLOR_SCHEMES = {
+    "Violet": {"primary": "#7C3AED", "secondary": "#FFFFFF", "accent": "#A78BFA", "gradient_start": "#7C3AED", "gradient_end": "#A78BFA"},
+    "Indigo": {"primary": "#4F46E5", "secondary": "#FFFFFF", "accent": "#818CF8", "gradient_start": "#4F46E5", "gradient_end": "#818CF8"},
+    "Blue":   {"primary": "#2563EB", "secondary": "#FFFFFF", "accent": "#60A5FA", "gradient_start": "#2563EB", "gradient_end": "#60A5FA"},
+    "Green":  {"primary": "#16A34A", "secondary": "#FFFFFF", "accent": "#4ADE80", "gradient_start": "#16A34A", "gradient_end": "#4ADE80"},
+    "Yellow": {"primary": "#EAB308", "secondary": "#FFFFFF", "accent": "#FDE047", "gradient_start": "#EAB308", "gradient_end": "#FDE047"},
+    "Orange": {"primary": "#EA580C", "secondary": "#FFFFFF", "accent": "#FB923C", "gradient_start": "#EA580C", "gradient_end": "#FB923C"},
+    "Red":    {"primary": "#DC2626", "secondary": "#FFFFFF", "accent": "#F87171", "gradient_start": "#DC2626", "gradient_end": "#F87171"},
+}
+
+
 def get_business_theme(business_name):
     """
-    Get the active theme for a business.
+    Get the theme for a business.
+    Uses Business.default_theme as authoritative source.
 
     Args:
         business_name: Business name
 
     Returns:
-        dict: Theme data or default theme
+        dict: Theme data
     """
-    # Get active theme
-    theme = frappe.get_all(
-        "Theme",
-        filters={
-            "business": business_name,
-            "active": 1,
-        },
-        fields=["name"],
-        limit=1,
-    )
+    # Check Business.default_theme first (authoritative)
+    default_theme = frappe.db.get_value("Business", business_name, "default_theme")
+    if default_theme:
+        return get_theme_data(default_theme)
 
-    if theme:
-        return get_theme_data(theme[0].name)
-
-    # Return default theme
+    # Fall back to default
     return get_default_theme()
 
 
@@ -52,22 +57,38 @@ def get_theme_data(theme_name):
     """
     theme = frappe.get_doc("Theme", theme_name)
 
+    # Get color scheme colors
+    scheme = theme.color_scheme or "Blue"
+    scheme_colors = COLOR_SCHEMES.get(scheme, COLOR_SCHEMES["Blue"])
+
+    # Use custom colors if scheme is Custom
+    if scheme == "Custom":
+        scheme_colors = {
+            "primary": theme.primary_color or "#2563EB",
+            "secondary": theme.secondary_color or "#FFFFFF",
+            "accent": theme.accent_color or "#60A5FA",
+            "gradient_start": theme.primary_color or "#2563EB",
+            "gradient_end": theme.accent_color or "#60A5FA",
+        }
+
     return {
         "name": theme.name,
-        "template": theme.template,
-        "primary_color": theme.primary_color,
-        "secondary_color": theme.secondary_color,
-        "accent_color": theme.accent_color,
-        "button_style": theme.button_style,
-        "card_style": theme.card_style,
+        "template": theme.template or "Modern",
+        "color_scheme": scheme,
+        "primary_color": scheme_colors["primary"],
+        "secondary_color": scheme_colors["secondary"],
+        "accent_color": scheme_colors["accent"],
+        "gradient_start": scheme_colors["gradient_start"],
+        "gradient_end": scheme_colors["gradient_end"],
+        "button_style": theme.button_style or "Filled",
+        "card_style": theme.card_style or "Modern",
         "font_family": theme.font_family,
-        "custom_settings": theme.custom_settings,
     }
 
 
 def get_default_theme():
     """
-    Get default theme settings.
+    Get default theme (Modern + Blue).
 
     Returns:
         dict: Default theme data
@@ -75,42 +96,21 @@ def get_default_theme():
     return {
         "name": None,
         "template": "Modern",
-        "primary_color": "#000000",
+        "color_scheme": "Blue",
+        "primary_color": "#2563EB",
         "secondary_color": "#FFFFFF",
-        "accent_color": "#007BFF",
+        "accent_color": "#60A5FA",
+        "gradient_start": "#2563EB",
+        "gradient_end": "#60A5FA",
         "button_style": "Filled",
         "card_style": "Modern",
         "font_family": None,
-        "custom_settings": None,
     }
-
-
-def activate_theme(theme_name):
-    """
-    Activate a theme and deactivate others for the same business.
-
-    This delegates to the Theme controller which handles validation
-    and deactivation of other themes.
-
-    Args:
-        theme_name: Theme name to activate
-
-    Returns:
-        bool: True if successful
-    """
-    theme = frappe.get_doc("Theme", theme_name)
-
-    # Set active flag - the controller will handle deactivation of others
-    theme.active = 1
-    theme.save(ignore_permissions=True)
-
-    return True
 
 
 def get_theme_css(theme_data):
     """
-    Generate CSS from theme data. All classes prefixed with 'bc-' to avoid
-    conflicts with Frappe/Bootstrap global styles.
+    Generate CSS from theme data.
 
     Args:
         theme_data: Theme data dictionary
@@ -118,25 +118,54 @@ def get_theme_css(theme_data):
     Returns:
         str: CSS string
     """
-    template = theme_data.get('template', 'Modern')
-    config = get_template_config(template)
-    primary = theme_data.get('primary_color', '#000000')
-    secondary = theme_data.get('secondary_color', '#FFFFFF')
-    accent = theme_data.get('accent_color', '#007BFF')
-    gradient_start = config.get('gradient_start', primary)
-    gradient_end = config.get('gradient_end', accent)
-    border_radius = get_border_radius(theme_data.get('card_style', 'Modern'))
-    font_family = theme_data.get('font_family', 'inherit')
-    card_elevation = config.get('card_elevation', 'shadow')
+    template = theme_data.get("template", "Modern")
+    primary = theme_data.get("primary_color", "#2563EB")
+    secondary = theme_data.get("secondary_color", "#FFFFFF")
+    accent = theme_data.get("accent_color", "#60A5FA")
+    gradient_start = theme_data.get("gradient_start", primary)
+    gradient_end = theme_data.get("gradient_end", accent)
+    button_style = theme_data.get("button_style", "Filled")
+    card_style = theme_data.get("card_style", "Modern")
+    font_family = theme_data.get("font_family", "inherit")
 
-    shadow_css = '0 1px 3px rgba(0,0,0,0.1)' if card_elevation == 'shadow' else 'none'
-    border_css = '1px solid #e2e8f0' if card_elevation == 'border' else 'none'
+    # Card elevation from card_style
+    card_elevation_map = {"Modern": "shadow", "Professional": "border", "Minimal": "none", "Classic": "shadow"}
+    card_elevation = card_elevation_map.get(card_style, "shadow")
+    shadow_css = "0 1px 3px rgba(0,0,0,0.1)" if card_elevation == "shadow" else "none"
+    border_css = "1px solid #e2e8f0" if card_elevation == "border" else "none"
+
+    # Border radius from card_style
+    radius_map = {"Modern": "8px", "Professional": "4px", "Minimal": "0px", "Classic": "12px"}
+    border_radius = radius_map.get(card_style, "8px")
+
+    # Button border radius from button_style
+    btn_radius_map = {"Filled": border_radius, "Outline": border_radius, "Rounded": "8px", "Pill": "999px"}
+    btn_radius = btn_radius_map.get(button_style, border_radius)
+
+    # Button style (filled vs outline)
+    btn_filled = button_style in ("Filled", "Rounded", "Pill")
+
+    # Section spacing from template
+    spacing_map = {"Modern": "2rem 1.5rem", "Professional": "1.5rem 1.5rem", "Minimal": "1rem 1.5rem", "Classic": "2rem 1.5rem"}
+    section_spacing = spacing_map.get(template, "2rem 1.5rem")
+
+    # Header style from template
+    header_style_map = {
+        "Modern": f"background: linear-gradient(135deg, {gradient_start}, {gradient_end});",
+        "Professional": f"background: {primary};",
+        "Minimal": f"background: {secondary}; color: {primary}; border-bottom: 2px solid {primary};",
+        "Classic": f"background: linear-gradient(180deg, {gradient_start}, {gradient_end});",
+    }
+    header_css = header_style_map.get(template, header_style_map["Modern"])
+
+    # Header text color
+    header_text_color = "white" if template != "Minimal" else primary
 
     css = f"""
-/* ===== OSDuo Business Connect Theme ===== */
+/* ===== OSDuo Business Connect — {template} + {theme_data.get('color_scheme', 'Blue')} ===== */
 .bc-page {{
     font-family: {font_family};
-    background: #f8fafc;
+    background: {'#f8fafc' if template != 'Minimal' else '#ffffff'};
     color: #1e293b;
     margin: 0;
     padding: 0;
@@ -145,23 +174,24 @@ def get_theme_css(theme_data):
 
 /* Header */
 .bc-header {{
-    background: linear-gradient(135deg, {gradient_start}, {gradient_end});
-    color: white;
-    padding: 3rem 1.5rem;
-    text-align: center;
+    {header_css}
+    color: {header_text_color};
+    padding: {'3rem 1.5rem' if template in ('Modern', 'Classic') else '2rem 1.5rem'};
+    text-align: {'center' if template in ('Modern', 'Minimal') else 'left'};
 }}
 
 .bc-header h1 {{
-    font-size: 2rem;
+    font-size: {'2rem' if template == 'Modern' else '1.75rem'};
     margin: 0 0 0.5rem 0;
     font-weight: 700;
-    color: white;
+    color: {header_text_color};
 }}
 
 .bc-header .bc-tagline {{
     font-size: 1.1rem;
     opacity: 0.9;
     margin: 0;
+    color: {header_text_color};
 }}
 
 /* Cards */
@@ -181,7 +211,7 @@ def get_theme_css(theme_data):
 .bc-btn {{
     display: inline-block;
     padding: 0.75rem 1.5rem;
-    border-radius: {border_radius};
+    border-radius: {btn_radius};
     text-decoration: none;
     font-weight: 500;
     transition: all 0.2s;
@@ -192,19 +222,19 @@ def get_theme_css(theme_data):
 }}
 
 .bc-btn-primary {{
-    background-color: {primary};
-    color: white;
+    background-color: {primary if btn_filled else 'transparent'};
+    color: {'white' if btn_filled else primary};
+    {'border: 2px solid ' + primary if not btn_filled else ''}
 }}
 
 .bc-btn-primary:hover {{
     opacity: 0.9;
-    transform: translateY(-1px);
-    color: white;
+    color: {'white' if btn_filled else primary};
     text-decoration: none;
 }}
 
 .bc-btn-secondary {{
-    background-color: {secondary};
+    background-color: {secondary if btn_filled else 'transparent'};
     color: {primary};
     border: 1px solid {primary};
 }}
@@ -216,13 +246,14 @@ def get_theme_css(theme_data):
 }}
 
 .bc-btn-accent {{
-    background-color: {accent};
-    color: white;
+    background-color: {accent if btn_filled else 'transparent'};
+    color: {'white' if btn_filled else accent};
+    {'border: 2px solid ' + accent if not btn_filled else ''}
 }}
 
 .bc-btn-accent:hover {{
     opacity: 0.9;
-    color: white;
+    color: {'white' if btn_filled else accent};
     text-decoration: none;
 }}
 
@@ -250,7 +281,7 @@ def get_theme_css(theme_data):
 
 /* Sections */
 .bc-section {{
-    padding: 2rem 1.5rem;
+    padding: {section_spacing};
     max-width: 800px;
     margin: 0 auto;
 }}
@@ -260,6 +291,8 @@ def get_theme_css(theme_data):
     font-weight: 600;
     margin: 0 0 1rem 0;
     color: {primary};
+    {'border-bottom: 2px solid ' + accent + '; padding-bottom: 0.5rem;' if template == 'Professional' else ''}
+    {'text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.875rem; color: ' + accent if template == 'Minimal' else ''}
 }}
 
 /* Product Grid */
@@ -291,7 +324,7 @@ def get_theme_css(theme_data):
 .bc-team-grid img {{
     width: 100px;
     height: 100px;
-    border-radius: 50%;
+    border-radius: {'50%' if template != 'Minimal' else '4px'};
     object-fit: cover;
 }}
 
@@ -325,6 +358,7 @@ def get_theme_css(theme_data):
     padding: 2rem;
     color: #64748b;
     font-size: 0.875rem;
+    {'border-top: 1px solid #e2e8f0;' if template == 'Professional' else ''}
 }}
 
 /* Responsive */
@@ -355,113 +389,3 @@ def get_theme_css(theme_data):
 }}
 """
     return css
-
-
-def get_border_radius(style):
-    """
-    Get border radius based on card style.
-
-    Args:
-        style: Card style name
-
-    Returns:
-        str: Border radius value
-    """
-    styles = {
-        "Modern": "8px",
-        "Professional": "4px",
-        "Minimal": "0px",
-        "Classic": "12px",
-        "Violet": "8px",
-        "Indigo": "8px",
-        "Blue": "8px",
-        "Green": "8px",
-        "Yellow": "8px",
-        "Orange": "8px",
-        "Red": "8px",
-    }
-    return styles.get(style, "8px")
-
-
-def get_template_config(template):
-    """
-    Get template-specific configuration.
-
-    Args:
-        template: Template name
-
-    Returns:
-        dict: Template configuration
-    """
-    configs = {
-        "Modern": {
-            "header_style": "gradient",
-            "section_spacing": "large",
-            "card_elevation": "shadow",
-        },
-        "Professional": {
-            "header_style": "solid",
-            "section_spacing": "medium",
-            "card_elevation": "border",
-        },
-        "Minimal": {
-            "header_style": "clean",
-            "section_spacing": "small",
-            "card_elevation": "none",
-        },
-        "Classic": {
-            "header_style": "ornate",
-            "section_spacing": "large",
-            "card_elevation": "shadow",
-        },
-        "Violet": {
-            "header_style": "gradient",
-            "section_spacing": "large",
-            "card_elevation": "shadow",
-            "gradient_start": "#7C3AED",
-            "gradient_end": "#A78BFA",
-        },
-        "Indigo": {
-            "header_style": "gradient",
-            "section_spacing": "large",
-            "card_elevation": "shadow",
-            "gradient_start": "#4F46E5",
-            "gradient_end": "#818CF8",
-        },
-        "Blue": {
-            "header_style": "gradient",
-            "section_spacing": "large",
-            "card_elevation": "shadow",
-            "gradient_start": "#2563EB",
-            "gradient_end": "#60A5FA",
-        },
-        "Green": {
-            "header_style": "gradient",
-            "section_spacing": "large",
-            "card_elevation": "shadow",
-            "gradient_start": "#16A34A",
-            "gradient_end": "#4ADE80",
-        },
-        "Yellow": {
-            "header_style": "gradient",
-            "section_spacing": "large",
-            "card_elevation": "shadow",
-            "gradient_start": "#EAB308",
-            "gradient_end": "#FDE047",
-        },
-        "Orange": {
-            "header_style": "gradient",
-            "section_spacing": "large",
-            "card_elevation": "shadow",
-            "gradient_start": "#EA580C",
-            "gradient_end": "#FB923C",
-        },
-        "Red": {
-            "header_style": "gradient",
-            "section_spacing": "large",
-            "card_elevation": "shadow",
-            "gradient_start": "#DC2626",
-            "gradient_end": "#F87171",
-        },
-    }
-    return configs.get(template, configs["Modern"])

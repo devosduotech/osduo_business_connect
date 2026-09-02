@@ -19,23 +19,24 @@ def get_context(context):
     if not business:
         frappe.throw("Business not found", frappe.DoesNotExistError)
 
-    # Find product
-    doc = frappe.db.get_value(
+    # Find product - use frappe.get_doc to get child tables (gallery)
+    product_name = frappe.db.get_value(
         "Showcase Product",
         {"slug": slug, "business": business.name, "status": "Published"},
-        ["*"],
-        as_dict=True,
+        "name",
     )
-    if not doc:
+    if not product_name:
         frappe.throw("Product not found", frappe.DoesNotExistError)
 
+    doc = frappe.get_doc("Showcase Product", product_name)
+
     context.doc = doc
-    context.title = doc.get("product_name") or doc.get("name")
+    context.title = doc.product_name or doc.name
     context.business_slug = business_slug
-    context.business_name = business.get("business_name")
-    context.business_email = business.get("email")
-    context.business_phone = business.get("phone")
-    context.business_whatsapp = business.get("whatsapp")
+    context.business_name = business.business_name
+    context.business_email = business.email
+    context.business_phone = business.phone
+    context.business_whatsapp = business.whatsapp
     context.no_breadcrumbs = 1
     context.no_header = 1
 
@@ -45,7 +46,7 @@ def get_context(context):
     context.theme_css = get_theme_css(theme_data)
 
     # SEO
-    if doc.get("seo_title"):
-        context.title = doc["seo_title"]
-    if doc.get("seo_description"):
-        context.meta_description = doc["seo_description"]
+    if doc.seo_title:
+        context.title = doc.seo_title
+    if doc.seo_description:
+        context.meta_description = doc.seo_description

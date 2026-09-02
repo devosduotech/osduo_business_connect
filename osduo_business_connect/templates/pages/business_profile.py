@@ -32,12 +32,12 @@ def get_context(context):
     context.theme = theme_data
     context.theme_css = get_theme_css(theme_data)
 
-    # Fetch social links separately (child table)
+    # Fetch social links from Business (not Digital Card - data isolation)
     context.social_links = frappe.get_all(
-        "Digital Card Link",
-        filters={"parenttype": "Digital Card", "parentfield": "links"},
-        fields=["link_type", "label", "url", "value"],
-        order_by="sort_order asc",
+        "Business Social Link",
+        filters={"parent": doc.name, "parenttype": "Business"},
+        fields=["platform", "url"],
+        order_by="idx asc",
     )
 
     # Fetch business hours separately

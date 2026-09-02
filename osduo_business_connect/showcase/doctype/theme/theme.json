@@ -40,7 +40,20 @@
       "label": "Template",
       "reqd": 1,
       "default": "Modern",
-      "options": "Modern\nProfessional\nMinimal\nClassic\nViolet\nIndigo\nBlue\nGreen\nYellow\nOrange\nRed",
+      "options": "Modern\nProfessional\nMinimal\nClassic",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "column_break_template",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "color_scheme",
+      "fieldtype": "Select",
+      "label": "Color Scheme",
+      "reqd": 1,
+      "default": "Blue",
+      "options": "Violet\nIndigo\nBlue\nGreen\nYellow\nOrange\nRed\nCustom",
       "in_list_view": 1
     },
     {

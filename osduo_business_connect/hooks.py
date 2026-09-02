@@ -105,10 +105,10 @@ scheduler_events = {
 # DocType-level permissions already grant Guest read for published records.
 # Web controllers use frappe.db.get_value to bypass permission hooks.
 
-permission_query_conditions = {
-    # CRM Lead isolation - critical for multi-business security
-    "CRM Lead": "osduo_business_connect.crm_integration.crm_permissions.get_lead_permission_query_conditions",
-}
+# NOTE: CRM Lead permission_query_conditions NOT registered here.
+# Frappe CRM already defines its own permission system for CRM Lead.
+# Business-level filtering should be done through CRM's organization hierarchy,
+# not by overriding CRM's native permission model.
 
 # DocType Class
 # ---------------

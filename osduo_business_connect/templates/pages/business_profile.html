@@ -6,7 +6,7 @@
 </style>
 
 <div class="bc-page">
-    {# Header Section #}
+    {# Header #}
     <div class="bc-header">
         {% if doc.cover_image %}
         <img src="{{ doc.cover_image }}" alt="" style="width:100%;height:300px;object-fit:cover;border-radius:8px;margin-bottom:1.5rem;">
@@ -21,7 +21,6 @@
         <p class="bc-tagline">{{ doc.industry }}</p>
         {% endif %}
 
-        {# Quick Actions #}
         <div style="margin-top:1.5rem;display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
             {% if doc.phone %}
             <a href="tel:{{ doc.phone }}" class="bc-btn bc-btn-secondary">&#9742; Call</a>
@@ -33,7 +32,7 @@
         </div>
     </div>
 
-    {# About Section #}
+    {# About #}
     {% if doc.description %}
     <div class="bc-section">
         <h2 class="bc-section-title">About Us</h2>
@@ -41,30 +40,7 @@
     </div>
     {% endif %}
 
-    {# Products Section #}
-    {% if products %}
-    <div class="bc-section">
-        <h2 class="bc-section-title">Products</h2>
-        <div class="bc-product-grid">
-            {% for product in products %}
-            <a href="/b/{{ doc.slug }}/p/{{ product.slug }}" class="bc-card bc-product-card">
-                {% if product.image %}
-                <img src="{{ product.image }}" alt="{{ product.product_name }}">
-                {% else %}
-                <div style="height:150px;background:#f1f5f9;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#94a3b8;">&#128230;</div>
-                {% endif %}
-                <h3 style="margin:0.75rem 0 0.25rem;font-size:1rem;">{{ product.product_name }}</h3>
-                <p style="margin:0;color:#64748b;font-size:0.875rem;">{{ product.short_description[:60] }}{% if product.short_description|length > 60 %}...{% endif %}</p>
-                {% if product.price %}
-                <div style="margin-top:0.5rem;color:{{ theme.primary_color }};font-weight:600;">{% if product.currency %}{{ product.currency }} {% endif %}{{ product.price }}</div>
-                {% endif %}
-            </a>
-            {% endfor %}
-        </div>
-    </div>
-    {% endif %}
-
-    {# Services Section #}
+    {# Services #}
     {% if services %}
     <div class="bc-section">
         <h2 class="bc-section-title">Services</h2>
@@ -78,16 +54,33 @@
                 {% endif %}
                 <h3 style="margin:0.75rem 0 0.25rem;font-size:1rem;">{{ service.service_name }}</h3>
                 <p style="margin:0;color:#64748b;font-size:0.875rem;">{{ service.short_description[:60] }}{% if service.short_description|length > 60 %}...{% endif %}</p>
-                {% if service.price %}
-                <div style="margin-top:0.5rem;color:{{ theme.primary_color }};font-weight:600;">{% if service.currency %}{{ service.currency }} {% endif %}{{ service.price }}</div>
-                {% endif %}
             </a>
             {% endfor %}
         </div>
     </div>
     {% endif %}
 
-    {# Team Section #}
+    {# Products #}
+    {% if products %}
+    <div class="bc-section">
+        <h2 class="bc-section-title">Products</h2>
+        <div class="bc-product-grid">
+            {% for product in products %}
+            <a href="/b/{{ doc.slug }}/p/{{ product.slug }}" class="bc-card bc-product-card">
+                {% if product.image %}
+                <img src="{{ product.image }}" alt="{{ product.product_name }}">
+                {% else %}
+                <div style="height:150px;background:#f1f5f9;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#94a3b8;">&#128230;</div>
+                {% endif %}
+                <h3 style="margin:0.75rem 0 0.25rem;font-size:1rem;">{{ product.product_name }}</h3>
+                <p style="margin:0;color:#64748b;font-size:0.875rem;">{{ product.short_description[:60] }}{% if product.short_description|length > 60 %}...{% endif %}</p>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {# Team #}
     {% if cards %}
     <div class="bc-section">
         <h2 class="bc-section-title">Our Team</h2>
@@ -109,7 +102,7 @@
     </div>
     {% endif %}
 
-    {# Contact Section #}
+    {# Contact #}
     <div class="bc-section" id="bc-contact">
         <h2 class="bc-section-title">Contact</h2>
         <div class="bc-card">
@@ -146,19 +139,17 @@
         <h2 class="bc-section-title">Connect</h2>
         <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
             {% for link in social_links %}
-            <a href="{{ link.url }}" target="_blank" class="bc-btn bc-btn-secondary" style="font-size:0.875rem;">{{ link.label or link.link_type }}</a>
+            <a href="{{ link.url }}" target="_blank" class="bc-btn bc-btn-secondary" style="font-size:0.875rem;">{{ link.platform }}</a>
             {% endfor %}
         </div>
     </div>
     {% endif %}
 
-    {# Footer #}
     <div class="bc-footer">
         <p>Powered by OSDuo Business Connect</p>
     </div>
 </div>
 
-{# Sticky Action Bar (always visible on mobile) #}
 <div class="bc-action-bar" style="display:none;">
     {% if doc.phone %}
     <a href="tel:{{ doc.phone }}" class="bc-btn bc-btn-primary">&#9742; Call</a>
