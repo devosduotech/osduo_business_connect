@@ -87,6 +87,22 @@ def get_context(context):
 
     context.meta_description = f"Contact {doc.get('display_name', '')}"
 
+    # Track card view (non-blocking)
+    _track_event(doc.business, "card_view", card=doc.name)
+
+
+def _track_event(business, event_type, **kwargs):
+    """Record engagement event in background. Never blocks page load."""
+    try:
+        frappe.enqueue(
+            "osduo_business_connect.analytics.analytics_service.record_engagement",
+            business=business,
+            event_type=event_type,
+            **kwargs,
+        )
+    except Exception:
+        pass
+
 
 def _generate_vcf(doc):
     """Generate vCard 3.0 content for download."""

@@ -1,0 +1,273 @@
+{% extends "templates/web.html" %}
+
+{%- block page_content -%}
+<div id="analytics-page">
+    <div class="page-head">
+        <div class="page-head-content">
+            <h3>Analytics Dashboard</h3>
+        </div>
+    </div>
+
+    <div class="form-message blue" id="loading-msg">
+        <p>Loading analytics data...</p>
+    </div>
+
+    <div id="analytics-content" style="display:none;">
+        {# Business Selector #}
+        <div style="margin-bottom:1.5rem;">
+            <label style="font-weight:600;margin-bottom:0.3rem;display:block;">Business</label>
+            <select id="business-select" class="input-with-feedback" style="max-width:400px;">
+                <option value="">Select business...</option>
+            </select>
+            <select id="days-select" class="input-with-feedback" style="max-width:160px;margin-left:0.5rem;">
+                <option value="7">Last 7 days</option>
+                <option value="30" selected>Last 30 days</option>
+                <option value="90">Last 90 days</option>
+                <option value="365">Last year</option>
+            </select>
+        </div>
+
+        {# Summary Cards #}
+        <div class="row" id="summary-cards" style="margin-bottom:1.5rem;">
+            <div class="col-sm-3">
+                <div class="frappe-card" style="padding:1rem;text-align:center;">
+                    <div style="font-size:1.8rem;font-weight:700;color:var(--primary);" id="stat-events">0</div>
+                    <div style="font-size:0.8rem;color:#888;">Total Events</div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="frappe-card" style="padding:1rem;text-align:center;">
+                    <div style="font-size:1.8rem;font-weight:700;color:#2490ef;" id="stat-enquiries">0</div>
+                    <div style="font-size:0.8rem;color:#888;">Enquiries</div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="frappe-card" style="padding:1rem;text-align:center;">
+                    <div style="font-size:1.8rem;font-weight:700;color:#28a745;" id="stat-cards">0</div>
+                    <div style="font-size:0.8rem;color:#888;">Cards</div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="frappe-card" style="padding:1rem;text-align:center;">
+                    <div style="font-size:1.8rem;font-weight:700;color:#f5a623;" id="stat-products">0</div>
+                    <div style="font-size:0.8rem;color:#888;">Products &amp; Services</div>
+                </div>
+            </div>
+        </div>
+
+        {# Engagement by Type #}
+        <div class="row" style="margin-bottom:1.5rem;">
+            <div class="col-sm-8">
+                <div class="frappe-card" style="padding:1.2rem;">
+                    <h5 style="margin-bottom:1rem;">Events by Day</h5>
+                    <div id="chart-events-by-day" style="height:220px;"></div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="frappe-card" style="padding:1.2rem;">
+                    <h5 style="margin-bottom:1rem;">Events by Type</h5>
+                    <div id="events-by-type-list"></div>
+                </div>
+            </div>
+        </div>
+
+        {# Top Cards + Enquiry Stats #}
+        <div class="row" style="margin-bottom:1.5rem;">
+            <div class="col-sm-6">
+                <div class="frappe-card" style="padding:1.2rem;">
+                    <h5 style="margin-bottom:1rem;">Top Cards</h5>
+                    <div id="top-cards-list"></div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="frappe-card" style="padding:1.2rem;">
+                    <h5 style="margin-bottom:1rem;">Enquiry Pipeline</h5>
+                    <div id="enquiry-pipeline"></div>
+                </div>
+            </div>
+        </div>
+
+        {# Enquiry by Source #}
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="frappe-card" style="padding:1.2rem;">
+                    <h5 style="margin-bottom:1rem;">Enquiries by Source</h5>
+                    <div id="enquiry-by-source"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% raw %}
+<script>
+frappe.ready(function() {
+    var businessSelect = document.getElementById('business-select');
+    var daysSelect = document.getElementById('days-select');
+    var loadingMsg = document.getElementById('loading-msg');
+    var content = document.getElementById('analytics-content');
+
+    // Load business list
+    frappe.call({
+        method: 'osduo_business_connect.pages.analytics.get_business_list',
+        callback: function(r) {
+            if (r.message) {
+                r.message.forEach(function(b) {
+                    var opt = document.createElement('option');
+                    opt.value = b.name;
+                    opt.textContent = b.business_name || b.name;
+                    businessSelect.appendChild(opt);
+                });
+                // Auto-select if only one business
+                if (r.message.length === 1) {
+                    businessSelect.value = r.message[0].name;
+                    loadAnalytics();
+                }
+            }
+            loadingMsg.style.display = 'none';
+            content.style.display = 'block';
+        }
+    });
+
+    businessSelect.addEventListener('change', loadAnalytics);
+    daysSelect.addEventListener('change', loadAnalytics);
+
+    function loadAnalytics() {
+        var business = businessSelect.value;
+        if (!business) return;
+
+        loadingMsg.style.display = 'block';
+        content.style.display = 'none';
+
+        frappe.call({
+            method: 'osduo_business_connect.pages.analytics.get_analytics',
+            args: { business: business, days: daysSelect.value },
+            callback: function(r) {
+                loadingMsg.style.display = 'none';
+                content.style.display = 'block';
+                if (r.message) renderAnalytics(r.message);
+            }
+        });
+    }
+
+    function renderAnalytics(data) {
+        var eng = data.engagement;
+        var enq = data.enquiry_stats;
+        var summary = data.summary;
+
+        // Summary cards
+        document.getElementById('stat-events').textContent = eng.total_events || 0;
+        document.getElementById('stat-enquiries').textContent = enq.total || 0;
+        document.getElementById('stat-cards').textContent = summary.total_cards || 0;
+        document.getElementById('stat-products').textContent =
+            (summary.total_products || 0) + (summary.total_services || 0);
+
+        // Events by day chart (simple bar chart)
+        renderBarChart('chart-events-by-day', eng.events_by_day || []);
+
+        // Events by type list
+        renderEventsByType('events-by-type-list', eng.events_by_type || {});
+
+        // Top cards
+        renderTopCards('top-cards-list', data.top_cards || []);
+
+        // Enquiry pipeline
+        renderEnquiryPipeline('enquiry-pipeline', enq);
+
+        // Enquiry by source
+        renderEnquiryBySource('enquiry-by-source', enq.by_source || {});
+    }
+
+    function renderBarChart(containerId, data) {
+        var container = document.getElementById(containerId);
+        if (!data.length) {
+            container.innerHTML = '<p style="color:#888;text-align:center;padding:2rem;">No data for this period</p>';
+            return;
+        }
+        var max = Math.max.apply(null, data.map(function(d) { return d.count; }));
+        var html = '<div style="display:flex;align-items:flex-end;gap:3px;height:180px;padding-top:10px;">';
+        data.forEach(function(d) {
+            var h = max > 0 ? (d.count / max * 160) : 0;
+            html += '<div style="flex:1;display:flex;flex-direction:column;align-items:center;">';
+            html += '<div style="font-size:0.65rem;color:#666;margin-bottom:2px;">' + d.count + '</div>';
+            html += '<div style="width:100%;background:var(--primary);border-radius:3px 3px 0 0;height:' + h + 'px;min-height:2px;" title="' + d.date + ': ' + d.count + '"></div>';
+            html += '<div style="font-size:0.55rem;color:#888;margin-top:3px;writing-mode:vertical-rl;transform:rotate(180deg);max-height:50px;overflow:hidden;">' + d.date.slice(5) + '</div>';
+            html += '</div>';
+        });
+        html += '</div>';
+        container.innerHTML = html;
+    }
+
+    function renderEventsByType(containerId, data) {
+        var container = document.getElementById(containerId);
+        var keys = Object.keys(data);
+        if (!keys.length) {
+            container.innerHTML = '<p style="color:#888;">No events recorded</p>';
+            return;
+        }
+        var total = keys.reduce(function(s, k) { return s + data[k]; }, 0);
+        var html = '<table class="table table-bordered" style="font-size:0.8rem;">';
+        html += '<thead><tr><th>Event</th><th style="text-align:right">Count</th><th style="text-align:right">%</th></tr></thead><tbody>';
+        keys.sort(function(a, b) { return data[b] - data[a]; }).forEach(function(k) {
+            var pct = total > 0 ? (data[k] / total * 100).toFixed(1) : 0;
+            html += '<tr><td>' + k.replace(/_/g, ' ') + '</td><td style="text-align:right">' + data[k] + '</td><td style="text-align:right">' + pct + '%</td></tr>';
+        });
+        html += '</tbody></table>';
+        container.innerHTML = html;
+    }
+
+    function renderTopCards(containerId, data) {
+        var container = document.getElementById(containerId);
+        if (!data.length) {
+            container.innerHTML = '<p style="color:#888;">No card views yet</p>';
+            return;
+        }
+        var html = '<table class="table table-bordered" style="font-size:0.8rem;">';
+        html += '<thead><tr><th>Card</th><th style="text-align:right">Views</th></tr></thead><tbody>';
+        data.forEach(function(d) {
+            html += '<tr><td>' + (d.card || '—') + '</td><td style="text-align:right">' + d.views + '</td></tr>';
+        });
+        html += '</tbody></table>';
+        container.innerHTML = html;
+    }
+
+    function renderEnquiryPipeline(containerId, data) {
+        var container = document.getElementById(containerId);
+        var items = [
+            { label: 'New', value: data.new || 0, color: '#2490ef' },
+            { label: 'Synced to CRM', value: data.synced || 0, color: '#f5a623' },
+            { label: 'Converted', value: data.converted || 0, color: '#28a745' },
+        ];
+        var html = '<div style="display:flex;gap:1rem;">';
+        items.forEach(function(item) {
+            html += '<div style="flex:1;text-align:center;padding:0.8rem;border:1px solid #e2e8f0;border-radius:6px;">';
+            html += '<div style="font-size:1.4rem;font-weight:700;color:' + item.color + ';">' + item.value + '</div>';
+            html += '<div style="font-size:0.75rem;color:#666;">' + item.label + '</div>';
+            html += '</div>';
+        });
+        html += '</div>';
+        container.innerHTML = html;
+    }
+
+    function renderEnquiryBySource(containerId, data) {
+        var container = document.getElementById(containerId);
+        var keys = Object.keys(data);
+        if (!keys.length) {
+            container.innerHTML = '<p style="color:#888;">No enquiries yet</p>';
+            return;
+        }
+        var total = keys.reduce(function(s, k) { return s + data[k]; }, 0);
+        var html = '<div style="display:flex;gap:0.5rem;flex-wrap:wrap;">';
+        keys.forEach(function(k) {
+            var pct = total > 0 ? (data[k] / total * 100).toFixed(0) : 0;
+            html += '<div style="padding:0.5rem 1rem;border:1px solid #e2e8f0;border-radius:20px;font-size:0.8rem;">';
+            html += '<strong>' + k + '</strong>: ' + data[k] + ' (' + pct + '%)';
+            html += '</div>';
+        });
+        html += '</div>';
+        container.innerHTML = html;
+    }
+});
+</script>
+{% endraw %}
+{%- endblock -%}
