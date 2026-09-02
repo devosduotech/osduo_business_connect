@@ -5,45 +5,47 @@
 {{ theme_css }}
 </style>
 
-<div class="product-profile" style="max-width:800px;margin:0 auto;">
+<div class="bc-page" style="max-width:800px;margin:0 auto;">
     {# Back Link #}
-    <a href="/b/{{ business_slug }}" style="display:inline-flex;align-items:center;gap:0.3rem;color:var(--primary-color);text-decoration:none;margin-bottom:1.5rem;font-size:0.9rem;">← Back to {{ business_name }}</a>
+    <div style="padding:1rem 1.5rem 0;">
+        <a href="/b/{{ business_slug }}" class="bc-back-link">&larr; Back to {{ business_name }}</a>
+    </div>
 
     {# Product Header #}
-    <div class="business-header" style="border-radius:var(--border-radius);margin-bottom:2rem;">
+    <div class="bc-header" style="margin:0 1.5rem;border-radius:8px;">
         {% if doc.image %}
-        <img src="{{ doc.image }}" alt="{{ doc.product_name }}" style="width:100%;max-height:400px;object-fit:cover;border-radius:var(--border-radius);margin-bottom:1.5rem;">
+        <img src="{{ doc.image }}" alt="{{ doc.product_name }}" style="width:100%;max-height:400px;object-fit:cover;border-radius:8px;margin-bottom:1.5rem;">
         {% endif %}
-        
+
         <h1>{{ doc.product_name }}</h1>
-        
+
         {% if doc.category %}
         <span style="display:inline-block;padding:0.35rem 0.75rem;background:rgba(255,255,255,0.2);border-radius:20px;font-size:0.85rem;margin-bottom:0.5rem;">{{ doc.category }}</span>
         {% endif %}
-        
+
         {% if doc.price %}
         <div style="font-size:1.5rem;font-weight:700;margin:1rem 0;">
             {% if doc.currency %}{{ doc.currency }} {% endif %}{{ doc.price }}
             {% if doc.unit %}/ {{ doc.unit }}{% endif %}
         </div>
         {% endif %}
-        
+
         {# Quick Actions #}
         <div style="margin-top:1.5rem;display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
-            <a href="mailto:{{ business_email }}?subject=Enquiry: {{ doc.product_name }}" class="btn btn-secondary">✉️ Send Enquiry</a>
+            <a href="mailto:{{ business_email }}?subject=Enquiry: {{ doc.product_name }}" class="bc-btn bc-btn-secondary">&#9993; Send Enquiry</a>
             {% if business_phone %}
-            <a href="tel:{{ business_phone }}" class="btn btn-secondary">📞 Call</a>
+            <a href="tel:{{ business_phone }}" class="bc-btn bc-btn-secondary">&#9742; Call</a>
             {% endif %}
             {% if business_whatsapp %}
-            <a href="https://wa.me/{{ business_whatsapp }}?text=Hi, I'm interested in {{ doc.product_name }}" class="btn btn-accent">💬 WhatsApp</a>
+            <a href="https://wa.me/{{ business_whatsapp }}?text=Hi, I'm interested in {{ doc.product_name }}" class="bc-btn bc-btn-accent">&#128172; WhatsApp</a>
             {% endif %}
         </div>
     </div>
 
     {# Description #}
     {% if doc.short_description or doc.description %}
-    <div class="section">
-        <h2 class="section-title">About This Product</h2>
+    <div class="bc-section">
+        <h2 class="bc-section-title">About This Product</h2>
         <div style="line-height:1.8;color:#475569;">
             {% if doc.description %}
                 {{ doc.description }}
@@ -56,12 +58,12 @@
 
     {# Features #}
     {% if doc.features %}
-    <div class="section">
-        <h2 class="section-title">Features</h2>
+    <div class="bc-section">
+        <h2 class="bc-section-title">Features</h2>
         <ul style="list-style:none;padding:0;margin:0;">
             {% for feature in doc.features %}
             <li style="padding:0.5rem 0;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;gap:0.5rem;">
-                <span style="color:var(--primary-color);">✓</span>
+                <span style="color:{{ theme.primary_color }};">&#10003;</span>
                 {{ feature.feature }}
             </li>
             {% endfor %}
@@ -71,9 +73,9 @@
 
     {# Specifications #}
     {% if doc.specifications %}
-    <div class="section">
-        <h2 class="section-title">Specifications</h2>
-        <div class="card">
+    <div class="bc-section">
+        <h2 class="bc-section-title">Specifications</h2>
+        <div class="bc-card">
             {% for spec in doc.specifications %}
             <div style="display:flex;justify-content:space-between;padding:0.75rem 0;border-bottom:1px solid #e2e8f0;">
                 <span style="color:#64748b;">{{ spec.spec_label }}</span>
@@ -86,36 +88,41 @@
 
     {# Gallery #}
     {% if doc.gallery %}
-    <div class="section">
-        <h2 class="section-title">Gallery</h2>
+    <div class="bc-section">
+        <h2 class="bc-section-title">Gallery</h2>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;">
             {% for image in doc.gallery %}
-            <img src="{{ image.image }}" alt="" style="width:100%;height:150px;object-fit:cover;border-radius:var(--border-radius);">
+            <img src="{{ image.image }}" alt="" style="width:100%;height:150px;object-fit:cover;border-radius:8px;">
             {% endfor %}
         </div>
     </div>
     {% endif %}
 
     {# Footer #}
-    <div class="footer">
+    <div class="bc-footer">
         <p>Powered by OSDuo Business Connect</p>
     </div>
 </div>
 
-{# Sticky Action Bar (Mobile) #}
-<div class="action-bar" style="display:none;">
-    <a href="mailto:{{ business_email }}?subject=Enquiry: {{ doc.product_name }}" class="btn btn-primary">✉️ Enquiry</a>
+{# Sticky Action Bar #}
+<div class="bc-action-bar" style="display:none;">
+    <a href="mailto:{{ business_email }}?subject=Enquiry: {{ doc.product_name }}" class="bc-btn bc-btn-primary">&#9993; Enquiry</a>
     {% if business_phone %}
-    <a href="tel:{{ business_phone }}" class="btn btn-primary">📞 Call</a>
+    <a href="tel:{{ business_phone }}" class="bc-btn bc-btn-primary" style="background:#334155;">&#9742; Call</a>
     {% endif %}
     {% if business_whatsapp %}
-    <a href="https://wa.me/{{ business_whatsapp }}" class="btn btn-accent">💬 WhatsApp</a>
+    <a href="https://wa.me/{{ business_whatsapp }}" class="bc-btn bc-btn-accent">&#128172; WhatsApp</a>
     {% endif %}
 </div>
 
 <script>
-if (window.innerWidth <= 768) {
-    document.querySelector('.action-bar').style.display = 'flex';
-}
+(function() {{
+    function checkMobile() {{
+        var bar = document.querySelector('.bc-action-bar');
+        if (bar) bar.style.display = window.innerWidth <= 768 ? 'flex' : 'none';
+    }}
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+}})();
 </script>
 {%- endblock -%}

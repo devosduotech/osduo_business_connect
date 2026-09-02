@@ -88,7 +88,7 @@ def get_default_theme():
 def activate_theme(theme_name):
     """
     Activate a theme and deactivate others for the same business.
-    
+
     This delegates to the Theme controller which handles validation
     and deactivation of other themes.
 
@@ -99,17 +99,18 @@ def activate_theme(theme_name):
         bool: True if successful
     """
     theme = frappe.get_doc("Theme", theme_name)
-    
+
     # Set active flag - the controller will handle deactivation of others
     theme.active = 1
     theme.save(ignore_permissions=True)
-    
+
     return True
 
 
 def get_theme_css(theme_data):
     """
-    Generate CSS from theme data.
+    Generate CSS from theme data. All classes prefixed with 'bc-' to avoid
+    conflicts with Frappe/Bootstrap global styles.
 
     Args:
         theme_data: Theme data dictionary
@@ -119,89 +120,114 @@ def get_theme_css(theme_data):
     """
     template = theme_data.get('template', 'Modern')
     config = get_template_config(template)
-    
-    css = f"""
-:root {{
-    --primary-color: {theme_data.get('primary_color', '#000000')};
-    --secondary-color: {theme_data.get('secondary_color', '#FFFFFF')};
-    --accent-color: {theme_data.get('accent_color', '#007BFF')};
-    --border-radius: {get_border_radius(theme_data.get('card_style', 'Modern'))};
-    --font-family: {theme_data.get('font_family', 'inherit')};
-}}
+    primary = theme_data.get('primary_color', '#000000')
+    secondary = theme_data.get('secondary_color', '#FFFFFF')
+    accent = theme_data.get('accent_color', '#007BFF')
+    gradient_start = config.get('gradient_start', primary)
+    gradient_end = config.get('gradient_end', accent)
+    border_radius = get_border_radius(theme_data.get('card_style', 'Modern'))
+    font_family = theme_data.get('font_family', 'inherit')
+    card_elevation = config.get('card_elevation', 'shadow')
 
-body {{
-    font-family: var(--font-family);
-    background-color: #f8fafc;
+    shadow_css = '0 1px 3px rgba(0,0,0,0.1)' if card_elevation == 'shadow' else 'none'
+    border_css = '1px solid #e2e8f0' if card_elevation == 'border' else 'none'
+
+    css = f"""
+/* ===== OSDuo Business Connect Theme ===== */
+.bc-page {{
+    font-family: {font_family};
+    background: #f8fafc;
     color: #1e293b;
     margin: 0;
     padding: 0;
+    line-height: 1.6;
 }}
 
-/* Header Styles */
-.business-header {{
-    background: linear-gradient(135deg, {config.get('gradient_start', theme_data.get('primary_color', '#000000'))}, {config.get('gradient_end', theme_data.get('accent_color', '#007BFF'))});
+/* Header */
+.bc-header {{
+    background: linear-gradient(135deg, {gradient_start}, {gradient_end});
     color: white;
     padding: 3rem 1.5rem;
     text-align: center;
 }}
 
-.business-header h1 {{
+.bc-header h1 {{
     font-size: 2rem;
     margin: 0 0 0.5rem 0;
     font-weight: 700;
+    color: white;
 }}
 
-.business-header .tagline {{
+.bc-header .bc-tagline {{
     font-size: 1.1rem;
     opacity: 0.9;
     margin: 0;
 }}
 
-/* Card Styles */
-.card {{
+/* Cards */
+.bc-card {{
     background: white;
-    border-radius: var(--border-radius);
-    box-shadow: {'0 1px 3px rgba(0,0,0,0.1)' if config.get('card_elevation') == 'shadow' else 'none'};
-    border: {'1px solid #e2e8f0' if config.get('card_elevation') == 'border' else 'none'};
+    border-radius: {border_radius};
+    box-shadow: {shadow_css};
+    border: {border_css};
     padding: 1.5rem;
     margin-bottom: 1rem;
+    text-decoration: none;
+    color: inherit;
+    display: block;
 }}
 
-/* Button Styles */
-.btn {{
+/* Buttons */
+.bc-btn {{
     display: inline-block;
     padding: 0.75rem 1.5rem;
-    border-radius: var(--border-radius);
+    border-radius: {border_radius};
     text-decoration: none;
     font-weight: 500;
     transition: all 0.2s;
     border: none;
     cursor: pointer;
+    text-align: center;
+    font-size: 0.95rem;
 }}
 
-.btn-primary {{
-    background-color: var(--primary-color);
+.bc-btn-primary {{
+    background-color: {primary};
     color: white;
 }}
 
-.btn-primary:hover {{
+.bc-btn-primary:hover {{
     opacity: 0.9;
     transform: translateY(-1px);
+    color: white;
+    text-decoration: none;
 }}
 
-.btn-secondary {{
-    background-color: var(--secondary-color);
-    color: var(--primary-color);
-    border: 1px solid var(--primary-color);
+.bc-btn-secondary {{
+    background-color: {secondary};
+    color: {primary};
+    border: 1px solid {primary};
 }}
 
-.btn-accent {{
-    background-color: var(--accent-color);
+.bc-btn-secondary:hover {{
+    opacity: 0.9;
+    color: {primary};
+    text-decoration: none;
+}}
+
+.bc-btn-accent {{
+    background-color: {accent};
     color: white;
 }}
 
-/* Action Bar */
-.action-bar {{
+.bc-btn-accent:hover {{
+    opacity: 0.9;
+    color: white;
+    text-decoration: none;
+}}
+
+/* Sticky Action Bar */
+.bc-action-bar {{
     position: fixed;
     bottom: 0;
     left: 0;
@@ -211,77 +237,90 @@ body {{
     display: flex;
     justify-content: space-around;
     box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-    z-index: 100;
+    z-index: 1000;
+    gap: 0.5rem;
 }}
 
-.action-bar .btn {{
+.bc-action-bar .bc-btn {{
     flex: 1;
-    margin: 0 0.25rem;
-    text-align: center;
+    margin: 0;
+    font-size: 0.85rem;
+    padding: 0.6rem 0.5rem;
 }}
 
-/* Section Styles */
-.section {{
+/* Sections */
+.bc-section {{
     padding: 2rem 1.5rem;
     max-width: 800px;
     margin: 0 auto;
 }}
 
-.section-title {{
+.bc-section-title {{
     font-size: 1.5rem;
     font-weight: 600;
     margin: 0 0 1rem 0;
-    color: var(--primary-color);
+    color: {primary};
 }}
 
 /* Product Grid */
-.product-grid {{
+.bc-product-grid {{
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 1rem;
 }}
 
-.product-card {{
+.bc-product-card {{
     text-align: center;
 }}
 
-.product-card img {{
+.bc-product-card img {{
     width: 100%;
     height: 150px;
     object-fit: cover;
-    border-radius: var(--border-radius);
+    border-radius: {border_radius};
 }}
 
 /* Team Grid */
-.team-grid {{
+.bc-team-grid {{
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 1.5rem;
     text-align: center;
 }}
 
-.team-member img {{
+.bc-team-grid img {{
     width: 100px;
     height: 100px;
     border-radius: 50%;
     object-fit: cover;
 }}
 
-/* Contact Info */
-.contact-item {{
+/* Contact */
+.bc-contact-item {{
     display: flex;
     align-items: center;
     gap: 0.75rem;
     margin-bottom: 1rem;
 }}
 
-.contact-item .icon {{
-    width: 20px;
-    color: var(--primary-color);
+/* Back Link */
+.bc-back-link {{
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: {primary};
+    text-decoration: none;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+}}
+
+.bc-back-link:hover {{
+    text-decoration: underline;
+    color: {primary};
 }}
 
 /* Footer */
-.footer {{
+.bc-footer {{
     text-align: center;
     padding: 2rem;
     color: #64748b;
@@ -290,24 +329,28 @@ body {{
 
 /* Responsive */
 @media (max-width: 768px) {{
-    .business-header {{
+    .bc-header {{
         padding: 2rem 1rem;
     }}
-    
-    .business-header h1 {{
+
+    .bc-header h1 {{
         font-size: 1.5rem;
     }}
-    
-    .section {{
+
+    .bc-section {{
         padding: 1.5rem 1rem;
     }}
-    
-    .product-grid {{
+
+    .bc-product-grid {{
         grid-template-columns: repeat(2, 1fr);
     }}
-    
-    .team-grid {{
+
+    .bc-team-grid {{
         grid-template-columns: repeat(2, 1fr);
+    }}
+
+    .bc-action-bar {{
+        display: flex !important;
     }}
 }}
 """

@@ -5,86 +5,81 @@
 {{ theme_css }}
 </style>
 
-<div class="business-profile">
+<div class="bc-page">
     {# Header Section #}
-    <div class="business-header">
+    <div class="bc-header">
         {% if doc.cover_image %}
         <img src="{{ doc.cover_image }}" alt="" style="width:100%;height:300px;object-fit:cover;border-radius:8px;margin-bottom:1.5rem;">
         {% endif %}
-        
+
         {% if doc.logo %}
         <img src="{{ doc.logo }}" alt="{{ doc.business_name }}" style="width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid white;margin-bottom:1rem;">
         {% endif %}
-        
+
         <h1>{{ doc.business_name }}</h1>
         {% if doc.industry %}
-        <p class="tagline">{{ doc.industry }}</p>
+        <p class="bc-tagline">{{ doc.industry }}</p>
         {% endif %}
-        
+
         {# Quick Actions #}
         <div style="margin-top:1.5rem;display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
             {% if doc.phone %}
-            <a href="tel:{{ doc.phone }}" class="btn btn-secondary">📞 Call</a>
+            <a href="tel:{{ doc.phone }}" class="bc-btn bc-btn-secondary">&#9742; Call</a>
             {% endif %}
             {% if doc.whatsapp %}
-            <a href="https://wa.me/{{ doc.whatsapp }}" class="btn btn-secondary">💬 WhatsApp</a>
+            <a href="https://wa.me/{{ doc.whatsapp }}" class="bc-btn bc-btn-secondary">&#128172; WhatsApp</a>
             {% endif %}
-            <a href="#contact" class="btn btn-accent">✉️ Enquiry</a>
+            <a href="#bc-contact" class="bc-btn bc-btn-accent">&#9993; Enquiry</a>
         </div>
     </div>
 
     {# About Section #}
     {% if doc.description %}
-    <div class="section">
-        <h2 class="section-title">About Us</h2>
+    <div class="bc-section">
+        <h2 class="bc-section-title">About Us</h2>
         <p style="line-height:1.8;color:#475569;">{{ doc.description }}</p>
     </div>
     {% endif %}
 
     {# Products Section #}
     {% if products %}
-    <div class="section">
-        <h2 class="section-title">Products</h2>
-        <div class="product-grid">
+    <div class="bc-section">
+        <h2 class="bc-section-title">Products</h2>
+        <div class="bc-product-grid">
             {% for product in products %}
-            <a href="/b/{{ doc.slug }}/p/{{ product.slug }}" class="card product-card" style="text-decoration:none;color:inherit;">
+            <a href="/b/{{ doc.slug }}/p/{{ product.slug }}" class="bc-card bc-product-card">
                 {% if product.image %}
                 <img src="{{ product.image }}" alt="{{ product.product_name }}">
                 {% else %}
-                <div style="height:150px;background:#f1f5f9;border-radius:var(--border-radius);display:flex;align-items:center;justify-content:center;color:#94a3b8;">📦</div>
+                <div style="height:150px;background:#f1f5f9;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#94a3b8;">&#128230;</div>
                 {% endif %}
                 <h3 style="margin:0.75rem 0 0.25rem;font-size:1rem;">{{ product.product_name }}</h3>
                 <p style="margin:0;color:#64748b;font-size:0.875rem;">{{ product.short_description[:60] }}{% if product.short_description|length > 60 %}...{% endif %}</p>
                 {% if product.price %}
-                <div style="margin-top:0.5rem;color:var(--primary-color);font-weight:600;">{% if product.currency %}{{ product.currency }} {% endif %}{{ product.price }}</div>
+                <div style="margin-top:0.5rem;color:{{ theme.primary_color }};font-weight:600;">{% if product.currency %}{{ product.currency }} {% endif %}{{ product.price }}</div>
                 {% endif %}
             </a>
             {% endfor %}
         </div>
-        {% if products|length > 6 %}
-        <div style="text-align:center;margin-top:1.5rem;">
-            <a href="/b/{{ doc.slug }}/products" class="btn btn-secondary">View All Products</a>
-        </div>
-        {% endif %}
     </div>
     {% endif %}
 
     {# Services Section #}
     {% if services %}
-    <div class="section">
-        <h2 class="section-title">Services</h2>
-        <div class="product-grid">
+    <div class="bc-section">
+        <h2 class="bc-section-title">Services</h2>
+        <div class="bc-product-grid">
             {% for service in services %}
-            <a href="/b/{{ doc.slug }}/s/{{ service.slug }}" class="card product-card" style="text-decoration:none;color:inherit;">
+            <a href="/b/{{ doc.slug }}/s/{{ service.slug }}" class="bc-card bc-product-card">
                 {% if service.image %}
                 <img src="{{ service.image }}" alt="{{ service.service_name }}">
                 {% else %}
-                <div style="height:150px;background:#f1f5f9;border-radius:var(--border-radius);display:flex;align-items:center;justify-content:center;color:#94a3b8;">🔧</div>
+                <div style="height:150px;background:#f1f5f9;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#94a3b8;">&#128295;</div>
                 {% endif %}
                 <h3 style="margin:0.75rem 0 0.25rem;font-size:1rem;">{{ service.service_name }}</h3>
                 <p style="margin:0;color:#64748b;font-size:0.875rem;">{{ service.short_description[:60] }}{% if service.short_description|length > 60 %}...{% endif %}</p>
                 {% if service.price %}
-                <div style="margin-top:0.5rem;color:var(--primary-color);font-weight:600;">{% if service.currency %}{{ service.currency }} {% endif %}{{ service.price }}</div>
+                <div style="margin-top:0.5rem;color:{{ theme.primary_color }};font-weight:600;">{% if service.currency %}{{ service.currency }} {% endif %}{{ service.price }}</div>
                 {% endif %}
             </a>
             {% endfor %}
@@ -94,15 +89,15 @@
 
     {# Team Section #}
     {% if cards %}
-    <div class="section">
-        <h2 class="section-title">Our Team</h2>
-        <div class="team-grid">
+    <div class="bc-section">
+        <h2 class="bc-section-title">Our Team</h2>
+        <div class="bc-team-grid">
             {% for card in cards %}
             <a href="/c/{{ card.slug }}" style="text-decoration:none;color:inherit;">
                 {% if card.profile_image %}
                 <img src="{{ card.profile_image }}" alt="{{ card.display_name }}">
                 {% else %}
-                <div style="width:100px;height:100px;border-radius:50%;background:var(--primary-color);color:white;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto;">{{ card.display_name[0] }}</div>
+                <div style="width:100px;height:100px;border-radius:50%;background:{{ theme.primary_color }};color:white;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto;">{{ card.display_name[0] }}</div>
                 {% endif %}
                 <h3 style="margin:0.75rem 0 0.25rem;font-size:1rem;">{{ card.display_name }}</h3>
                 {% if card.designation %}
@@ -115,30 +110,30 @@
     {% endif %}
 
     {# Contact Section #}
-    <div class="section" id="contact">
-        <h2 class="section-title">Contact</h2>
-        <div class="card">
+    <div class="bc-section" id="bc-contact">
+        <h2 class="bc-section-title">Contact</h2>
+        <div class="bc-card">
             {% if doc.phone %}
-            <div class="contact-item">
-                <span class="icon">📞</span>
+            <div class="bc-contact-item">
+                <span>&#9742;</span>
                 <a href="tel:{{ doc.phone }}" style="color:inherit;text-decoration:none;">{{ doc.phone }}</a>
             </div>
             {% endif %}
             {% if doc.email %}
-            <div class="contact-item">
-                <span class="icon">✉️</span>
+            <div class="bc-contact-item">
+                <span>&#9993;</span>
                 <a href="mailto:{{ doc.email }}" style="color:inherit;text-decoration:none;">{{ doc.email }}</a>
             </div>
             {% endif %}
             {% if doc.website %}
-            <div class="contact-item">
-                <span class="icon">🌐</span>
+            <div class="bc-contact-item">
+                <span>&#127760;</span>
                 <a href="{{ doc.website }}" target="_blank" style="color:inherit;text-decoration:none;">{{ doc.website }}</a>
             </div>
             {% endif %}
             {% if doc.address %}
-            <div class="contact-item">
-                <span class="icon">📍</span>
+            <div class="bc-contact-item">
+                <span>&#128205;</span>
                 <span>{{ doc.address }}{% if doc.city %}, {{ doc.city }}{% endif %}{% if doc.state %}, {{ doc.state }}{% endif %}</span>
             </div>
             {% endif %}
@@ -147,37 +142,41 @@
 
     {# Social Links #}
     {% if social_links %}
-    <div class="section">
-        <h2 class="section-title">Connect</h2>
+    <div class="bc-section">
+        <h2 class="bc-section-title">Connect</h2>
         <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
             {% for link in social_links %}
-            <a href="{{ link.url }}" target="_blank" class="btn btn-secondary" style="font-size:0.875rem;">{{ link.label or link.link_type }}</a>
+            <a href="{{ link.url }}" target="_blank" class="bc-btn bc-btn-secondary" style="font-size:0.875rem;">{{ link.label or link.link_type }}</a>
             {% endfor %}
         </div>
     </div>
     {% endif %}
 
     {# Footer #}
-    <div class="footer">
+    <div class="bc-footer">
         <p>Powered by OSDuo Business Connect</p>
     </div>
 </div>
 
-{# Sticky Action Bar (Mobile) #}
-<div class="action-bar" style="display:none;">
+{# Sticky Action Bar (always visible on mobile) #}
+<div class="bc-action-bar" style="display:none;">
     {% if doc.phone %}
-    <a href="tel:{{ doc.phone }}" class="btn btn-primary">📞 Call</a>
+    <a href="tel:{{ doc.phone }}" class="bc-btn bc-btn-primary">&#9742; Call</a>
     {% endif %}
     {% if doc.whatsapp %}
-    <a href="https://wa.me/{{ doc.whatsapp }}" class="btn btn-primary">💬 WhatsApp</a>
+    <a href="https://wa.me/{{ doc.whatsapp }}" class="bc-btn bc-btn-accent">&#128172; WhatsApp</a>
     {% endif %}
-    <a href="#contact" class="btn btn-accent">✉️ Enquiry</a>
+    <a href="#bc-contact" class="bc-btn bc-btn-primary" style="background:#334155;">&#9993; Enquiry</a>
 </div>
 
 <script>
-// Show action bar on mobile
-if (window.innerWidth <= 768) {
-    document.querySelector('.action-bar').style.display = 'flex';
-}
+(function() {{
+    function checkMobile() {{
+        var bar = document.querySelector('.bc-action-bar');
+        if (bar) bar.style.display = window.innerWidth <= 768 ? 'flex' : 'none';
+    }}
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+}})();
 </script>
 {%- endblock -%}
