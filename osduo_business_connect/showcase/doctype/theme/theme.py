@@ -41,9 +41,10 @@ class Theme(Document):
             self.font_family = self.font_family.strip()
 
     def validate_business(self):
-        """Validate that business exists."""
+        """Validate that business exists. Skip for built-in themes."""
+        # Built-in themes don't require a business
         if not self.business:
-            frappe.throw("Business is required")
+            return
 
         # Check if business exists
         business = frappe.get_doc("Business", self.business)
@@ -98,7 +99,7 @@ class Theme(Document):
 
     def validate_active_theme(self):
         """Validate that only one theme is active per business."""
-        if self.active:
+        if self.active and self.business:
             # Deactivate other active themes for this business
             # This is the authoritative activation logic
             frappe.db.sql(
@@ -112,7 +113,7 @@ class Theme(Document):
 
     def handle_activation(self):
         """Handle theme activation."""
-        if self.active:
+        if self.active and self.business:
             # Update Business default_theme
             frappe.db.set_value("Business", self.business, "default_theme", self.name)
             frappe.db.commit()
