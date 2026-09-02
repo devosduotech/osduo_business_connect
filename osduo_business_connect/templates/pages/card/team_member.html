@@ -4,107 +4,119 @@
 <div class="bc-page bc-template-{{ theme.template|lower }}" style="{{ theme_vars }}">
 
     {# Back link #}
-    <div style="padding:0.75rem 1.5rem 0;">
+    <div class="bc-reading" style="padding-top:0.75rem;">
         <a href="/b/{{ business_slug }}" class="bc-back-link">&larr; {{ business_name }}</a>
     </div>
 
     {# ===== PERSON HERO ===== #}
-    <div class="bc-header" style="padding:2rem 1.5rem;">
-        {% if doc.profile_image %}
-        <img src="{{ doc.profile_image }}" alt="{{ doc.display_name }}" style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid var(--bc-accent);margin:0 auto 0.75rem;display:block;">
-        {% else %}
-        <div style="width:100px;height:100px;border-radius:50%;background:var(--bc-secondary);color:var(--bc-primary);display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 0.75rem;font-weight:700;">{{ doc.display_name[0] if doc.display_name else '?' }}</div>
-        {% endif %}
+    <div class="bc-header">
+        <div class="bc-reading">
+            {% if doc.profile_image %}
+            <img src="{{ doc.profile_image }}" alt="{{ doc.display_name }}" style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid var(--bc-accent);margin:0 auto 0.75rem;display:block;">
+            {% else %}
+            <div style="width:100px;height:100px;border-radius:50%;background:var(--bc-secondary);color:var(--bc-primary);display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 0.75rem;font-weight:700;">{{ doc.display_name[0] if doc.display_name else '?' }}</div>
+            {% endif %}
 
-        <h1 style="margin:0.4rem 0 0.2rem;font-size:1.35rem;">{{ doc.display_name }}</h1>
-        {% if doc.designation %}
-        <p class="bc-tagline" style="margin:0 0 0.3rem;">{{ doc.designation }}</p>
-        {% endif %}
-        <p style="margin:0;opacity:0.8;font-size:0.9rem;">{{ business_name }}</p>
+            <h1 style="margin:0.4rem 0 0.2rem;font-size:1.35rem;">{{ doc.display_name }}</h1>
+            {% if doc.designation %}
+            <p class="bc-tagline" style="margin:0 0 0.3rem;">{{ doc.designation }}</p>
+            {% endif %}
+            <p style="margin:0;opacity:0.8;font-size:0.9rem;">{{ business_name }}</p>
 
-        <div style="margin-top:1.25rem;display:flex;gap:0.6rem;justify-content:center;flex-wrap:wrap;">
-            {% if doc.phone %}
-            <a href="tel:{{ doc.phone }}" class="bc-btn bc-btn-secondary">&#9742; Call</a>
-            {% endif %}
-            {% if doc.whatsapp %}
-            <a href="https://wa.me/{{ doc.whatsapp|replace('+','')|replace(' ','') }}" class="bc-btn bc-btn-secondary">&#128172; WhatsApp</a>
-            {% endif %}
-            {% if doc.email %}
-            <a href="mailto:{{ doc.email }}" class="bc-btn bc-btn-accent">&#9993; Email</a>
-            {% endif %}
+            <div style="margin-top:1.25rem;display:flex;gap:0.6rem;justify-content:center;flex-wrap:wrap;">
+                {% if doc.phone %}
+                <a href="tel:{{ doc.phone }}" class="bc-btn bc-btn-secondary">&#9742; Call</a>
+                {% endif %}
+                {% if doc.whatsapp %}
+                <a href="https://wa.me/{{ doc.whatsapp|replace('+','')|replace(' ','') }}" class="bc-btn bc-btn-secondary">&#128172; WhatsApp</a>
+                {% endif %}
+                {% if doc.email %}
+                <a href="mailto:{{ doc.email }}" class="bc-btn bc-btn-accent">&#9993; Email</a>
+                {% endif %}
+            </div>
         </div>
     </div>
 
     {# ===== BIO ===== #}
     {% if doc.bio %}
     <div class="bc-section">
-        <h2 class="bc-section-title">About</h2>
-        <p style="line-height:1.8;color:#475569;">{{ doc.bio }}</p>
+        <div class="bc-reading">
+            <h2 class="bc-section-title">About</h2>
+            <p style="line-height:1.8;color:#475569;">{{ doc.bio }}</p>
+        </div>
     </div>
     {% endif %}
 
     {# ===== CONTACT INFO ===== #}
     <div class="bc-section">
-        <h2 class="bc-section-title">Contact</h2>
-        <div class="bc-card">
-            {% if doc.phone %}
-            <div class="bc-contact-item">
-                <span>&#9742;</span>
-                <a href="tel:{{ doc.phone }}" style="color:inherit;text-decoration:none;">{{ doc.phone }}</a>
+        <div class="bc-reading">
+            <h2 class="bc-section-title">Contact</h2>
+            <div class="bc-card">
+                {% if doc.phone %}
+                <div class="bc-contact-item">
+                    <span>&#9742;</span>
+                    <a href="tel:{{ doc.phone }}" style="color:inherit;text-decoration:none;">{{ doc.phone }}</a>
+                </div>
+                {% endif %}
+                {% if doc.email %}
+                <div class="bc-contact-item">
+                    <span>&#9993;</span>
+                    <a href="mailto:{{ doc.email }}" style="color:inherit;text-decoration:none;">{{ doc.email }}</a>
+                </div>
+                {% endif %}
+                {% if doc.website %}
+                <div class="bc-contact-item">
+                    <span>&#127760;</span>
+                    <a href="{{ doc.website }}" target="_blank" style="color:inherit;text-decoration:none;">{{ doc.website }}</a>
+                </div>
+                {% endif %}
             </div>
-            {% endif %}
-            {% if doc.email %}
-            <div class="bc-contact-item">
-                <span>&#9993;</span>
-                <a href="mailto:{{ doc.email }}" style="color:inherit;text-decoration:none;">{{ doc.email }}</a>
-            </div>
-            {% endif %}
-            {% if doc.website %}
-            <div class="bc-contact-item">
-                <span>&#127760;</span>
-                <a href="{{ doc.website }}" target="_blank" style="color:inherit;text-decoration:none;">{{ doc.website }}</a>
-            </div>
-            {% endif %}
         </div>
     </div>
 
     {# ===== SOCIAL LINKS ===== #}
     {% if links %}
     <div class="bc-section">
-        <h2 class="bc-section-title">Connect</h2>
-        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
-            {% for link in links %}
-            <a href="{{ link.url }}" target="_blank" class="bc-btn bc-btn-secondary" style="font-size:0.8rem;">{{ link.label or link.link_type }}</a>
-            {% endfor %}
+        <div class="bc-reading">
+            <h2 class="bc-section-title">Connect</h2>
+            <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+                {% for link in links %}
+                <a href="{{ link.url }}" target="_blank" class="bc-btn bc-btn-secondary" style="font-size:0.8rem;">{{ link.label or link.link_type }}</a>
+                {% endfor %}
+            </div>
         </div>
     </div>
     {% endif %}
 
     {# ===== QR CODE ===== #}
     {% if doc.qr_enabled and doc.qr_image %}
-    <div class="bc-section" style="text-align:center;">
-        <img src="{{ doc.qr_image }}" alt="QR Code" style="width:120px;height:120px;">
-        <p style="color:#94a3b8;font-size:0.8rem;margin-top:0.4rem;">Scan to view card</p>
+    <div class="bc-section">
+        <div class="bc-reading" style="text-align:center;">
+            <img src="{{ doc.qr_image }}" alt="QR Code" style="width:120px;height:120px;">
+            <p style="color:#94a3b8;font-size:0.8rem;margin-top:0.4rem;">Scan to view card</p>
+        </div>
     </div>
     {% endif %}
 
     {# ===== ENQUIRY FORM ===== #}
     <div class="bc-section">
-        <h2 class="bc-section-title">Send a Message</h2>
-        <form id="card-enquiry-form" class="bc-card" style="padding:1.25rem;">
-            <input type="hidden" name="business" value="{{ doc.business }}">
-            <input type="hidden" name="card" value="{{ doc.name }}">
-            <div style="margin-bottom:0.6rem;">
-                <input type="text" name="visitor_name" placeholder="Your Name" required style="width:100%;padding:0.65rem;border:1px solid #ddd;border-radius:var(--bc-card-radius);box-sizing:border-box;font-size:0.9rem;">
-            </div>
-            <div style="margin-bottom:0.6rem;">
-                <input type="email" name="visitor_email" placeholder="Email Address" required style="width:100%;padding:0.65rem;border:1px solid #ddd;border-radius:var(--bc-card-radius);box-sizing:border-box;font-size:0.9rem;">
-            </div>
-            <div style="margin-bottom:0.6rem;">
-                <textarea name="message" placeholder="Your Message" rows="3" required style="width:100%;padding:0.65rem;border:1px solid #ddd;border-radius:var(--bc-card-radius);box-sizing:border-box;resize:vertical;font-size:0.9rem;"></textarea>
-            </div>
-            <button type="submit" class="bc-btn bc-btn-primary" style="width:100%;padding:0.75rem;">Send Message</button>
-        </form>
+        <div class="bc-reading">
+            <h2 class="bc-section-title">Send a Message</h2>
+            <form id="card-enquiry-form" class="bc-card bc-enquiry-form" style="padding:1.25rem;">
+                <input type="hidden" name="business" value="{{ doc.business }}">
+                <input type="hidden" name="card" value="{{ doc.name }}">
+                <div style="margin-bottom:0.6rem;">
+                    <input type="text" name="visitor_name" placeholder="Your Name" required>
+                </div>
+                <div style="margin-bottom:0.6rem;">
+                    <input type="email" name="visitor_email" placeholder="Email Address" required>
+                </div>
+                <div style="margin-bottom:0.6rem;">
+                    <textarea name="message" placeholder="Your Message" rows="3" required></textarea>
+                </div>
+                <button type="submit" class="bc-btn bc-btn-primary" style="width:100%;padding:0.75rem;">Send Message</button>
+            </form>
+        </div>
     </div>
 
     <div class="bc-footer">

@@ -1,7 +1,6 @@
 /* ===== OSDuo Business Connect — Static Styles ===== */
-/* Theme colors are applied via CSS custom properties on .bc-page */
 
-/* Hide Frappe website navbar on BC pages */
+/* Hide Frappe website navbar */
 .page-container .navbar,
 .page-container nav,
 .page-container .web-header,
@@ -15,33 +14,61 @@
     display: none !important;
 }
 
-/* Reset Frappe page container */
-.page-container {
-    max-width: 100% !important;
-    padding: 0 !important;
-    margin: 0 !important;
-}
-
-.page-container .page_content {
-    padding: 0 !important;
-    margin: 0 !important;
-    max-width: 100% !important;
-}
-
-.page-container .hero-and-content {
-    margin: 0 !important;
-    max-width: 100% !important;
-}
-
+.page-container { max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
+.page-container .page_content { padding: 0 !important; margin: 0 !important; max-width: 100% !important; }
+.page-container .hero-and-content { margin: 0 !important; max-width: 100% !important; }
 .page-container .breadcrumb-area,
 .page-container .page-breadcrumbs,
-.page-container .breadcrumb {
-    display: none !important;
+.page-container .breadcrumb { display: none !important; }
+
+/* ======================== */
+/* WIDTH TOKENS             */
+/* ======================== */
+:root {
+    --bc-max-width: 1200px;
+    --bc-content-width: 1100px;
+    --bc-reading-width: 760px;
+    --bc-detail-width: 1000px;
+    --bc-card-width: 480px;
+    --bc-page-padding: 16px;
 }
 
-/* ===================== */
-/* BASE PAGE             */
-/* ===================== */
+/* ======================== */
+/* CONTAINER CLASSES        */
+/* ======================== */
+.bc-container {
+    width: calc(100% - 32px);
+    max-width: var(--bc-max-width);
+    margin-inline: auto;
+}
+
+.bc-content {
+    width: calc(100% - 32px);
+    max-width: var(--bc-content-width);
+    margin-inline: auto;
+}
+
+.bc-reading {
+    width: calc(100% - 32px);
+    max-width: var(--bc-reading-width);
+    margin-inline: auto;
+}
+
+.bc-detail {
+    width: calc(100% - 32px);
+    max-width: var(--bc-detail-width);
+    margin-inline: auto;
+}
+
+.bc-card-page {
+    width: calc(100% - 32px);
+    max-width: var(--bc-card-width);
+    margin-inline: auto;
+}
+
+/* ======================== */
+/* PAGE                     */
+/* ======================== */
 .bc-page {
     --bc-primary: #2563EB;
     --bc-secondary: #FFFFFF;
@@ -52,7 +79,7 @@
     --bc-font-family: inherit;
     --bc-header-bg: linear-gradient(135deg, #2563EB, #60A5FA);
     --bc-header-text: white;
-    --bc-section-spacing: 2rem 1.5rem;
+    --bc-section-spacing: 2rem 0;
     --bc-card-shadow: 0 1px 3px rgba(0,0,0,0.1);
     --bc-card-border: none;
     --bc-btn-radius: 8px;
@@ -66,13 +93,13 @@
     -webkit-font-smoothing: antialiased;
 }
 
-/* ===================== */
-/* HEADER / HERO         */
-/* ===================== */
+/* ======================== */
+/* HEADER / HERO            */
+/* ======================== */
 .bc-header {
     background: var(--bc-header-bg);
     color: var(--bc-header-text);
-    padding: 2.5rem 1.5rem;
+    padding: 2.5rem 0;
     text-align: center;
 }
 
@@ -90,7 +117,7 @@
     color: var(--bc-header-text);
 }
 
-/* Cover image — full image visible, no cropping */
+/* Cover image — full image, no crop */
 .bc-cover-img {
     width: 100%;
     max-height: 400px;
@@ -98,7 +125,16 @@
     border-radius: var(--bc-card-radius);
     margin-bottom: 1.5rem;
     display: block;
-    background: #f8fafc;
+    background: rgba(255,255,255,0.1);
+}
+
+/* Business cover — taller for landing */
+.bc-business-cover {
+    width: 100%;
+    height: clamp(180px, 25vw, 320px);
+    object-fit: cover;
+    border-radius: var(--bc-card-radius);
+    margin-bottom: 1.5rem;
 }
 
 /* Logo */
@@ -111,9 +147,9 @@
     margin-bottom: 1rem;
 }
 
-/* ===================== */
-/* TEMPLATE: MODERN      */
-/* ===================== */
+/* ======================== */
+/* TEMPLATE: MODERN         */
+/* ======================== */
 .bc-template-modern .bc-header {
     background: var(--bc-header-bg);
     border-radius: 0 0 1.5rem 1.5rem;
@@ -140,13 +176,13 @@
     border-radius: 2px;
 }
 
-/* ===================== */
-/* TEMPLATE: PROFESSIONAL */
-/* ===================== */
+/* ======================== */
+/* TEMPLATE: PROFESSIONAL   */
+/* ======================== */
 .bc-template-professional .bc-header {
     background: var(--bc-primary);
     border-radius: 0;
-    padding: 2rem 1.5rem;
+    padding: 2rem 0;
 }
 
 .bc-template-professional .bc-card {
@@ -179,22 +215,17 @@
     border-bottom-color: white;
 }
 
-/* ===================== */
-/* TEMPLATE: MINIMAL     */
-/* ===================== */
+/* ======================== */
+/* TEMPLATE: MINIMAL        */
+/* ======================== */
 .bc-template-minimal .bc-header {
     background: transparent;
     color: var(--bc-text);
-    padding: 2rem 1.5rem;
+    padding: 2rem 0;
 }
 
-.bc-template-minimal .bc-header h1 {
-    color: var(--bc-text);
-}
-
-.bc-template-minimal .bc-header .bc-tagline {
-    color: #64748b;
-}
+.bc-template-minimal .bc-header h1 { color: var(--bc-text); }
+.bc-template-minimal .bc-header .bc-tagline { color: #64748b; }
 
 .bc-template-minimal .bc-card {
     border-radius: 0;
@@ -212,13 +243,11 @@
     letter-spacing: 0.05em;
 }
 
-.bc-template-minimal .bc-btn {
-    border-radius: 0;
-}
+.bc-template-minimal .bc-btn { border-radius: 0; }
 
-/* ===================== */
-/* TEMPLATE: CLASSIC     */
-/* ===================== */
+/* ======================== */
+/* TEMPLATE: CLASSIC        */
+/* ======================== */
 .bc-template-classic .bc-header {
     background: var(--bc-header-bg);
     border-radius: 0;
@@ -237,9 +266,9 @@
     padding-left: 0.75rem;
 }
 
-/* ===================== */
-/* CARDS                 */
-/* ===================== */
+/* ======================== */
+/* CARDS                    */
+/* ======================== */
 .bc-card {
     background: white;
     border-radius: var(--bc-card-radius);
@@ -252,9 +281,9 @@
     display: block;
 }
 
-/* ===================== */
-/* BUTTONS               */
-/* ===================== */
+/* ======================== */
+/* BUTTONS                  */
+/* ======================== */
 .bc-btn {
     display: inline-block;
     padding: 0.7rem 1.4rem;
@@ -269,43 +298,18 @@
     line-height: 1.4;
 }
 
-.bc-btn-primary {
-    background-color: var(--bc-primary);
-    color: white;
-}
+.bc-btn-primary { background-color: var(--bc-primary); color: white; }
+.bc-btn-primary:hover { opacity: 0.9; color: white; text-decoration: none; }
 
-.bc-btn-primary:hover {
-    opacity: 0.9;
-    color: white;
-    text-decoration: none;
-}
+.bc-btn-secondary { background-color: var(--bc-secondary); color: var(--bc-primary); border: 1px solid var(--bc-primary); }
+.bc-btn-secondary:hover { opacity: 0.9; color: var(--bc-primary); text-decoration: none; }
 
-.bc-btn-secondary {
-    background-color: var(--bc-secondary);
-    color: var(--bc-primary);
-    border: 1px solid var(--bc-primary);
-}
+.bc-btn-accent { background-color: var(--bc-accent); color: white; }
+.bc-btn-accent:hover { opacity: 0.9; color: white; text-decoration: none; }
 
-.bc-btn-secondary:hover {
-    opacity: 0.9;
-    color: var(--bc-primary);
-    text-decoration: none;
-}
-
-.bc-btn-accent {
-    background-color: var(--bc-accent);
-    color: white;
-}
-
-.bc-btn-accent:hover {
-    opacity: 0.9;
-    color: white;
-    text-decoration: none;
-}
-
-/* ===================== */
-/* STICKY ACTION BAR     */
-/* ===================== */
+/* ======================== */
+/* STICKY ACTION BAR        */
+/* ======================== */
 .bc-action-bar {
     position: fixed;
     bottom: 0;
@@ -327,13 +331,11 @@
     padding: 0.55rem 0.4rem;
 }
 
-/* ===================== */
-/* SECTIONS              */
-/* ===================== */
+/* ======================== */
+/* SECTIONS                 */
+/* ======================== */
 .bc-section {
     padding: var(--bc-section-spacing);
-    max-width: 800px;
-    margin: 0 auto;
 }
 
 .bc-section-title {
@@ -343,18 +345,16 @@
     color: var(--bc-primary);
 }
 
-/* ===================== */
-/* PRODUCT GRID          */
-/* ===================== */
+/* ======================== */
+/* PRODUCT GRID             */
+/* ======================== */
 .bc-product-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
 }
 
-.bc-product-card {
-    text-align: center;
-}
+.bc-product-card { text-align: center; }
 
 .bc-product-card img {
     width: 100%;
@@ -364,13 +364,13 @@
     background: #f8fafc;
 }
 
-/* ===================== */
-/* TEAM GRID             */
-/* ===================== */
+/* ======================== */
+/* TEAM GRID                */
+/* ======================== */
 .bc-team-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-    gap: 1.25rem;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
     text-align: center;
 }
 
@@ -381,9 +381,9 @@
     object-fit: cover;
 }
 
-/* ===================== */
-/* CONTACT               */
-/* ===================== */
+/* ======================== */
+/* CONTACT                  */
+/* ======================== */
 .bc-contact-item {
     display: flex;
     align-items: center;
@@ -391,9 +391,9 @@
     margin-bottom: 0.875rem;
 }
 
-/* ===================== */
-/* BACK LINK             */
-/* ===================== */
+/* ======================== */
+/* BACK LINK                */
+/* ======================== */
 .bc-back-link {
     display: inline-flex;
     align-items: center;
@@ -404,14 +404,11 @@
     font-size: 0.875rem;
 }
 
-.bc-back-link:hover {
-    text-decoration: underline;
-    color: var(--bc-primary);
-}
+.bc-back-link:hover { text-decoration: underline; color: var(--bc-primary); }
 
-/* ===================== */
-/* FOOTER                */
-/* ===================== */
+/* ======================== */
+/* FOOTER                   */
+/* ======================== */
 .bc-footer {
     text-align: center;
     padding: 1.5rem;
@@ -420,9 +417,9 @@
     border-top: 1px solid #f1f5f9;
 }
 
-/* ===================== */
-/* NAVIGATION            */
-/* ===================== */
+/* ======================== */
+/* NAVIGATION               */
+/* ======================== */
 .bc-nav {
     display: flex;
     gap: 0;
@@ -432,12 +429,12 @@
     position: sticky;
     top: 0;
     z-index: 100;
-    padding: 0 1rem;
+    padding: 0;
     -webkit-overflow-scrolling: touch;
 }
 
 .bc-nav-link {
-    padding: 0.8rem 1rem;
+    padding: 0.8rem 1.25rem;
     color: #64748b;
     text-decoration: none;
     font-size: 0.85rem;
@@ -447,123 +444,76 @@
     transition: all 0.2s;
 }
 
-.bc-nav-link:hover {
-    color: var(--bc-primary);
-    text-decoration: none;
+.bc-nav-link:hover { color: var(--bc-primary); text-decoration: none; }
+.bc-nav-link.active { color: var(--bc-primary); border-bottom-color: var(--bc-primary); }
+
+/* ======================== */
+/* ENQUIRY FORM             */
+/* ======================== */
+.bc-enquiry-form input,
+.bc-enquiry-form textarea {
+    width: 100%;
+    padding: 0.65rem;
+    border: 1px solid #ddd;
+    border-radius: var(--bc-card-radius);
+    box-sizing: border-box;
+    font-size: 0.9rem;
 }
 
-.bc-nav-link.active {
-    color: var(--bc-primary);
-    border-bottom-color: var(--bc-primary);
+/* ======================== */
+/* RESPONSIVE               */
+/* ======================== */
+
+/* Tablet */
+@media (min-width: 768px) {
+    .bc-container { width: calc(100% - 48px); }
+    .bc-content { width: calc(100% - 48px); }
 }
 
-/* ===================== */
-/* RESPONSIVE            */
-/* ===================== */
+/* Desktop */
+@media (min-width: 1200px) {
+    .bc-container { width: calc(100% - 64px); }
+    .bc-content { width: calc(100% - 64px); }
+}
+
+/* Mobile */
 @media (max-width: 768px) {
-    .bc-header {
-        padding: 1.5rem 1rem;
-    }
+    .bc-header { padding: 1.5rem 0; }
+    .bc-header h1 { font-size: 1.35rem; }
+    .bc-header .bc-tagline { font-size: 0.9rem; }
 
-    .bc-header h1 {
-        font-size: 1.35rem;
-    }
+    .bc-cover-img { max-height: 280px; }
+    .bc-business-cover { height: clamp(140px, 40vw, 220px); }
+    .bc-logo-img { width: 72px; height: 72px; }
 
-    .bc-header .bc-tagline {
-        font-size: 0.9rem;
-    }
+    .bc-section { padding: 1.25rem 0; }
+    .bc-section-title { font-size: 1.1rem; }
 
-    .bc-cover-img {
-        max-height: 280px;
-        border-radius: var(--bc-card-radius);
-    }
+    .bc-product-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+    .bc-product-card img { height: 130px; }
 
-    .bc-logo-img {
-        width: 72px;
-        height: 72px;
-    }
+    .bc-team-grid { grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .bc-team-grid img { width: 64px; height: 64px; }
 
-    .bc-section {
-        padding: 1.25rem 1rem;
-    }
+    .bc-btn { padding: 0.6rem 1.1rem; font-size: 0.85rem; }
+    .bc-action-bar { display: flex !important; padding: 0.5rem; }
+    .bc-action-bar .bc-btn { font-size: 0.75rem; padding: 0.5rem 0.3rem; }
 
-    .bc-section-title {
-        font-size: 1.1rem;
-    }
-
-    .bc-product-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.75rem;
-    }
-
-    .bc-product-card img {
-        height: 130px;
-    }
-
-    .bc-team-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 1rem;
-    }
-
-    .bc-team-grid img {
-        width: 64px;
-        height: 64px;
-    }
-
-    .bc-btn {
-        padding: 0.6rem 1.1rem;
-        font-size: 0.85rem;
-    }
-
-    .bc-action-bar {
-        display: flex !important;
-        padding: 0.5rem;
-    }
-
-    .bc-action-bar .bc-btn {
-        font-size: 0.75rem;
-        padding: 0.5rem 0.3rem;
-    }
-
-    .bc-nav {
-        padding: 0 0.5rem;
-    }
-
-    .bc-nav-link {
-        padding: 0.7rem 0.75rem;
-        font-size: 0.8rem;
-    }
+    .bc-nav { padding: 0; }
+    .bc-nav-link { padding: 0.7rem 0.75rem; font-size: 0.8rem; }
 }
 
+/* Small mobile */
 @media (max-width: 480px) {
-    .bc-header {
-        padding: 1.25rem 0.75rem;
-    }
+    .bc-container { width: calc(100% - 32px); }
 
-    .bc-cover-img {
-        max-height: 200px;
-    }
+    .bc-header { padding: 1.25rem 0; }
+    .bc-cover-img { max-height: 200px; }
+    .bc-business-cover { height: clamp(120px, 50vw, 180px); }
 
-    .bc-section {
-        padding: 1rem 0.75rem;
-    }
-
-    .bc-product-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.5rem;
-    }
-
-    .bc-product-card img {
-        height: 100px;
-    }
-
-    .bc-team-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 0.75rem;
-    }
-
-    .bc-team-grid img {
-        width: 56px;
-        height: 56px;
-    }
+    .bc-section { padding: 1rem 0; }
+    .bc-product-grid { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
+    .bc-product-card img { height: 100px; }
+    .bc-team-grid { grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+    .bc-team-grid img { width: 56px; height: 56px; }
 }
