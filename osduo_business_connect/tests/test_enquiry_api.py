@@ -1,133 +1,63 @@
-"""
-Unit tests for Enquiry Public API.
-
-These tests verify:
-- Public enquiry API functionality
-- Webhook handling
-- Validation functions
-"""
-
 import os
 import sys
 import unittest
 
-# Add parent directory to path for local testing
-app_parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(0, app_parent_dir)
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
+
+APP_DIR = os.path.join(os.path.dirname(__file__), "..")
+ENQUIRY_DIR = os.path.join(APP_DIR, "enquiry")
 
 
 class TestPublicEnquiryAPI(unittest.TestCase):
-    """Tests for Public Enquiry API."""
+    """Verify public enquiry API module (located in enquiry/ not crm_integration/)."""
 
-    def test_public_enquiry_api_exists(self):
-        """Test that public enquiry API file exists."""
-        api_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)),
-            "..",
-            "enquiry",
-            "enquiry",
-            "public_enquiry_api.py",
-        )
-        self.assertTrue(os.path.exists(api_path), "Public enquiry API not found")
+    def test_exists(self):
+        path = os.path.join(ENQUIRY_DIR, "public_enquiry_api.py")
+        self.assertTrue(os.path.exists(path))
 
-    def test_public_enquiry_api_has_submit_enquiry(self):
-        """Test that public enquiry API has submit_enquiry function."""
-        api_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)),
-            "..",
-            "enquiry",
-            "enquiry",
-            "public_enquiry_api.py",
-        )
-        with open(api_path, "r") as f:
+    def test_has_submit_enquiry(self):
+        path = os.path.join(ENQUIRY_DIR, "public_enquiry_api.py")
+        with open(path) as f:
             content = f.read()
-        self.assertIn("def submit_enquiry", content, "submit_enquiry function not found")
+        self.assertIn("def submit_enquiry", content)
 
-    def test_public_enquiry_api_has_form_config(self):
-        """Test that public enquiry API has get_enquiry_form_config function."""
-        api_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)),
-            "..",
-            "enquiry",
-            "enquiry",
-            "public_enquiry_api.py",
-        )
-        with open(api_path, "r") as f:
+    def test_has_form_config(self):
+        path = os.path.join(ENQUIRY_DIR, "public_enquiry_api.py")
+        with open(path) as f:
             content = f.read()
-        self.assertIn(
-            "def get_enquiry_form_config", content, "get_enquiry_form_config function not found"
-        )
+        self.assertIn("def get_enquiry_form_config", content)
 
-    def test_public_enquiry_api_has_validate_data(self):
-        """Test that public enquiry API has validate_enquiry_data function."""
-        api_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)),
-            "..",
-            "enquiry",
-            "enquiry",
-            "public_enquiry_api.py",
-        )
-        with open(api_path, "r") as f:
+    def test_has_validate_data(self):
+        path = os.path.join(ENQUIRY_DIR, "public_enquiry_api.py")
+        with open(path) as f:
             content = f.read()
-        self.assertIn(
-            "def validate_enquiry_data", content, "validate_enquiry_data function not found"
-        )
+        self.assertIn("def validate_enquiry_data", content)
 
 
 class TestEnquiryWebhook(unittest.TestCase):
-    """Tests for Enquiry Webhook."""
+    """Verify enquiry webhook module (located in enquiry/ not crm_integration/)."""
 
-    def test_enquiry_webhook_exists(self):
-        """Test that Enquiry webhook file exists."""
-        webhook_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)),
-            "..",
-            "enquiry",
-            "enquiry",
-            "enquiry_webhook.py",
-        )
-        self.assertTrue(os.path.exists(webhook_path), "Enquiry webhook not found")
+    def test_exists(self):
+        path = os.path.join(ENQUIRY_DIR, "enquiry_webhook.py")
+        self.assertTrue(os.path.exists(path))
 
-    def test_enquiry_webhook_has_handle_function(self):
-        """Test that Enquiry webhook has handle_enquiry_webhook function."""
-        webhook_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)),
-            "..",
-            "enquiry",
-            "enquiry",
-            "enquiry_webhook.py",
-        )
-        with open(webhook_path, "r") as f:
+    def test_has_handle_function(self):
+        path = os.path.join(ENQUIRY_DIR, "enquiry_webhook.py")
+        with open(path) as f:
             content = f.read()
-        self.assertIn(
-            "def handle_enquiry_webhook", content, "handle_enquiry_webhook function not found"
-        )
+        self.assertIn("def handle_enquiry_webhook", content)
 
-    def test_enquiry_webhook_has_rate_limit(self):
-        """Test that Enquiry webhook has rate_limit_check function."""
-        webhook_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)),
-            "..",
-            "enquiry",
-            "enquiry",
-            "enquiry_webhook.py",
-        )
-        with open(webhook_path, "r") as f:
+    def test_has_rate_limit(self):
+        path = os.path.join(ENQUIRY_DIR, "enquiry_webhook.py")
+        with open(path) as f:
             content = f.read()
-        self.assertIn("def rate_limit_check", content, "rate_limit_check function not found")
+        self.assertIn("def rate_limit_check", content)
 
-    def test_enquiry_webhook_has_spam_check(self):
-        """Test that Enquiry webhook has spam_check function."""
-        webhook_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)),
-            "..",
-            "enquiry",
-            "enquiry",
-            "enquiry_webhook.py",
-        )
-        with open(webhook_path, "r") as f:
+    def test_has_spam_check(self):
+        path = os.path.join(ENQUIRY_DIR, "enquiry_webhook.py")
+        with open(path) as f:
             content = f.read()
-        self.assertIn("def spam_check", content, "spam_check function not found")
+        self.assertIn("def spam_check", content)
 
 
 if __name__ == "__main__":
