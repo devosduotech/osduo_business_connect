@@ -85,7 +85,7 @@
     --bc-btn-radius: 8px;
 
     font-family: var(--bc-font-family);
-    background: var(--bc-background);
+    background: white;
     color: var(--bc-text);
     margin: 0;
     padding: 0;
@@ -336,6 +336,11 @@
 /* ======================== */
 .bc-section {
     padding: var(--bc-section-spacing);
+}
+
+/* Apply theme background within container */
+.bc-section-alt {
+    background: var(--bc-background);
 }
 
 .bc-section-title {
