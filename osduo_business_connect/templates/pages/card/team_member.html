@@ -1,28 +1,28 @@
 {%- extends "osduo_business_connect/templates/base.html" -%}
 
 {%- block page_content -%}
-<div class="bc-page" style="{{ theme_vars }}">
+<div class="bc-page bc-template-{{ theme.template|lower }}" style="{{ theme_vars }}">
 
     {# Back link #}
-    <div style="padding:1rem 1.5rem 0;">
+    <div style="padding:0.75rem 1.5rem 0;">
         <a href="/b/{{ business_slug }}" class="bc-back-link">&larr; {{ business_name }}</a>
     </div>
 
     {# ===== PERSON HERO ===== #}
     <div class="bc-header" style="padding:2rem 1.5rem;">
         {% if doc.profile_image %}
-        <img src="{{ doc.profile_image }}" alt="{{ doc.display_name }}" style="width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid var(--bc-accent);margin:0 auto 1rem;display:block;">
+        <img src="{{ doc.profile_image }}" alt="{{ doc.display_name }}" style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid var(--bc-accent);margin:0 auto 0.75rem;display:block;">
         {% else %}
-        <div style="width:120px;height:120px;border-radius:50%;background:var(--bc-secondary);color:var(--bc-primary);display:flex;align-items:center;justify-content:center;font-size:2.5rem;margin:0 auto 1rem;font-weight:700;">{{ doc.display_name[0] if doc.display_name else '?' }}</div>
+        <div style="width:100px;height:100px;border-radius:50%;background:var(--bc-secondary);color:var(--bc-primary);display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 0.75rem;font-weight:700;">{{ doc.display_name[0] if doc.display_name else '?' }}</div>
         {% endif %}
 
-        <h1 style="margin:0.5rem 0 0.25rem;font-size:1.5rem;">{{ doc.display_name }}</h1>
+        <h1 style="margin:0.4rem 0 0.2rem;font-size:1.35rem;">{{ doc.display_name }}</h1>
         {% if doc.designation %}
-        <p class="bc-tagline" style="margin:0 0 0.5rem;">{{ doc.designation }}</p>
+        <p class="bc-tagline" style="margin:0 0 0.3rem;">{{ doc.designation }}</p>
         {% endif %}
-        <p style="margin:0;opacity:0.8;font-size:0.95rem;">{{ business_name }}</p>
+        <p style="margin:0;opacity:0.8;font-size:0.9rem;">{{ business_name }}</p>
 
-        <div style="margin-top:1.5rem;display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+        <div style="margin-top:1.25rem;display:flex;gap:0.6rem;justify-content:center;flex-wrap:wrap;">
             {% if doc.phone %}
             <a href="tel:{{ doc.phone }}" class="bc-btn bc-btn-secondary">&#9742; Call</a>
             {% endif %}
@@ -72,9 +72,9 @@
     {% if links %}
     <div class="bc-section">
         <h2 class="bc-section-title">Connect</h2>
-        <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
             {% for link in links %}
-            <a href="{{ link.url }}" target="_blank" class="bc-btn bc-btn-secondary" style="font-size:0.875rem;">{{ link.label or link.link_type }}</a>
+            <a href="{{ link.url }}" target="_blank" class="bc-btn bc-btn-secondary" style="font-size:0.8rem;">{{ link.label or link.link_type }}</a>
             {% endfor %}
         </div>
     </div>
@@ -83,27 +83,27 @@
     {# ===== QR CODE ===== #}
     {% if doc.qr_enabled and doc.qr_image %}
     <div class="bc-section" style="text-align:center;">
-        <img src="{{ doc.qr_image }}" alt="QR Code" style="width:140px;height:140px;">
-        <p style="color:#94a3b8;font-size:0.85rem;margin-top:0.5rem;">Scan to view card</p>
+        <img src="{{ doc.qr_image }}" alt="QR Code" style="width:120px;height:120px;">
+        <p style="color:#94a3b8;font-size:0.8rem;margin-top:0.4rem;">Scan to view card</p>
     </div>
     {% endif %}
 
     {# ===== ENQUIRY FORM ===== #}
     <div class="bc-section">
         <h2 class="bc-section-title">Send a Message</h2>
-        <form id="card-enquiry-form" class="bc-card" style="padding:1.5rem;">
+        <form id="card-enquiry-form" class="bc-card" style="padding:1.25rem;">
             <input type="hidden" name="business" value="{{ doc.business }}">
             <input type="hidden" name="card" value="{{ doc.name }}">
-            <div style="margin-bottom:0.75rem;">
-                <input type="text" name="visitor_name" placeholder="Your Name" required style="width:100%;padding:0.75rem;border:1px solid #ddd;border-radius:var(--bc-card-radius);box-sizing:border-box;">
+            <div style="margin-bottom:0.6rem;">
+                <input type="text" name="visitor_name" placeholder="Your Name" required style="width:100%;padding:0.65rem;border:1px solid #ddd;border-radius:var(--bc-card-radius);box-sizing:border-box;font-size:0.9rem;">
             </div>
-            <div style="margin-bottom:0.75rem;">
-                <input type="email" name="visitor_email" placeholder="Email Address" required style="width:100%;padding:0.75rem;border:1px solid #ddd;border-radius:var(--bc-card-radius);box-sizing:border-box;">
+            <div style="margin-bottom:0.6rem;">
+                <input type="email" name="visitor_email" placeholder="Email Address" required style="width:100%;padding:0.65rem;border:1px solid #ddd;border-radius:var(--bc-card-radius);box-sizing:border-box;font-size:0.9rem;">
             </div>
-            <div style="margin-bottom:0.75rem;">
-                <textarea name="message" placeholder="Your Message" rows="3" required style="width:100%;padding:0.75rem;border:1px solid #ddd;border-radius:var(--bc-card-radius);box-sizing:border-box;resize:vertical;"></textarea>
+            <div style="margin-bottom:0.6rem;">
+                <textarea name="message" placeholder="Your Message" rows="3" required style="width:100%;padding:0.65rem;border:1px solid #ddd;border-radius:var(--bc-card-radius);box-sizing:border-box;resize:vertical;font-size:0.9rem;"></textarea>
             </div>
-            <button type="submit" class="bc-btn bc-btn-primary" style="width:100%;padding:0.85rem;">Send Message</button>
+            <button type="submit" class="bc-btn bc-btn-primary" style="width:100%;padding:0.75rem;">Send Message</button>
         </form>
     </div>
 
@@ -145,7 +145,7 @@
                 body: JSON.stringify(data)
             });
             if (res.ok) {
-                form.innerHTML = '<div style="text-align:center;padding:1.5rem;"><h3 style="margin:0 0 0.5rem;">Message Sent!</h3><p style="color:#666;">Thank you. We will get back to you soon.</p></div>';
+                form.innerHTML = '<div style="text-align:center;padding:1.25rem;"><h3 style="margin:0 0 0.4rem;">Message Sent!</h3><p style="color:#666;font-size:0.9rem;">Thank you. We will get back to you soon.</p></div>';
             } else {
                 const err = await res.json();
                 alert(err.message || 'Error sending message');

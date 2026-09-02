@@ -1,34 +1,34 @@
 {%- extends "osduo_business_connect/templates/base.html" -%}
 
 {%- block page_content -%}
-<div class="bc-page" style="{{ theme_vars }}">
-    <div class="bc-card" style="max-width:480px;margin:0 auto;text-align:center;">
+<div class="bc-page bc-template-{{ theme.template|lower }}" style="{{ theme_vars }}">
+    <div class="bc-card" style="max-width:420px;margin:0 auto;text-align:center;">
 
         {# Profile Image #}
         {% if doc.profile_image %}
-        <img src="{{ doc.profile_image }}" alt="{{ doc.display_name }}" style="width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid var(--bc-accent);margin-bottom:1rem;">
+        <img src="{{ doc.profile_image }}" alt="{{ doc.display_name }}" style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid var(--bc-accent);margin-bottom:0.75rem;">
         {% else %}
-        <div style="width:120px;height:120px;border-radius:50%;background:var(--bc-primary);color:white;display:flex;align-items:center;justify-content:center;font-size:2.5rem;margin:0 auto 1rem;">
+        <div style="width:100px;height:100px;border-radius:50%;background:var(--bc-primary);color:white;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 0.75rem;">
             {{ doc.display_name[0] if doc.display_name else '?' }}
         </div>
         {% endif %}
 
         {# Name & Designation #}
-        <h1 style="margin:0.5rem 0 0.25rem;font-size:1.5rem;">{{ doc.display_name }}</h1>
+        <h1 style="margin:0.4rem 0 0.2rem;font-size:1.35rem;">{{ doc.display_name }}</h1>
         {% if doc.designation %}
-        <p style="color:#666;margin:0 0 0.5rem;">{{ doc.designation }}</p>
+        <p style="color:#666;margin:0 0 0.3rem;font-size:0.9rem;">{{ doc.designation }}</p>
         {% endif %}
         {% if doc.show_business and doc.business_name %}
-        <p style="color:#94a3b8;margin:0 0 1rem;font-size:0.9rem;">{{ doc.business_name }}</p>
+        <p style="color:#94a3b8;margin:0 0 0.75rem;font-size:0.85rem;">{{ doc.business_name }}</p>
         {% endif %}
 
         {# Bio #}
         {% if doc.bio %}
-        <div style="color:#555;font-size:0.95rem;line-height:1.6;margin:1rem 0;padding:1rem;background:var(--bc-background);border-radius:var(--bc-card-radius);">{{ doc.bio }}</div>
+        <div style="color:#555;font-size:0.9rem;line-height:1.6;margin:0.75rem 0;padding:0.75rem;background:var(--bc-background);border-radius:var(--bc-card-radius);">{{ doc.bio }}</div>
         {% endif %}
 
         {# Action Buttons #}
-        <div style="display:flex;flex-direction:column;gap:0.75rem;margin:1.5rem 0;">
+        <div style="display:flex;flex-direction:column;gap:0.6rem;margin:1.25rem 0;">
             {% if doc.phone %}
             <a href="tel:{{ doc.phone }}" class="bc-btn bc-btn-primary">&#9742; Call {{ doc.phone }}</a>
             {% endif %}
@@ -45,45 +45,45 @@
 
         {# Social Links #}
         {% if links %}
-        <div style="display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap;margin:1.5rem 0;">
+        <div style="display:flex;gap:0.4rem;justify-content:center;flex-wrap:wrap;margin:1.25rem 0;">
             {% for link in links %}
-            <a href="{{ link.url }}" target="_blank" class="bc-btn bc-btn-secondary" style="font-size:0.85rem;">{{ link.label or link.link_type }}</a>
+            <a href="{{ link.url }}" target="_blank" class="bc-btn bc-btn-secondary" style="font-size:0.75rem;padding:0.4rem 0.75rem;">{{ link.label or link.link_type }}</a>
             {% endfor %}
         </div>
         {% endif %}
 
         {# Business Link #}
         {% if doc.show_business and doc.business_slug %}
-        <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid #eee;">
-            <a href="/b/{{ doc.business_slug }}" style="color:var(--bc-primary);text-decoration:none;font-size:0.9rem;">{{ doc.business_name }}</a>
+        <div style="margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid #eee;">
+            <a href="/b/{{ doc.business_slug }}" style="color:var(--bc-primary);text-decoration:none;font-size:0.85rem;">{{ doc.business_name }}</a>
         </div>
         {% endif %}
 
         {# QR Code #}
         {% if doc.qr_enabled and doc.qr_image %}
-        <div style="margin-top:1.5rem;">
-            <img src="{{ doc.qr_image }}" alt="QR Code" style="width:120px;height:120px;">
-            <p style="color:#999;font-size:0.8rem;margin-top:0.5rem;">Scan to view card</p>
+        <div style="margin-top:1.25rem;">
+            <img src="{{ doc.qr_image }}" alt="QR Code" style="width:100px;height:100px;">
+            <p style="color:#999;font-size:0.75rem;margin-top:0.4rem;">Scan to view card</p>
         </div>
         {% endif %}
     </div>
 
     {# Enquiry Form #}
-    <div style="margin-top:2rem;text-align:left;">
-        <h2 style="font-size:1.1rem;text-align:center;color:var(--bc-primary);">Send a Message</h2>
-        <form id="card-enquiry-form" class="bc-card" style="padding:1.5rem;">
+    <div style="margin-top:1.5rem;text-align:left;">
+        <h2 style="font-size:1rem;text-align:center;color:var(--bc-primary);">Send a Message</h2>
+        <form id="card-enquiry-form" class="bc-card" style="padding:1.25rem;">
             <input type="hidden" name="business" value="{{ doc.business }}">
             <input type="hidden" name="card" value="{{ doc.name }}">
-            <div style="margin-bottom:0.75rem;">
-                <input type="text" name="visitor_name" placeholder="Your Name" required style="width:100%;padding:0.75rem;border:1px solid #ddd;border-radius:var(--bc-card-radius);box-sizing:border-box;">
+            <div style="margin-bottom:0.6rem;">
+                <input type="text" name="visitor_name" placeholder="Your Name" required style="width:100%;padding:0.65rem;border:1px solid #ddd;border-radius:var(--bc-card-radius);box-sizing:border-box;font-size:0.9rem;">
             </div>
-            <div style="margin-bottom:0.75rem;">
-                <input type="email" name="visitor_email" placeholder="Email Address" required style="width:100%;padding:0.75rem;border:1px solid #ddd;border-radius:var(--bc-card-radius);box-sizing:border-box;">
+            <div style="margin-bottom:0.6rem;">
+                <input type="email" name="visitor_email" placeholder="Email Address" required style="width:100%;padding:0.65rem;border:1px solid #ddd;border-radius:var(--bc-card-radius);box-sizing:border-box;font-size:0.9rem;">
             </div>
-            <div style="margin-bottom:0.75rem;">
-                <textarea name="message" placeholder="Your Message" rows="3" required style="width:100%;padding:0.75rem;border:1px solid #ddd;border-radius:var(--bc-card-radius);box-sizing:border-box;resize:vertical;"></textarea>
+            <div style="margin-bottom:0.6rem;">
+                <textarea name="message" placeholder="Your Message" rows="3" required style="width:100%;padding:0.65rem;border:1px solid #ddd;border-radius:var(--bc-card-radius);box-sizing:border-box;resize:vertical;font-size:0.9rem;"></textarea>
             </div>
-            <button type="submit" class="bc-btn bc-btn-primary" style="width:100%;padding:0.85rem;">Send Message</button>
+            <button type="submit" class="bc-btn bc-btn-primary" style="width:100%;padding:0.75rem;">Send Message</button>
         </form>
     </div>
 </div>
@@ -103,7 +103,7 @@ document.getElementById('card-enquiry-form').addEventListener('submit', async fu
             body: JSON.stringify(data)
         });
         if (res.ok) {
-            form.innerHTML = '<div style="text-align:center;padding:1.5rem;"><h3 style="margin:0 0 0.5rem;">Message Sent!</h3><p style="color:#666;">Thank you. We will get back to you soon.</p></div>';
+            form.innerHTML = '<div style="text-align:center;padding:1.25rem;"><h3 style="margin:0 0 0.4rem;">Message Sent!</h3><p style="color:#666;font-size:0.9rem;">Thank you. We will get back to you soon.</p></div>';
         } else {
             const err = await res.json();
             alert(err.message || 'Error sending message');

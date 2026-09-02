@@ -1,16 +1,16 @@
 {%- extends "osduo_business_connect/templates/base.html" -%}
 
 {%- block page_content -%}
-<div class="bc-page" style="{{ theme_vars }}">
+<div class="bc-page bc-template-{{ theme.template|lower }}" style="{{ theme_vars }}">
 
     {# ===== HEADER ===== #}
     <div class="bc-header">
         {% if doc.cover_image %}
-        <img src="{{ doc.cover_image }}" alt="" style="width:100%;height:280px;object-fit:cover;border-radius:8px;margin-bottom:1.5rem;">
+        <img src="{{ doc.cover_image }}" alt="" class="bc-cover-img">
         {% endif %}
 
         {% if doc.logo %}
-        <img src="{{ doc.logo }}" alt="{{ doc.business_name }}" style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:4px solid white;margin-bottom:1rem;">
+        <img src="{{ doc.logo }}" alt="{{ doc.business_name }}" class="bc-logo-img">
         {% endif %}
 
         <h1>{{ doc.business_name }}</h1>
@@ -18,7 +18,7 @@
         <p class="bc-tagline">{{ doc.industry }}</p>
         {% endif %}
 
-        <div style="margin-top:1.5rem;display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+        <div style="margin-top:1.25rem;display:flex;gap:0.6rem;justify-content:center;flex-wrap:wrap;">
             {% if doc.phone %}
             <a href="tel:{{ doc.phone }}" class="bc-btn bc-btn-secondary">&#9742; Call</a>
             {% endif %}
@@ -56,10 +56,10 @@
                 {% if product.image %}
                 <img src="{{ product.image }}" alt="{{ product.product_name }}">
                 {% else %}
-                <div style="height:150px;background:#f1f5f9;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#94a3b8;">&#128230;</div>
+                <div style="height:140px;background:#f1f5f9;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#94a3b8;">&#128230;</div>
                 {% endif %}
-                <h3 style="margin:0.75rem 0 0.25rem;font-size:1rem;">{{ product.product_name }}</h3>
-                <p style="margin:0;color:#64748b;font-size:0.875rem;">{{ product.short_description[:60] }}{% if product.short_description|length > 60 %}...{% endif %}</p>
+                <h3 style="margin:0.6rem 0 0.2rem;font-size:0.95rem;">{{ product.product_name }}</h3>
+                <p style="margin:0;color:#64748b;font-size:0.8rem;">{{ product.short_description[:50] }}{% if product.short_description|length > 50 %}...{% endif %}</p>
             </a>
             {% endfor %}
         </div>
@@ -76,10 +76,10 @@
                 {% if service.image %}
                 <img src="{{ service.image }}" alt="{{ service.service_name }}">
                 {% else %}
-                <div style="height:150px;background:#f1f5f9;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#94a3b8;">&#128295;</div>
+                <div style="height:140px;background:#f1f5f9;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#94a3b8;">&#128295;</div>
                 {% endif %}
-                <h3 style="margin:0.75rem 0 0.25rem;font-size:1rem;">{{ service.service_name }}</h3>
-                <p style="margin:0;color:#64748b;font-size:0.875rem;">{{ service.short_description[:60] }}{% if service.short_description|length > 60 %}...{% endif %}</p>
+                <h3 style="margin:0.6rem 0 0.2rem;font-size:0.95rem;">{{ service.service_name }}</h3>
+                <p style="margin:0;color:#64748b;font-size:0.8rem;">{{ service.short_description[:50] }}{% if service.short_description|length > 50 %}...{% endif %}</p>
             </a>
             {% endfor %}
         </div>
@@ -96,11 +96,11 @@
                 {% if member.profile_image %}
                 <img src="{{ member.profile_image }}" alt="{{ member.display_name }}">
                 {% else %}
-                <div style="width:100px;height:100px;border-radius:50%;background:var(--bc-primary);color:white;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto;">{{ member.display_name[0] }}</div>
+                <div style="width:80px;height:80px;border-radius:50%;background:var(--bc-primary);color:white;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin:0 auto;">{{ member.display_name[0] }}</div>
                 {% endif %}
-                <h3 style="margin:0.75rem 0 0.25rem;font-size:1rem;">{{ member.display_name }}</h3>
+                <h3 style="margin:0.5rem 0 0.15rem;font-size:0.9rem;">{{ member.display_name }}</h3>
                 {% if member.designation %}
-                <p style="margin:0;color:#64748b;font-size:0.875rem;">{{ member.designation }}</p>
+                <p style="margin:0;color:#64748b;font-size:0.8rem;">{{ member.designation }}</p>
                 {% endif %}
             </a>
             {% endfor %}
@@ -143,9 +143,9 @@
     {% if social_links %}
     <div class="bc-section">
         <h2 class="bc-section-title">Connect</h2>
-        <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+        <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
             {% for link in social_links %}
-            <a href="{{ link.url }}" target="_blank" class="bc-btn bc-btn-secondary" style="font-size:0.875rem;">{{ link.platform }}</a>
+            <a href="{{ link.url }}" target="_blank" class="bc-btn bc-btn-secondary" style="font-size:0.8rem;">{{ link.platform }}</a>
             {% endfor %}
         </div>
     </div>
