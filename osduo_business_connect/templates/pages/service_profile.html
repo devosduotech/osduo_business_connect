@@ -103,14 +103,16 @@
     {% endif %}
 </div>
 
+{% raw %}
 <script>
-(function() {{
-    function checkMobile() {{
+(function() {
+    function checkMobile() {
         var bar = document.querySelector('.bc-action-bar');
         if (bar) bar.style.display = window.innerWidth <= 768 ? 'flex' : 'none';
-    }}
+    }
     checkMobile();
     window.addEventListener('resize', checkMobile);
-}})();
+})();
 </script>
+{% endraw %}
 {%- endblock -%}
