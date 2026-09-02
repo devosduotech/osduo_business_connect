@@ -51,6 +51,7 @@
             <h2 style="font-size:1rem;color:var(--bc-primary);margin-bottom:0.75rem;">Products</h2>
             <div style="display:flex;flex-direction:column;gap:0.75rem;">
                 {% for product in products %}
+                <a href="/b/{{ doc.business_slug }}/products/{{ product.slug }}" style="text-decoration:none;">
                 <div class="bc-card" style="padding:0.75rem;display:flex;gap:0.75rem;align-items:center;">
                     {% if product.image %}
                     <img src="{{ product.image }}" alt="{{ product.product_name }}" style="width:48px;height:48px;border-radius:8px;object-fit:cover;">
@@ -65,6 +66,7 @@
                     <span style="font-size:0.8rem;font-weight:600;color:var(--bc-primary);white-space:nowrap;">{{ product.currency }} {{ product.price }}</span>
                     {% endif %}
                 </div>
+                </a>
                 {% endfor %}
             </div>
         </div>
@@ -77,6 +79,7 @@
             <h2 style="font-size:1rem;color:var(--bc-primary);margin-bottom:0.75rem;">Services</h2>
             <div style="display:flex;flex-direction:column;gap:0.75rem;">
                 {% for service in services %}
+                <a href="/b/{{ doc.business_slug }}/services/{{ service.slug }}" style="text-decoration:none;">
                 <div class="bc-card" style="padding:0.75rem;display:flex;gap:0.75rem;align-items:center;">
                     {% if service.image %}
                     <img src="{{ service.image }}" alt="{{ service.service_name }}" style="width:48px;height:48px;border-radius:8px;object-fit:cover;">
@@ -91,6 +94,7 @@
                     <span style="font-size:0.8rem;font-weight:600;color:var(--bc-primary);white-space:nowrap;">{{ service.currency }} {{ service.price }}</span>
                     {% endif %}
                 </div>
+                </a>
                 {% endfor %}
             </div>
         </div>
