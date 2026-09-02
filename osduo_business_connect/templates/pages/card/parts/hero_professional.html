@@ -1,0 +1,58 @@
+{# Card Hero — Professional template #}
+<div class="bc-card-hero" style="background:var(--bc-primary);color:white;border-radius:var(--bc-card-radius) var(--bc-card-radius) 0 0;">
+    {% if doc.profile_image %}
+    <img src="{{ doc.profile_image }}" alt="{{ doc.display_name }}" class="bc-card-avatar" style="border-color:white;">
+    {% else %}
+    <div class="bc-card-avatar bc-card-avatar-fallback" style="background:rgba(255,255,255,0.2);">
+        {{ doc.display_name[0] if doc.display_name else '?' }}
+    </div>
+    {% endif %}
+
+    <h1 style="color:white;">{{ doc.display_name }}</h1>
+    {% if doc.designation %}
+    <p style="color:rgba(255,255,255,0.8);margin:0 0 0.2rem;">{{ doc.designation }}</p>
+    {% endif %}
+    {% if doc.show_business and doc.business_name %}
+    <p style="color:rgba(255,255,255,0.6);margin:0 0 0.75rem;font-size:0.85rem;">{{ doc.business_name }}</p>
+    {% endif %}
+
+    {% if doc.bio %}
+    <div class="bc-card-bio" style="background:rgba(255,255,255,0.1);color:white;">{{ doc.bio }}</div>
+    {% endif %}
+
+    <div class="bc-card-actions">
+        {% if doc.phone %}
+        <a href="tel:{{ doc.phone }}" class="bc-btn" style="background:white;color:var(--bc-primary);">&#9742; Call {{ doc.phone }}</a>
+        {% endif %}
+        {% if doc.whatsapp %}
+        <a href="https://wa.me/{{ doc.whatsapp|replace('+','')|replace(' ','') }}" class="bc-btn" style="background:#25D366;color:white;">&#128172; WhatsApp</a>
+        {% endif %}
+        {% if doc.email %}
+        <a href="mailto:{{ doc.email }}" class="bc-btn" style="background:#EA4335;color:white;">&#9993; Send Email</a>
+        {% endif %}
+        {% if doc.website %}
+        <a href="{{ doc.website }}" target="_blank" class="bc-btn" style="background:rgba(255,255,255,0.2);color:white;">&#127760; Visit Website</a>
+        {% endif %}
+    </div>
+
+    {% if links %}
+    <div class="bc-card-links">
+        {% for link in links %}
+        <a href="{{ link.url }}" target="_blank" class="bc-btn" style="font-size:0.75rem;padding:0.4rem 0.75rem;background:rgba(255,255,255,0.2);color:white;">{{ link.label or link.link_type }}</a>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if doc.show_business and doc.business_slug %}
+    <div class="bc-card-business-link" style="border-color:rgba(255,255,255,0.2);">
+        <a href="/b/{{ doc.business_slug }}" style="color:white;">{{ doc.business_name }}</a>
+    </div>
+    {% endif %}
+
+    {% if doc.qr_enabled and doc.qr_image %}
+    <div class="bc-card-qr">
+        <img src="{{ doc.qr_image }}" alt="QR Code">
+        <p style="color:rgba(255,255,255,0.7);">Scan to view card</p>
+    </div>
+    {% endif %}
+</div>

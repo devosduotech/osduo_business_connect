@@ -1,0 +1,42 @@
+{# Product/Service Hero — Professional template #}
+<div class="bc-header" style="padding-bottom:2rem;">
+    <div class="bc-detail">
+        {% if doc.image %}
+        <img src="{{ doc.image }}" alt="{{ doc.product_name or doc.service_name }}" class="bc-cover-img">
+        {% endif %}
+
+        <div style="display:flex;align-items:flex-start;gap:1rem;flex-wrap:wrap;">
+            <div style="text-align:left;">
+                <h1 style="font-size:1.5rem;">{{ doc.product_name or doc.service_name }}</h1>
+                {% if doc.category %}
+                <span style="display:inline-block;padding:0.25rem 0.6rem;background:var(--bc-accent);color:white;border-radius:4px;font-size:0.75rem;">{{ doc.category }}</span>
+                {% endif %}
+                {% if doc.short_description %}
+                <p class="bc-tagline" style="margin:0.5rem 0 0;">{{ doc.short_description }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if doc.price_display_mode != "Hidden" and doc.price %}
+        <div style="font-size:1.3rem;font-weight:700;margin:0.75rem 0;">
+            {% if doc.price_display_mode == "Contact" %}
+                Contact for pricing
+            {% else %}
+                {% if doc.currency %}{{ doc.currency }} {% endif %}{{ doc.price }}
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="bc-hero-actions">
+            {% if doc.enquiry_enabled %}
+            <a href="mailto:{{ business_email }}?subject=Enquiry: {{ doc.product_name or doc.service_name }}" class="bc-btn bc-btn-secondary">&#9993; Send Enquiry</a>
+            {% endif %}
+            {% if business_phone %}
+            <a href="tel:{{ business_phone }}" class="bc-btn bc-btn-secondary">&#9742; Call</a>
+            {% endif %}
+            {% if business_whatsapp %}
+            <a href="https://wa.me/{{ business_whatsapp }}?text=Hi, I'm interested in {{ doc.product_name or doc.service_name }}" class="bc-btn bc-btn-accent">&#128172; WhatsApp</a>
+            {% endif %}
+        </div>
+    </div>
+</div>

@@ -66,6 +66,93 @@
     margin-inline: auto;
 }
 
+.bc-card-hero {
+    text-align: center;
+    padding: 1.5rem;
+}
+
+.bc-card-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--bc-accent);
+    margin: 0 auto 0.75rem;
+    display: block;
+}
+
+.bc-card-avatar-fallback {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: var(--bc-primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin: 0 auto 0.75rem;
+}
+
+.bc-card-hero h1 {
+    margin: 0.4rem 0 0.2rem;
+    font-size: 1.35rem;
+}
+
+.bc-card-bio {
+    color: #555;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin: 0.75rem 0;
+    padding: 0.75rem;
+    background: var(--bc-background);
+    border-radius: var(--bc-card-radius);
+}
+
+.bc-card-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin: 1.25rem 0;
+}
+
+.bc-card-links {
+    display: flex;
+    gap: 0.4rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 1.25rem 0;
+}
+
+.bc-card-business-link {
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid #eee;
+    text-align: center;
+}
+
+.bc-card-business-link a {
+    color: var(--bc-primary);
+    text-decoration: none;
+    font-size: 0.85rem;
+}
+
+.bc-card-qr {
+    margin-top: 1.25rem;
+    text-align: center;
+}
+
+.bc-card-qr img {
+    width: 100px;
+    height: 100px;
+}
+
+.bc-card-qr p {
+    color: #999;
+    font-size: 0.75rem;
+    margin-top: 0.4rem;
+}
+
 /* ======================== */
 /* PAGE                     */
 /* ======================== */
