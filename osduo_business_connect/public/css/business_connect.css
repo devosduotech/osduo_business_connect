@@ -358,18 +358,41 @@
     gap: 1.25rem;
 }
 
-.bc-product-card { text-align: center; }
+.bc-product-card { text-align: left; }
 
 .bc-product-card img {
     width: 100%;
     height: 160px;
     object-fit: contain;
-    border-radius: var(--bc-card-radius);
+    border-radius: var(--bc-card-radius) var(--bc-card-radius) 0 0;
     background: #f8fafc;
 }
 
+.bc-card-body {
+    padding: 0.75rem 0 0 0;
+}
+
+.bc-card-body h3 {
+    margin: 0 0 0.3rem 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.bc-card-body p {
+    margin: 0 0 0.5rem 0;
+    color: #64748b;
+    font-size: 0.8rem;
+    line-height: 1.5;
+}
+
+.bc-card-link {
+    color: var(--bc-primary);
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
 /* ======================== */
-/* TEAM GRID                */
+/* PEOPLE GRID              */
 /* ======================== */
 .bc-team-grid {
     display: grid;
@@ -385,14 +408,58 @@
     object-fit: cover;
 }
 
+.bc-team-grid h3 {
+    margin: 0.5rem 0 0.15rem;
+    font-size: 0.9rem;
+}
+
+.bc-team-grid p {
+    margin: 0;
+    color: #64748b;
+    font-size: 0.8rem;
+}
+
 /* ======================== */
-/* CONTACT                  */
+/* CONTACT GRID             */
 /* ======================== */
-.bc-contact-item {
+.bc-contact-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.bc-contact-card {
     display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 0.875rem;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 1rem;
+    background: white;
+    border-radius: var(--bc-card-radius);
+    border: 1px solid #e2e8f0;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.2s;
+}
+
+.bc-contact-card:hover {
+    border-color: var(--bc-primary);
+}
+
+.bc-contact-icon {
+    font-size: 1.25rem;
+}
+
+.bc-contact-label {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.bc-contact-value {
+    font-size: 0.9rem;
+    color: var(--bc-text);
+    word-break: break-word;
 }
 
 /* ======================== */
@@ -494,16 +561,18 @@
     .bc-section-title { font-size: 1.1rem; }
 
     .bc-product-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
-    .bc-product-card img { height: 130px; }
+    .bc-product-card img { height: 120px; }
 
     .bc-team-grid { grid-template-columns: repeat(3, 1fr); gap: 1rem; }
     .bc-team-grid img { width: 64px; height: 64px; }
+
+    .bc-contact-grid { grid-template-columns: 1fr; }
 
     .bc-btn { padding: 0.6rem 1.1rem; font-size: 0.85rem; }
     .bc-action-bar { display: flex !important; padding: 0.5rem; }
     .bc-action-bar .bc-btn { font-size: 0.75rem; padding: 0.5rem 0.3rem; }
 
-    .bc-nav { padding: 0; }
+    .bc-nav { padding: 0; overflow-x: auto; }
     .bc-nav-link { padding: 0.7rem 0.75rem; font-size: 0.8rem; }
 }
 
@@ -514,8 +583,9 @@
     .bc-header { padding: 1.25rem 0; }
 
     .bc-section { padding: 1rem 0; }
-    .bc-product-grid { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
-    .bc-product-card img { height: 100px; }
-    .bc-team-grid { grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+    .bc-product-grid { grid-template-columns: 1fr; gap: 0.75rem; }
+    .bc-product-card img { height: 140px; }
+    .bc-team-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
     .bc-team-grid img { width: 56px; height: 56px; }
+    .bc-contact-grid { grid-template-columns: 1fr; }
 }
