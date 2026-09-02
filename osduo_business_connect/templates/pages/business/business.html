@@ -34,7 +34,6 @@
                 <a href="#bc-about" class="bc-nav-link active">About</a>
                 {% if products %}<a href="#bc-products" class="bc-nav-link">Products</a>{% endif %}
                 {% if services %}<a href="#bc-services" class="bc-nav-link">Services</a>{% endif %}
-                {% if members %}<a href="#bc-people" class="bc-nav-link">People</a>{% endif %}
                 <a href="#bc-contact" class="bc-nav-link">Contact</a>
             </nav>
         </div>
@@ -95,30 +94,6 @@
                         <p>{{ service.short_description[:80] }}{% if service.short_description|length > 80 %}...{% endif %}</p>
                         <span class="bc-card-link">View Service &rarr;</span>
                     </div>
-                </a>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-    {% endif %}
-
-    {# ===== PEOPLE (Optional) ===== #}
-    {% if members %}
-    <div class="bc-section bc-section-alt" id="bc-people">
-        <div class="bc-container">
-            <h2 class="bc-section-title">Our People</h2>
-            <div class="bc-team-grid">
-                {% for member in members %}
-                <a href="/b/{{ doc.slug }}/team/{{ member.slug }}" style="text-decoration:none;color:inherit;">
-                    {% if member.profile_image %}
-                    <img src="{{ member.profile_image }}" alt="{{ member.display_name }}">
-                    {% else %}
-                    <div style="width:80px;height:80px;border-radius:50%;background:var(--bc-primary);color:white;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin:0 auto;">{{ member.display_name[0] }}</div>
-                    {% endif %}
-                    <h3>{{ member.display_name }}</h3>
-                    {% if member.designation %}
-                    <p>{{ member.designation }}</p>
-                    {% endif %}
                 </a>
                 {% endfor %}
             </div>
