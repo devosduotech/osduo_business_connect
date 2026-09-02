@@ -6,8 +6,8 @@
   "engine": "InnoDB",
   "naming_rule": "By \"Series\" field",
   "autoname": "naming_series:",
-  "title_field": "business",
-  "search_fields": "business,template",
+  "title_field": "theme_name",
+  "search_fields": "theme_name,business,template",
   "is_submittable": 0,
   "issingle": 0,
   "istable": 0,
@@ -24,7 +24,17 @@
       "default": "THEME-.#####",
       "options": "THEME-.#####",
       "reqd": 1,
-      "set_only_once": 1
+      "set_only_once": 1,
+      "hidden": 1
+    },
+    {
+      "fieldname": "theme_name",
+      "fieldtype": "Data",
+      "label": "Theme Name",
+      "reqd": 1,
+      "unique": 0,
+      "description": "A friendly name for this theme (e.g., 'My Brand Theme', 'Summer Campaign')",
+      "in_list_view": 1
     },
     {
       "fieldname": "business",
@@ -35,16 +45,22 @@
       "in_standard_filter": 1
     },
     {
+      "fieldname": "section_look",
+      "fieldtype": "Section Break",
+      "label": "Look & Feel"
+    },
+    {
       "fieldname": "template",
       "fieldtype": "Select",
-      "label": "Template",
+      "label": "Template (Layout)",
       "reqd": 1,
       "default": "Modern",
       "options": "Modern\nProfessional\nMinimal\nClassic",
-      "in_list_view": 1
+      "in_list_view": 1,
+      "description": "Controls the page structure and layout"
     },
     {
-      "fieldname": "column_break_template",
+      "fieldname": "column_break_look",
       "fieldtype": "Column Break"
     },
     {
@@ -54,20 +70,23 @@
       "reqd": 1,
       "default": "Blue",
       "options": "Violet\nIndigo\nBlue\nGreen\nYellow\nOrange\nRed\nCustom",
-      "in_list_view": 1
+      "in_list_view": 1,
+      "description": "Select a preset or 'Custom' to choose your own colors"
     },
     {
       "fieldname": "section_colors",
       "fieldtype": "Section Break",
-      "label": "Colors"
+      "label": "Colors",
+      "hidden": 0
     },
     {
       "fieldname": "primary_color",
       "fieldtype": "Color",
       "label": "Primary Color",
       "reqd": 1,
-      "default": "#000000",
-      "in_list_view": 1
+      "default": "#2563EB",
+      "in_list_view": 1,
+      "description": "Main brand color used in headers, buttons, links"
     },
     {
       "fieldname": "secondary_color",
@@ -75,12 +94,15 @@
       "label": "Secondary Color",
       "reqd": 1,
       "default": "#FFFFFF",
-      "in_list_view": 1
+      "in_list_view": 1,
+      "description": "Background or text inverse color"
     },
     {
       "fieldname": "accent_color",
       "fieldtype": "Color",
-      "label": "Accent Color"
+      "label": "Accent Color",
+      "default": "#60A5FA",
+      "description": "Highlights, hover states, borders"
     },
     {
       "fieldname": "section_style",
@@ -118,7 +140,8 @@
     {
       "fieldname": "section_advanced",
       "fieldtype": "Section Break",
-      "label": "Advanced Settings"
+      "label": "Advanced Settings",
+      "collapsible": 1
     },
     {
       "fieldname": "custom_settings",
