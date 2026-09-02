@@ -14,7 +14,7 @@ def get_context(context):
         ["name", "business", "member", "display_name", "slug",
          "designation", "profile_image", "bio", "phone", "email",
          "whatsapp", "website", "qr_enabled", "qr_image",
-         "theme", "show_business"],
+         "theme", "show_business", "show_products", "show_services"],
         as_dict=True,
     )
     if not doc:
@@ -59,6 +59,28 @@ def get_context(context):
         if business:
             doc["business_name"] = business.get("business_name")
             doc["business_slug"] = business.get("slug")
+
+    # Products (if enabled)
+    context.products = []
+    if doc.get("show_products") and doc.get("business"):
+        context.products = frappe.get_all(
+            "Showcase Product",
+            filters={"business": doc["business"], "status": "Published"},
+            fields=["name", "product_name", "slug", "short_description", "price", "currency", "image"],
+            order_by="sort_order asc",
+            limit=10,
+        )
+
+    # Services (if enabled)
+    context.services = []
+    if doc.get("show_services") and doc.get("business"):
+        context.services = frappe.get_all(
+            "Showcase Service",
+            filters={"business": doc["business"], "status": "Published"},
+            fields=["name", "service_name", "slug", "short_description", "price", "currency", "image"],
+            order_by="sort_order asc",
+            limit=10,
+        )
 
     # Generate VCF content
     context.vcf_content = _generate_vcf(doc)

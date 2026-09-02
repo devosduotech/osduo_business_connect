@@ -165,6 +165,18 @@
       "default": 1
     },
     {
+      "fieldname": "show_products",
+      "fieldtype": "Check",
+      "label": "Show Products",
+      "default": 0
+    },
+    {
+      "fieldname": "show_services",
+      "fieldtype": "Check",
+      "label": "Show Services",
+      "default": 0
+    },
+    {
       "fieldname": "sort_order",
       "fieldtype": "Int",
       "label": "Sort Order"
