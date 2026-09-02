@@ -15,7 +15,7 @@
     display: none !important;
 }
 
-/* Reset Frappe page container for full-width public pages */
+/* Reset Frappe page container */
 .page-container {
     max-width: 100% !important;
     padding: 0 !important;
@@ -33,13 +33,15 @@
     max-width: 100% !important;
 }
 
-/* Hide Frappe breadcrumbs */
 .page-container .breadcrumb-area,
 .page-container .page-breadcrumbs,
 .page-container .breadcrumb {
     display: none !important;
 }
 
+/* ===================== */
+/* BASE PAGE             */
+/* ===================== */
 .bc-page {
     --bc-primary: #2563EB;
     --bc-secondary: #FFFFFF;
@@ -61,31 +63,182 @@
     margin: 0;
     padding: 0;
     line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
 }
 
-/* Header */
+/* ===================== */
+/* HEADER / HERO         */
+/* ===================== */
 .bc-header {
     background: var(--bc-header-bg);
     color: var(--bc-header-text);
-    padding: 3rem 1.5rem;
+    padding: 2.5rem 1.5rem;
     text-align: center;
 }
 
 .bc-header h1 {
-    font-size: 2rem;
+    font-size: 1.75rem;
     margin: 0 0 0.5rem 0;
     font-weight: 700;
     color: var(--bc-header-text);
 }
 
 .bc-header .bc-tagline {
-    font-size: 1.1rem;
+    font-size: 1rem;
     opacity: 0.9;
     margin: 0;
     color: var(--bc-header-text);
 }
 
-/* Cards */
+/* Cover image — natural height, no cropping */
+.bc-cover-img {
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+    border-radius: var(--bc-card-radius);
+    margin-bottom: 1.5rem;
+    display: block;
+}
+
+/* Logo */
+.bc-logo-img {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid rgba(255,255,255,0.3);
+    margin-bottom: 1rem;
+}
+
+/* ===================== */
+/* TEMPLATE: MODERN      */
+/* ===================== */
+.bc-template-modern .bc-header {
+    background: var(--bc-header-bg);
+    border-radius: 0 0 1.5rem 1.5rem;
+}
+
+.bc-template-modern .bc-card {
+    border-radius: var(--bc-card-radius);
+    box-shadow: var(--bc-card-shadow);
+}
+
+.bc-template-modern .bc-section-title {
+    position: relative;
+    padding-bottom: 0.5rem;
+}
+
+.bc-template-modern .bc-section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 3px;
+    background: var(--bc-primary);
+    border-radius: 2px;
+}
+
+/* ===================== */
+/* TEMPLATE: PROFESSIONAL */
+/* ===================== */
+.bc-template-professional .bc-header {
+    background: var(--bc-primary);
+    border-radius: 0;
+    padding: 2rem 1.5rem;
+}
+
+.bc-template-professional .bc-card {
+    border-radius: 4px;
+    box-shadow: none;
+    border: 1px solid #e2e8f0;
+}
+
+.bc-template-professional .bc-section-title {
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    color: #64748b;
+    font-weight: 600;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 0.75rem;
+}
+
+.bc-template-professional .bc-nav {
+    background: var(--bc-primary);
+}
+
+.bc-template-professional .bc-nav-link {
+    color: rgba(255,255,255,0.7);
+}
+
+.bc-template-professional .bc-nav-link:hover,
+.bc-template-professional .bc-nav-link.active {
+    color: white;
+    border-bottom-color: white;
+}
+
+/* ===================== */
+/* TEMPLATE: MINIMAL     */
+/* ===================== */
+.bc-template-minimal .bc-header {
+    background: transparent;
+    color: var(--bc-text);
+    padding: 2rem 1.5rem;
+}
+
+.bc-template-minimal .bc-header h1 {
+    color: var(--bc-text);
+}
+
+.bc-template-minimal .bc-header .bc-tagline {
+    color: #64748b;
+}
+
+.bc-template-minimal .bc-card {
+    border-radius: 0;
+    box-shadow: none;
+    border: none;
+    border-bottom: 1px solid #f1f5f9;
+    padding: 1.25rem 0;
+}
+
+.bc-template-minimal .bc-section-title {
+    font-weight: 400;
+    color: #94a3b8;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.bc-template-minimal .bc-btn {
+    border-radius: 0;
+}
+
+/* ===================== */
+/* TEMPLATE: CLASSIC     */
+/* ===================== */
+.bc-template-classic .bc-header {
+    background: var(--bc-header-bg);
+    border-radius: 0;
+    border-bottom: 4px solid var(--bc-accent);
+}
+
+.bc-template-classic .bc-card {
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border: 1px solid #f1f5f9;
+}
+
+.bc-template-classic .bc-section-title {
+    font-style: italic;
+    border-left: 4px solid var(--bc-primary);
+    padding-left: 0.75rem;
+}
+
+/* ===================== */
+/* CARDS                 */
+/* ===================== */
 .bc-card {
     background: white;
     border-radius: var(--bc-card-radius);
@@ -98,10 +251,12 @@
     display: block;
 }
 
-/* Buttons */
+/* ===================== */
+/* BUTTONS               */
+/* ===================== */
 .bc-btn {
     display: inline-block;
-    padding: 0.75rem 1.5rem;
+    padding: 0.7rem 1.4rem;
     border-radius: var(--bc-btn-radius);
     text-decoration: none;
     font-weight: 500;
@@ -109,7 +264,8 @@
     border: none;
     cursor: pointer;
     text-align: center;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
+    line-height: 1.4;
 }
 
 .bc-btn-primary {
@@ -146,27 +302,16 @@
     text-decoration: none;
 }
 
-/* Outline buttons */
-.bc-btn-outline.bc-btn-primary {
-    background: transparent;
-    color: var(--bc-primary);
-    border: 2px solid var(--bc-primary);
-}
-
-.bc-btn-outline.bc-btn-accent {
-    background: transparent;
-    color: var(--bc-accent);
-    border: 2px solid var(--bc-accent);
-}
-
-/* Sticky Action Bar */
+/* ===================== */
+/* STICKY ACTION BAR     */
+/* ===================== */
 .bc-action-bar {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
     background: white;
-    padding: 0.75rem;
+    padding: 0.6rem 0.75rem;
     display: flex;
     justify-content: space-around;
     box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
@@ -177,11 +322,13 @@
 .bc-action-bar .bc-btn {
     flex: 1;
     margin: 0;
-    font-size: 0.85rem;
-    padding: 0.6rem 0.5rem;
+    font-size: 0.8rem;
+    padding: 0.55rem 0.4rem;
 }
 
-/* Sections */
+/* ===================== */
+/* SECTIONS              */
+/* ===================== */
 .bc-section {
     padding: var(--bc-section-spacing);
     max-width: 800px;
@@ -189,13 +336,15 @@
 }
 
 .bc-section-title {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 600;
     margin: 0 0 1rem 0;
     color: var(--bc-primary);
 }
 
-/* Product Grid */
+/* ===================== */
+/* PRODUCT GRID          */
+/* ===================== */
 .bc-product-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -208,43 +357,49 @@
 
 .bc-product-card img {
     width: 100%;
-    height: 150px;
+    height: 140px;
     object-fit: cover;
     border-radius: var(--bc-card-radius);
 }
 
-/* Team Grid */
+/* ===================== */
+/* TEAM GRID             */
+/* ===================== */
 .bc-team-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 1.25rem;
     text-align: center;
 }
 
 .bc-team-grid img {
-    width: 100px;
-    height: 100px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
     object-fit: cover;
 }
 
-/* Contact */
+/* ===================== */
+/* CONTACT               */
+/* ===================== */
 .bc-contact-item {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0.875rem;
 }
 
-/* Back Link */
+/* ===================== */
+/* BACK LINK             */
+/* ===================== */
 .bc-back-link {
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
     color: var(--bc-primary);
     text-decoration: none;
-    margin-bottom: 1.5rem;
-    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
 }
 
 .bc-back-link:hover {
@@ -252,15 +407,20 @@
     color: var(--bc-primary);
 }
 
-/* Footer */
+/* ===================== */
+/* FOOTER                */
+/* ===================== */
 .bc-footer {
     text-align: center;
-    padding: 2rem;
-    color: #64748b;
-    font-size: 0.875rem;
+    padding: 1.5rem;
+    color: #94a3b8;
+    font-size: 0.8rem;
+    border-top: 1px solid #f1f5f9;
 }
 
-/* Navigation */
+/* ===================== */
+/* NAVIGATION            */
+/* ===================== */
 .bc-nav {
     display: flex;
     gap: 0;
@@ -270,15 +430,15 @@
     position: sticky;
     top: 0;
     z-index: 100;
-    padding: 0 1.5rem;
+    padding: 0 1rem;
     -webkit-overflow-scrolling: touch;
 }
 
 .bc-nav-link {
-    padding: 0.875rem 1.25rem;
+    padding: 0.8rem 1rem;
     color: #64748b;
     text-decoration: none;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 500;
     white-space: nowrap;
     border-bottom: 2px solid transparent;
@@ -295,29 +455,113 @@
     border-bottom-color: var(--bc-primary);
 }
 
-/* Responsive */
+/* ===================== */
+/* RESPONSIVE            */
+/* ===================== */
 @media (max-width: 768px) {
     .bc-header {
-        padding: 2rem 1rem;
+        padding: 1.5rem 1rem;
     }
 
     .bc-header h1 {
-        font-size: 1.5rem;
+        font-size: 1.35rem;
+    }
+
+    .bc-header .bc-tagline {
+        font-size: 0.9rem;
+    }
+
+    .bc-cover-img {
+        max-height: 250px;
+        border-radius: var(--bc-card-radius);
+    }
+
+    .bc-logo-img {
+        width: 72px;
+        height: 72px;
     }
 
     .bc-section {
-        padding: 1.5rem 1rem;
+        padding: 1.25rem 1rem;
+    }
+
+    .bc-section-title {
+        font-size: 1.1rem;
     }
 
     .bc-product-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+
+    .bc-product-card img {
+        height: 110px;
     }
 
     .bc-team-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+    }
+
+    .bc-team-grid img {
+        width: 64px;
+        height: 64px;
+    }
+
+    .bc-btn {
+        padding: 0.6rem 1.1rem;
+        font-size: 0.85rem;
     }
 
     .bc-action-bar {
         display: flex !important;
+        padding: 0.5rem;
+    }
+
+    .bc-action-bar .bc-btn {
+        font-size: 0.75rem;
+        padding: 0.5rem 0.3rem;
+    }
+
+    .bc-nav {
+        padding: 0 0.5rem;
+    }
+
+    .bc-nav-link {
+        padding: 0.7rem 0.75rem;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .bc-header {
+        padding: 1.25rem 0.75rem;
+    }
+
+    .bc-cover-img {
+        max-height: 180px;
+    }
+
+    .bc-section {
+        padding: 1rem 0.75rem;
+    }
+
+    .bc-product-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+    }
+
+    .bc-product-card img {
+        height: 90px;
+    }
+
+    .bc-team-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem;
+    }
+
+    .bc-team-grid img {
+        width: 56px;
+        height: 56px;
     }
 }

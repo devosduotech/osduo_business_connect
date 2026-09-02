@@ -1,17 +1,17 @@
 {%- extends "osduo_business_connect/templates/base.html" -%}
 
 {%- block page_content -%}
-<div class="bc-page" style="{{ theme_vars }}">
+<div class="bc-page bc-template-{{ theme.template|lower }}" style="{{ theme_vars }}">
 
     {# Back link #}
-    <div style="padding:1rem 1.5rem 0;">
+    <div style="padding:0.75rem 1.5rem 0;">
         <a href="/b/{{ business_slug }}" class="bc-back-link">&larr; {{ business_name }}</a>
     </div>
 
     {# ===== SERVICE HERO ===== #}
     <div class="bc-header" style="padding:2rem 1.5rem;">
         {% if doc.image %}
-        <img src="{{ doc.image }}" alt="{{ doc.service_name }}" style="width:100%;max-height:350px;object-fit:cover;border-radius:8px;margin-bottom:1.5rem;">
+        <img src="{{ doc.image }}" alt="{{ doc.service_name }}" class="bc-cover-img">
         {% endif %}
 
         <h1>{{ doc.service_name }}</h1>
@@ -20,7 +20,7 @@
         <p class="bc-tagline">{{ doc.short_description }}</p>
         {% endif %}
 
-        <div style="margin-top:1.5rem;display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+        <div style="margin-top:1.25rem;display:flex;gap:0.6rem;justify-content:center;flex-wrap:wrap;">
             {% if business_phone %}
             <a href="tel:{{ business_phone }}" class="bc-btn bc-btn-secondary">&#9742; Call</a>
             {% endif %}
@@ -64,9 +64,9 @@
     {% if doc.gallery %}
     <div class="bc-section">
         <h2 class="bc-section-title">Gallery</h2>
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:0.75rem;">
             {% for image in doc.gallery %}
-            <img src="{{ image.image }}" alt="" style="width:100%;height:150px;object-fit:cover;border-radius:8px;">
+            <img src="{{ image.image }}" alt="" style="width:100%;height:140px;object-fit:cover;border-radius:8px;">
             {% endfor %}
         </div>
     </div>
@@ -77,14 +77,14 @@
         <h2 class="bc-section-title">About {{ business_name }}</h2>
         <div class="bc-card" style="text-align:center;">
             <h3 style="margin:0 0 0.5rem;">{{ business_name }}</h3>
-            <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;margin-top:1rem;">
+            <div style="display:flex;gap:0.6rem;justify-content:center;flex-wrap:wrap;margin-top:0.75rem;">
                 {% if business_phone %}
-                <a href="tel:{{ business_phone }}" class="bc-btn bc-btn-secondary" style="font-size:0.85rem;">&#9742; Call</a>
+                <a href="tel:{{ business_phone }}" class="bc-btn bc-btn-secondary" style="font-size:0.8rem;">&#9742; Call</a>
                 {% endif %}
                 {% if business_whatsapp %}
-                <a href="https://wa.me/{{ business_whatsapp }}" class="bc-btn bc-btn-secondary" style="font-size:0.85rem;">&#128172; WhatsApp</a>
+                <a href="https://wa.me/{{ business_whatsapp }}" class="bc-btn bc-btn-secondary" style="font-size:0.8rem;">&#128172; WhatsApp</a>
                 {% endif %}
-                <a href="/b/{{ business_slug }}" class="bc-btn bc-btn-secondary" style="font-size:0.85rem;">&#127968; View Business</a>
+                <a href="/b/{{ business_slug }}" class="bc-btn bc-btn-secondary" style="font-size:0.8rem;">&#127968; View Business</a>
             </div>
         </div>
     </div>
