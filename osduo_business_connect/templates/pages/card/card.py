@@ -1,5 +1,4 @@
 import frappe
-from frappe.utils.file_manager import get_web_file_url
 from ....services.theme_service import get_business_theme, get_theme_data, get_default_theme, get_theme_variables
 
 
