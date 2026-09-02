@@ -1,9 +1,10 @@
 import frappe
 from frappe import _
-from ...services.theme_service import get_business_theme, get_theme_variables
+from ....services.theme_service import get_business_theme, get_theme_variables
+
 
 def get_context(context):
-    """Provide context for business profile page."""
+    """Business landing page — /b/<business_slug>"""
     slug = frappe.form_dict.get("business_slug")
     if not slug:
         frappe.throw("Business not found", frappe.DoesNotExistError)
@@ -25,12 +26,12 @@ def get_context(context):
     context.doc = doc
     context.title = doc.get("business_name") or doc.get("name")
 
-    # Fetch theme and generate CSS variables
+    # Theme
     theme_data = get_business_theme(doc.name)
     context.theme = theme_data
     context.theme_vars = get_theme_variables(theme_data)
 
-    # Fetch social links from Business (not Digital Card - data isolation)
+    # Social links
     context.social_links = frappe.get_all(
         "Business Social Link",
         filters={"parent": doc.name, "parenttype": "Business"},
@@ -38,7 +39,7 @@ def get_context(context):
         order_by="idx asc",
     )
 
-    # Fetch business hours separately
+    # Business hours
     context.business_hours = frappe.get_all(
         "Business Hour",
         filters={"parent": doc.name},
@@ -46,15 +47,15 @@ def get_context(context):
         order_by="idx asc",
     )
 
-    # Fetch cards
-    context.cards = frappe.db.get_list(
+    # Team members
+    context.members = frappe.db.get_list(
         "Digital Card",
         filters={"business": doc.name, "status": "Published", "public_profile_enabled": 1},
         fields=["name", "display_name", "slug", "designation", "profile_image"],
         order_by="sort_order asc",
     )
 
-    # Fetch products
+    # Products
     context.products = frappe.db.get_list(
         "Showcase Product",
         filters={"business": doc.name, "status": "Published"},
@@ -62,11 +63,11 @@ def get_context(context):
         order_by="sort_order asc",
     )
 
-    # Fetch services
+    # Services
     context.services = frappe.db.get_list(
         "Showcase Service",
         filters={"business": doc.name, "status": "Published"},
-        fields=["name", "service_name", "slug", "image", "short_description", "price", "currency"],
+        fields=["name", "service_name", "slug", "image", "short_description"],
         order_by="sort_order asc",
     )
 

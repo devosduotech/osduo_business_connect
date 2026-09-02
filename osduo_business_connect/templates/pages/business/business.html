@@ -2,14 +2,15 @@
 
 {%- block page_content -%}
 <div class="bc-page" style="{{ theme_vars }}">
-    {# Header #}
+
+    {# ===== HEADER ===== #}
     <div class="bc-header">
         {% if doc.cover_image %}
-        <img src="{{ doc.cover_image }}" alt="" style="width:100%;height:300px;object-fit:cover;border-radius:8px;margin-bottom:1.5rem;">
+        <img src="{{ doc.cover_image }}" alt="" style="width:100%;height:280px;object-fit:cover;border-radius:8px;margin-bottom:1.5rem;">
         {% endif %}
 
         {% if doc.logo %}
-        <img src="{{ doc.logo }}" alt="{{ doc.business_name }}" style="width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid white;margin-bottom:1rem;">
+        <img src="{{ doc.logo }}" alt="{{ doc.business_name }}" style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:4px solid white;margin-bottom:1rem;">
         {% endif %}
 
         <h1>{{ doc.business_name }}</h1>
@@ -28,41 +29,30 @@
         </div>
     </div>
 
-    {# About #}
+    {# ===== NAVIGATION ===== #}
+    <nav class="bc-nav" id="bc-nav">
+        <a href="#bc-about" class="bc-nav-link active">About</a>
+        {% if products %}<a href="#bc-products" class="bc-nav-link">Products</a>{% endif %}
+        {% if services %}<a href="#bc-services" class="bc-nav-link">Services</a>{% endif %}
+        {% if members %}<a href="#bc-team" class="bc-nav-link">Team</a>{% endif %}
+        <a href="#bc-contact" class="bc-nav-link">Contact</a>
+    </nav>
+
+    {# ===== ABOUT ===== #}
     {% if doc.description %}
-    <div class="bc-section">
+    <div class="bc-section" id="bc-about">
         <h2 class="bc-section-title">About Us</h2>
         <p style="line-height:1.8;color:#475569;">{{ doc.description }}</p>
     </div>
     {% endif %}
 
-    {# Services #}
-    {% if services %}
-    <div class="bc-section">
-        <h2 class="bc-section-title">Services</h2>
-        <div class="bc-product-grid">
-            {% for service in services %}
-            <a href="/b/{{ doc.slug }}/s/{{ service.slug }}" class="bc-card bc-product-card">
-                {% if service.image %}
-                <img src="{{ service.image }}" alt="{{ service.service_name }}">
-                {% else %}
-                <div style="height:150px;background:#f1f5f9;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#94a3b8;">&#128295;</div>
-                {% endif %}
-                <h3 style="margin:0.75rem 0 0.25rem;font-size:1rem;">{{ service.service_name }}</h3>
-                <p style="margin:0;color:#64748b;font-size:0.875rem;">{{ service.short_description[:60] }}{% if service.short_description|length > 60 %}...{% endif %}</p>
-            </a>
-            {% endfor %}
-        </div>
-    </div>
-    {% endif %}
-
-    {# Products #}
+    {# ===== PRODUCTS ===== #}
     {% if products %}
-    <div class="bc-section">
+    <div class="bc-section" id="bc-products">
         <h2 class="bc-section-title">Products</h2>
         <div class="bc-product-grid">
             {% for product in products %}
-            <a href="/b/{{ doc.slug }}/p/{{ product.slug }}" class="bc-card bc-product-card">
+            <a href="/b/{{ doc.slug }}/products/{{ product.slug }}" class="bc-card bc-product-card">
                 {% if product.image %}
                 <img src="{{ product.image }}" alt="{{ product.product_name }}">
                 {% else %}
@@ -76,21 +66,41 @@
     </div>
     {% endif %}
 
-    {# Team #}
-    {% if cards %}
-    <div class="bc-section">
+    {# ===== SERVICES ===== #}
+    {% if services %}
+    <div class="bc-section" id="bc-services">
+        <h2 class="bc-section-title">Services</h2>
+        <div class="bc-product-grid">
+            {% for service in services %}
+            <a href="/b/{{ doc.slug }}/services/{{ service.slug }}" class="bc-card bc-product-card">
+                {% if service.image %}
+                <img src="{{ service.image }}" alt="{{ service.service_name }}">
+                {% else %}
+                <div style="height:150px;background:#f1f5f9;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#94a3b8;">&#128295;</div>
+                {% endif %}
+                <h3 style="margin:0.75rem 0 0.25rem;font-size:1rem;">{{ service.service_name }}</h3>
+                <p style="margin:0;color:#64748b;font-size:0.875rem;">{{ service.short_description[:60] }}{% if service.short_description|length > 60 %}...{% endif %}</p>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {# ===== TEAM ===== #}
+    {% if members %}
+    <div class="bc-section" id="bc-team">
         <h2 class="bc-section-title">Our Team</h2>
         <div class="bc-team-grid">
-            {% for card in cards %}
-            <a href="/c/{{ card.slug }}" style="text-decoration:none;color:inherit;">
-                {% if card.profile_image %}
-                <img src="{{ card.profile_image }}" alt="{{ card.display_name }}">
+            {% for member in members %}
+            <a href="/b/{{ doc.slug }}/team/{{ member.slug }}" style="text-decoration:none;color:inherit;">
+                {% if member.profile_image %}
+                <img src="{{ member.profile_image }}" alt="{{ member.display_name }}">
                 {% else %}
-                <div style="width:100px;height:100px;border-radius:50%;background:var(--bc-primary);color:white;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto;">{{ card.display_name[0] }}</div>
+                <div style="width:100px;height:100px;border-radius:50%;background:var(--bc-primary);color:white;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto;">{{ member.display_name[0] }}</div>
                 {% endif %}
-                <h3 style="margin:0.75rem 0 0.25rem;font-size:1rem;">{{ card.display_name }}</h3>
-                {% if card.designation %}
-                <p style="margin:0;color:#64748b;font-size:0.875rem;">{{ card.designation }}</p>
+                <h3 style="margin:0.75rem 0 0.25rem;font-size:1rem;">{{ member.display_name }}</h3>
+                {% if member.designation %}
+                <p style="margin:0;color:#64748b;font-size:0.875rem;">{{ member.designation }}</p>
                 {% endif %}
             </a>
             {% endfor %}
@@ -98,7 +108,7 @@
     </div>
     {% endif %}
 
-    {# Contact #}
+    {# ===== CONTACT ===== #}
     <div class="bc-section" id="bc-contact">
         <h2 class="bc-section-title">Contact</h2>
         <div class="bc-card">
@@ -129,7 +139,7 @@
         </div>
     </div>
 
-    {# Social Links #}
+    {# ===== SOCIAL LINKS ===== #}
     {% if social_links %}
     <div class="bc-section">
         <h2 class="bc-section-title">Connect</h2>

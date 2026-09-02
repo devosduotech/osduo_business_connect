@@ -3,6 +3,7 @@
 {%- block page_content -%}
 <div class="bc-page" style="{{ theme_vars }}">
     <div class="bc-card" style="max-width:480px;margin:0 auto;text-align:center;">
+
         {# Profile Image #}
         {% if doc.profile_image %}
         <img src="{{ doc.profile_image }}" alt="{{ doc.display_name }}" style="width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid var(--bc-accent);margin-bottom:1rem;">
@@ -15,7 +16,10 @@
         {# Name & Designation #}
         <h1 style="margin:0.5rem 0 0.25rem;font-size:1.5rem;">{{ doc.display_name }}</h1>
         {% if doc.designation %}
-        <p style="color:#666;margin:0 0 1rem;">{{ doc.designation }}</p>
+        <p style="color:#666;margin:0 0 0.5rem;">{{ doc.designation }}</p>
+        {% endif %}
+        {% if doc.show_business and doc.business_name %}
+        <p style="color:#94a3b8;margin:0 0 1rem;font-size:0.9rem;">{{ doc.business_name }}</p>
         {% endif %}
 
         {# Bio #}
@@ -23,7 +27,7 @@
         <div style="color:#555;font-size:0.95rem;line-height:1.6;margin:1rem 0;padding:1rem;background:var(--bc-background);border-radius:var(--bc-card-radius);">{{ doc.bio }}</div>
         {% endif %}
 
-        {# Contact Links #}
+        {# Action Buttons #}
         <div style="display:flex;flex-direction:column;gap:0.75rem;margin:1.5rem 0;">
             {% if doc.phone %}
             <a href="tel:{{ doc.phone }}" class="bc-btn bc-btn-primary">&#9742; Call {{ doc.phone }}</a>
@@ -49,7 +53,7 @@
         {% endif %}
 
         {# Business Link #}
-        {% if doc.show_business and doc.business_name %}
+        {% if doc.show_business and doc.business_slug %}
         <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid #eee;">
             <a href="/b/{{ doc.business_slug }}" style="color:var(--bc-primary);text-decoration:none;font-size:0.9rem;">{{ doc.business_name }}</a>
         </div>

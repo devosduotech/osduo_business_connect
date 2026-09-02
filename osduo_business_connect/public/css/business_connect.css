@@ -260,6 +260,41 @@
     font-size: 0.875rem;
 }
 
+/* Navigation */
+.bc-nav {
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    background: white;
+    border-bottom: 1px solid #e2e8f0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 0 1.5rem;
+    -webkit-overflow-scrolling: touch;
+}
+
+.bc-nav-link {
+    padding: 0.875rem 1.25rem;
+    color: #64748b;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+}
+
+.bc-nav-link:hover {
+    color: var(--bc-primary);
+    text-decoration: none;
+}
+
+.bc-nav-link.active {
+    color: var(--bc-primary);
+    border-bottom-color: var(--bc-primary);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .bc-header {
