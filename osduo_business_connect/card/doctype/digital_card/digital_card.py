@@ -36,6 +36,9 @@ class DigitalCard(Document):
     def on_update(self):
         """Post-save operations."""
         self.handle_publish_status()
+        # Generate QR if enabled but not yet generated
+        if self.qr_enabled and not self.qr_image and self.status == "Published":
+            self.generate_qr_code()
 
     def normalize_fields(self):
         """Normalize field values."""

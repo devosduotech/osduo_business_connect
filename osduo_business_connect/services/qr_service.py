@@ -64,6 +64,7 @@ def generate_qr_code(card_doc):
             "attached_to_name": card_doc.name,
         })
         file_doc.insert(ignore_permissions=True)
+        file_doc.reload()
 
         # Update card document using direct DB update to avoid triggering lifecycle hooks
         frappe.db.set_value("Digital Card", card_doc.name, "qr_image", file_doc.file_url)
