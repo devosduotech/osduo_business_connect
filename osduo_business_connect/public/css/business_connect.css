@@ -90,14 +90,15 @@
     color: var(--bc-header-text);
 }
 
-/* Cover image — natural height, no cropping */
+/* Cover image — full image visible, no cropping */
 .bc-cover-img {
     width: 100%;
     max-height: 400px;
-    object-fit: cover;
+    object-fit: contain;
     border-radius: var(--bc-card-radius);
     margin-bottom: 1.5rem;
     display: block;
+    background: #f8fafc;
 }
 
 /* Logo */
@@ -357,9 +358,10 @@
 
 .bc-product-card img {
     width: 100%;
-    height: 140px;
-    object-fit: cover;
+    height: 160px;
+    object-fit: contain;
     border-radius: var(--bc-card-radius);
+    background: #f8fafc;
 }
 
 /* ===================== */
@@ -472,7 +474,7 @@
     }
 
     .bc-cover-img {
-        max-height: 250px;
+        max-height: 280px;
         border-radius: var(--bc-card-radius);
     }
 
@@ -495,7 +497,7 @@
     }
 
     .bc-product-card img {
-        height: 110px;
+        height: 130px;
     }
 
     .bc-team-grid {
@@ -539,7 +541,7 @@
     }
 
     .bc-cover-img {
-        max-height: 180px;
+        max-height: 200px;
     }
 
     .bc-section {
@@ -552,7 +554,7 @@
     }
 
     .bc-product-card img {
-        height: 90px;
+        height: 100px;
     }
 
     .bc-team-grid {
