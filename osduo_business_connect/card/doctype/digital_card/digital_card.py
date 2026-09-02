@@ -39,6 +39,7 @@ class DigitalCard(Document):
         # Generate QR if enabled but not yet generated
         if self.qr_enabled and not self.qr_image and self.status == "Published":
             self.generate_qr_code()
+            self.reload()
 
     def normalize_fields(self):
         """Normalize field values."""
