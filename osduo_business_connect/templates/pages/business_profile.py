@@ -1,4 +1,6 @@
 import frappe
+from frappe import _
+from ...services.theme_service import get_business_theme, get_theme_css
 
 def get_context(context):
     """Provide context for business profile page."""
@@ -25,12 +27,17 @@ def get_context(context):
     context.no_breadcrumbs = 1
     context.no_header = 1
 
+    # Fetch theme and generate CSS
+    theme_data = get_business_theme(doc.name)
+    context.theme = theme_data
+    context.theme_css = get_theme_css(theme_data)
+
     # Fetch social links separately (child table)
     context.social_links = frappe.get_all(
-        "Business Social Link",
-        filters={"parent": doc.name},
-        fields=["platform", "url"],
-        order_by="idx asc",
+        "Digital Card Link",
+        filters={"parenttype": "Digital Card", "parentfield": "links"},
+        fields=["link_type", "label", "url", "value"],
+        order_by="sort_order asc",
     )
 
     # Fetch business hours separately

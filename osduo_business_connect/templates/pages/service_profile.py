@@ -1,4 +1,5 @@
 import frappe
+from ...services.theme_service import get_business_theme, get_theme_css
 
 def get_context(context):
     """Provide context for service profile page."""
@@ -12,7 +13,7 @@ def get_context(context):
     business = frappe.db.get_value(
         "Business",
         {"slug": business_slug, "status": "Published"},
-        ["name", "business_name", "email"],
+        ["name", "business_name", "email", "phone", "whatsapp"],
         as_dict=True,
     )
     if not business:
@@ -33,8 +34,15 @@ def get_context(context):
     context.business_slug = business_slug
     context.business_name = business.get("business_name")
     context.business_email = business.get("email")
+    context.business_phone = business.get("phone")
+    context.business_whatsapp = business.get("whatsapp")
     context.no_breadcrumbs = 1
     context.no_header = 1
+
+    # Fetch theme and generate CSS
+    theme_data = get_business_theme(business.name)
+    context.theme = theme_data
+    context.theme_css = get_theme_css(theme_data)
 
     # SEO
     if doc.get("seo_title"):

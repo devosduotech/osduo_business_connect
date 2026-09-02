@@ -40,7 +40,7 @@
       "label": "Template",
       "reqd": 1,
       "default": "Modern",
-      "options": "Modern\nProfessional\nMinimal\nClassic",
+      "options": "Modern\nProfessional\nMinimal\nClassic\nViolet\nIndigo\nBlue\nGreen\nYellow\nOrange\nRed",
       "in_list_view": 1
     },
     {

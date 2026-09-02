@@ -2,162 +2,182 @@
 
 {%- block page_content -%}
 <style>
-.business-profile { max-width: 960px; margin: 0 auto; }
-.business-hero { position: relative; margin-bottom: 2rem; }
-.business-hero .cover { width: 100%; height: 300px; object-fit: cover; border-radius: 12px; }
-.business-hero .logo { width: 100px; height: 100px; border-radius: 12px; object-fit: cover; border: 3px solid #fff; position: absolute; bottom: -40px; left: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
-.business-header { padding: 50px 24px 1rem; }
-.business-header h1 { margin: 0; font-size: 1.75rem; }
-.business-header .industry { color: #666; font-size: 0.95rem; }
-.business-header .description { color: #555; line-height: 1.7; margin: 1rem 0; }
-
-.contact-section { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin: 2rem 0; }
-.contact-section .info { padding: 1.5rem; background: #f9f9f9; border-radius: 12px; }
-.contact-section .info h2 { margin: 0 0 1rem; font-size: 1.1rem; }
-.contact-section .info a { display: block; color: #4C5AE5; text-decoration: none; margin-bottom: 0.5rem; }
-.contact-section .hours { padding: 1.5rem; background: #f9f9f9; border-radius: 12px; }
-.contact-section .hours h2 { margin: 0 0 1rem; font-size: 1.1rem; }
-.hours-row { display: flex; justify-content: space-between; padding: 0.35rem 0; border-bottom: 1px solid #eee; }
-
-.cards-section, .products-section, .services-section { margin: 3rem 0; }
-.section-title { font-size: 1.25rem; margin-bottom: 1.5rem; }
-.cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
-.card-item { text-align: center; padding: 1.5rem; background: #fff; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); text-decoration: none; color: inherit; }
-.card-item img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 0.75rem; }
-.card-item h3 { margin: 0; font-size: 1rem; }
-.card-item p { margin: 0.25rem 0 0; color: #666; font-size: 0.85rem; }
-
-.products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
-.product-item { padding: 1rem; background: #fff; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); text-decoration: none; color: inherit; }
-.product-item img { width: 100%; height: 160px; object-fit: cover; border-radius: 8px; margin-bottom: 0.75rem; }
-.product-item h3 { margin: 0; font-size: 1rem; }
-.product-item p { margin: 0.25rem 0 0; color: #666; font-size: 0.85rem; }
-.product-item .price { color: #4C5AE5; font-weight: 600; margin-top: 0.5rem; }
+{{ theme_css }}
 </style>
 
 <div class="business-profile">
-    {# Hero Section #}
-    <div class="business-hero">
-        {% if doc.cover_image %}
-        <img src="{{ doc.cover_image }}" alt="" class="cover">
-        {% else %}
-        <div style="height:300px; background:linear-gradient(135deg, #4C5AE5 0%, #667eea 100%); border-radius:12px;"></div>
-        {% endif %}
-        {% if doc.logo %}
-        <img src="{{ doc.logo }}" alt="{{ doc.business_name }}" class="logo">
-        {% endif %}
-    </div>
-
+    {# Header Section #}
     <div class="business-header">
+        {% if doc.cover_image %}
+        <img src="{{ doc.cover_image }}" alt="" style="width:100%;height:300px;object-fit:cover;border-radius:8px;margin-bottom:1.5rem;">
+        {% endif %}
+        
+        {% if doc.logo %}
+        <img src="{{ doc.logo }}" alt="{{ doc.business_name }}" style="width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid white;margin-bottom:1rem;">
+        {% endif %}
+        
         <h1>{{ doc.business_name }}</h1>
         {% if doc.industry %}
-        <p class="industry">{{ doc.industry }}</p>
+        <p class="tagline">{{ doc.industry }}</p>
         {% endif %}
-        {% if doc.description %}
-        <div class="description">{{ doc.description }}</div>
-        {% endif %}
+        
+        {# Quick Actions #}
+        <div style="margin-top:1.5rem;display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+            {% if doc.phone %}
+            <a href="tel:{{ doc.phone }}" class="btn btn-secondary">📞 Call</a>
+            {% endif %}
+            {% if doc.whatsapp %}
+            <a href="https://wa.me/{{ doc.whatsapp }}" class="btn btn-secondary">💬 WhatsApp</a>
+            {% endif %}
+            <a href="#contact" class="btn btn-accent">✉️ Enquiry</a>
+        </div>
     </div>
 
-    {# Contact & Hours #}
-    <div class="contact-section">
-        <div class="info">
-            <h2>Contact</h2>
-            {% if doc.phone %}<a href="tel:{{ doc.phone }}">📞 {{ doc.phone }}</a>{% endif %}
-            {% if doc.email %}<a href="mailto:{{ doc.email }}">✉️ {{ doc.email }}</a>{% endif %}
-            {% if doc.website %}<a href="{{ doc.website }}" target="_blank">🌐 {{ doc.website }}</a>{% endif %}
-            {% if doc.address %}
-            <p style="margin:0.5rem 0 0; color:#555;">📍 {{ doc.address }}{% if doc.city %}, {{ doc.city }}{% endif %}{% if doc.state %}, {{ doc.state }}{% endif %}</p>
-            {% endif %}
-        </div>
-        <div class="hours">
-            <h2>Business Hours</h2>
-            {% for hour in business_hours %}
-            <div class="hours-row">
-                <span>{{ hour.day }}</span>
-                <span>{% if not hour.enabled %}Closed{% elif hour.is_24_hours %}24 Hours{% else %}{{ hour.open_time }} - {{ hour.close_time }}{% endif %}</span>
-            </div>
+    {# About Section #}
+    {% if doc.description %}
+    <div class="section">
+        <h2 class="section-title">About Us</h2>
+        <p style="line-height:1.8;color:#475569;">{{ doc.description }}</p>
+    </div>
+    {% endif %}
+
+    {# Products Section #}
+    {% if products %}
+    <div class="section">
+        <h2 class="section-title">Products</h2>
+        <div class="product-grid">
+            {% for product in products %}
+            <a href="/b/{{ doc.slug }}/p/{{ product.slug }}" class="card product-card" style="text-decoration:none;color:inherit;">
+                {% if product.image %}
+                <img src="{{ product.image }}" alt="{{ product.product_name }}">
+                {% else %}
+                <div style="height:150px;background:#f1f5f9;border-radius:var(--border-radius);display:flex;align-items:center;justify-content:center;color:#94a3b8;">📦</div>
+                {% endif %}
+                <h3 style="margin:0.75rem 0 0.25rem;font-size:1rem;">{{ product.product_name }}</h3>
+                <p style="margin:0;color:#64748b;font-size:0.875rem;">{{ product.short_description[:60] }}{% if product.short_description|length > 60 %}...{% endif %}</p>
+                {% if product.price %}
+                <div style="margin-top:0.5rem;color:var(--primary-color);font-weight:600;">{% if product.currency %}{{ product.currency }} {% endif %}{{ product.price }}</div>
+                {% endif %}
+            </a>
             {% endfor %}
-            {% if not business_hours %}
-            <p style="color:#666;">Not specified</p>
+        </div>
+        {% if products|length > 6 %}
+        <div style="text-align:center;margin-top:1.5rem;">
+            <a href="/b/{{ doc.slug }}/products" class="btn btn-secondary">View All Products</a>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {# Services Section #}
+    {% if services %}
+    <div class="section">
+        <h2 class="section-title">Services</h2>
+        <div class="product-grid">
+            {% for service in services %}
+            <a href="/b/{{ doc.slug }}/s/{{ service.slug }}" class="card product-card" style="text-decoration:none;color:inherit;">
+                {% if service.image %}
+                <img src="{{ service.image }}" alt="{{ service.service_name }}">
+                {% else %}
+                <div style="height:150px;background:#f1f5f9;border-radius:var(--border-radius);display:flex;align-items:center;justify-content:center;color:#94a3b8;">🔧</div>
+                {% endif %}
+                <h3 style="margin:0.75rem 0 0.25rem;font-size:1rem;">{{ service.service_name }}</h3>
+                <p style="margin:0;color:#64748b;font-size:0.875rem;">{{ service.short_description[:60] }}{% if service.short_description|length > 60 %}...{% endif %}</p>
+                {% if service.price %}
+                <div style="margin-top:0.5rem;color:var(--primary-color);font-weight:600;">{% if service.currency %}{{ service.currency }} {% endif %}{{ service.price }}</div>
+                {% endif %}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {# Team Section #}
+    {% if cards %}
+    <div class="section">
+        <h2 class="section-title">Our Team</h2>
+        <div class="team-grid">
+            {% for card in cards %}
+            <a href="/c/{{ card.slug }}" style="text-decoration:none;color:inherit;">
+                {% if card.profile_image %}
+                <img src="{{ card.profile_image }}" alt="{{ card.display_name }}">
+                {% else %}
+                <div style="width:100px;height:100px;border-radius:50%;background:var(--primary-color);color:white;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto;">{{ card.display_name[0] }}</div>
+                {% endif %}
+                <h3 style="margin:0.75rem 0 0.25rem;font-size:1rem;">{{ card.display_name }}</h3>
+                {% if card.designation %}
+                <p style="margin:0;color:#64748b;font-size:0.875rem;">{{ card.designation }}</p>
+                {% endif %}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {# Contact Section #}
+    <div class="section" id="contact">
+        <h2 class="section-title">Contact</h2>
+        <div class="card">
+            {% if doc.phone %}
+            <div class="contact-item">
+                <span class="icon">📞</span>
+                <a href="tel:{{ doc.phone }}" style="color:inherit;text-decoration:none;">{{ doc.phone }}</a>
+            </div>
+            {% endif %}
+            {% if doc.email %}
+            <div class="contact-item">
+                <span class="icon">✉️</span>
+                <a href="mailto:{{ doc.email }}" style="color:inherit;text-decoration:none;">{{ doc.email }}</a>
+            </div>
+            {% endif %}
+            {% if doc.website %}
+            <div class="contact-item">
+                <span class="icon">🌐</span>
+                <a href="{{ doc.website }}" target="_blank" style="color:inherit;text-decoration:none;">{{ doc.website }}</a>
+            </div>
+            {% endif %}
+            {% if doc.address %}
+            <div class="contact-item">
+                <span class="icon">📍</span>
+                <span>{{ doc.address }}{% if doc.city %}, {{ doc.city }}{% endif %}{% if doc.state %}, {{ doc.state }}{% endif %}</span>
+            </div>
             {% endif %}
         </div>
     </div>
 
     {# Social Links #}
     {% if social_links %}
-    <div style="margin: 2rem 0; display: flex; gap: 0.5rem; flex-wrap: wrap;">
-        {% for link in social_links %}
-        <a href="{{ link.url }}" target="_blank" style="padding: 0.5rem 1rem; background: #f0f0f0; border-radius: 20px; text-decoration: none; color: #555; font-size: 0.85rem;">{{ link.platform }}</a>
-        {% endfor %}
-    </div>
-    {% endif %}
-
-    {# Cards #}
-    {% if cards %}
-    <div class="cards-section">
-        <h2 class="section-title">Team</h2>
-        <div class="cards-grid">
-            {% for card in cards %}
-            <a href="/c/{{ card.slug }}" class="card-item">
-                {% if card.profile_image %}
-                <img src="{{ card.profile_image }}" alt="{{ card.display_name }}">
-                {% else %}
-                <div style="width:80px;height:80px;border-radius:50%;background:#4C5AE5;color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin:0 auto 0.75rem;">{{ card.display_name[0] }}</div>
-                {% endif %}
-                <h3>{{ card.display_name }}</h3>
-                {% if card.designation %}
-                <p>{{ card.designation }}</p>
-                {% endif %}
-            </a>
+    <div class="section">
+        <h2 class="section-title">Connect</h2>
+        <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+            {% for link in social_links %}
+            <a href="{{ link.url }}" target="_blank" class="btn btn-secondary" style="font-size:0.875rem;">{{ link.label or link.link_type }}</a>
             {% endfor %}
         </div>
     </div>
     {% endif %}
 
-    {# Products #}
-    {% if products %}
-    <div class="products-section">
-        <h2 class="section-title">Products</h2>
-        <div class="products-grid">
-            {% for product in products %}
-            <a href="/b/{{ doc.slug }}/p/{{ product.slug }}" class="product-item">
-                {% if product.image %}
-                <img src="{{ product.image }}" alt="{{ product.product_name }}">
-                {% else %}
-                <div style="height:160px;background:#f0f0f0;border-radius:8px;margin-bottom:0.75rem;"></div>
-                {% endif %}
-                <h3>{{ product.product_name }}</h3>
-                <p>{{ product.short_description[:80] }}{% if product.short_description|length > 80 %}...{% endif %}</p>
-                {% if product.price %}
-                <div class="price">{% if product.currency %}{{ product.currency }} {% endif %}{{ product.price }}</div>
-                {% endif %}
-            </a>
-            {% endfor %}
-        </div>
+    {# Footer #}
+    <div class="footer">
+        <p>Powered by OSDuo Business Connect</p>
     </div>
-    {% endif %}
-
-    {# Services #}
-    {% if services %}
-    <div class="services-section">
-        <h2 class="section-title">Services</h2>
-        <div class="products-grid">
-            {% for service in services %}
-            <a href="/b/{{ doc.slug }}/s/{{ service.slug }}" class="product-item">
-                {% if service.image %}
-                <img src="{{ service.image }}" alt="{{ service.service_name }}">
-                {% else %}
-                <div style="height:160px;background:#f0f0f0;border-radius:8px;margin-bottom:0.75rem;"></div>
-                {% endif %}
-                <h3>{{ service.service_name }}</h3>
-                <p>{{ service.short_description[:80] }}{% if service.short_description|length > 80 %}...{% endif %}</p>
-                {% if service.price %}
-                <div class="price">{% if service.currency %}{{ service.currency }} {% endif %}{{ service.price }}</div>
-                {% endif %}
-            </a>
-            {% endfor %}
-        </div>
-    </div>
-    {% endif %}
 </div>
+
+{# Sticky Action Bar (Mobile) #}
+<div class="action-bar" style="display:none;">
+    {% if doc.phone %}
+    <a href="tel:{{ doc.phone }}" class="btn btn-primary">📞 Call</a>
+    {% endif %}
+    {% if doc.whatsapp %}
+    <a href="https://wa.me/{{ doc.whatsapp }}" class="btn btn-primary">💬 WhatsApp</a>
+    {% endif %}
+    <a href="#contact" class="btn btn-accent">✉️ Enquiry</a>
+</div>
+
+<script>
+// Show action bar on mobile
+if (window.innerWidth <= 768) {
+    document.querySelector('.action-bar').style.display = 'flex';
+}
+</script>
 {%- endblock -%}
