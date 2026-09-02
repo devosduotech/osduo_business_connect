@@ -74,7 +74,7 @@
             {% for hour in business_hours %}
             <div class="hours-row">
                 <span>{{ hour.day }}</span>
-                <span>{% if hour.is_closed %}Closed{% else %}{{ hour.open_time }} - {{ hour.close_time }}{% endif %}</span>
+                <span>{% if not hour.enabled %}Closed{% elif hour.is_24_hours %}24 Hours{% else %}{{ hour.open_time }} - {{ hour.close_time }}{% endif %}</span>
             </div>
             {% endfor %}
             {% if not business_hours %}

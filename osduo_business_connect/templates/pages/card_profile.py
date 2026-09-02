@@ -24,12 +24,12 @@ def get_context(context):
     context.no_breadcrumbs = 1
     context.no_header = 1
 
-    # Fetch social links separately (child table)
+    # Fetch social links from Digital Card Link child table
     context.links = frappe.get_all(
-        "Social Link",
-        filters={"parent": doc.name},
-        fields=["platform", "url"],
-        order_by="idx asc",
+        "Digital Card Link",
+        filters={"parent": doc.name, "enabled": 1},
+        fields=["link_type", "label", "value", "url"],
+        order_by="sort_order asc",
     )
 
     # Fetch business info for the link

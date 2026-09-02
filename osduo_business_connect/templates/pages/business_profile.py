@@ -25,7 +25,7 @@ def get_context(context):
     context.no_breadcrumbs = 1
     context.no_header = 1
 
-    # Fetch social links separately (child table - no permission check needed)
+    # Fetch social links separately (child table)
     context.social_links = frappe.get_all(
         "Business Social Link",
         filters={"parent": doc.name},
@@ -37,11 +37,11 @@ def get_context(context):
     context.business_hours = frappe.get_all(
         "Business Hour",
         filters={"parent": doc.name},
-        fields=["day", "open_time", "close_time", "is_closed"],
+        fields=["day", "open_time", "close_time", "enabled", "is_24_hours"],
         order_by="idx asc",
     )
 
-    # Fetch cards using db.get_list to bypass permission hooks
+    # Fetch cards
     context.cards = frappe.db.get_list(
         "Digital Card",
         filters={"business": doc.name, "status": "Published", "public_profile_enabled": 1},
