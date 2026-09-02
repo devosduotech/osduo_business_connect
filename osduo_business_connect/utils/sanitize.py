@@ -69,7 +69,7 @@ def sanitize_url(url):
 def sanitize_text(text):
     """
     Sanitize plain text content.
-    
+
     Removes any HTML tags and escapes special characters.
 
     Args:
@@ -80,7 +80,57 @@ def sanitize_text(text):
     """
     if not text:
         return text
-    
+
     # Use Frappe's text sanitizer
     from frappe.utils import cstr
     return cstr(text).strip()
+
+
+def normalize_url(url):
+    """
+    Normalize URL by prepending https:// if no protocol is specified.
+
+    Improves UX for non-tech savvy users who type 'www.example.com'
+    instead of 'https://www.example.com'.
+
+    Args:
+        url: URL to normalize
+
+    Returns:
+        str: Normalized URL with protocol
+    """
+    if not url:
+        return url
+
+    url = url.strip()
+
+    if not url:
+        return url
+
+    # Already has a protocol
+    if url.startswith(("http://", "https://", "mailto:", "tel:")):
+        return url
+
+    # Prepend https:// for domains like www.example.com or example.com
+    return "https://" + url
+
+
+def normalize_url_fields(doc):
+    """
+    Normalize all URL fields in a document.
+
+    Call this from before_validate or before_save in DocType controllers.
+
+    Args:
+        doc: Frappe document with URL fields
+    """
+    url_fields = [
+        field.fieldname
+        for field in doc.meta.get("fields", [])
+        if field.fieldtype == "Data" and field.options == "URL"
+    ]
+
+    for fieldname in url_fields:
+        value = doc.get(fieldname)
+        if value:
+            doc.set(fieldname, normalize_url(value))

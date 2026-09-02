@@ -23,6 +23,7 @@ class Enquiry(Document):
     def before_validate(self):
         """Pre-process data before validation."""
         self.normalize_fields()
+        self.normalize_urls()
         self.sanitize_message()
 
     def validate(self):
@@ -53,6 +54,11 @@ class Enquiry(Document):
         # Normalize phone
         if self.visitor_phone:
             self.visitor_phone = self.visitor_phone.strip()
+
+    def normalize_urls(self):
+        """Normalize URL fields to add https:// if missing."""
+        from osduo_business_connect.utils.sanitize import normalize_url_fields
+        normalize_url_fields(self)
 
         # Normalize company
         if self.visitor_company:

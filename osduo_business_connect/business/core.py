@@ -31,6 +31,7 @@ class Business(Document):
     def before_validate(self):
         """Pre-process data before validation."""
         self.normalize_fields()
+        self.normalize_urls()
 
     def validate(self):
         """Authoritative location for business validation."""
@@ -88,6 +89,11 @@ class Business(Document):
         # Normalize slug to lowercase
         if self.slug:
             self.slug = self.slug.lower().strip()
+
+    def normalize_urls(self):
+        """Normalize URL fields to add https:// if missing."""
+        from osduo_business_connect.utils.sanitize import normalize_url_fields
+        normalize_url_fields(self)
 
         # Normalize email
         if self.email:

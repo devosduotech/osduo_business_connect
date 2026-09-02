@@ -20,6 +20,7 @@ class DigitalCard(Document):
     def before_validate(self):
         """Pre-process data before validation."""
         self.normalize_fields()
+        self.normalize_urls()
 
     def validate(self):
         """Authoritative location for digital card validation."""
@@ -45,6 +46,11 @@ class DigitalCard(Document):
         # Normalize email
         if self.email:
             self.email = self.email.lower().strip()
+
+    def normalize_urls(self):
+        """Normalize URL fields to add https:// if missing."""
+        from osduo_business_connect.utils.sanitize import normalize_url_fields
+        normalize_url_fields(self)
 
     def validate_member(self):
         """Validate that member belongs to business and is active."""

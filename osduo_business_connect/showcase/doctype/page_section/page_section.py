@@ -14,7 +14,7 @@ class PageSection(Document):
 
     def before_validate(self):
         """Pre-process data before validation."""
-        pass
+        self.normalize_urls()
 
     def validate(self):
         """Authoritative location for section validation."""
@@ -29,6 +29,11 @@ class PageSection(Document):
     def on_update(self):
         """Post-save operations."""
         pass
+
+    def normalize_urls(self):
+        """Normalize URL fields to add https:// if missing."""
+        from osduo_business_connect.utils.sanitize import normalize_url_fields
+        normalize_url_fields(self)
 
     def validate_business(self):
         """Validate that business exists and is published."""

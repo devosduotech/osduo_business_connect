@@ -15,6 +15,7 @@ class ShowcaseProduct(Document):
     def before_validate(self):
         """Pre-process data before validation."""
         self.normalize_fields()
+        self.normalize_urls()
         self.sanitize_description()
 
     def validate(self):
@@ -42,6 +43,11 @@ class ShowcaseProduct(Document):
         # Normalize product name
         if self.product_name:
             self.product_name = self.product_name.strip()
+
+    def normalize_urls(self):
+        """Normalize URL fields to add https:// if missing."""
+        from osduo_business_connect.utils.sanitize import normalize_url_fields
+        normalize_url_fields(self)
 
     def sanitize_description(self):
         """Sanitize description field."""
