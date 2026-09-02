@@ -37,8 +37,6 @@ def get_context(context):
     context.business_email = business.email
     context.business_phone = business.phone
     context.business_whatsapp = business.whatsapp
-    context.no_breadcrumbs = 1
-    context.no_header = 1
 
     # Fetch theme and generate CSS variables
     theme_data = get_business_theme(business.name)

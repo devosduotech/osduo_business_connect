@@ -22,8 +22,6 @@ def get_context(context):
 
     context.doc = doc
     context.title = doc.get("display_name") or doc.get("name")
-    context.no_breadcrumbs = 1
-    context.no_header = 1
 
     # Fetch theme — card's own theme, or fall back to business default
     if doc.get("theme"):

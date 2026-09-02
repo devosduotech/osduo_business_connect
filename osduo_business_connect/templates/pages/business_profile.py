@@ -24,8 +24,6 @@ def get_context(context):
 
     context.doc = doc
     context.title = doc.get("business_name") or doc.get("name")
-    context.no_breadcrumbs = 1
-    context.no_header = 1
 
     # Fetch theme and generate CSS variables
     theme_data = get_business_theme(doc.name)
