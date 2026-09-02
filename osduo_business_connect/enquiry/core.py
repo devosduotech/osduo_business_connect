@@ -9,6 +9,8 @@ Separated from the doctype directory to avoid Python import conflicts
 when module name == doctype name == file name (all 'enquiry').
 """
 
+import re
+
 import frappe
 from frappe.model.document import Document
 
@@ -72,8 +74,6 @@ class Enquiry(Document):
     def sanitize_message(self):
         """Sanitize message field."""
         if self.message:
-            # Remove script tags and event handlers
-            import re
             self.message = re.sub(r'<script[^>]*>.*?</script>', '', self.message, flags=re.DOTALL | re.IGNORECASE)
             self.message = re.sub(r'on\w+="[^"]*"', '', self.message)
             self.message = re.sub(r"on\w+='[^']*'", '', self.message)
@@ -150,7 +150,6 @@ class Enquiry(Document):
 
         # Validate email format if provided
         if self.visitor_email:
-            import re
             email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
             if not re.match(email_pattern, self.visitor_email):
                 frappe.throw("Invalid email address")
