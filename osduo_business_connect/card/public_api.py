@@ -123,3 +123,36 @@ def get_card_download_url(card_doc, download_type):
         return f"{site_url}/api/method/osduo_business_connect.card.public_api.download_vcard?slug={card_doc.slug}"
 
     return None
+
+
+@frappe.whitelist(allow_guest=True)
+def download_vcard(slug):
+    """
+    Download vCard for a Digital Card by slug.
+
+    Args:
+        slug: Card slug
+
+    Returns:
+        None (sets frappe.response for file download)
+    """
+    if not slug:
+        frappe.throw(_("Slug is required"))
+
+    card = frappe.get_all(
+        "Digital Card",
+        filters={
+            "slug": slug,
+            "status": "Published",
+            "vcard_enabled": 1,
+        },
+        fields=["name"],
+        limit=1,
+    )
+
+    if not card:
+        frappe.throw(_("Card not found"), frappe.DoesNotExistError)
+
+    card_doc = frappe.get_doc("Digital Card", card[0].name)
+    from osduo_business_connect.services.vcard_service import download_vcard as _download
+    _download(card_doc)
