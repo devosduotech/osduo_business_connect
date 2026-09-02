@@ -5,63 +5,71 @@
 
     {# ===== HEADER ===== #}
     <div class="bc-header">
-        {% if doc.cover_image %}
-        <img src="{{ doc.cover_image }}" alt="" class="bc-cover-img">
-        {% endif %}
-
-        {% if doc.logo %}
-        <img src="{{ doc.logo }}" alt="{{ doc.business_name }}" class="bc-logo-img">
-        {% endif %}
-
-        <h1>{{ doc.business_name }}</h1>
-        {% if doc.industry %}
-        <p class="bc-tagline">{{ doc.industry }}</p>
-        {% endif %}
-
-        <div style="margin-top:1.25rem;display:flex;gap:0.6rem;justify-content:center;flex-wrap:wrap;">
-            {% if doc.phone %}
-            <a href="tel:{{ doc.phone }}" class="bc-btn bc-btn-secondary">&#9742; Call</a>
+        <div class="bc-container">
+            {% if doc.cover_image %}
+            <img src="{{ doc.cover_image }}" alt="" class="bc-business-cover">
             {% endif %}
-            {% if doc.whatsapp %}
-            <a href="https://wa.me/{{ doc.whatsapp }}" class="bc-btn bc-btn-secondary">&#128172; WhatsApp</a>
+
+            {% if doc.logo %}
+            <img src="{{ doc.logo }}" alt="{{ doc.business_name }}" class="bc-logo-img">
             {% endif %}
-            <a href="#bc-contact" class="bc-btn bc-btn-accent">&#9993; Enquiry</a>
+
+            <h1>{{ doc.business_name }}</h1>
+            {% if doc.industry %}
+            <p class="bc-tagline">{{ doc.industry }}</p>
+            {% endif %}
+
+            <div style="margin-top:1.25rem;display:flex;gap:0.6rem;justify-content:center;flex-wrap:wrap;">
+                {% if doc.phone %}
+                <a href="tel:{{ doc.phone }}" class="bc-btn bc-btn-secondary">&#9742; Call</a>
+                {% endif %}
+                {% if doc.whatsapp %}
+                <a href="https://wa.me/{{ doc.whatsapp }}" class="bc-btn bc-btn-secondary">&#128172; WhatsApp</a>
+                {% endif %}
+                <a href="#bc-contact" class="bc-btn bc-btn-accent">&#9993; Enquiry</a>
+            </div>
         </div>
     </div>
 
     {# ===== NAVIGATION ===== #}
-    <nav class="bc-nav" id="bc-nav">
-        <a href="#bc-about" class="bc-nav-link active">About</a>
-        {% if products %}<a href="#bc-products" class="bc-nav-link">Products</a>{% endif %}
-        {% if services %}<a href="#bc-services" class="bc-nav-link">Services</a>{% endif %}
-        {% if members %}<a href="#bc-team" class="bc-nav-link">Team</a>{% endif %}
-        <a href="#bc-contact" class="bc-nav-link">Contact</a>
+    <nav class="bc-nav">
+        <div class="bc-container" style="display:flex;gap:0;overflow-x:auto;">
+            <a href="#bc-about" class="bc-nav-link active">About</a>
+            {% if products %}<a href="#bc-products" class="bc-nav-link">Products</a>{% endif %}
+            {% if services %}<a href="#bc-services" class="bc-nav-link">Services</a>{% endif %}
+            {% if members %}<a href="#bc-team" class="bc-nav-link">Team</a>{% endif %}
+            <a href="#bc-contact" class="bc-nav-link">Contact</a>
+        </div>
     </nav>
 
     {# ===== ABOUT ===== #}
     {% if doc.description %}
     <div class="bc-section" id="bc-about">
-        <h2 class="bc-section-title">About Us</h2>
-        <p style="line-height:1.8;color:#475569;">{{ doc.description }}</p>
+        <div class="bc-reading">
+            <h2 class="bc-section-title">About Us</h2>
+            <p style="line-height:1.8;color:#475569;">{{ doc.description }}</p>
+        </div>
     </div>
     {% endif %}
 
     {# ===== PRODUCTS ===== #}
     {% if products %}
     <div class="bc-section" id="bc-products">
-        <h2 class="bc-section-title">Products</h2>
-        <div class="bc-product-grid">
-            {% for product in products %}
-            <a href="/b/{{ doc.slug }}/products/{{ product.slug }}" class="bc-card bc-product-card">
-                {% if product.image %}
-                <img src="{{ product.image }}" alt="{{ product.product_name }}">
-                {% else %}
-                <div style="height:140px;background:#f1f5f9;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#94a3b8;">&#128230;</div>
-                {% endif %}
-                <h3 style="margin:0.6rem 0 0.2rem;font-size:0.95rem;">{{ product.product_name }}</h3>
-                <p style="margin:0;color:#64748b;font-size:0.8rem;">{{ product.short_description[:50] }}{% if product.short_description|length > 50 %}...{% endif %}</p>
-            </a>
-            {% endfor %}
+        <div class="bc-container">
+            <h2 class="bc-section-title">Products</h2>
+            <div class="bc-product-grid">
+                {% for product in products %}
+                <a href="/b/{{ doc.slug }}/products/{{ product.slug }}" class="bc-card bc-product-card">
+                    {% if product.image %}
+                    <img src="{{ product.image }}" alt="{{ product.product_name }}">
+                    {% else %}
+                    <div style="height:160px;background:#f1f5f9;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#94a3b8;">&#128230;</div>
+                    {% endif %}
+                    <h3 style="margin:0.6rem 0 0.2rem;font-size:0.95rem;">{{ product.product_name }}</h3>
+                    <p style="margin:0;color:#64748b;font-size:0.8rem;">{{ product.short_description[:50] }}{% if product.short_description|length > 50 %}...{% endif %}</p>
+                </a>
+                {% endfor %}
+            </div>
         </div>
     </div>
     {% endif %}
@@ -69,19 +77,21 @@
     {# ===== SERVICES ===== #}
     {% if services %}
     <div class="bc-section" id="bc-services">
-        <h2 class="bc-section-title">Services</h2>
-        <div class="bc-product-grid">
-            {% for service in services %}
-            <a href="/b/{{ doc.slug }}/services/{{ service.slug }}" class="bc-card bc-product-card">
-                {% if service.image %}
-                <img src="{{ service.image }}" alt="{{ service.service_name }}">
-                {% else %}
-                <div style="height:140px;background:#f1f5f9;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#94a3b8;">&#128295;</div>
-                {% endif %}
-                <h3 style="margin:0.6rem 0 0.2rem;font-size:0.95rem;">{{ service.service_name }}</h3>
-                <p style="margin:0;color:#64748b;font-size:0.8rem;">{{ service.short_description[:50] }}{% if service.short_description|length > 50 %}...{% endif %}</p>
-            </a>
-            {% endfor %}
+        <div class="bc-container">
+            <h2 class="bc-section-title">Services</h2>
+            <div class="bc-product-grid">
+                {% for service in services %}
+                <a href="/b/{{ doc.slug }}/services/{{ service.slug }}" class="bc-card bc-product-card">
+                    {% if service.image %}
+                    <img src="{{ service.image }}" alt="{{ service.service_name }}">
+                    {% else %}
+                    <div style="height:160px;background:#f1f5f9;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#94a3b8;">&#128295;</div>
+                    {% endif %}
+                    <h3 style="margin:0.6rem 0 0.2rem;font-size:0.95rem;">{{ service.service_name }}</h3>
+                    <p style="margin:0;color:#64748b;font-size:0.8rem;">{{ service.short_description[:50] }}{% if service.short_description|length > 50 %}...{% endif %}</p>
+                </a>
+                {% endfor %}
+            </div>
         </div>
     </div>
     {% endif %}
@@ -89,64 +99,70 @@
     {# ===== TEAM ===== #}
     {% if members %}
     <div class="bc-section" id="bc-team">
-        <h2 class="bc-section-title">Our Team</h2>
-        <div class="bc-team-grid">
-            {% for member in members %}
-            <a href="/b/{{ doc.slug }}/team/{{ member.slug }}" style="text-decoration:none;color:inherit;">
-                {% if member.profile_image %}
-                <img src="{{ member.profile_image }}" alt="{{ member.display_name }}">
-                {% else %}
-                <div style="width:80px;height:80px;border-radius:50%;background:var(--bc-primary);color:white;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin:0 auto;">{{ member.display_name[0] }}</div>
-                {% endif %}
-                <h3 style="margin:0.5rem 0 0.15rem;font-size:0.9rem;">{{ member.display_name }}</h3>
-                {% if member.designation %}
-                <p style="margin:0;color:#64748b;font-size:0.8rem;">{{ member.designation }}</p>
-                {% endif %}
-            </a>
-            {% endfor %}
+        <div class="bc-detail">
+            <h2 class="bc-section-title">Our Team</h2>
+            <div class="bc-team-grid">
+                {% for member in members %}
+                <a href="/b/{{ doc.slug }}/team/{{ member.slug }}" style="text-decoration:none;color:inherit;">
+                    {% if member.profile_image %}
+                    <img src="{{ member.profile_image }}" alt="{{ member.display_name }}">
+                    {% else %}
+                    <div style="width:80px;height:80px;border-radius:50%;background:var(--bc-primary);color:white;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin:0 auto;">{{ member.display_name[0] }}</div>
+                    {% endif %}
+                    <h3 style="margin:0.5rem 0 0.15rem;font-size:0.9rem;">{{ member.display_name }}</h3>
+                    {% if member.designation %}
+                    <p style="margin:0;color:#64748b;font-size:0.8rem;">{{ member.designation }}</p>
+                    {% endif %}
+                </a>
+                {% endfor %}
+            </div>
         </div>
     </div>
     {% endif %}
 
     {# ===== CONTACT ===== #}
     <div class="bc-section" id="bc-contact">
-        <h2 class="bc-section-title">Contact</h2>
-        <div class="bc-card">
-            {% if doc.phone %}
-            <div class="bc-contact-item">
-                <span>&#9742;</span>
-                <a href="tel:{{ doc.phone }}" style="color:inherit;text-decoration:none;">{{ doc.phone }}</a>
+        <div class="bc-reading">
+            <h2 class="bc-section-title">Contact</h2>
+            <div class="bc-card">
+                {% if doc.phone %}
+                <div class="bc-contact-item">
+                    <span>&#9742;</span>
+                    <a href="tel:{{ doc.phone }}" style="color:inherit;text-decoration:none;">{{ doc.phone }}</a>
+                </div>
+                {% endif %}
+                {% if doc.email %}
+                <div class="bc-contact-item">
+                    <span>&#9993;</span>
+                    <a href="mailto:{{ doc.email }}" style="color:inherit;text-decoration:none;">{{ doc.email }}</a>
+                </div>
+                {% endif %}
+                {% if doc.website %}
+                <div class="bc-contact-item">
+                    <span>&#127760;</span>
+                    <a href="{{ doc.website }}" target="_blank" style="color:inherit;text-decoration:none;">{{ doc.website }}</a>
+                </div>
+                {% endif %}
+                {% if doc.address %}
+                <div class="bc-contact-item">
+                    <span>&#128205;</span>
+                    <span>{{ doc.address }}{% if doc.city %}, {{ doc.city }}{% endif %}{% if doc.state %}, {{ doc.state }}{% endif %}</span>
+                </div>
+                {% endif %}
             </div>
-            {% endif %}
-            {% if doc.email %}
-            <div class="bc-contact-item">
-                <span>&#9993;</span>
-                <a href="mailto:{{ doc.email }}" style="color:inherit;text-decoration:none;">{{ doc.email }}</a>
-            </div>
-            {% endif %}
-            {% if doc.website %}
-            <div class="bc-contact-item">
-                <span>&#127760;</span>
-                <a href="{{ doc.website }}" target="_blank" style="color:inherit;text-decoration:none;">{{ doc.website }}</a>
-            </div>
-            {% endif %}
-            {% if doc.address %}
-            <div class="bc-contact-item">
-                <span>&#128205;</span>
-                <span>{{ doc.address }}{% if doc.city %}, {{ doc.city }}{% endif %}{% if doc.state %}, {{ doc.state }}{% endif %}</span>
-            </div>
-            {% endif %}
         </div>
     </div>
 
     {# ===== SOCIAL LINKS ===== #}
     {% if social_links %}
     <div class="bc-section">
-        <h2 class="bc-section-title">Connect</h2>
-        <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
-            {% for link in social_links %}
-            <a href="{{ link.url }}" target="_blank" class="bc-btn bc-btn-secondary" style="font-size:0.8rem;">{{ link.platform }}</a>
-            {% endfor %}
+        <div class="bc-reading">
+            <h2 class="bc-section-title">Connect</h2>
+            <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
+                {% for link in social_links %}
+                <a href="{{ link.url }}" target="_blank" class="bc-btn bc-btn-secondary" style="font-size:0.8rem;">{{ link.platform }}</a>
+                {% endfor %}
+            </div>
         </div>
     </div>
     {% endif %}
