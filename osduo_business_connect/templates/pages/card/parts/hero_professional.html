@@ -22,16 +22,24 @@
 
     <div class="bc-card-actions">
         {% if doc.phone %}
-        <a href="tel:{{ doc.phone }}" class="bc-btn" style="background:white;color:var(--bc-primary);">&#9742; Call {{ doc.phone }}</a>
+        <a href="tel:{{ doc.phone }}" class="bc-card-action-btn" style="background:white;color:var(--bc-primary);">
+            <span class="bc-card-action-icon">&#9742;</span> Call
+        </a>
         {% endif %}
         {% if doc.whatsapp %}
-        <a href="https://wa.me/{{ doc.whatsapp|replace('+','')|replace(' ','') }}" class="bc-btn" style="background:#25D366;color:white;">&#128172; WhatsApp</a>
+        <a href="https://wa.me/{{ doc.whatsapp|replace('+','')|replace(' ','') }}" class="bc-card-action-btn" style="background:#25D366;color:white;">
+            <span class="bc-card-action-icon">&#128172;</span> WhatsApp
+        </a>
         {% endif %}
         {% if doc.email %}
-        <a href="mailto:{{ doc.email }}" class="bc-btn" style="background:#EA4335;color:white;">&#9993; Send Email</a>
+        <a href="mailto:{{ doc.email }}" class="bc-card-action-btn" style="background:#EA4335;color:white;">
+            <span class="bc-card-action-icon">&#9993;</span> Email
+        </a>
         {% endif %}
         {% if doc.website %}
-        <a href="{{ doc.website }}" target="_blank" class="bc-btn" style="background:rgba(255,255,255,0.2);color:white;">&#127760; Visit Website</a>
+        <a href="{{ doc.website }}" target="_blank" class="bc-card-action-btn" style="background:rgba(255,255,255,0.2);color:white;">
+            <span class="bc-card-action-icon">&#127760;</span> Website
+        </a>
         {% endif %}
     </div>
 
@@ -40,12 +48,6 @@
         {% for link in links %}
         <a href="{{ link.url }}" target="_blank" class="bc-btn" style="font-size:0.75rem;padding:0.4rem 0.75rem;background:rgba(255,255,255,0.2);color:white;">{{ link.label or link.link_type }}</a>
         {% endfor %}
-    </div>
-    {% endif %}
-
-    {% if doc.show_business and doc.business_slug %}
-    <div class="bc-card-business-link" style="border-color:rgba(255,255,255,0.2);">
-        <a href="/b/{{ doc.business_slug }}" style="color:white;">{{ doc.business_name }}</a>
     </div>
     {% endif %}
 

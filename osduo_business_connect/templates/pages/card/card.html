@@ -2,7 +2,7 @@
 
 {%- block page_content -%}
 <div class="bc-page bc-template-{{ theme.template|lower }}" style="{{ theme_vars }}">
-    <div class="bc-card-page">
+    <div class="bc-card-page" style="padding-bottom:3.5rem;">
 
         {# ===== CARD HERO (varies by template) ===== #}
         {% if template_type == "Professional" %}
@@ -14,27 +14,117 @@
         {% else %}
             {% include "osduo_business_connect/templates/pages/card/parts/hero_modern.html" %}
         {% endif %}
-    </div>
 
-    {# Enquiry Form #}
-    <div class="bc-card-page" style="margin-top:1.5rem;">
-        <h2 style="font-size:1rem;text-align:center;color:var(--bc-primary);">Send a Message</h2>
-        <form id="card-enquiry-form" class="bc-card bc-enquiry-form" style="padding:1.25rem;">
-            <input type="hidden" name="business" value="{{ doc.business }}">
-            <input type="hidden" name="card" value="{{ doc.name }}">
-            <div style="margin-bottom:0.6rem;">
-                <input type="text" name="visitor_name" placeholder="Your Name" required>
+        {# ===== VCF DOWNLOAD ===== #}
+        <div class="bc-card-vcf">
+            <a href="data:text/vcard;charset=utf-8,{{ vcf_content|urlencode }}" download="{{ doc.slug }}.vcf" class="bc-card-vcf-btn">
+                &#128229; Add to Phone Book
+            </a>
+        </div>
+
+        {# ===== STRIPE SEPARATOR ===== #}
+        <div class="bc-card-stripe"></div>
+
+        {# ===== SOCIAL LINKS ===== #}
+        {% if links %}
+        <div class="bc-card-page" style="padding:1.25rem 0;">
+            <div class="bc-card-links" style="margin:0;">
+                {% for link in links %}
+                <a href="{{ link.url }}" target="_blank" class="bc-btn bc-btn-secondary" style="font-size:0.8rem;">{{ link.label or link.link_type }}</a>
+                {% endfor %}
             </div>
-            <div style="margin-bottom:0.6rem;">
-                <input type="email" name="visitor_email" placeholder="Email Address" required>
+        </div>
+        <div class="bc-card-stripe"></div>
+        {% endif %}
+
+        {# ===== BUSINESS LINK ===== #}
+        {% if doc.show_business and doc.business_slug %}
+        <div class="bc-card-page" style="padding:1rem 0 0.5rem;text-align:center;">
+            <a href="/b/{{ doc.business_slug }}" style="color:var(--bc-primary);text-decoration:none;font-size:0.85rem;">{{ doc.business_name }} &rarr;</a>
+        </div>
+        <div class="bc-card-stripe"></div>
+        {% endif %}
+
+        {# ===== ENQUIRY FORM ===== #}
+        <div class="bc-card-page" style="padding:1.25rem 0;">
+            <h2 style="font-size:1rem;text-align:center;color:var(--bc-primary);margin-bottom:0.75rem;">Send a Message</h2>
+            <form id="card-enquiry-form" class="bc-card bc-enquiry-form" style="padding:1.25rem;">
+                <input type="hidden" name="business" value="{{ doc.business }}">
+                <input type="hidden" name="card" value="{{ doc.name }}">
+                <div style="margin-bottom:0.6rem;">
+                    <input type="text" name="visitor_name" placeholder="Your Name" required>
+                </div>
+                <div style="margin-bottom:0.6rem;">
+                    <input type="email" name="visitor_email" placeholder="Email Address" required>
+                </div>
+                <div style="margin-bottom:0.6rem;">
+                    <textarea name="message" placeholder="Your Message" rows="3" required></textarea>
+                </div>
+                <button type="submit" class="bc-btn bc-btn-primary" style="width:100%;padding:0.75rem;">Send Message</button>
+            </form>
+        </div>
+
+        <div class="bc-card-stripe"></div>
+
+        {# ===== SHARE SECTION ===== #}
+        <div class="bc-card-page bc-card-share" style="padding:1.25rem 0;">
+            <h2 style="font-size:1rem;color:var(--bc-primary);">Share Card</h2>
+
+            <div class="bc-card-share-link" onclick="navigator.clipboard.writeText('{{ card_url }}').then(function(){document.getElementById('bc-copy-toast').textContent='Copied!';document.getElementById('bc-copy-toast').style.display='block';setTimeout(function(){document.getElementById('bc-copy-toast').style.display='none';},1500);})">
+                <span class="bc-card-share-url">{{ card_url }}</span>
+                <span class="bc-card-share-copy">Copy</span>
             </div>
-            <div style="margin-bottom:0.6rem;">
-                <textarea name="message" placeholder="Your Message" rows="3" required></textarea>
+            <div id="bc-copy-toast" style="display:none;text-align:center;color:var(--bc-primary);font-size:0.8rem;margin-top:0.3rem;">Copied!</div>
+
+            {% if doc.qr_enabled and doc.qr_image %}
+            <div class="bc-card-share-qr">
+                <img src="{{ doc.qr_image }}" alt="QR Code">
+                <p>Scan to view card</p>
             </div>
-            <button type="submit" class="bc-btn bc-btn-primary" style="width:100%;padding:0.75rem;">Send Message</button>
-        </form>
+            {% endif %}
+
+            <div class="bc-card-share-buttons">
+                {% if doc.phone %}
+                <a href="https://wa.me/?text={{ card_url|urlencode }}" target="_blank" class="bc-btn bc-btn-secondary" style="font-size:0.8rem;">&#128172; WhatsApp</a>
+                {% endif %}
+                <a href="sms:?body={{ card_url|urlencode }}" class="bc-btn bc-btn-secondary" style="font-size:0.8rem;">&#128172; SMS</a>
+                <a href="mailto:?subject=Digital Card&body=Check out this card: {{ card_url }}" class="bc-btn bc-btn-secondary" style="font-size:0.8rem;">&#9993; Email</a>
+            </div>
+        </div>
+
+        <div class="bc-card-share" style="padding:0.75rem 0 1.5rem;text-align:center;">
+            <p style="color:#94a3b8;font-size:0.7rem;">Powered by OSDuo Business Connect</p>
+        </div>
     </div>
 </div>
+
+{# ===== BOTTOM NAV ===== #}
+<nav class="bc-card-bottom-nav">
+    <a href="#bc-top">
+        <span class="bc-nav-icon">&#127968;</span>
+        <span>Home</span>
+    </a>
+    {% if links %}
+    <a href="#bc-links">
+        <span class="bc-nav-icon">&#128279;</span>
+        <span>Links</span>
+    </a>
+    {% endif %}
+    {% if doc.bio %}
+    <a href="#bc-about">
+        <span class="bc-nav-icon">&#128100;</span>
+        <span>About</span>
+    </a>
+    {% endif %}
+    <a href="#bc-enquiry">
+        <span class="bc-nav-icon">&#128172;</span>
+        <span>Enquiry</span>
+    </a>
+    <a href="#bc-share">
+        <span class="bc-nav-icon">&#128228;</span>
+        <span>Share</span>
+    </a>
+</nav>
 
 {% raw %}
 <script>
@@ -59,6 +149,17 @@ document.getElementById('card-enquiry-form').addEventListener('submit', async fu
     } catch(err) {
         alert('Error sending message');
     }
+});
+
+document.querySelectorAll('.bc-card-bottom-nav a').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+        var href = this.getAttribute('href');
+        if (href && href.startsWith('#')) {
+            e.preventDefault();
+            var target = document.getElementById(href.substring(1));
+            if (target) target.scrollIntoView({ behavior: 'smooth' });
+        }
+    });
 });
 </script>
 {% endraw %}

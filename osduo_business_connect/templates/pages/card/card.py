@@ -1,4 +1,5 @@
 import frappe
+from frappe.utils.file_manager import get_web_file_url
 from ....services.theme_service import get_business_theme, get_theme_data, get_default_theme, get_theme_variables
 
 
@@ -22,6 +23,11 @@ def get_context(context):
 
     context.doc = doc
     context.title = doc.get("display_name") or doc.get("name")
+
+    # Card URL for sharing
+    host = frappe.request.host if frappe.request else "business.local"
+    protocol = "https" if frappe.request and frappe.request.scheme == "https" else "http"
+    context.card_url = f"{protocol}://{host}/c/{slug}"
 
     # Theme — card's own, or fall back to business default
     if doc.get("theme"):
@@ -55,4 +61,44 @@ def get_context(context):
             doc["business_name"] = business.get("business_name")
             doc["business_slug"] = business.get("slug")
 
+    # Generate VCF content
+    context.vcf_content = _generate_vcf(doc)
+
     context.meta_description = f"Contact {doc.get('display_name', '')}"
+
+
+def _generate_vcf(doc):
+    """Generate vCard 3.0 content for download."""
+    lines = [
+        "BEGIN:VCARD",
+        "VERSION:3.0",
+    ]
+
+    name = doc.get("display_name") or ""
+    parts = name.split(" ", 1)
+    first_name = parts[0] if parts else ""
+    last_name = parts[1] if len(parts) > 1 else ""
+    lines.append(f"N:{last_name};{first_name};;;")
+    lines.append(f"FN:{name}")
+
+    if doc.get("designation"):
+        lines.append(f"TITLE:{doc['designation']}")
+
+    if doc.get("phone"):
+        lines.append(f"TEL;TYPE=CELL:{doc['phone']}")
+
+    if doc.get("email"):
+        lines.append(f"EMAIL:{doc['email']}")
+
+    if doc.get("website"):
+        lines.append(f"URL:{doc['website']}")
+
+    if doc.get("business_name"):
+        lines.append(f"ORG:{doc['business_name']}")
+
+    if doc.get("bio"):
+        escaped = doc["bio"].replace("\n", "\\n")
+        lines.append(f"NOTE:{escaped}")
+
+    lines.append("END:VCARD")
+    return "\r\n".join(lines)

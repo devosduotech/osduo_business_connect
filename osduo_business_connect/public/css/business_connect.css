@@ -154,6 +154,215 @@
 }
 
 /* ======================== */
+/* CARD: HORIZONTAL ACTIONS  */
+/* ======================== */
+.bc-card-actions {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    margin: 1.25rem 0;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.bc-card-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.6rem 1rem;
+    border-radius: var(--bc-btn-radius);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: opacity 0.2s;
+}
+
+.bc-card-action-btn:hover {
+    opacity: 0.85;
+}
+
+.bc-card-action-icon {
+    font-size: 1rem;
+}
+
+/* ======================== */
+/* CARD: VCF DOWNLOAD       */
+/* ======================== */
+.bc-card-vcf {
+    display: flex;
+    gap: 0.5rem;
+    margin: 1rem 0;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.bc-card-vcf-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.65rem 1.2rem;
+    border-radius: var(--bc-btn-radius);
+    background: var(--bc-primary);
+    color: white;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: opacity 0.2s;
+}
+
+.bc-card-vcf-btn:hover {
+    opacity: 0.85;
+}
+
+/* ======================== */
+/* CARD: SECTION SEPARATOR  */
+/* ======================== */
+.bc-card-stripe {
+    height: 3px;
+    background: var(--bc-primary);
+    opacity: 0.15;
+    margin: 0;
+}
+
+.bc-card-wave {
+    width: 100%;
+    height: 20px;
+    overflow: hidden;
+    line-height: 0;
+}
+
+.bc-card-wave svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* ======================== */
+/* CARD: BOTTOM NAV         */
+/* ======================== */
+.bc-card-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-around;
+    padding: 0.4rem 0;
+    z-index: 100;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+}
+
+.bc-card-bottom-nav a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15rem;
+    text-decoration: none;
+    color: #64748b;
+    font-size: 0.65rem;
+    padding: 0.2rem 0.4rem;
+    transition: color 0.2s;
+}
+
+.bc-card-bottom-nav a:hover,
+.bc-card-bottom-nav a.active {
+    color: var(--bc-primary);
+}
+
+.bc-card-bottom-nav .bc-nav-icon {
+    font-size: 1.1rem;
+}
+
+/* ======================== */
+/* CARD: SHARE SECTION      */
+/* ======================== */
+.bc-card-share {
+    text-align: center;
+}
+
+.bc-card-share-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #f1f5f9;
+    border-radius: var(--bc-btn-radius);
+    padding: 0.6rem 1rem;
+    margin: 0.75rem 0;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.bc-card-share-link:hover {
+    background: #e2e8f0;
+}
+
+.bc-card-share-url {
+    flex: 1;
+    font-size: 0.8rem;
+    color: #475569;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: left;
+}
+
+.bc-card-share-copy {
+    font-size: 0.75rem;
+    color: var(--bc-primary);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.bc-card-share-qr {
+    margin: 1rem 0;
+}
+
+.bc-card-share-qr img {
+    width: 120px;
+    height: 120px;
+    border-radius: 8px;
+}
+
+.bc-card-share-qr p {
+    color: #94a3b8;
+    font-size: 0.75rem;
+    margin-top: 0.3rem;
+}
+
+.bc-card-share-buttons {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 0.75rem;
+}
+
+/* ======================== */
+/* SECTION ALT (fix)        */
+/* ======================== */
+.bc-section-alt {
+    background: var(--bc-background);
+}
+
+/* ======================== */
+/* BUSINESS: WAVE DIVIDER   */
+/* ======================== */
+.bc-hero-wave {
+    width: 100%;
+    height: 30px;
+    overflow: hidden;
+    line-height: 0;
+    margin-top: -1px;
+}
+
+.bc-hero-wave svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* ======================== */
 /* PAGE                     */
 /* ======================== */
 .bc-page {
