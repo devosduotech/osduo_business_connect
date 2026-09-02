@@ -186,7 +186,7 @@
 .bc-header {
     background: var(--bc-header-bg);
     color: var(--bc-header-text);
-    padding: 2.5rem 0;
+    padding: 1.5rem 0;
     text-align: center;
 }
 
@@ -207,6 +207,7 @@
 /* Cover image — full image, no crop */
 .bc-cover-img {
     width: 100%;
+    max-height: 280px;
     object-fit: contain;
     border-radius: var(--bc-card-radius);
     margin-bottom: 1.5rem;
@@ -217,6 +218,7 @@
 /* Business cover — taller for landing */
 .bc-business-cover {
     width: 100%;
+    max-height: 320px;
     object-fit: contain;
     border-radius: var(--bc-card-radius);
     margin-bottom: 1.5rem;
@@ -224,12 +226,12 @@
 
 /* Logo */
 .bc-logo-img {
-    width: 90px;
-    height: 90px;
+    width: 72px;
+    height: 72px;
     border-radius: 50%;
     object-fit: cover;
     border: 3px solid rgba(255,255,255,0.3);
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
 }
 
 /* ======================== */
@@ -636,13 +638,13 @@
 
 /* Mobile */
 @media (max-width: 768px) {
-    .bc-header { padding: 1.5rem 0; }
+    .bc-header { padding: 1rem 0; }
     .bc-header h1 { font-size: 1.35rem; }
     .bc-header .bc-tagline { font-size: 0.9rem; }
 
-    .bc-cover-img { border-radius: var(--bc-card-radius); }
-    .bc-business-cover { border-radius: var(--bc-card-radius); }
-    .bc-logo-img { width: 72px; height: 72px; }
+    .bc-cover-img { border-radius: var(--bc-card-radius); max-height: 200px; }
+    .bc-business-cover { border-radius: var(--bc-card-radius); max-height: 220px; }
+    .bc-logo-img { width: 64px; height: 64px; }
 
     .bc-section { padding: 1.25rem 0; }
     .bc-section-title { font-size: 1.1rem; }
@@ -667,7 +669,9 @@
 @media (max-width: 480px) {
     .bc-container { width: calc(100% - 32px); }
 
-    .bc-header { padding: 1.25rem 0; }
+    .bc-header { padding: 0.75rem 0; }
+    .bc-cover-img { max-height: 160px; }
+    .bc-business-cover { max-height: 180px; }
 
     .bc-section { padding: 1rem 0; }
     .bc-product-grid { grid-template-columns: 1fr; gap: 0.75rem; }
