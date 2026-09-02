@@ -1,5 +1,5 @@
 import frappe
-from ...services.theme_service import get_business_theme, get_theme_data, get_default_theme, get_theme_css
+from ...services.theme_service import get_business_theme, get_theme_data, get_default_theme, get_theme_variables
 
 def get_context(context):
     """Provide context for digital card profile page."""
@@ -34,7 +34,7 @@ def get_context(context):
         theme_data = get_default_theme()
 
     context.theme = theme_data
-    context.theme_css = get_theme_css(theme_data)
+    context.theme_vars = get_theme_variables(theme_data)
 
     # Fetch social links from Digital Card Link child table
     context.links = frappe.get_all(

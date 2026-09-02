@@ -1,6 +1,6 @@
 import frappe
 from frappe import _
-from ...services.theme_service import get_business_theme, get_theme_css
+from ...services.theme_service import get_business_theme, get_theme_variables
 
 def get_context(context):
     """Provide context for business profile page."""
@@ -27,10 +27,10 @@ def get_context(context):
     context.no_breadcrumbs = 1
     context.no_header = 1
 
-    # Fetch theme and generate CSS
+    # Fetch theme and generate CSS variables
     theme_data = get_business_theme(doc.name)
     context.theme = theme_data
-    context.theme_css = get_theme_css(theme_data)
+    context.theme_vars = get_theme_variables(theme_data)
 
     # Fetch social links from Business (not Digital Card - data isolation)
     context.social_links = frappe.get_all(

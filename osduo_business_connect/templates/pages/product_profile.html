@@ -1,17 +1,11 @@
 {%- extends "templates/web.html" -%}
 
 {%- block page_content -%}
-<style>
-{{ theme_css }}
-</style>
-
-<div class="bc-page" style="max-width:800px;margin:0 auto;">
-    {# Back Link #}
+<div class="bc-page" style="{{ theme_vars }}">
     <div style="padding:1rem 1.5rem 0;">
         <a href="/b/{{ business_slug }}" class="bc-back-link">&larr; Back to {{ business_name }}</a>
     </div>
 
-    {# Product Header #}
     <div class="bc-header" style="margin:0 1.5rem;border-radius:8px;">
         {% if doc.image %}
         <img src="{{ doc.image }}" alt="{{ doc.product_name }}" style="width:100%;max-height:400px;object-fit:cover;border-radius:8px;margin-bottom:1.5rem;">
@@ -33,7 +27,6 @@
         </div>
         {% endif %}
 
-        {# Quick Actions #}
         <div style="margin-top:1.5rem;display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
             {% if doc.enquiry_enabled %}
             <a href="mailto:{{ business_email }}?subject=Enquiry: {{ doc.product_name }}" class="bc-btn bc-btn-secondary">&#9993; Send Enquiry</a>
@@ -47,21 +40,15 @@
         </div>
     </div>
 
-    {# Description #}
     {% if doc.short_description or doc.description %}
     <div class="bc-section">
         <h2 class="bc-section-title">About This Product</h2>
         <div style="line-height:1.8;color:#475569;">
-            {% if doc.description %}
-                {{ doc.description }}
-            {% else %}
-                {{ doc.short_description }}
-            {% endif %}
+            {% if doc.description %}{{ doc.description }}{% else %}{{ doc.short_description }}{% endif %}
         </div>
     </div>
     {% endif %}
 
-    {# Video #}
     {% if doc.video_url %}
     <div class="bc-section">
         <h2 class="bc-section-title">Video</h2>
@@ -71,7 +58,6 @@
     </div>
     {% endif %}
 
-    {# Gallery #}
     {% if doc.gallery %}
     <div class="bc-section">
         <h2 class="bc-section-title">Gallery</h2>
@@ -83,20 +69,15 @@
     </div>
     {% endif %}
 
-    {# Brochure #}
     {% if doc.brochure %}
     <div class="bc-section">
         <a href="{{ doc.brochure }}" class="bc-btn bc-btn-primary" target="_blank">&#128196; Download Brochure</a>
     </div>
     {% endif %}
 
-    {# Footer #}
-    <div class="bc-footer">
-        <p>Powered by OSDuo Business Connect</p>
-    </div>
+    <div class="bc-footer"><p>Powered by OSDuo Business Connect</p></div>
 </div>
 
-{# Sticky Action Bar #}
 <div class="bc-action-bar" style="display:none;">
     {% if doc.enquiry_enabled %}
     <a href="mailto:{{ business_email }}?subject=Enquiry: {{ doc.product_name }}" class="bc-btn bc-btn-primary">&#9993; Enquiry</a>

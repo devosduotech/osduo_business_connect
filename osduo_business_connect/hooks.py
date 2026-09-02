@@ -28,8 +28,7 @@ add_to_apps_screen = [
 # app_include_js = "/assets/osduo_business_connect/js/osduo_business_connect.js"
 
 # include js, css files in header of web template
-# web_include_css = "/assets/osduo_business_connect/css/osduo_business_connect.css"
-# web_include_js = "/assets/osduo_business_connect/js/osduo_business_connect.js"
+web_include_css = "/assets/osduo_business_connect/css/business_connect.css"
 
 # Website route rules
 # ------------------

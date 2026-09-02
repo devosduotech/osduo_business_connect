@@ -1,17 +1,11 @@
 {%- extends "templates/web.html" -%}
 
 {%- block page_content -%}
-<style>
-{{ theme_css }}
-</style>
-
-<div class="bc-page" style="max-width:800px;margin:0 auto;">
-    {# Back Link #}
+<div class="bc-page" style="{{ theme_vars }}">
     <div style="padding:1rem 1.5rem 0;">
         <a href="/b/{{ business_slug }}" class="bc-back-link">&larr; Back to {{ business_name }}</a>
     </div>
 
-    {# Service Header #}
     <div class="bc-header" style="margin:0 1.5rem;border-radius:8px;">
         {% if doc.image %}
         <img src="{{ doc.image }}" alt="{{ doc.service_name }}" style="width:100%;max-height:400px;object-fit:cover;border-radius:8px;margin-bottom:1.5rem;">
@@ -19,11 +13,11 @@
 
         <h1>{{ doc.service_name }}</h1>
 
-        {# Quick Actions #}
+        {% if doc.short_description %}
+        <p class="bc-tagline">{{ doc.short_description }}</p>
+        {% endif %}
+
         <div style="margin-top:1.5rem;display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
-            {% if doc.enquiry_enabled %}
-            <a href="mailto:{{ business_email }}?subject=Enquiry: {{ doc.service_name }}" class="bc-btn bc-btn-secondary">&#9993; Send Enquiry</a>
-            {% endif %}
             {% if business_phone %}
             <a href="tel:{{ business_phone }}" class="bc-btn bc-btn-secondary">&#9742; Call</a>
             {% endif %}
@@ -33,55 +27,50 @@
         </div>
     </div>
 
-    {# Description #}
-    {% if doc.short_description or doc.description %}
+    {% if doc.description %}
     <div class="bc-section">
         <h2 class="bc-section-title">About This Service</h2>
-        <div style="line-height:1.8;color:#475569;">
-            {% if doc.description %}
-                {{ doc.description }}
-            {% else %}
-                {{ doc.short_description }}
-            {% endif %}
-        </div>
+        <div style="line-height:1.8;color:#475569;">{{ doc.description }}</div>
     </div>
     {% endif %}
 
-    {# Benefits #}
     {% if doc.benefits %}
     <div class="bc-section">
         <h2 class="bc-section-title">Benefits</h2>
-        <ul style="list-style:none;padding:0;margin:0;">
+        <ul style="line-height:2;color:#475569;">
             {% for benefit in doc.benefits %}
-            <li style="padding:0.5rem 0;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;gap:0.5rem;">
-                <span style="color:{{ theme.primary_color }};">&#10003;</span>
-                {{ benefit.benefit }}
-            </li>
+            <li>{{ benefit.benefit }}</li>
             {% endfor %}
         </ul>
     </div>
     {% endif %}
 
-    {# Brochure #}
-    {% if doc.brochure %}
+    {% if doc.video_url %}
     <div class="bc-section">
-        <a href="{{ doc.brochure }}" class="bc-btn bc-btn-primary" target="_blank">&#128196; Download Brochure</a>
+        <h2 class="bc-section-title">Video</h2>
+        <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:8px;">
+            <iframe src="{{ doc.video_url }}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allowfullscreen></iframe>
+        </div>
     </div>
     {% endif %}
 
-    {# Footer #}
-    <div class="bc-footer">
-        <p>Powered by OSDuo Business Connect</p>
+    {% if doc.gallery %}
+    <div class="bc-section">
+        <h2 class="bc-section-title">Gallery</h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;">
+            {% for image in doc.gallery %}
+            <img src="{{ image.image }}" alt="" style="width:100%;height:150px;object-fit:cover;border-radius:8px;">
+            {% endfor %}
+        </div>
     </div>
+    {% endif %}
+
+    <div class="bc-footer"><p>Powered by OSDuo Business Connect</p></div>
 </div>
 
-{# Sticky Action Bar #}
 <div class="bc-action-bar" style="display:none;">
-    {% if doc.enquiry_enabled %}
-    <a href="mailto:{{ business_email }}?subject=Enquiry: {{ doc.service_name }}" class="bc-btn bc-btn-primary">&#9993; Enquiry</a>
-    {% endif %}
     {% if business_phone %}
-    <a href="tel:{{ business_phone }}" class="bc-btn bc-btn-primary" style="background:#334155;">&#9742; Call</a>
+    <a href="tel:{{ business_phone }}" class="bc-btn bc-btn-primary">&#9742; Call</a>
     {% endif %}
     {% if business_whatsapp %}
     <a href="https://wa.me/{{ business_whatsapp }}" class="bc-btn bc-btn-accent">&#128172; WhatsApp</a>
