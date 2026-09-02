@@ -120,7 +120,6 @@
 /* Cover image — full image, no crop */
 .bc-cover-img {
     width: 100%;
-    max-height: 400px;
     object-fit: contain;
     border-radius: var(--bc-card-radius);
     margin-bottom: 1.5rem;
@@ -131,8 +130,7 @@
 /* Business cover — taller for landing */
 .bc-business-cover {
     width: 100%;
-    height: clamp(180px, 25vw, 320px);
-    object-fit: cover;
+    object-fit: contain;
     border-radius: var(--bc-card-radius);
     margin-bottom: 1.5rem;
 }
@@ -335,13 +333,14 @@
 /* SECTIONS                 */
 /* ======================== */
 .bc-section {
-    padding: var(--bc-section-spacing);
+    padding: var(--bc-section-spacing) 0;
 }
 
-/* Apply theme background within container */
-.bc-section-alt {
-    background: var(--bc-background);
-}
+/* Background variants — applied to inner containers */
+.bc-container.bc-bg { background: var(--bc-background); padding: 2rem 1.5rem; }
+.bc-content.bc-bg { background: var(--bc-background); padding: 2rem 1.5rem; }
+.bc-reading.bc-bg { background: var(--bc-background); padding: 2rem 1.5rem; }
+.bc-detail.bc-bg { background: var(--bc-background); padding: 2rem 1.5rem; }
 
 .bc-section-title {
     font-size: 1.25rem;
@@ -487,8 +486,8 @@
     .bc-header h1 { font-size: 1.35rem; }
     .bc-header .bc-tagline { font-size: 0.9rem; }
 
-    .bc-cover-img { max-height: 280px; }
-    .bc-business-cover { height: clamp(140px, 40vw, 220px); }
+    .bc-cover-img { border-radius: var(--bc-card-radius); }
+    .bc-business-cover { border-radius: var(--bc-card-radius); }
     .bc-logo-img { width: 72px; height: 72px; }
 
     .bc-section { padding: 1.25rem 0; }
@@ -513,8 +512,6 @@
     .bc-container { width: calc(100% - 32px); }
 
     .bc-header { padding: 1.25rem 0; }
-    .bc-cover-img { max-height: 200px; }
-    .bc-business-cover { height: clamp(120px, 50vw, 180px); }
 
     .bc-section { padding: 1rem 0; }
     .bc-product-grid { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
