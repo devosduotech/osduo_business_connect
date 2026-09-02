@@ -61,6 +61,15 @@
       "link": "/app/enquiry",
       "description": "View customer enquiries",
       "color": "#00bfa5"
+    },
+    {
+      "label": "Analytics",
+      "type": "Page",
+      "name": "analytics",
+      "icon": "octicon octicon-graph",
+      "link": "/osduo_business_connect/analytics",
+      "description": "View engagement analytics and enquiry stats",
+      "color": "#2490ef"
     }
   ],
   "links": [
@@ -127,6 +136,12 @@
       "name": "Engagement Event",
       "label": "Page Views",
       "description": "Track page engagement analytics"
+    },
+    {
+      "type": "Page",
+      "name": "analytics",
+      "label": "Analytics Dashboard",
+      "description": "View engagement analytics and enquiry stats"
     }
   ]
 }

@@ -51,3 +51,19 @@ def get_context(context):
         context.title = doc.seo_title
     if getattr(doc, "seo_description", None):
         context.meta_description = doc.seo_description
+
+    # Track product view (non-blocking)
+    _track_event(business.name, "product_view", product=doc.name)
+
+
+def _track_event(business, event_type, **kwargs):
+    """Record engagement event in background. Never blocks page load."""
+    try:
+        frappe.enqueue(
+            "osduo_business_connect.analytics.analytics_service.record_engagement",
+            business=business,
+            event_type=event_type,
+            **kwargs,
+        )
+    except Exception:
+        pass
