@@ -9,6 +9,8 @@ Separated from the doctype directory to avoid Python import conflicts
 when module name == doctype name == file name (all 'business').
 """
 
+import re
+
 import frappe
 from frappe.model.document import Document
 
@@ -105,7 +107,6 @@ class Business(Document):
             frappe.throw("Public Slug is required")
 
         # Check slug format: only lowercase letters, numbers, and hyphens
-        import re
         if not re.match(r'^[a-z0-9-]+$', self.slug):
             frappe.throw("Slug can only contain lowercase letters, numbers, and hyphens")
 
@@ -145,9 +146,8 @@ class Business(Document):
         if not self.owner_user:
             frappe.throw("Business Owner is required")
 
-        # Check if user is enabled
-        user = frappe.get_doc("User", self.owner_user)
-        if user.enabled != 1:
+        enabled = frappe.db.get_value("User", self.owner_user, "enabled")
+        if enabled != 1:
             frappe.throw("Business Owner must be an enabled user")
 
     def validate_contact_methods(self):
