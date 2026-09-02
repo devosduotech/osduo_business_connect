@@ -1,6 +1,45 @@
 /* ===== OSDuo Business Connect — Static Styles ===== */
 /* Theme colors are applied via CSS custom properties on .bc-page */
 
+/* Hide Frappe website navbar on BC pages */
+.page-container .navbar,
+.page-container nav,
+.page-container .web-header,
+.page-container .hero-and-content .navbar,
+.page-container .sidebar-menu,
+.page-container .page-sidebar,
+.page-container .page-header,
+.page-container .breadcrumb-area,
+.page-container .page-breadcrumbs,
+.page-container .page_content .hero-and-content .page-sidebar {
+    display: none !important;
+}
+
+/* Reset Frappe page container for full-width public pages */
+.page-container {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.page-container .page_content {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+}
+
+.page-container .hero-and-content {
+    margin: 0 !important;
+    max-width: 100% !important;
+}
+
+/* Hide Frappe breadcrumbs */
+.page-container .breadcrumb-area,
+.page-container .page-breadcrumbs,
+.page-container .breadcrumb {
+    display: none !important;
+}
+
 .bc-page {
     --bc-primary: #2563EB;
     --bc-secondary: #FFFFFF;
