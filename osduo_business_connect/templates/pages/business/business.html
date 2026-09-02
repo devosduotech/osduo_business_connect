@@ -44,8 +44,8 @@
 
     {# ===== ABOUT ===== #}
     {% if doc.description %}
-    <div class="bc-section bc-section-alt" id="bc-about">
-        <div class="bc-reading">
+    <div class="bc-section" id="bc-about">
+        <div class="bc-reading bc-bg">
             <h2 class="bc-section-title">About Us</h2>
             <p style="line-height:1.8;color:#475569;">{{ doc.description }}</p>
         </div>
@@ -76,8 +76,8 @@
 
     {# ===== SERVICES ===== #}
     {% if services %}
-    <div class="bc-section bc-section-alt" id="bc-services">
-        <div class="bc-container">
+    <div class="bc-section" id="bc-services">
+        <div class="bc-container bc-bg">
             <h2 class="bc-section-title">Services</h2>
             <div class="bc-product-grid">
                 {% for service in services %}
