@@ -11,128 +11,139 @@ Digital business identity, product/service showcase, lead generation, and CRM in
 
 ```bash
 bench get-app https://github.com/devosduotech/osduo_business_connect.git
-bench install-app osduo_business_connect
+bench --site <site-name> migrate
+bench build --app osduo_business_connect
+bench restart
 ```
+
+## URL Hierarchy
+
+| URL | Page |
+|-----|------|
+| `/b/<business>` | Business landing page |
+| `/b/<business>/team/<member>` | Team member / person page |
+| `/b/<business>/products/<product>` | Product page |
+| `/b/<business>/services/<service>` | Service page |
+| `/c/<card>` | Digital Card (short QR/NFC URL) |
 
 ## Module Structure
 
 ```
 osduo_business_connect/
-├── business/           # Business ownership and membership
-│   ├── doctype/
-│   │   ├── business/           # Root ownership record
-│   │   ├── business_member/    # Team members with roles
-│   │   ├── business_social_link/  # Child table for social links
-│   │   └── business_hour/      # Child table for business hours
-│   └── core.py         # Business class + helper functions
-├── card/               # Digital business cards
+├── business/              # Business ownership and membership
+│   ├── core.py            # Business class + helper functions
 │   └── doctype/
-│       ├── digital_card/       # Public digital card
-│       └── social_link/        # Child table for card social links
-├── showcase/           # Product and service showcase
+│       ├── business/
+│       ├── business_member/
+│       ├── business_social_link/
+│       └── business_hour/
+├── card/                  # Digital business cards
+│   ├── public_api.py      # Public card API
 │   └── doctype/
-│       ├── showcase_product/   # Product listings
-│       ├── showcase_service/   # Service listings
-│       ├── page_section/       # Custom page sections
-│       └── theme/              # Card/page themes
-├── analytics/          # Engagement analytics
+│       ├── digital_card/
+│       └── digital_card_link/
+├── showcase/              # Product/service showcase + themes
+│   ├── service_route.py   # Service web route
+│   ├── product_route.py   # Product web route
 │   └── doctype/
-│       └── engagement_event/   # Track views, clicks, shares
-├── enquiry/            # Lead generation
+│       ├── showcase_product/
+│       ├── showcase_service/
+│       ├── page_section/
+│       └── theme/
+├── analytics/             # Engagement analytics
 │   └── doctype/
-│       └── enquiry/            # Public enquiry forms
-├── crm_integration/    # Frappe CRM integration
-│   ├── crm_permissions.py     # CRM Lead permission isolation
-│   └── hooks.py               # CRM event handlers
-├── permissions/        # Centralized permission dispatcher
-├── services/           # Business logic layer
-├── utils/              # Utility functions
-└── templates/pages/    # Public web page templates
+│       └── engagement_event/
+├── enquiry/               # Lead generation
+│   ├── core.py            # Enquiry class
+│   ├── enquiry_service.py # Enquiry business logic
+│   ├── public_enquiry_api.py
+│   ├── enquiry_webhook.py
+│   └── doctype/
+│       └── enquiry/
+├── crm_integration/       # Frappe CRM integration
+│   ├── lead_mapper.py     # Enquiry → CRM Lead mapping
+│   ├── crm_sync.py        # Background sync enqueue
+│   └── crm_permissions.py # CRM permission isolation
+├── services/              # Shared services
+│   ├── theme_service.py   # Theme resolution + CSS vars
+│   ├── qr_service.py      # QR code generation
+│   ├── vcard_service.py   # vCard generation
+│   └── scheduler.py       # Background task scheduler
+├── permissions/           # Centralized permission dispatcher
+├── utils/                 # Utility functions
+├── patches/               # Frappe v16 bug fixes
+└── templates/
+    ├── base.html          # Minimal HTML base template
+    └── pages/
+        ├── business/      # Business landing page
+        ├── product/       # Product page
+        ├── service/       # Service page
+        └── card/          # Digital card page
 ```
 
 ## DocTypes (14 total)
 
-### Core DocTypes
+### Core
 | DocType | Module | Purpose |
 |---------|--------|---------|
-| Business | business | Root ownership record for all business data |
-| Business Member | business | Team members with roles (Owner/Manager/Member/Marketing) |
+| Business | business | Root ownership record |
+| Business Member | business | Team members with roles |
 | Digital Card | card | Public digital business card |
-| Showcase Product | showcase | Product listings with pricing |
-| Showcase Service | showcase | Service listings with pricing |
-| Theme | theme | Card/page themes (CSS, colors) |
+| Showcase Product | showcase | Product listings |
+| Showcase Service | showcase | Service listings |
+| Theme | theme | Page themes (template + colors) |
 | Page Section | showcase | Custom page sections |
-| Enquiry | enquiry | Public enquiry form submissions |
+| Enquiry | enquiry | Public enquiry submissions |
 | Engagement Event | analytics | View/click/share tracking |
 
-### Child Table DocTypes
+### Child Tables
 | DocType | Parent | Purpose |
 |---------|--------|---------|
 | Business Social Link | Business | Social media links |
 | Business Hour | Business | Operating hours |
-| Social Link | Digital Card | Card social links |
+| Digital Card Link | Digital Card | Card social links |
 
-## Custom Roles (7)
+## Theme System
 
-| Role | Purpose |
-|------|---------|
-| OSDuo Business Owner | Full control over business |
-| OSDuo Business Manager | Manage members, cards, products |
-| OSDuo Business Member | Read-only access |
-| OSDuo Marketing Manager | Manage products, services, cards |
-| OSDuo System Manager | Cross-business admin |
-| OSDuo Enquiry Manager | Manage enquiries |
-| OSDuo Analytics Viewer | View analytics |
+**Templates:** Modern, Professional, Minimal, Classic — each with distinct hero layout via `{% include %}` partials.
 
-## Key Features
+**Color Schemes:** Violet, Indigo, Blue, Green, Yellow, Orange, Red, Custom — each defines primary/secondary/accent colors.
 
-### Completed
-- [x] Full DocType structure (14 DocTypes, 7 roles)
-- [x] Business ownership model with member roles
-- [x] Digital card with slug-based public URLs
-- [x] Product/service showcase with categories
-- [x] Public enquiry forms with Guest access
-- [x] CRM Lead integration with permission isolation
-- [x] Naming series for all DocTypes (BIZ-.#####, CARD-.#####, etc.)
-- [x] Custom permission system for multi-business security
-- [x] GitHub repository with develop/main branches
-- [x] `install.py` with DocType existence checks
-- [x] Fixed ModuleNotFoundError by separating core logic from doctype files
+Themes supply CSS custom properties via inline style on `.bc-page`. Static CSS in `public/css/business_connect.css`.
 
-### In Progress
-- [ ] Web templates for public pages (404 routing issue)
-- [ ] Workspace UI for desk navigation
+## CRM Integration
 
-### Pending
-- [ ] Digital card QR code generation
-- [ ] vCard download
-- [ ] Theme customization engine
-- [ ] Analytics dashboard
-- [ ] Email notification templates
+```
+Enquiry created → on_update() → crm_sync.enqueue_sync()
+    → Background worker: lead_mapper.create_lead_from_enquiry()
+        → Creates CRM Lead with custom fields
+        → Updates Enquiry status: "New" → "Synced"
+        → On failure: "Sync Failed" (retried hourly)
+```
 
-## Known Issues
+**Custom fields on CRM Lead:** `osduo_business`, `osduo_card`, `osduo_product`, `osduo_service`, `osduo_enquiry`, `osduo_campaign`, `osduo_source`, `osduo_landing_url`
 
-### Web Page Routing (404)
-Public web pages at `/b/<slug>` and `/c/<slug>` return 404 despite:
-- Correct template files in `templates/pages/`
-- Controller files providing context
-- `website_route_rules` in hooks.py
-- Guest permissions added to DocTypes
+## Testing
 
-**Possible causes:**
-- Frappe v16 web routing may not support custom `website_route_rules` as expected
-- May need to use Frappe's standard web page convention instead of custom routes
-- Cache not clearing properly between deploys
+```bash
+# Run on dev machine (no frappe required)
+cd osduo_business_connect
+python3 -m unittest discover -s tests -p "test_*.py" -v
 
-**Workaround:** Use desk UI for all operations. Public pages deferred.
+# 109 tests across 9 files
+```
 
-## Architecture Decisions
+## Deployment
 
-1. **No `doc_events`** — Frappe auto-calls controller methods for own DocTypes
-2. **Naming series** — All DocTypes use `naming_series` field with single defaults
-3. **Permission separation** — Custom permission functions in `permissions/__init__.py`
-4. **Core logic separation** — Business and Enquiry classes in `core.py` files to avoid Python import conflicts
-5. **Guest access** — Web controllers use `frappe.db.get_value` to bypass permission hooks
+```bash
+cd ~/frappe-bench
+rm -rf apps/osduo_business_connect
+bench get-app https://github.com/devosduotech/osduo_business_connect.git --branch develop
+bench --site business.local migrate
+bench build --app osduo_business_connect
+bench --site business.local clear-website-cache
+bench restart
+```
 
 ## License
 
