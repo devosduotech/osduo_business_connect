@@ -150,11 +150,15 @@ def get_recent_events(business_name, days=30, limit=15):
     from_date = frappe.utils.add_days(frappe.utils.nowdate(), -days)
 
     events = frappe.db.sql(
-        """SELECT ee.event_type, ee.event_time, ee.card, ee.product, ee.service,
-        ee.device_type, ee.browser, bm.person_name
+        """SELECT ee.event_type, ee.event_time, ee.card, ee.device_type, ee.browser,
+        bm.person_name,
+        CASE WHEN sp.name IS NOT NULL THEN sp.product_name ELSE ee.product END as product_name,
+        CASE WHEN ss.name IS NOT NULL THEN ss.service_name ELSE ee.service END as service_name
         FROM `tabEngagement Event` ee
         LEFT JOIN `tabDigital Card` dc ON ee.card = dc.name
         LEFT JOIN `tabBusiness Member` bm ON dc.member = bm.name
+        LEFT JOIN `tabShowcase Product` sp ON ee.product = sp.name
+        LEFT JOIN `tabShowcase Service` ss ON ee.service = ss.name
         WHERE ee.business = %s AND ee.event_time >= %s
         ORDER BY ee.event_time DESC
         LIMIT %s""",
