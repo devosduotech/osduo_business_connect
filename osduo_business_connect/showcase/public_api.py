@@ -198,13 +198,15 @@ def serialize_product(product_name):
 
     # Include gallery
     if product.gallery:
+        sorted_gallery = sorted(product.gallery, key=lambda x: x.sort_order or 0)
         data["gallery"] = [
             {
                 "image": item.image,
                 "caption": item.caption,
                 "alt_text": item.alt_text,
+                "sort_order": item.sort_order,
             }
-            for item in product.gallery
+            for item in sorted_gallery
         ]
 
     return data
@@ -243,6 +245,19 @@ def serialize_service(service_name):
                 "description": benefit.description,
             }
             for benefit in service.benefits
+        ]
+
+    # Include gallery
+    if hasattr(service, "gallery") and service.gallery:
+        sorted_gallery = sorted(service.gallery, key=lambda x: x.sort_order or 0)
+        data["gallery"] = [
+            {
+                "image": item.image,
+                "caption": item.caption,
+                "alt_text": item.alt_text,
+                "sort_order": item.sort_order,
+            }
+            for item in sorted_gallery
         ]
 
     return data

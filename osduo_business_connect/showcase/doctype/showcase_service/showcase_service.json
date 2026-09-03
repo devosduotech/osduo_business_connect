@@ -101,6 +101,12 @@
       "options": "Service Benefit"
     },
     {
+      "fieldname": "gallery",
+      "fieldtype": "Table",
+      "label": "Gallery",
+      "options": "Product Gallery Item"
+    },
+    {
       "fieldname": "section_enquiry",
       "fieldtype": "Section Break",
       "label": "Enquiry"
