@@ -12,6 +12,23 @@ from frappe import _
 
 from osduo_business_connect.enquiry.enquiry_service import create_enquiry
 
+# Rate limit: max submissions per IP per business per hour
+RATE_LIMIT_MAX = 10
+RATE_LIMIT_WINDOW = 3600  # 1 hour in seconds
+
+
+def _check_rate_limit(ip, business_name):
+    """Check and increment rate limit counter for IP + business.
+
+    Returns True if request is allowed, False if rate limited.
+    """
+    cache_key = f"enquiry_rl:{business_name}:{ip}"
+    count = frappe.cache.get_value(cache_key) or 0
+    if count >= RATE_LIMIT_MAX:
+        return False
+    frappe.cache.set_value(cache_key, count + 1, expires_in_sec=RATE_LIMIT_WINDOW)
+    return True
+
 
 @frappe.whitelist(allow_guest=True)
 def submit_enquiry(business_slug, visitor_data, source="Other", references=None):
@@ -45,6 +62,11 @@ def submit_enquiry(business_slug, visitor_data, source="Other", references=None)
     if not business:
         frappe.log_error(f"Enquiry failed: Business not found for slug {business_slug}", "Enquiry Error")
         frappe.throw(_("Business not found"), frappe.DoesNotExistError)
+
+    # Rate limit: max 10 enquiries per IP per business per hour
+    ip = frappe.local.request_ip or "127.0.0.1"
+    if not _check_rate_limit(ip, business[0].name):
+        frappe.throw(_("Too many enquiries. Please try again later."), frappe.RateLimitExceededError)
 
     # Validate required fields
     if not visitor_data.get("name"):

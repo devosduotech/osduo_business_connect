@@ -152,10 +152,17 @@ def get_permission_query_conditions(user):
 def has_permission(doc, ptype):
     """
     Check if user has permission on Page Section document.
-    
+
     Business Owner/Manager/Marketing can manage sections.
+    Guest can read sections for published businesses.
     """
     user = frappe.session.user
+
+    # Guest can read page sections (needed for public business pages)
+    if user == "Guest":
+        if ptype == "read":
+            return True
+        return False
 
     # System Manager has full access
     if "System Manager" in frappe.get_roles(user):

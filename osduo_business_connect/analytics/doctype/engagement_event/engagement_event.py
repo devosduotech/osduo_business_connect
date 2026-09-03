@@ -164,10 +164,15 @@ def get_permission_query_conditions(user):
 def has_permission(doc, ptype):
     """
     Check if user has permission on Engagement Event document.
-    
+
     Events are read-only for business users.
+    Guest has no access (events are internal analytics).
     """
     user = frappe.session.user
+
+    # Guest has no access to engagement events
+    if user == "Guest":
+        return False
 
     # System Manager has full access
     if "System Manager" in frappe.get_roles(user):

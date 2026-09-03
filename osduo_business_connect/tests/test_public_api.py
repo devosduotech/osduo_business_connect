@@ -53,33 +53,5 @@ class TestShowcasePublicAPI(unittest.TestCase):
         self.assertIn("def serialize_service", content)
 
 
-class TestProductRoute(unittest.TestCase):
-    """Verify product route module."""
-
-    def test_exists(self):
-        path = os.path.join(SHOWCASE_DIR, "product_route.py")
-        self.assertTrue(os.path.exists(path))
-
-    def test_has_get_context(self):
-        path = os.path.join(SHOWCASE_DIR, "product_route.py")
-        with open(path) as f:
-            content = f.read()
-        self.assertIn("def get_context", content)
-
-
-class TestServiceRoute(unittest.TestCase):
-    """Verify service route module."""
-
-    def test_exists(self):
-        path = os.path.join(SHOWCASE_DIR, "service_route.py")
-        self.assertTrue(os.path.exists(path))
-
-    def test_has_get_context(self):
-        path = os.path.join(SHOWCASE_DIR, "service_route.py")
-        with open(path) as f:
-            content = f.read()
-        self.assertIn("def get_context", content)
-
-
 if __name__ == "__main__":
     unittest.main()

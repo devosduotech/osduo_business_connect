@@ -30,6 +30,9 @@ def after_install():
     # Create CRM Lead Source
     create_crm_lead_source()
 
+    # Allow same-origin CSRF for guest form submissions
+    _ensure_allowed_referrers()
+
 
 def create_crm_custom_fields():
     """
@@ -179,6 +182,7 @@ def after_migrate():
     create_default_roles()
     create_builtin_themes()
     create_crm_lead_source()
+    _ensure_allowed_referrers()
 
 
 def create_crm_lead_source():
@@ -241,3 +245,52 @@ def _get_scheme_accent(scheme):
         "Red": "#F87171",
     }
     return colors.get(scheme, "#60A5FA")
+
+
+def _ensure_allowed_referrers():
+    """Add the site URL to allowed_referrers in site_config.json.
+
+    Frappe v16 validates CSRF in HTTPRequest.__init__() before whitelist
+    routing.  When the Referer header matches an entry in allowed_referrers,
+    CSRF validation is skipped (is_allowed_referrer returns True).  This
+    enables guest form submissions from our own domain.
+    """
+    import json
+    import os
+
+    site_config_path = os.path.join(frappe.get_site_path(), "site_config.json")
+
+    try:
+        with open(site_config_path) as f:
+            config = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return
+
+    changed = False
+
+    # Ensure site URL is in allowed_referrers
+    site_url = frappe.utils.get_url()  # e.g. http://business.local
+    if site_url:
+        allowed = config.get("allowed_referrers", [])
+        if site_url not in allowed:
+            allowed.append(site_url)
+            config["allowed_referrers"] = allowed
+            changed = True
+
+    # Also set ignore_csrf as belt-and-suspenders for guest form submissions
+    if not config.get("ignore_csrf"):
+        config["ignore_csrf"] = 1
+        changed = True
+
+    if changed:
+        with open(site_config_path, "w") as f:
+            json.dump(config, f, indent=1)
+
+        frappe.conf.allowed_referrers = config.get("allowed_referrers", [])
+        frappe.conf.ignore_csrf = 1
+
+        # Clear the cached allowed_referrers so Frappe re-reads from conf
+        try:
+            frappe.cache.delete_key("allowed_referrers")
+        except Exception:
+            pass

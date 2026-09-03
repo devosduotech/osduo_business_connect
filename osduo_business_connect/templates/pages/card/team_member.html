@@ -154,6 +154,8 @@
     <a href="/b/{{ business_slug }}" class="bc-btn bc-btn-primary" style="background:#334155;">&#127968; Business</a>
 </div>
 
+<div id="bc-csrf-token" data-token="{{ frappe.session.csrf_token or frappe.session.data.csrf_token or '' }}" style="display:none;"></div>
+
 {% raw %}
 <script>
 (function() {
@@ -164,11 +166,6 @@
     checkMobile();
     window.addEventListener('resize', checkMobile);
 
-    function getCookie(name) {
-        var v = document.cookie.match('(^|; )' + name + '=([^;]*)');
-        return v ? v[2] : '';
-    }
-
     document.getElementById('card-enquiry-form').addEventListener('submit', function(e) {
         e.preventDefault();
         var form = e.target;
@@ -176,12 +173,13 @@
         btn.disabled = true;
         btn.textContent = 'Sending...';
         var fd = new FormData(form);
+        var csrfToken = document.getElementById('bc-csrf-token').getAttribute('data-token') || '';
 
         fetch('/api/method/osduo_business_connect.enquiry.public_enquiry_api.submit_enquiry', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-Frappe-CSRF-Token': getCookie('csrf_token'),
+                'X-Frappe-CSRF-Token': csrfToken,
             },
             body: JSON.stringify({
                 business_slug: fd.get('business_slug'),

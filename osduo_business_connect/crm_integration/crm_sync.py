@@ -31,6 +31,8 @@ def sync_enquiry_to_crm(enquiry_name):
     """
     Sync an Enquiry to a CRM Lead. Called by background worker.
 
+    Idempotent: checks for existing Lead before creating one.
+
     Args:
         enquiry_name: Enquiry document name
 
@@ -42,8 +44,22 @@ def sync_enquiry_to_crm(enquiry_name):
     except frappe.DoesNotExistError:
         return {"status": "error", "message": f"Enquiry {enquiry_name} not found"}
 
-    if enquiry_doc.status == "Synced":
+    # Already synced — skip
+    if enquiry_doc.status == "Synced" or enquiry_doc.crm_lead:
         return {"status": "skipped", "message": "Already synced"}
+
+    # Idempotency check: does a CRM Lead already exist for this enquiry?
+    existing_lead = frappe.db.get_value(
+        "CRM Lead", {"osduo_enquiry": enquiry_name}, "name"
+    )
+    if existing_lead:
+        # Link existing lead to enquiry and skip creation
+        frappe.db.set_value("Enquiry", enquiry_name, {
+            "status": "Synced",
+            "crm_lead": existing_lead,
+        })
+        frappe.db.commit()
+        return {"status": "skipped", "message": f"Lead {existing_lead} already exists"}
 
     from osduo_business_connect.crm_integration.lead_mapper import create_lead_from_enquiry
     return create_lead_from_enquiry(enquiry_doc)
