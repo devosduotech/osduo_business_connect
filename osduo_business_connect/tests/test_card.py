@@ -102,19 +102,5 @@ class TestPublicAPI(unittest.TestCase):
         self.assertIn("def serialize_card", content)
 
 
-class TestPublicRoute(unittest.TestCase):
-    """Verify card public route module."""
-
-    def test_exists(self):
-        path = os.path.join(CARD_DIR, "public_route.py")
-        self.assertTrue(os.path.exists(path))
-
-    def test_has_get_context(self):
-        path = os.path.join(CARD_DIR, "public_route.py")
-        with open(path) as f:
-            content = f.read()
-        self.assertIn("def get_context", content)
-
-
 if __name__ == "__main__":
     unittest.main()

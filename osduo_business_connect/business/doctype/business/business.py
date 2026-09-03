@@ -6,7 +6,7 @@ Business DocType Controller
 
 This is a minimal stub. The full implementation lives in business/core.py
 to avoid Python import conflicts when module name == doctype name.
-Frape's load_doctype_module expects this file to exist.
+Frappe's load_doctype_module expects this file to exist.
 """
 
 from osduo_business_connect.business.core import (

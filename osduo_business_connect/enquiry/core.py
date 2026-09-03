@@ -210,14 +210,13 @@ def has_permission(doc, ptype):
     Check if user has permission on Enquiry document.
 
     Business Owner/Manager can manage enquiries.
-    Guest can create enquiries (public forms).
+    Guest has no direct access — enquiries are created through the
+    whitelisted public API (submit_enquiry) which uses ignore_permissions.
     """
     user = frappe.session.user
 
-    # Guest can only create enquiries
+    # Guest has no direct permission on Enquiry records
     if user == "Guest":
-        if ptype == "create":
-            return True
         return False
 
     # System Manager has full access
@@ -245,7 +244,7 @@ def has_permission(doc, ptype):
     elif ptype == "write":
         return member_role in ["Owner", "Manager"]
     elif ptype == "create":
-        return False  # Enquiries are created through public API
+        return False  # Enquiries are created through public API only
     elif ptype == "delete":
         return member_role == "Owner"
 

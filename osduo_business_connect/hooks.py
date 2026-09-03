@@ -106,12 +106,18 @@ scheduler_events = {
 
 # Permissions
 # -----------
-# Permissions evaluated in scripted ways
 
-# has_permission hook REMOVED - Frappe's web layer calls this for Guest
-# users before controllers run, blocking all public page access.
-# DocType-level permissions already grant Guest read for published records.
-# Web controllers use frappe.db.get_value to bypass permission hooks.
+has_permission = {
+    "Business": "osduo_business_connect.permissions.has_permission",
+    "Business Member": "osduo_business_connect.permissions.has_permission",
+    "Digital Card": "osduo_business_connect.permissions.has_permission",
+    "Showcase Product": "osduo_business_connect.permissions.has_permission",
+    "Showcase Service": "osduo_business_connect.permissions.has_permission",
+    "Enquiry": "osduo_business_connect.permissions.has_permission",
+    "Page Section": "osduo_business_connect.permissions.has_permission",
+    "Theme": "osduo_business_connect.permissions.has_permission",
+    "Engagement Event": "osduo_business_connect.permissions.has_permission",
+}
 
 # NOTE: CRM Lead permission_query_conditions NOT registered here.
 # Frappe CRM already defines its own permission system for CRM Lead.

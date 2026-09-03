@@ -68,24 +68,38 @@ def has_permission(doc, ptype):
     """Check if user has permission on Theme document."""
     user = frappe.session.user
 
+    # Guest can read all themes (needed for public page rendering)
+    if user == "Guest":
+        if ptype == "read":
+            return True
+        return False
+
     if "System Manager" in frappe.get_roles(user):
         return True
+
+    # System themes (no business) are read-only for non-System Managers
+    if not doc.business:
+        if ptype == "read":
+            return True
+        return False
 
     from osduo_business_connect.business.core import get_user_businesses
     businesses = get_user_businesses(user)
     business_names = [b["name"] for b in businesses]
 
-    if doc.business and doc.business not in business_names:
+    if doc.business not in business_names:
         return False
 
     from osduo_business_connect.business.core import get_user_role_in_business
-    if doc.business:
-        member_role = get_user_role_in_business(user, doc.business)
-        if not member_role:
-            return False
-        if ptype in ("write", "create"):
-            return member_role in ["Owner", "Manager", "Marketing"]
-        if ptype == "delete":
-            return member_role == "Owner"
+    member_role = get_user_role_in_business(user, doc.business)
+    if not member_role:
+        return False
 
-    return True
+    if ptype == "read":
+        return True
+    if ptype in ("write", "create"):
+        return member_role in ["Owner", "Manager", "Marketing"]
+    if ptype == "delete":
+        return member_role == "Owner"
+
+    return False

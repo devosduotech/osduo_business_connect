@@ -46,8 +46,9 @@ class Business(Document):
         self.set_defaults()
 
     def after_insert(self):
-        """Post-insert operations - create owner membership."""
+        """Post-insert operations - create owner membership and default theme."""
         self.create_owner_membership()
+        self.create_default_theme()
 
     def on_update(self):
         """Post-save operations."""
@@ -85,6 +86,23 @@ class Business(Document):
             })
             member.insert(ignore_permissions=True)
             frappe.db.commit()
+
+    def create_default_theme(self):
+        """Create a default theme (Modern + Blue) and link it to this business."""
+        theme = frappe.get_doc({
+            "doctype": "Theme",
+            "theme_name": f"{self.business_name or self.name} Theme",
+            "business": self.name,
+            "template": "Modern",
+            "color_scheme": "Blue",
+            "primary_color": "#2563EB",
+            "secondary_color": "#FFFFFF",
+            "accent_color": "#60A5FA",
+            "button_style": "Filled",
+        })
+        theme.insert(ignore_permissions=True)
+        self.default_theme = theme.name
+        frappe.db.commit()
 
     def normalize_fields(self):
         """Normalize field values."""
