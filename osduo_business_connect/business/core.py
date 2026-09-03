@@ -101,7 +101,9 @@ class Business(Document):
             "button_style": "Filled",
         })
         theme.insert(ignore_permissions=True)
-        self.default_theme = theme.name
+        # Persist to database (self.default_theme on an already-inserted doc
+        # doesn't auto-persist)
+        frappe.db.set_value("Business", self.name, "default_theme", theme.name)
         frappe.db.commit()
 
     def normalize_fields(self):
@@ -208,8 +210,8 @@ def get_permission_query_conditions(user):
     if not businesses:
         return "1=0"  # No access
 
-    business_names = [b["name"] for b in businesses]
-    return f"`tabBusiness`.name IN ({', '.join(['%s'] * len(business_names))})"
+    business_names = [frappe.db.escape(b["name"]) for b in businesses]
+    return f"`tabBusiness`.name IN ({', '.join(business_names)})"
 
 
 def has_permission(doc, ptype):
@@ -230,6 +232,13 @@ def has_permission(doc, ptype):
     if "System Manager" in frappe.get_roles(user):
         return True
 
+    # Business creation: allow if user has OSDuo Business Owner role
+    # (before_insert won't have membership yet)
+    if ptype == "create":
+        if "OSDuo Business Owner" in frappe.get_roles(user):
+            return True
+        return False
+
     # Check if user is a member of this business
     businesses = get_user_businesses(user)
     business_names = [b["name"] for b in businesses]
@@ -248,8 +257,6 @@ def has_permission(doc, ptype):
         return True
     elif ptype == "write":
         return member_role in ["Owner", "Manager", "Marketing"]
-    elif ptype == "create":
-        return member_role == "Owner"
     elif ptype == "delete":
         return member_role == "Owner"
 

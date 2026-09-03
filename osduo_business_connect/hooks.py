@@ -39,11 +39,6 @@ website_route_rules = [
         "from_route": "/b/<business_slug>",
         "to_route": "business/business",
     },
-    # Team member page (under business)
-    {
-        "from_route": "/b/<business_slug>/team/<member_slug>",
-        "to_route": "card/team_member",
-    },
     # Digital Card (short URL)
     {
         "from_route": "/c/<card_slug>",
@@ -117,12 +112,23 @@ has_permission = {
     "Page Section": "osduo_business_connect.permissions.has_permission",
     "Theme": "osduo_business_connect.permissions.has_permission",
     "Engagement Event": "osduo_business_connect.permissions.has_permission",
+    # CRM Lead: OSDuo permission layer on top of CRM's native model
+    "CRM Lead": "osduo_business_connect.crm_integration.crm_permissions.has_permission",
 }
 
-# NOTE: CRM Lead permission_query_conditions NOT registered here.
-# Frappe CRM already defines its own permission system for CRM Lead.
-# Business-level filtering should be done through CRM's organization hierarchy,
-# not by overriding CRM's native permission model.
+permission_query_conditions = {
+    "Business": "osduo_business_connect.business.core.get_permission_query_conditions",
+    "Business Member": "osduo_business_connect.business.doctype.business_member.business_member.get_permission_query_conditions",
+    "Digital Card": "osduo_business_connect.card.doctype.digital_card.digital_card.get_permission_query_conditions",
+    "Showcase Product": "osduo_business_connect.showcase.doctype.showcase_product.showcase_product.get_permission_query_conditions",
+    "Showcase Service": "osduo_business_connect.showcase.doctype.showcase_service.showcase_service.get_permission_query_conditions",
+    "Enquiry": "osduo_business_connect.enquiry.core.get_permission_query_conditions",
+    "Page Section": "osduo_business_connect.showcase.doctype.page_section.page_section.get_permission_query_conditions",
+    "Theme": "osduo_business_connect.showcase.doctype.theme.theme.get_permission_query_conditions",
+    "Engagement Event": "osduo_business_connect.analytics.doctype.engagement_event.engagement_event.get_permission_query_conditions",
+    # CRM Lead: OSDuo business isolation
+    "CRM Lead": "osduo_business_connect.crm_integration.crm_permissions.get_permission_query_conditions",
+}
 
 # DocType Class
 # ---------------

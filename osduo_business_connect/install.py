@@ -47,7 +47,8 @@ def create_crm_custom_fields():
             "label": "OSDuo Business",
             "options": "Business",
             "insert_after": "source",
-            "description": "OSDuo Business that generated this lead",
+            "read_only": 1,
+            "description": "OSDuo Business that generated this lead (managed by Business Connect)",
         },
         {
             "fieldname": "osduo_card",
@@ -55,7 +56,8 @@ def create_crm_custom_fields():
             "label": "OSDuo Digital Card",
             "options": "Digital Card",
             "insert_after": "osduo_business",
-            "description": "Digital Card that generated this lead",
+            "read_only": 1,
+            "description": "Digital Card that generated this lead (managed by Business Connect)",
         },
         {
             "fieldname": "osduo_product",
@@ -63,7 +65,8 @@ def create_crm_custom_fields():
             "label": "OSDuo Product",
             "options": "Showcase Product",
             "insert_after": "osduo_card",
-            "description": "Product that generated this lead",
+            "read_only": 1,
+            "description": "Product that generated this lead (managed by Business Connect)",
         },
         {
             "fieldname": "osduo_service",
@@ -71,7 +74,8 @@ def create_crm_custom_fields():
             "label": "OSDuo Service",
             "options": "Showcase Service",
             "insert_after": "osduo_product",
-            "description": "Service that generated this lead",
+            "read_only": 1,
+            "description": "Service that generated this lead (managed by Business Connect)",
         },
         {
             "fieldname": "osduo_enquiry",
@@ -79,21 +83,25 @@ def create_crm_custom_fields():
             "label": "OSDuo Enquiry",
             "options": "Enquiry",
             "insert_after": "osduo_service",
-            "description": "Enquiry that generated this lead",
+            "read_only": 1,
+            "unique": 1,
+            "description": "Enquiry that generated this lead (managed by Business Connect)",
         },
         {
             "fieldname": "osduo_campaign",
             "fieldtype": "Data",
             "label": "OSDuo Campaign",
             "insert_after": "osduo_enquiry",
-            "description": "Campaign attribution for this lead",
+            "read_only": 1,
+            "description": "Campaign attribution for this lead (managed by Business Connect)",
         },
         {
             "fieldname": "osduo_source",
             "fieldtype": "Data",
             "label": "OSDuo Source",
             "insert_after": "osduo_campaign",
-            "description": "Specific source (Product page, Service page, etc.)",
+            "read_only": 1,
+            "description": "Specific source (Product page, Service page, etc.) (managed by Business Connect)",
         },
         {
             "fieldname": "osduo_landing_url",
@@ -101,7 +109,8 @@ def create_crm_custom_fields():
             "label": "OSDuo Landing URL",
             "options": "URL",
             "insert_after": "osduo_source",
-            "description": "URL where the lead was captured",
+            "read_only": 1,
+            "description": "URL where the lead was captured (managed by Business Connect)",
         },
     ]
     

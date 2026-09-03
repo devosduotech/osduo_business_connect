@@ -145,8 +145,8 @@ def get_permission_query_conditions(user):
     if not businesses:
         return "1=0"
 
-    business_names = [b["name"] for b in businesses]
-    return f"`tabPage Section`.business IN ({', '.join(['%s'] * len(business_names))})"
+    business_names = [frappe.db.escape(b["name"]) for b in businesses]
+    return f"`tabPage Section`.business IN ({', '.join(business_names)})"
 
 
 def has_permission(doc, ptype):
