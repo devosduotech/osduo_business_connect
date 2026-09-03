@@ -350,6 +350,9 @@ def get_public_business_by_slug(slug):
     Used by all public-facing controllers to ensure consistent access rules:
     Business must be Published AND public_profile_enabled.
 
+    Uses frappe.db.get_value to bypass permission_query_conditions
+    (this is a public function with its own visibility check).
+
     Args:
         slug: Business public slug
 
@@ -359,21 +362,13 @@ def get_public_business_by_slug(slug):
     if not slug:
         return None
 
-    business = frappe.get_all(
+    business = frappe.db.get_value(
         "Business",
-        filters={
-            "slug": slug,
-            "status": "Published",
-            "public_profile_enabled": 1,
-        },
-        fields=[
-            "name", "slug", "business_name", "tagline", "logo", "status",
-            "description", "website", "email", "phone", "whatsapp",
-            "address", "city", "state",
-        ],
-        limit=1,
+        {"slug": slug, "status": "Published", "public_profile_enabled": 1},
+        ["name", "slug", "business_name", "tagline", "logo", "status",
+         "description", "website", "email", "phone", "whatsapp",
+         "address", "city", "state"],
+        as_dict=True,
     )
 
-    if business:
-        return business[0]
-    return None
+    return business or None
