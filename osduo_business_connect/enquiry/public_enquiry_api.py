@@ -50,18 +50,23 @@ def submit_enquiry(business_slug, visitor_data, source="Other", references=None)
     if not visitor_data.get("name"):
         frappe.throw(_("Visitor name is required"))
 
+    # Validate phone format
+    if visitor_data.get("phone"):
+        import re
+        phone_digits = re.sub(r'[^0-9]', '', visitor_data["phone"])
+        if len(phone_digits) < 7:
+            frappe.throw(_("Contact number must be at least 7 digits"))
+        if len(phone_digits) > 15:
+            frappe.throw(_("Contact number must not exceed 15 digits"))
+    else:
+        frappe.throw(_("Contact number is required"))
+
     # Validate email format if provided
     if visitor_data.get("email"):
         import re
         email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
         if not re.match(email_pattern, visitor_data["email"]):
             frappe.throw(_("Invalid email address"))
-
-    # Validate phone format if provided
-    if visitor_data.get("phone"):
-        phone = visitor_data["phone"].replace(" ", "").replace("-", "").replace("(", "").replace(")", "")
-        if not phone.isdigit() and not phone.startswith("+"):
-            frappe.throw(_("Invalid phone number"))
 
     # Create enquiry
     result = create_enquiry(
