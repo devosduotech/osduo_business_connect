@@ -52,20 +52,16 @@ def submit_enquiry(business_slug, visitor_data, source="Other", references=None)
         import json
         references = json.loads(references)
 
-    # Get business by slug
-    business = frappe.get_all(
-        "Business",
-        filters={"slug": business_slug, "status": "Published"},
-        fields=["name"],
-        limit=1,
-    )
+    # Get business by slug (requires Published + public_profile_enabled)
+    from osduo_business_connect.business.core import get_public_business_by_slug
+    business = get_public_business_by_slug(business_slug)
     if not business:
         frappe.log_error(f"Enquiry failed: Business not found for slug {business_slug}", "Enquiry Error")
         frappe.throw(_("Business not found"), frappe.DoesNotExistError)
 
     # Rate limit: max 10 enquiries per IP per business per hour
     ip = frappe.local.request_ip or "127.0.0.1"
-    if not _check_rate_limit(ip, business[0].name):
+    if not _check_rate_limit(ip, business.name):
         frappe.throw(_("Too many enquiries. Please try again later."), frappe.RateLimitExceededError)
 
     # Validate required fields
@@ -92,7 +88,7 @@ def submit_enquiry(business_slug, visitor_data, source="Other", references=None)
 
     # Create enquiry
     result = create_enquiry(
-        business_name=business[0].name,
+        business_name=business.name,
         visitor_data=visitor_data,
         source=source,
         references=references,

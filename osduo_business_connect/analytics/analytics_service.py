@@ -4,25 +4,21 @@ from frappe import _
 
 def record_engagement(business, event_type, **kwargs):
     try:
-        request = frappe.request if frappe.request else None
-
         event_data = {
             "doctype": "Engagement Event",
             "business": business,
             "event_type": event_type,
             "event_time": frappe.utils.now_datetime(),
-            "session_id": kwargs.get("session_id") or _get_session_id(request),
+            "session_id": kwargs.get("session_id"),
             "card": kwargs.get("card"),
             "product": kwargs.get("product"),
             "service": kwargs.get("service"),
             "campaign": kwargs.get("campaign"),
-            "landing_url": kwargs.get("landing_url") or _get_landing_url(request),
-            "referrer": kwargs.get("referrer") or _get_referrer(request),
+            "landing_url": kwargs.get("landing_url"),
+            "referrer": kwargs.get("referrer"),
+            "device_type": kwargs.get("device_type"),
+            "browser": kwargs.get("browser"),
         }
-
-        if request:
-            event_data["device_type"] = detect_device_type(request)
-            event_data["browser"] = detect_browser(request)
 
         event = frappe.get_doc(event_data)
         event.insert(ignore_permissions=True)
