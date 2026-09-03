@@ -28,6 +28,41 @@ def create_enquiry(business_name, visitor_data, source="Other", references=None)
     business = frappe.get_doc("Business", business_name)
     if business.status != "Published":
         frappe.throw("Business is not published")
+    if not business.public_profile_enabled:
+        frappe.throw("Business public profile is not enabled")
+
+    # Validate references belong to this business and are published
+    card_name = references.get("card") if references else None
+    product_name = references.get("product") if references else None
+    service_name = references.get("service") if references else None
+
+    if card_name:
+        card = frappe.db.get_value(
+            "Digital Card",
+            {"name": card_name, "business": business_name,
+             "status": "Published", "public_profile_enabled": 1},
+            ["name"],
+        )
+        if not card:
+            frappe.throw("Digital Card not found or not published")
+
+    if product_name:
+        product = frappe.db.get_value(
+            "Showcase Product",
+            {"name": product_name, "business": business_name, "status": "Published"},
+            ["name"],
+        )
+        if not product:
+            frappe.throw("Product not found or not published")
+
+    if service_name:
+        service = frappe.db.get_value(
+            "Showcase Service",
+            {"name": service_name, "business": business_name, "status": "Published"},
+            ["name"],
+        )
+        if not service:
+            frappe.throw("Service not found or not published")
 
     # Create enquiry
     enquiry = frappe.get_doc({

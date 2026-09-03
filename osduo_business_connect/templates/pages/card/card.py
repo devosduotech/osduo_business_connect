@@ -94,7 +94,8 @@ def get_context(context):
         )
 
     # Generate VCF content
-    context.vcf_content = _generate_vcf(doc)
+    from osduo_business_connect.services.vcard_service import generate_vcard
+    context.vcf_content = generate_vcard(frappe.get_doc("Digital Card", doc.name))
 
     context.meta_description = f"Contact {doc.get('display_name', '')}"
 
@@ -143,40 +144,3 @@ def _track_event(business, event_type, **kwargs):
         )
     except Exception:
         pass
-
-
-def _generate_vcf(doc):
-    """Generate vCard 3.0 content for download."""
-    lines = [
-        "BEGIN:VCARD",
-        "VERSION:3.0",
-    ]
-
-    name = doc.get("display_name") or ""
-    parts = name.split(" ", 1)
-    first_name = parts[0] if parts else ""
-    last_name = parts[1] if len(parts) > 1 else ""
-    lines.append(f"N:{last_name};{first_name};;;")
-    lines.append(f"FN:{name}")
-
-    if doc.get("designation"):
-        lines.append(f"TITLE:{doc['designation']}")
-
-    if doc.get("phone"):
-        lines.append(f"TEL;TYPE=CELL:{doc['phone']}")
-
-    if doc.get("email"):
-        lines.append(f"EMAIL:{doc['email']}")
-
-    if doc.get("website"):
-        lines.append(f"URL:{doc['website']}")
-
-    if doc.get("business_name"):
-        lines.append(f"ORG:{doc['business_name']}")
-
-    if doc.get("bio"):
-        escaped = doc["bio"].replace("\n", "\\n")
-        lines.append(f"NOTE:{escaped}")
-
-    lines.append("END:VCARD")
-    return "\r\n".join(lines)

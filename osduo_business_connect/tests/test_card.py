@@ -99,7 +99,7 @@ class TestPublicAPI(unittest.TestCase):
         path = os.path.join(CARD_DIR, "public_api.py")
         with open(path) as f:
             content = f.read()
-        self.assertIn("def serialize_card", content)
+        self.assertIn("def get_public_card_by_slug", content)
 
 
 if __name__ == "__main__":

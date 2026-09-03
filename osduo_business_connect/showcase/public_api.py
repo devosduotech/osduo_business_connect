@@ -5,10 +5,13 @@
 Public API for Showcase Products and Services.
 
 This module provides API functions for public access to products and services.
+Uses get_public_business_by_slug() for consistent Business visibility checks.
 """
 
 import frappe
 from frappe import _
+
+from osduo_business_connect.business.core import get_public_business_by_slug
 
 
 def get_public_product(business_slug, product_slug):
@@ -22,31 +25,24 @@ def get_public_product(business_slug, product_slug):
     Returns:
         dict: Product data or None if not found
     """
-    # Get business by slug
-    business = frappe.get_all(
-        "Business",
-        filters={"slug": business_slug, "status": "Published"},
-        fields=["name"],
-        limit=1,
-    )
+    business = get_public_business_by_slug(business_slug)
     if not business:
         return None
 
-    # Get product by slug
-    product = frappe.get_all(
+    product = frappe.db.get_value(
         "Showcase Product",
-        filters={
-            "business": business[0].name,
+        {
+            "business": business.name,
             "slug": product_slug,
             "status": "Published",
         },
-        fields=["name"],
-        limit=1,
+        ["name"],
+        as_dict=True,
     )
     if not product:
         return None
 
-    return serialize_product(product[0].name)
+    return serialize_product(product.name)
 
 
 def get_public_products(business_slug, limit=20, offset=0):
@@ -61,21 +57,14 @@ def get_public_products(business_slug, limit=20, offset=0):
     Returns:
         list: List of product data
     """
-    # Get business by slug
-    business = frappe.get_all(
-        "Business",
-        filters={"slug": business_slug, "status": "Published"},
-        fields=["name"],
-        limit=1,
-    )
+    business = get_public_business_by_slug(business_slug)
     if not business:
         return []
 
-    # Get products
     products = frappe.get_all(
         "Showcase Product",
         filters={
-            "business": business[0].name,
+            "business": business.name,
             "status": "Published",
         },
         fields=["name"],
@@ -98,31 +87,24 @@ def get_public_service(business_slug, service_slug):
     Returns:
         dict: Service data or None if not found
     """
-    # Get business by slug
-    business = frappe.get_all(
-        "Business",
-        filters={"slug": business_slug, "status": "Published"},
-        fields=["name"],
-        limit=1,
-    )
+    business = get_public_business_by_slug(business_slug)
     if not business:
         return None
 
-    # Get service by slug
-    service = frappe.get_all(
+    service = frappe.db.get_value(
         "Showcase Service",
-        filters={
-            "business": business[0].name,
+        {
+            "business": business.name,
             "slug": service_slug,
             "status": "Published",
         },
-        fields=["name"],
-        limit=1,
+        ["name"],
+        as_dict=True,
     )
     if not service:
         return None
 
-    return serialize_service(service[0].name)
+    return serialize_service(service.name)
 
 
 def get_public_services(business_slug, limit=20, offset=0):
@@ -137,21 +119,14 @@ def get_public_services(business_slug, limit=20, offset=0):
     Returns:
         list: List of service data
     """
-    # Get business by slug
-    business = frappe.get_all(
-        "Business",
-        filters={"slug": business_slug, "status": "Published"},
-        fields=["name"],
-        limit=1,
-    )
+    business = get_public_business_by_slug(business_slug)
     if not business:
         return []
 
-    # Get services
     services = frappe.get_all(
         "Showcase Service",
         filters={
-            "business": business[0].name,
+            "business": business.name,
             "status": "Published",
         },
         fields=["name"],

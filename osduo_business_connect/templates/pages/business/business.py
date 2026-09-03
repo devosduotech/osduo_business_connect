@@ -48,14 +48,6 @@ def get_context(context):
         order_by="idx asc",
     )
 
-    # Members (optional)
-    context.members = frappe.db.get_list(
-        "Digital Card",
-        filters={"business": doc.name, "status": "Published", "public_profile_enabled": 1},
-        fields=["name", "display_name", "slug", "designation", "profile_image"],
-        order_by="sort_order asc",
-    )
-
     # Products
     context.products = frappe.db.get_list(
         "Showcase Product",

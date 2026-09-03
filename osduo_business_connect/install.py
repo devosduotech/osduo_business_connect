@@ -197,6 +197,7 @@ def migrate_crm_custom_fields():
 
     Previous versions may have created fields with read_only=0 or unique=0
     due to a bug in create_custom_field_if_not_exists. This corrects them.
+    Also deduplicates osduo_enquiry values before enforcing uniqueness.
     """
     fields_to_fix = {
         "osduo_enquiry": {"read_only": 1, "unique": 1},
@@ -208,6 +209,24 @@ def migrate_crm_custom_fields():
         "osduo_source": {"read_only": 1, "unique": 0},
         "osduo_landing_url": {"read_only": 1, "unique": 0},
     }
+
+    # Deduplicate osduo_enquiry before enforcing uniqueness.
+    # Keep the earliest CRM Lead for each enquiry value; clear duplicates.
+    duplicates = frappe.db.sql(
+        """SELECT osduo_enquiry, MIN(name) as keep_name
+        FROM `tabCRM Lead`
+        WHERE osduo_enquiry IS NOT NULL AND osduo_enquiry != ''
+        GROUP BY osduo_enquiry
+        HAVING COUNT(*) > 1""",
+        as_dict=True,
+    )
+    for dup in duplicates:
+        frappe.db.sql(
+            """UPDATE `tabCRM Lead`
+            SET osduo_enquiry = ''
+            WHERE osduo_enquiry = %s AND name != %s""",
+            (dup.osduo_enquiry, dup.keep_name),
+        )
 
     for fieldname, attrs in fields_to_fix.items():
         cf_name = frappe.db.exists(
@@ -262,7 +281,6 @@ def create_builtin_themes():
                 "secondary_color": "#FFFFFF",
                 "accent_color": _get_scheme_accent(scheme),
                 "button_style": "Filled",
-                "active": 0,
             }).insert(ignore_permissions=True)
             frappe.db.commit()
 

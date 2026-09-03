@@ -103,8 +103,13 @@ def create_lead_from_enquiry(enquiry_doc):
 def retry_failed_enquiries():
     """
     Retry creating CRM Leads for enquiries that failed to sync.
-    Called by scheduler (hourly). Looks for enquiries with no CRM lead linked.
+    Called by scheduler (daily). Uses sync_enquiry_to_crm for idempotency.
+
+    Returns:
+        int: Number of enquiries successfully synced
     """
+    synced_count = 0
+
     enquiries = frappe.get_all(
         "Enquiry",
         filters={"status": "New", "crm_lead": ["is", "not set"]},
@@ -114,13 +119,17 @@ def retry_failed_enquiries():
 
     for enquiry in enquiries:
         try:
-            enquiry_doc = frappe.get_doc("Enquiry", enquiry.name)
-            create_lead_from_enquiry(enquiry_doc)
+            from osduo_business_connect.crm_integration.crm_sync import sync_enquiry_to_crm
+            result = sync_enquiry_to_crm(enquiry.name)
+            if result and result.get("status") == "success":
+                synced_count += 1
         except Exception as e:
             frappe.log_error(
                 message=f"Failed to retry enquiry {enquiry.name}: {str(e)}",
                 title="Enquiry Retry Failed",
             )
+
+    return synced_count
 
 
 def ensure_crm_lead_source():

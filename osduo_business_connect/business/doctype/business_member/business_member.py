@@ -79,13 +79,14 @@ class BusinessMember(Document):
             if existing_owner:
                 frappe.throw("A business can only have one active Owner. Please deactivate the existing owner first.")
 
-        # Prevent Manager from creating Owner role
-        if self.role == "Owner" and not self.is_new():
+        # Prevent Manager from creating/modifying Owner role
+        if self.role == "Owner":
             user = frappe.session.user
-            from osduo_business_connect.business.core import get_user_role_in_business
-            current_role = get_user_role_in_business(user, self.business)
-            if current_role == "Manager":
-                frappe.throw("Managers cannot create or modify Owner role")
+            if "System Manager" not in frappe.get_roles(user):
+                from osduo_business_connect.business.core import get_user_role_in_business
+                current_role = get_user_role_in_business(user, self.business)
+                if current_role != "Owner":
+                    frappe.throw("Only the Business Owner or a System Manager can create or modify Owner role")
 
     def validate_unique_membership(self):
         """Validate that user doesn't have duplicate active membership."""

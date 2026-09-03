@@ -27,7 +27,7 @@
 
         <div class="bc-hero-actions" style="justify-content:flex-start;">
             {% if doc.enquiry_enabled %}
-            <a href="mailto:{{ business_email }}?subject=Enquiry: {{ doc.product_name or doc.service_name }}" class="bc-btn bc-btn-secondary" style="border-radius:0;">&#9993; Send Enquiry</a>
+            <a href="#bc-enquiry" class="bc-btn bc-btn-secondary" style="border-radius:0;">&#9993; Send Enquiry</a>
             {% endif %}
             {% if business_phone %}
             <a href="tel:{{ business_phone }}" class="bc-btn bc-btn-secondary" style="border-radius:0;">&#9742; Call</a>
