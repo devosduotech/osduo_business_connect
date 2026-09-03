@@ -80,8 +80,17 @@
     <div class="bc-section">
         <div class="bc-reading bc-bg">
             <h2 class="bc-section-title">About {{ business_name }}</h2>
+            {% if business.description %}
+            <p style="line-height:1.8;color:#475569;margin-bottom:1rem;">{{ business.description }}</p>
+            {% endif %}
             <div class="bc-card" style="text-align:center;">
                 <h3 style="margin:0 0 0.5rem;">{{ business_name }}</h3>
+                {% if business.address or business.city %}
+                <p style="color:#64748b;font-size:0.85rem;margin:0.3rem 0;">&#128205; {{ business.address }}{% if business.city %}, {{ business.city }}{% endif %}{% if business.state %}, {{ business.state }}{% endif %}</p>
+                {% endif %}
+                {% if business.website %}
+                <a href="{{ business.website }}" target="_blank" style="color:var(--bc-primary);font-size:0.85rem;text-decoration:none;">{{ business.website }}</a>
+                {% endif %}
                 <div style="display:flex;gap:0.6rem;justify-content:center;flex-wrap:wrap;margin-top:0.75rem;">
                     {% if business_phone %}
                     <a href="tel:{{ business_phone }}" class="bc-btn bc-btn-secondary" style="font-size:0.8rem;">&#9742; Call</a>

@@ -14,7 +14,8 @@ def get_context(context):
     business = frappe.db.get_value(
         "Business",
         {"slug": business_slug, "status": "Published"},
-        ["name", "business_name", "slug", "email", "phone", "whatsapp"],
+        ["name", "business_name", "slug", "description", "website",
+         "email", "phone", "whatsapp", "address", "city", "state"],
         as_dict=True,
     )
     if not business:
