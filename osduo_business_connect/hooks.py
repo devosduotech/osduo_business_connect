@@ -34,6 +34,11 @@ web_include_css = "/assets/osduo_business_connect/css/business_connect.css"
 # ------------------
 
 website_route_rules = [
+    # Enquiry form submission (CSRF-exempt via website route)
+    {
+        "from_route": "/submit-enquiry",
+        "to_route": "enquiry/submit_enquiry_page",
+    },
     # Business landing page
     {
         "from_route": "/b/<business_slug>",
