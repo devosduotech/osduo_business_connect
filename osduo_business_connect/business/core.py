@@ -162,13 +162,20 @@ class Business(Document):
                 frappe.throw(f"Slug '{self.slug}' is already taken")
 
     def validate_owner_user(self):
-        """Validate that owner_user is enabled."""
+        """Validate that owner_user is enabled and authorized."""
         if not self.owner_user:
             frappe.throw("Business Owner is required")
 
         enabled = frappe.db.get_value("User", self.owner_user, "enabled")
         if enabled != 1:
             frappe.throw("Business Owner must be an enabled user")
+
+        # Owner authorization: owner_user must be the current user,
+        # unless the current user is a System Manager.
+        user = frappe.session.user
+        if "System Manager" not in frappe.get_roles(user):
+            if self.owner_user != user:
+                frappe.throw("You can only create a business for yourself. Contact a System Manager to create a business for another user.")
 
     def validate_contact_methods(self):
         """

@@ -98,6 +98,7 @@
     </div>
 
     {# ===== ENQUIRY FORM ===== #}
+    {% if doc.enquiry_enabled %}
     <div class="bc-section" id="bc-enquiry">
         <div class="bc-reading bc-bg">
             <h2 class="bc-section-title">Send a Message</h2>
@@ -122,6 +123,7 @@
             </form>
         </div>
     </div>
+    {% endif %}
 
     <div class="bc-footer"><p>Powered by OSDuo Business Connect</p></div>
 </div>

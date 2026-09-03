@@ -95,6 +95,7 @@
     </div>
 
     {# ===== ENQUIRY FORM ===== #}
+    {% if doc.enquiry_enabled %}
     <div class="bc-section" id="bc-enquiry">
         <div class="bc-reading bc-bg">
             <h2 class="bc-section-title">Send a Message</h2>
@@ -119,13 +120,14 @@
             </form>
         </div>
     </div>
+    {% endif %}
 
     <div class="bc-footer"><p>Powered by OSDuo Business Connect</p></div>
 </div>
 
 <div class="bc-action-bar" style="display:none;">
     {% if doc.enquiry_enabled %}
-    <a href="mailto:{{ business_email }}?subject=Enquiry: {{ doc.product_name }}" class="bc-btn bc-btn-primary">&#9993; Enquiry</a>
+    <a href="#bc-enquiry" class="bc-btn bc-btn-primary">&#9993; Enquiry</a>
     {% endif %}
     {% if business_phone %}
     <a href="tel:{{ business_phone }}" class="bc-btn bc-btn-primary" style="background:#334155;">&#9742; Call</a>
