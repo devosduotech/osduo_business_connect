@@ -128,7 +128,7 @@ def get_top_cards(business_name, days=30, limit=5):
     from_date = frappe.utils.add_days(frappe.utils.nowdate(), -days)
 
     top_cards = frappe.db.sql(
-        """SELECT ee.card, bm.member_name, COUNT(ee.name) as views
+        """SELECT ee.card, bm.person_name, COUNT(ee.name) as views
         FROM `tabEngagement Event` ee
         LEFT JOIN `tabDigital Card` dc ON ee.card = dc.name
         LEFT JOIN `tabBusiness Member` bm ON dc.member = bm.name
@@ -141,7 +141,7 @@ def get_top_cards(business_name, days=30, limit=5):
     )
 
     return [
-        {"card": row.card, "member_name": row.member_name or row.card, "views": row.views}
+        {"card": row.card, "member_name": row.person_name or row.card, "views": row.views}
         for row in top_cards
     ]
 
