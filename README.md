@@ -11,9 +11,9 @@ Digital business identity, product/service showcase, lead generation, and CRM in
 ## Installation
 
 ```bash
-pip install qrcode[pil]
 bench get-app https://github.com/devosduotech/osduo_business_connect.git
 bench --site <site-name> migrate
+bench --site <site-name> pip install qrcode[pil]
 bench build --app osduo_business_connect
 bench restart
 ```
@@ -173,10 +173,10 @@ python3 -m unittest discover -s tests -p "test_*.py" -v
 
 ```bash
 cd ~/frappe-bench
-pip install qrcode[pil]
 rm -rf apps/osduo_business_connect
 bench get-app https://github.com/devosduotech/osduo_business_connect.git --branch develop
 bench --site business.local migrate
+bench --site business.local pip install qrcode[pil]
 bench build --app osduo_business_connect
 bench --site business.local clear-website-cache
 bench restart
