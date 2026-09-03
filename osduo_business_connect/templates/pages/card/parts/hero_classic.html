@@ -1,71 +1,86 @@
-{# Card Hero — Classic template #}
-<div class="bc-card-hero" style="background:linear-gradient(135deg,var(--bc-primary),var(--bc-accent));border-radius:var(--bc-card-radius) var(--bc-card-radius) 0 0;border-bottom:3px solid var(--bc-accent);">
-    {% if doc.profile_image %}
-    <img src="{{ doc.profile_image }}" alt="{{ doc.display_name }}" class="bc-card-avatar" style="border-color:var(--bc-accent);">
-    {% else %}
-    <div class="bc-card-avatar bc-card-avatar-fallback" style="background:rgba(255,255,255,0.2);">
-        {{ doc.display_name[0] if doc.display_name else '?' }}
+{# Card Hero — Classic: banner header, avatar overlapping edge, decorative lines #}
+<div class="bc-card-hero bc-hero-classic">
+    <div class="bc-hero-classic-banner">
+        <div class="bc-hero-classic-banner-inner">
+            <h1>{{ doc.display_name }}</h1>
+            {% if doc.designation %}
+            <p class="bc-hero-classic-designation">{{ doc.designation }}</p>
+            {% endif %}
+            {% if doc.show_business and doc.business_name %}
+            <p class="bc-hero-classic-business">{{ doc.business_name }}</p>
+            {% endif %}
+        </div>
     </div>
-    {% endif %}
 
-    <h1 style="color:white;font-style:italic;">{{ doc.display_name }}</h1>
-    {% if doc.designation %}
-    <p style="color:rgba(255,255,255,0.8);margin:0 0 0.2rem;font-style:italic;">{{ doc.designation }}</p>
-    {% endif %}
-    {% if doc.show_business and doc.business_name %}
-    <p style="color:rgba(255,255,255,0.6);margin:0 0 0.75rem;font-size:0.85rem;">{{ doc.business_name }}</p>
-    {% endif %}
-
-    {% if doc.bio %}
-    <div class="bc-card-bio" style="background:rgba(255,255,255,0.1);color:white;">{{ doc.bio }}</div>
-    {% endif %}
-
-    {% if doc.phone or doc.email %}
-    <div class="bc-card-contact-details" style="margin:0.75rem 0;font-size:0.85rem;color:rgba(255,255,255,0.8);">
-        {% if doc.phone %}
-        <p style="margin:0.2rem 0;">&#9742; {{ doc.phone }}</p>
-        {% endif %}
-        {% if doc.email %}
-        <p style="margin:0.2rem 0;">&#9993; {{ doc.email }}</p>
-        {% endif %}
-    </div>
-    {% endif %}
-
-    <div class="bc-card-actions">
-        {% if doc.phone %}
-        <a href="tel:{{ doc.phone }}" class="bc-card-action-btn" style="background:white;color:var(--bc-primary);">
-            <span class="bc-card-action-icon">&#9742;</span> Call
-        </a>
-        {% endif %}
-        {% if doc.whatsapp %}
-        <a href="https://wa.me/{{ doc.whatsapp|replace('+','')|replace(' ','') }}" class="bc-card-action-btn" style="background:#25D366;color:white;">
-            <span class="bc-card-action-icon">&#128172;</span> WhatsApp
-        </a>
-        {% endif %}
-        {% if doc.email %}
-        <a href="mailto:{{ doc.email }}" class="bc-card-action-btn" style="background:#EA4335;color:white;">
-            <span class="bc-card-action-icon">&#9993;</span> Email
-        </a>
-        {% endif %}
-        {% if doc.website %}
-        <a href="{{ doc.website }}" target="_blank" class="bc-card-action-btn" style="background:rgba(255,255,255,0.2);color:white;">
-            <span class="bc-card-action-icon">&#127760;</span> Website
-        </a>
+    <div class="bc-hero-classic-avatar-overlap">
+        {% if doc.profile_image %}
+        <img src="{{ doc.profile_image }}" alt="{{ doc.display_name }}" class="bc-hero-classic-avatar">
+        {% else %}
+        <div class="bc-card-avatar-fallback bc-hero-classic-avatar-fallback">
+            {{ doc.display_name[0] if doc.display_name else '?' }}
+        </div>
         {% endif %}
     </div>
 
-    {% if links %}
-    <div class="bc-card-links">
-        {% for link in links %}
-        <a href="{{ link.url }}" target="_blank" class="bc-btn" style="font-size:0.75rem;padding:0.4rem 0.75rem;background:rgba(255,255,255,0.2);color:white;">{{ link.label or link.link_type }}</a>
-        {% endfor %}
-    </div>
-    {% endif %}
+    <div class="bc-hero-classic-body">
+        {% if doc.bio %}
+        <div class="bc-card-bio bc-hero-classic-bio">{{ doc.bio }}</div>
+        {% endif %}
 
-    {% if doc.qr_enabled and doc.qr_image %}
-    <div class="bc-card-qr">
-        <img src="{{ doc.qr_image }}" alt="QR Code">
-        <p style="color:rgba(255,255,255,0.7);">Scan to view card</p>
+        {% if doc.phone or doc.email %}
+        <div class="bc-hero-classic-contact">
+            {% if doc.phone %}
+            <a href="tel:{{ doc.phone }}" class="bc-hero-classic-contact-item">
+                <span>&#9742;</span> {{ doc.phone }}
+            </a>
+            {% endif %}
+            {% if doc.email %}
+            <a href="mailto:{{ doc.email }}" class="bc-hero-classic-contact-item">
+                <span>&#9993;</span> {{ doc.email }}
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="bc-hero-classic-divider-line"></div>
+
+        <div class="bc-card-actions bc-hero-classic-actions">
+            {% if doc.phone %}
+            <a href="tel:{{ doc.phone }}" class="bc-card-action-btn bc-hero-classic-btn">
+                <span class="bc-card-action-icon">&#9742;</span> Call
+            </a>
+            {% endif %}
+            {% if doc.whatsapp %}
+            <a href="https://wa.me/{{ doc.whatsapp|replace('+','')|replace(' ','') }}" class="bc-card-action-btn bc-hero-classic-btn bc-hero-classic-btn-whatsapp">
+                <span class="bc-card-action-icon">&#128172;</span> WhatsApp
+            </a>
+            {% endif %}
+            {% if doc.email %}
+            <a href="mailto:{{ doc.email }}" class="bc-card-action-btn bc-hero-classic-btn bc-hero-classic-btn-email">
+                <span class="bc-card-action-icon">&#9993;</span> Email
+            </a>
+            {% endif %}
+            {% if doc.website %}
+            <a href="{{ doc.website }}" target="_blank" class="bc-card-action-btn bc-hero-classic-btn">
+                <span class="bc-card-action-icon">&#127760;</span> Website
+            </a>
+            {% endif %}
+        </div>
+
+        {% if links %}
+        <div class="bc-hero-classic-divider-line"></div>
+        <div class="bc-card-links bc-hero-classic-links">
+            {% for link in links %}
+            <a href="{{ link.url }}" target="_blank" class="bc-btn bc-hero-classic-link-btn">{{ link.label or link.link_type }}</a>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if doc.qr_enabled and doc.qr_image %}
+        <div class="bc-card-qr bc-hero-classic-qr">
+            <img src="{{ doc.qr_image }}" alt="QR Code">
+            <p>Scan to view card</p>
+        </div>
+        {% endif %}
     </div>
-    {% endif %}
 </div>
