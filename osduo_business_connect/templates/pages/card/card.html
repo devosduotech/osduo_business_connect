@@ -180,6 +180,11 @@
 
 {% raw %}
 <script>
+function getCookie(name) {
+    var v = document.cookie.match('(^|; )' + name + '=([^;]*)');
+    return v ? v[2] : '';
+}
+
 document.getElementById('card-enquiry-form').addEventListener('submit', function(e) {
     e.preventDefault();
     var form = e.target;
@@ -188,9 +193,13 @@ document.getElementById('card-enquiry-form').addEventListener('submit', function
     btn.textContent = 'Sending...';
     var fd = new FormData(form);
 
-    frappe.call({
-        method: 'osduo_business_connect.enquiry.public_enquiry_api.submit_enquiry',
-        args: {
+    fetch('/api/method/osduo_business_connect.enquiry.public_enquiry_api.submit_enquiry', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Frappe-CSRF-Token': getCookie('csrf_token'),
+        },
+        body: JSON.stringify({
             business_slug: fd.get('business_slug'),
             visitor_data: JSON.stringify({
                 name: fd.get('visitor_name'),
@@ -202,21 +211,26 @@ document.getElementById('card-enquiry-form').addEventListener('submit', function
             references: JSON.stringify({
                 card: fd.get('card'),
             }),
-        },
-        callback: function(r) {
-            if (r.message && r.message.name) {
-                form.innerHTML = '<div style="text-align:center;padding:1.25rem;"><h3 style="margin:0 0 0.4rem;">Message Sent!</h3><p style="color:#666;font-size:0.9rem;">Thank you. We will get back to you soon.</p></div>';
-            } else {
-                alert('Error sending message');
-                btn.disabled = false;
-                btn.textContent = 'Send Message';
+        }),
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(result) {
+        if (result.message && result.message.name) {
+            form.innerHTML = '<div style="text-align:center;padding:1.25rem;"><h3 style="margin:0 0 0.4rem;">Message Sent!</h3><p style="color:#666;font-size:0.9rem;">Thank you. We will get back to you soon.</p></div>';
+        } else {
+            var msg = 'Error sending message';
+            if (result._server_messages) {
+                try { msg = JSON.parse(result._server_messages)[0].message; } catch(ex) {}
             }
-        },
-        error: function(r) {
-            alert(r._message || 'Error sending message');
+            alert(msg);
             btn.disabled = false;
             btn.textContent = 'Send Message';
         }
+    })
+    .catch(function() {
+        alert('Error sending message');
+        btn.disabled = false;
+        btn.textContent = 'Send Message';
     });
 });
 
