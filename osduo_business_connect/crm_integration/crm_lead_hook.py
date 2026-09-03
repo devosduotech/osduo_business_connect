@@ -2,27 +2,17 @@ import frappe
 
 
 def on_crm_lead_update(doc, method):
-    """When CRM Lead status changes, update the linked Enquiry status."""
+    """When CRM Lead status changes, update the linked Enquiry status.
+    If CRM Lead status is anything other than 'New', set Enquiry to 'Converted'.
+    Only applies to leads created from our application (have osduo_enquiry)."""
     enquiry_name = doc.osduo_enquiry if hasattr(doc, "osduo_enquiry") else None
     if not enquiry_name:
-        # Try fetching from DB in case field not loaded
         enquiry_name = frappe.db.get_value("CRM Lead", doc.name, "osduo_enquiry")
     if not enquiry_name:
         return
 
-    status_map = {
-        "New": "New",
-        "Replied": "Synced",
-        "Qualified": "Synced",
-        "Converted": "Converted",
-        "Closed": "Synced",
-        "Lead": "Synced",
-        "Opportunity": "Synced",
-    }
-
-    new_status = status_map.get(doc.status)
-    if not new_status:
-        return
+    # Any status other than New means the enquiry is being acted on
+    new_status = "Converted" if doc.status != "New" else "New"
 
     current_status = frappe.db.get_value("Enquiry", enquiry_name, "status")
     if current_status != new_status:
