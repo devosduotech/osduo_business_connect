@@ -32,6 +32,17 @@ def create_lead_from_enquiry(enquiry_doc):
         first_name = name_parts[0]
         last_name = name_parts[1] if len(name_parts) > 1 else ""
 
+        # Get card owner's user for lead_owner
+        lead_owner = None
+        if enquiry_doc.card:
+            member_user = frappe.db.get_value(
+                "Business Member",
+                {"name": frappe.db.get_value("Digital Card", enquiry_doc.card, "member")},
+                "user",
+            )
+            if member_user:
+                lead_owner = member_user
+
         # Build lead data with correct CRM field names
         lead_data = {
             "doctype": "CRM Lead",
@@ -41,7 +52,7 @@ def create_lead_from_enquiry(enquiry_doc):
             "email": enquiry_doc.visitor_email,
             "mobile_no": enquiry_doc.visitor_phone,
             "organization": enquiry_doc.visitor_company or "",
-            "source": "Business Connect",  # CRM Lead Source (Link field)
+            "source": "Business Connect",
             "status": "New",
             # OSDuo custom fields
             "osduo_business": enquiry_doc.business,
@@ -53,6 +64,9 @@ def create_lead_from_enquiry(enquiry_doc):
             "osduo_source": enquiry_doc.source or "Business Profile",
             "osduo_landing_url": enquiry_doc.landing_url or "",
         }
+
+        if lead_owner:
+            lead_data["lead_owner"] = lead_owner
 
         lead = frappe.get_doc(lead_data)
         lead.insert(ignore_permissions=True)
