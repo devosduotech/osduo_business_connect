@@ -110,11 +110,13 @@ def get_enquiry_stats(business_name):
     converted_count = frappe.db.count("Enquiry", filters={"business": business_name, "status": "Converted"})
 
     # Get enquiries by source
-    source_counts = frappe.get_all(
-        "Enquiry",
-        filters={"business": business_name},
-        fields=["source", "count(name) as count"],
-        group_by="source",
+    source_counts = frappe.db.sql(
+        """SELECT source, COUNT(name) as cnt
+        FROM `tabEnquiry`
+        WHERE business = %s
+        GROUP BY source""",
+        (business_name,),
+        as_dict=True,
     )
 
     return {
@@ -122,5 +124,5 @@ def get_enquiry_stats(business_name):
         "new": new_count,
         "synced": synced_count,
         "converted": converted_count,
-        "by_source": {row.source: row.count for row in source_counts},
+        "by_source": {row.source: row.cnt for row in source_counts},
     }
