@@ -5,3 +5,7 @@ app_name = "osduo_business_connect"
 # (evaluate_dynamic_routes prepends "/" to path that already has one)
 from osduo_business_connect.patches.website_route_fix import apply_patch
 apply_patch()
+
+# Apply CSRF exemption for guest form submissions
+from osduo_business_connect.patches.csrf_exempt import apply_patch as apply_csrf_patch
+apply_csrf_patch()
