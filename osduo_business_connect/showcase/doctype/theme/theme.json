@@ -105,6 +105,20 @@
       "description": "Highlights, hover states, borders"
     },
     {
+      "fieldname": "background_color",
+      "fieldtype": "Color",
+      "label": "Background Color",
+      "default": "#F8FAFC",
+      "description": "Page background color (used with Custom color scheme)"
+    },
+    {
+      "fieldname": "font_color",
+      "fieldtype": "Color",
+      "label": "Font Color",
+      "default": "#1E293B",
+      "description": "Main text color (used with Custom color scheme)"
+    },
+    {
       "fieldname": "section_style",
       "fieldtype": "Section Break",
       "label": "Style Settings"
