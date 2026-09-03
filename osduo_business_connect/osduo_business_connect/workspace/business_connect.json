@@ -63,6 +63,15 @@
       "color": "#00bfa5"
     },
     {
+      "label": "Categories",
+      "type": "DocType",
+      "name": "Product Category",
+      "icon": "octicon octicon-tag",
+      "link": "/app/product-category",
+      "description": "Manage product categories",
+      "color": "#f5a623"
+    },
+    {
       "label": "Analytics",
       "type": "Page",
       "name": "analytics",
@@ -114,6 +123,12 @@
       "name": "Showcase Product",
       "label": "Products",
       "description": "Product showcase items"
+    },
+    {
+      "type": "DocType",
+      "name": "Product Category",
+      "label": "Product Categories",
+      "description": "Reusable product categories"
     },
     {
       "type": "DocType",

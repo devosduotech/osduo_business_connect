@@ -138,9 +138,20 @@
     },
     {
       "fieldname": "font_family",
-      "fieldtype": "Data",
+      "fieldtype": "Select",
       "label": "Font Family",
-      "description": "Custom font family name (e.g., 'Roboto', 'Open Sans')"
+      "default": "System Default",
+      "options": "System Default\nInter\nRoboto\nOpen Sans\nLato\nPoppins\nMontserrat\nNunito\nSource Sans 3\nRaleway",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "font_size",
+      "fieldtype": "Select",
+      "label": "Font Size",
+      "default": "Default",
+      "options": "Small\nDefault\nLarge",
+      "in_list_view": 1,
+      "description": "Base font size preset"
     },
     {
       "fieldname": "section_advanced",

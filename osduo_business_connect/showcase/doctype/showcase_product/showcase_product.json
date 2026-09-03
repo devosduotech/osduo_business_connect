@@ -132,8 +132,17 @@
     },
     {
       "fieldname": "category",
+      "fieldtype": "Link",
+      "label": "Category",
+      "options": "Product Category",
+      "in_standard_filter": 1
+    },
+    {
+      "fieldname": "location",
       "fieldtype": "Data",
-      "label": "Category"
+      "label": "Location",
+      "options": "URL",
+      "description": "Google Maps link or any map URL"
     },
     {
       "fieldname": "section_enquiry",
