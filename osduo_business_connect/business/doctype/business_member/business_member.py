@@ -138,14 +138,16 @@ def get_permission_query_conditions(user):
     return f"`tabBusiness Member`.business IN ({', '.join(business_names)})"
 
 
-def has_permission(doc, ptype):
+def has_permission(doc, user=None, ptype=None):
     """
     Check if user has permission on Business Member document.
 
     Business Owner/Manager can manage members.
     Members can read their own membership.
+    True → do not deny | False → deny | None → fall back to normal permissions
     """
-    user = frappe.session.user
+    if not user:
+        user = frappe.session.user
 
     # System Manager has full access
     if "System Manager" in frappe.get_roles(user):

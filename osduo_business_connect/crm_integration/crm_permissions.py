@@ -19,13 +19,15 @@ Rules:
 import frappe
 
 
-def has_permission(doc, ptype):
+def has_permission(doc, user=None, ptype=None):
     """
     Document-level permission for CRM Lead.
 
     Adds OSDuo business isolation on top of CRM's native permissions.
+    True → do not deny | False → deny | None → fall back to CRM's normal permissions
     """
-    user = frappe.session.user
+    if not user:
+        user = frappe.session.user
 
     # Guest: no access
     if user == "Guest":
@@ -35,18 +37,11 @@ def has_permission(doc, ptype):
     if "System Manager" in frappe.get_roles(user):
         return True
 
-    # CRM Manager/User: defer to CRM's native permission system.
-    # These roles manage CRM Leads through CRM's own ownership model.
-    # Business Connect only adds filtering for business-scoped access.
-    crm_roles = {"CRM Manager", "CRM User"}
-    user_roles = set(frappe.get_roles(user))
-
-    # If user has CRM roles AND the lead has no osduo_business,
-    # let CRM handle it natively
+    # If the lead has no osduo_business, let CRM's native permissions decide.
+    # Return None = "no OSDuo decision" → Frappe falls back to normal permissions.
     osduo_business = doc.osduo_business if hasattr(doc, "osduo_business") else None
     if not osduo_business:
-        # No Business Connect context — CRM's native permissions apply
-        return True
+        return None
 
     # Lead has osduo_business: check if user is a member of that business
     from osduo_business_connect.business.core import get_user_businesses

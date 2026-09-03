@@ -64,9 +64,12 @@ def get_permission_query_conditions(user):
     return f"`tabTheme`.business IN ({', '.join(business_names)})"
 
 
-def has_permission(doc, ptype):
-    """Check if user has permission on Theme document."""
-    user = frappe.session.user
+def has_permission(doc, user=None, ptype=None):
+    """Check if user has permission on Theme document.
+    True → do not deny | False → deny | None → fall back to normal permissions
+    """
+    if not user:
+        user = frappe.session.user
 
     # Guest can read all themes (needed for public page rendering)
     if user == "Guest":

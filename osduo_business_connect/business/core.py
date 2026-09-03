@@ -214,13 +214,15 @@ def get_permission_query_conditions(user):
     return f"`tabBusiness`.name IN ({', '.join(business_names)})"
 
 
-def has_permission(doc, ptype):
+def has_permission(doc, user=None, ptype=None):
     """
     Check if user has permission on Business document.
 
     This is called by Frappe's permission system.
+    True → do not deny | False → deny | None → fall back to normal permissions
     """
-    user = frappe.session.user
+    if not user:
+        user = frappe.session.user
 
     # Guest can only read published businesses with public profile enabled
     if user == "Guest":

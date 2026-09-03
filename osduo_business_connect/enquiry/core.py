@@ -205,15 +205,17 @@ def get_permission_query_conditions(user):
     return f"`tabEnquiry`.business IN ({', '.join(business_names)})"
 
 
-def has_permission(doc, ptype):
+def has_permission(doc, user=None, ptype=None):
     """
     Check if user has permission on Enquiry document.
 
     Business Owner/Manager can manage enquiries.
     Guest has no direct access — enquiries are created through the
     whitelisted public API (submit_enquiry) which uses ignore_permissions.
+    True → do not deny | False → deny | None → fall back to normal permissions
     """
-    user = frappe.session.user
+    if not user:
+        user = frappe.session.user
 
     # Guest has no direct permission on Enquiry records
     if user == "Guest":
