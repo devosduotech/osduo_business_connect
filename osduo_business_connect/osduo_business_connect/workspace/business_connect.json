@@ -76,7 +76,7 @@
       "type": "Page",
       "name": "analytics",
       "icon": "octicon octicon-graph",
-      "link": "/osduo_business_connect/analytics",
+      "link": "/app/analytics",
       "description": "View engagement analytics and enquiry stats",
       "color": "#2490ef"
     }
