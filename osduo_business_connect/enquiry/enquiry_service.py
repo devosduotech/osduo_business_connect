@@ -107,16 +107,19 @@ def get_enquiry_stats(business_name):
         "Enquiry", filters={"business": business_name, "status": "Synced"}
     )
 
-    # Converted = CRM Leads that became Deals
-    converted_count = 0
+    # Converted = Enquiries marked Converted OR CRM Leads that became Deals
+    converted_count = frappe.db.count(
+        "Enquiry", filters={"business": business_name, "status": "Converted"}
+    )
     if frappe.db.exists("DocType", "CRM Lead"):
-        converted_count = frappe.db.sql(
+        crm_converted = frappe.db.sql(
             """SELECT COUNT(DISTINCT cl.name) as cnt
             FROM `tabCRM Lead` cl
             INNER JOIN `tabEnquiry` en ON cl.osduo_enquiry = en.name
             WHERE en.business = %s AND cl.status = 'Converted'""",
             (business_name,),
         )[0][0] or 0
+        converted_count = max(converted_count, crm_converted)
 
     source_counts = frappe.db.sql(
         """SELECT source, COUNT(name) as cnt
