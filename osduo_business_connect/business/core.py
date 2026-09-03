@@ -328,19 +328,14 @@ def get_business_by_slug(slug):
     if not slug:
         return None
 
-    business = frappe.get_all(
+    business = frappe.db.get_value(
         "Business",
-        filters={
-            "slug": slug,
-            "status": "Published",
-        },
-        fields=["name", "slug", "business_name", "tagline", "logo", "status"],
-        limit=1,
+        {"slug": slug, "status": "Published"},
+        ["name", "slug", "business_name", "logo", "status"],
+        as_dict=True,
     )
 
-    if business:
-        return business[0]
-    return None
+    return business or None
 
 
 def get_public_business_by_slug(slug):
@@ -365,7 +360,7 @@ def get_public_business_by_slug(slug):
     business = frappe.db.get_value(
         "Business",
         {"slug": slug, "status": "Published", "public_profile_enabled": 1},
-        ["name", "slug", "business_name", "tagline", "logo", "status",
+        ["name", "slug", "business_name", "logo", "status",
          "description", "website", "email", "phone", "whatsapp",
          "address", "city", "state"],
         as_dict=True,
