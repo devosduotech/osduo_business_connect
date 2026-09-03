@@ -39,6 +39,7 @@ def create_enquiry(business_name, visitor_data, source="Other", references=None)
         "visitor_company": visitor_data.get("company"),
         "message": visitor_data.get("message"),
         "source": source,
+        "status": "New",
         "campaign": references.get("campaign") if references else None,
         "landing_url": references.get("landing_url") if references else None,
         "card": references.get("card") if references else None,
