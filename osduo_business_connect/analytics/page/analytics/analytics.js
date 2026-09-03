@@ -48,17 +48,14 @@ function load_business_list(page) {
 		method: "osduo_business_connect.pages.analytics.get_business_list",
 		callback: function (r) {
 			if (r.message && r.message.length) {
-				var df = page.fields_dict.business.df;
-				df.options = ["", ...r.message.map((b) => b.name)];
-				page.fields_dict.business.refresh();
-				page.fields_dict.business.set_value(r.message[0].name);
+				page.fields_dict.business.$input.val(r.message[0].name).trigger("change");
 			}
 		},
 	});
 }
 
 function load_analytics(page) {
-	var business = page.fields_dict.business.get_value();
+	var business = page.fields_dict.business.$input.val();
 	var days = page.fields_dict.days.get_value();
 	if (!business) return;
 
