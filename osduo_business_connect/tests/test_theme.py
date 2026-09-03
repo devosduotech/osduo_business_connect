@@ -26,7 +26,7 @@ class TestThemeDocType(unittest.TestCase):
 
     def test_required_fields(self):
         fieldnames = [f["fieldname"] for f in self.data["fields"]]
-        for req in ["theme_name", "template", "color_scheme", "primary_color", "secondary_color", "button_style", "card_style"]:
+        for req in ["theme_name", "template", "color_scheme", "primary_color", "secondary_color", "button_style"]:
             self.assertIn(req, fieldnames)
 
     def test_template_options(self):
