@@ -13,17 +13,15 @@ def execute():
 
     frappe.db.sql(
         """INSERT INTO `tabPage`
-        (name, module, page_name, title, icon, public, system_page,
+        (name, module, page_name, title, icon,
          creation, modified, modified_by, owner, docstatus)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, NOW(), NOW(), %s, %s, 0)""",
+        VALUES (%s, %s, %s, %s, %s, NOW(), NOW(), %s, %s, 0)""",
         (
             page_name,
             "Analytics",
             page_name,
             "Analytics Dashboard",
             "octicon octicon-graph",
-            1,
-            0,
             frappe.session.user,
             frappe.session.user,
         ),
