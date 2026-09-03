@@ -34,7 +34,6 @@ def run_uat_tests():
         test_showcase_product_creation,
         test_showcase_service_creation,
         test_theme_creation,
-        test_page_section_creation,
         test_enquiry_submission,
         test_crm_sync,
         test_public_profile_access,
@@ -252,39 +251,6 @@ def test_theme_creation():
     
     # Cleanup
     frappe.delete_doc("Theme", theme.name)
-    frappe.delete_doc("Business", business.name)
-
-
-def test_page_section_creation():
-    """Test page section creation with sequence validation."""
-    # Create test business
-    business = frappe.get_doc({
-        "doctype": "Business",
-        "business_name": "UAT Section Test",
-        "slug": "uat-section-test",
-        "email": "section@test.com",
-        "status": "Draft",
-    })
-    business.insert()
-    
-    # Create section
-    section = frappe.get_doc({
-        "doctype": "Page Section",
-        "business": business.name,
-        "section_type": "Hero",
-        "title": "Welcome",
-        "sequence": 1,
-        "enabled": 1,
-        "visibility": "Public",
-        "config_hero_title": "Welcome to Our Business",
-    })
-    section.insert()
-    
-    # Verify section created
-    assert section.name
-    
-    # Cleanup
-    frappe.delete_doc("Page Section", section.name)
     frappe.delete_doc("Business", business.name)
 
 

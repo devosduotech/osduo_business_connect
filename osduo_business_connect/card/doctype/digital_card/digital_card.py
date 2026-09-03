@@ -166,15 +166,17 @@ def get_permission_query_conditions(user):
     return f"`tabDigital Card`.business IN ({', '.join(business_names)})"
 
 
-def has_permission(doc, ptype):
+def has_permission(doc, user=None, ptype=None):
     """
     Check if user has permission on Digital Card document.
 
     Business Owner/Manager can manage all cards.
     Business Members can manage their own cards.
     Guest can read published cards.
+    True → do not deny | False → deny | None → fall back to normal permissions
     """
-    user = frappe.session.user
+    if not user:
+        user = frappe.session.user
 
     # Guest can only read published cards with public profile enabled
     if user == "Guest":

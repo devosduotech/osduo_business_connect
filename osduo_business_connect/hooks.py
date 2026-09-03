@@ -109,7 +109,6 @@ has_permission = {
     "Showcase Product": "osduo_business_connect.permissions.has_permission",
     "Showcase Service": "osduo_business_connect.permissions.has_permission",
     "Enquiry": "osduo_business_connect.permissions.has_permission",
-    "Page Section": "osduo_business_connect.permissions.has_permission",
     "Theme": "osduo_business_connect.permissions.has_permission",
     "Engagement Event": "osduo_business_connect.permissions.has_permission",
     # CRM Lead: OSDuo permission layer on top of CRM's native model
@@ -123,7 +122,6 @@ permission_query_conditions = {
     "Showcase Product": "osduo_business_connect.showcase.doctype.showcase_product.showcase_product.get_permission_query_conditions",
     "Showcase Service": "osduo_business_connect.showcase.doctype.showcase_service.showcase_service.get_permission_query_conditions",
     "Enquiry": "osduo_business_connect.enquiry.core.get_permission_query_conditions",
-    "Page Section": "osduo_business_connect.showcase.doctype.page_section.page_section.get_permission_query_conditions",
     "Theme": "osduo_business_connect.showcase.doctype.theme.theme.get_permission_query_conditions",
     "Engagement Event": "osduo_business_connect.analytics.doctype.engagement_event.engagement_event.get_permission_query_conditions",
     # CRM Lead: OSDuo business isolation

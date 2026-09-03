@@ -130,14 +130,16 @@ def get_permission_query_conditions(user):
     return f"`tabShowcase Service`.business IN ({', '.join(business_names)})"
 
 
-def has_permission(doc, ptype):
+def has_permission(doc, user=None, ptype=None):
     """
     Check if user has permission on Showcase Service document.
 
     Business Owner/Manager/Marketing can manage services.
     Guest can read published services.
+    True → do not deny | False → deny | None → fall back to normal permissions
     """
-    user = frappe.session.user
+    if not user:
+        user = frappe.session.user
 
     # Guest can only read published services
     if user == "Guest":
