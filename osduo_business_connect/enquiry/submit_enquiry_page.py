@@ -10,7 +10,9 @@ def get_context(context):
     try:
         data = json.loads(frappe.request.data)
     except (json.JSONDecodeError, TypeError):
-        frappe.throw("Invalid request data")
+        frappe.response["type"] = "json"
+        frappe.response["message"] = {"error": "Invalid request data"}
+        return
 
     visitor_data = data.get("visitor_data", {})
     if isinstance(visitor_data, str):
@@ -23,24 +25,32 @@ def get_context(context):
     business_slug = data.get("business_slug")
     source = data.get("source", "Digital Card")
 
-    from osduo_business_connect.enquiry.enquiry_service import create_enquiry
+    try:
+        from osduo_business_connect.enquiry.enquiry_service import create_enquiry
 
-    # Get business by slug
-    business = frappe.get_all(
-        "Business",
-        filters={"slug": business_slug, "status": "Published"},
-        fields=["name"],
-        limit=1,
-    )
-    if not business:
-        frappe.throw("Business not found")
+        # Get business by slug
+        business = frappe.get_all(
+            "Business",
+            filters={"slug": business_slug, "status": "Published"},
+            fields=["name"],
+            limit=1,
+        )
+        if not business:
+            frappe.response["type"] = "json"
+            frappe.response["message"] = {"error": "Business not found"}
+            return
 
-    result = create_enquiry(
-        business_name=business[0].name,
-        visitor_data=visitor_data,
-        source=source,
-        references=references,
-    )
+        result = create_enquiry(
+            business_name=business[0].name,
+            visitor_data=visitor_data,
+            source=source,
+            references=references,
+        )
 
-    frappe.response["content_type"] = "application/json"
-    frappe.response["message"] = result
+        frappe.response["type"] = "json"
+        frappe.response["message"] = result
+
+    except Exception as e:
+        frappe.log_error(f"Enquiry submission failed: {str(e)}", "Enquiry Error")
+        frappe.response["type"] = "json"
+        frappe.response["message"] = {"error": str(e)}
