@@ -210,7 +210,6 @@ def create_builtin_themes():
                 "secondary_color": "#FFFFFF",
                 "accent_color": _get_scheme_accent(scheme),
                 "button_style": "Filled",
-                "card_style": "Modern",
                 "active": 0,
             }).insert(ignore_permissions=True)
             frappe.db.commit()

@@ -119,15 +119,6 @@
       "in_list_view": 1
     },
     {
-      "fieldname": "card_style",
-      "fieldtype": "Select",
-      "label": "Card Style",
-      "reqd": 1,
-      "default": "Modern",
-      "options": "Modern\nProfessional\nMinimal\nClassic",
-      "in_list_view": 1
-    },
-    {
       "fieldname": "column_break_style",
       "fieldtype": "Column Break"
     },

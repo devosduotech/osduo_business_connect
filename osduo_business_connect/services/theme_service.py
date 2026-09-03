@@ -78,7 +78,6 @@ def get_theme_data(theme_name):
         "gradient_start": scheme_colors["gradient_start"],
         "gradient_end": scheme_colors["gradient_end"],
         "button_style": theme.button_style or "Filled",
-        "card_style": theme.card_style or "Modern",
         "font_family": theme.font_family or "inherit",
     }
 
@@ -101,7 +100,6 @@ def get_default_theme():
         "gradient_start": "#2563EB",
         "gradient_end": "#60A5FA",
         "button_style": "Filled",
-        "card_style": "Modern",
         "font_family": "inherit",
     }
 
@@ -124,18 +122,17 @@ def get_theme_variables(theme_data):
     gradient_start = theme_data.get("gradient_start", primary)
     gradient_end = theme_data.get("gradient_end", accent)
     button_style = theme_data.get("button_style", "Filled")
-    card_style = theme_data.get("card_style", "Modern")
     font_family = theme_data.get("font_family") or "inherit"
 
-    # Card elevation
+    # Card elevation — derived from template
     card_elevation_map = {"Modern": "shadow", "Professional": "border", "Minimal": "none", "Classic": "shadow"}
-    card_elevation = card_elevation_map.get(card_style, "shadow")
+    card_elevation = card_elevation_map.get(template, "shadow")
     shadow = "0 1px 3px rgba(0,0,0,0.1)" if card_elevation == "shadow" else "none"
     border = "1px solid #e2e8f0" if card_elevation == "border" else "none"
 
-    # Border radius
+    # Border radius — derived from template
     radius_map = {"Modern": "8px", "Professional": "4px", "Minimal": "0px", "Classic": "12px"}
-    card_radius = radius_map.get(card_style, "8px")
+    card_radius = radius_map.get(template, "8px")
 
     # Button radius
     btn_radius_map = {"Filled": card_radius, "Outline": card_radius, "Rounded": "8px", "Pill": "999px"}
