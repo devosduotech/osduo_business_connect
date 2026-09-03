@@ -94,22 +94,30 @@ def track_enquiry_event(business_name, enquiry_name, source):
 def get_enquiry_stats(business_name):
     """
     Get enquiry statistics for a business.
-
-    Args:
-        business_name: Business name
-
-    Returns:
-        dict: Enquiry statistics
+    Shows pipeline: New enquiries → Synced to CRM → Converted to Deal.
     """
-    # Get total enquiries
     total = frappe.db.count("Enquiry", filters={"business": business_name})
 
-    # Get enquiries by status
-    new_count = frappe.db.count("Enquiry", filters={"business": business_name, "status": "New"})
-    synced_count = frappe.db.count("Enquiry", filters={"business": business_name, "status": "Synced"})
-    converted_count = frappe.db.count("Enquiry", filters={"business": business_name, "status": "Converted"})
+    new_count = frappe.db.count(
+        "Enquiry", filters={"business": business_name, "status": "New"}
+    )
 
-    # Get enquiries by source
+    # Synced = enquiries that became CRM Leads
+    synced_count = frappe.db.count(
+        "Enquiry", filters={"business": business_name, "status": "Synced"}
+    )
+
+    # Converted = CRM Leads that became Deals
+    converted_count = 0
+    if frappe.db.exists("DocType", "CRM Lead"):
+        converted_count = frappe.db.sql(
+            """SELECT COUNT(DISTINCT cl.name) as cnt
+            FROM `tabCRM Lead` cl
+            INNER JOIN `tabEnquiry` en ON cl.osduo_enquiry = en.name
+            WHERE en.business = %s AND cl.status = 'Converted'""",
+            (business_name,),
+        )[0][0] or 0
+
     source_counts = frappe.db.sql(
         """SELECT source, COUNT(name) as cnt
         FROM `tabEnquiry`
