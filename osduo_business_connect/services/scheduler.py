@@ -14,7 +14,7 @@ from frappe import _
 def daily_tasks():
     """Run daily tasks."""
     # Retry failed CRM sync
-    retry_failed_crm_sync()
+    retry_pending_enquiries()
 
 
 def hourly_tasks():
@@ -27,19 +27,16 @@ def weekly_tasks():
     pass
 
 
-def retry_failed_crm_sync():
+def retry_pending_enquiries():
     """
-    Retry failed CRM sync for all pending enquiries.
-    
-    This is a safe background operation that doesn't require user interaction.
+    Retry creating CRM Leads for enquiries that failed to sync.
+    Called by scheduler (daily).
     """
     try:
-        from osduo_business_connect.enquiry.enquiry_service import retry_failed_sync
-        
-        synced_count = retry_failed_sync()
+        from osduo_business_connect.crm_integration.lead_mapper import retry_failed_enquiries
+        synced_count = retry_failed_enquiries()
         if synced_count > 0:
             frappe.logger().info(f"Successfully synced {synced_count} enquiries to CRM")
-            
     except Exception as e:
         frappe.log_error(
             message=f"Failed to retry CRM sync: {str(e)}",
