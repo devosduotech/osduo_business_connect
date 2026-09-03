@@ -27,7 +27,7 @@ bench restart
 | `/b/<business>/products/<product>` | Product page |
 | `/b/<business>/services/<service>` | Service page |
 | `/c/<card>` | Digital Card (short QR/NFC URL) |
-| `/osduo_business_connect/analytics` | Analytics desk dashboard (`/app/analytics`) |
+| `/app/analytics` | Analytics desk dashboard |
 
 ## Features
 
@@ -69,16 +69,22 @@ bench restart
 
 ### Analytics
 - Desk page at `/app/analytics` (business selector, date range)
-- Link visits, QR scans, card views, product/service views
-- Events by day/type, top cards, enquiry pipeline, recent activity
+- SVG line chart with gradient fill (visits by day)
+- Summary cards: Link Visits, QR Scans, Cards, Products
+- Top cards with member name (not card number)
+- Recent activity with member name, device, browser
+- Event names capitalized (Card View, Profile View, etc.)
+- Enquiry pipeline: New → Converted (manual + CRM sync)
 - Device type & browser tracking
 - Event recording on all public pages (non-blocking background jobs)
 
 ### CRM Integration
 ```
 Enquiry → on_update() → Background sync → CRM Lead
+    → Lead owner = card owner (Digital Card → Business Member → user)
+    → Status sync: any CRM Lead status ≠ New → Enquiry "Converted"
     → Custom fields: business, card, product, service, enquiry
-    → Status tracking: New → Synced → Converted
+    → Source: "Business Connect"
     → Failed syncs retried hourly
 ```
 
