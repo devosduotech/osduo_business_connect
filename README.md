@@ -64,7 +64,9 @@ bench restart
 - Description section
 - Location field (Google Maps link)
 - Product categories (reusable per business)
-- Gallery, video, brochure
+- Gallery — 4-col desktop, 2-col mobile thumbnails, click-to-open full image
+- Gallery sorted by sort_order, captions, alt text, lazy loading
+- Video, brochure
 - "About Business" section with description & address
 
 ### Analytics
