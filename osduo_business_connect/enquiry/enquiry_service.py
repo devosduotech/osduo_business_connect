@@ -61,7 +61,8 @@ def create_enquiry(business_name, visitor_data, source="Other", references=None)
     try:
         from osduo_business_connect.crm_integration.crm_sync import enqueue_sync
         enqueue_sync(enquiry.name)
-    except Exception:
+    except Exception as e:
+        frappe.log_error(f"CRM sync enqueue failed for {enquiry.name}: {str(e)}", "Enquiry CRM Sync")
         pass  # Don't fail enquiry creation if sync enqueue fails
 
     return {
