@@ -341,3 +341,39 @@ def get_business_by_slug(slug):
     if business:
         return business[0]
     return None
+
+
+def get_public_business_by_slug(slug):
+    """
+    Get a public business by slug with full visibility check.
+
+    Used by all public-facing controllers to ensure consistent access rules:
+    Business must be Published AND public_profile_enabled.
+
+    Args:
+        slug: Business public slug
+
+    Returns:
+        dict: Business data or None
+    """
+    if not slug:
+        return None
+
+    business = frappe.get_all(
+        "Business",
+        filters={
+            "slug": slug,
+            "status": "Published",
+            "public_profile_enabled": 1,
+        },
+        fields=[
+            "name", "slug", "business_name", "tagline", "logo", "status",
+            "description", "website", "email", "phone", "whatsapp",
+            "address", "city", "state",
+        ],
+        limit=1,
+    )
+
+    if business:
+        return business[0]
+    return None

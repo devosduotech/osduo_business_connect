@@ -10,14 +10,9 @@ def get_context(context):
     if not business_slug or not product_slug:
         frappe.throw("Product not found", frappe.DoesNotExistError)
 
-    # Find business
-    business = frappe.db.get_value(
-        "Business",
-        {"slug": business_slug, "status": "Published"},
-        ["name", "business_name", "slug", "description", "website",
-         "email", "phone", "whatsapp", "address", "city", "state"],
-        as_dict=True,
-    )
+    # Find business (requires Published + public_profile_enabled)
+    from ....business.core import get_public_business_by_slug
+    business = get_public_business_by_slug(business_slug)
     if not business:
         frappe.throw("Business not found", frappe.DoesNotExistError)
 
@@ -53,8 +48,38 @@ def get_context(context):
     if getattr(doc, "seo_description", None):
         context.meta_description = doc.seo_description
 
-    # Track product view (non-blocking)
-    _track_event(business.name, "product_view", product=doc.name)
+    # Capture analytics context BEFORE enqueueing
+    analytics_ctx = _capture_analytics_context()
+    _track_event(business.name, "product_view", product=doc.name, **analytics_ctx)
+
+
+def _capture_analytics_context():
+    """Extract request metadata for analytics before background job."""
+    ctx = {}
+    request = frappe.request if frappe.request else None
+    if request:
+        ctx["landing_url"] = request.url
+        ctx["referrer"] = request.headers.get("Referer")
+        user_agent = request.headers.get("User-Agent", "").lower()
+        if any(x in user_agent for x in ["mobile", "android", "iphone"]):
+            ctx["device_type"] = "Mobile"
+        elif any(x in user_agent for x in ["tablet", "ipad"]):
+            ctx["device_type"] = "Tablet"
+        elif any(x in user_agent for x in ["mozilla", "chrome", "safari", "firefox"]):
+            ctx["device_type"] = "Desktop"
+        else:
+            ctx["device_type"] = "Unknown"
+        if "chrome" in user_agent and "edg" not in user_agent:
+            ctx["browser"] = "Chrome"
+        elif "firefox" in user_agent:
+            ctx["browser"] = "Firefox"
+        elif "safari" in user_agent and "chrome" not in user_agent:
+            ctx["browser"] = "Safari"
+        elif "edg" in user_agent:
+            ctx["browser"] = "Edge"
+        else:
+            ctx["browser"] = "Unknown"
+    return ctx
 
 
 def _track_event(business, event_type, **kwargs):

@@ -153,8 +153,8 @@ def create_custom_field_if_not_exists(dt, field):
         "options": options,
         "insert_after": field.get("insert_after"),
         "description": field.get("description"),
-        "unique": 0,
-        "read_only": 0,
+        "unique": field.get("unique", 0),
+        "read_only": field.get("read_only", 0),
         "in_list_view": 0,
         "in_standard_filter": 0,
     })
