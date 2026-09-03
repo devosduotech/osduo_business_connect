@@ -38,7 +38,7 @@ class TestEnquiryDocType(unittest.TestCase):
     def test_status_options(self):
         status_field = next(f for f in self.data["fields"] if f["fieldname"] == "status")
         options = status_field["options"]
-        for st in ["New", "Synced", "Converted"]:
+        for st in ["New", "Contacted", "Nurture", "Qualified", "Converted", "Unqualified", "Junk"]:
             self.assertIn(st, options)
 
     def test_has_permissions(self):

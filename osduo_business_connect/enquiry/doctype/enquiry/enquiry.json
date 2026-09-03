@@ -148,7 +148,7 @@
       "label": "Status",
       "reqd": 1,
       "default": "New",
-      "options": "New\nSync Pending\nSynced\nSync Failed\nConverted\nClosed\nSpam",
+      "options": "New\nContacted\nNurture\nQualified\nConverted\nUnqualified\nJunk\nClosed\nSpam",
       "in_list_view": 1,
       "in_standard_filter": 1
     },

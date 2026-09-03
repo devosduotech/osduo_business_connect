@@ -304,13 +304,14 @@ function render_enquiry_pipeline(container_id, data) {
 	var container = document.getElementById(container_id);
 	var items = [
 		{ label: __("New"), value: data.new || 0, color: "#2490ef" },
-		{ label: __("Synced"), value: data.synced || 0, color: "#f5a623" },
+		{ label: __("Ongoing"), value: data.ongoing || 0, color: "#f5a623" },
 		{ label: __("Converted"), value: data.converted || 0, color: "#28a745" },
+		{ label: __("Lost"), value: data.lost || 0, color: "#dc3545" },
 	];
-	var html = '<div style="display:flex;gap:1rem;">';
+	var html = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">';
 	items.forEach(function (item) {
 		html +=
-			'<div style="flex:1;text-align:center;padding:0.8rem;border:1px solid #e2e8f0;border-radius:6px;">';
+			'<div style="text-align:center;padding:0.8rem;border:1px solid #e2e8f0;border-radius:6px;">';
 		html +=
 			'<div style="font-size:1.4rem;font-weight:700;color:' +
 			item.color +

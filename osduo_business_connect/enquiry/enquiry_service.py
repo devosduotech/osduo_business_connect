@@ -102,7 +102,7 @@ def track_enquiry_event(business_name, enquiry_name, source, card=None, product=
 def get_enquiry_stats(business_name):
     """
     Get enquiry statistics for a business.
-    Shows pipeline: New enquiries → Synced to CRM → Converted to Deal.
+    Pipeline: New → Ongoing → Converted / Lost
     """
     total = frappe.db.count("Enquiry", filters={"business": business_name})
 
@@ -110,24 +110,20 @@ def get_enquiry_stats(business_name):
         "Enquiry", filters={"business": business_name, "status": "New"}
     )
 
-    # Synced = enquiries that became CRM Leads
-    synced_count = frappe.db.count(
-        "Enquiry", filters={"business": business_name, "status": "Synced"}
+    # Ongoing = Contacted, Nurture, Qualified
+    ongoing_count = frappe.db.count(
+        "Enquiry", filters={"business": business_name, "status": ["in", ["Contacted", "Nurture", "Qualified"]]}
     )
 
-    # Converted = Enquiries marked Converted OR CRM Leads that became Deals
+    # Converted
     converted_count = frappe.db.count(
         "Enquiry", filters={"business": business_name, "status": "Converted"}
     )
-    if frappe.db.exists("DocType", "CRM Lead"):
-        crm_converted = frappe.db.sql(
-            """SELECT COUNT(DISTINCT cl.name) as cnt
-            FROM `tabCRM Lead` cl
-            INNER JOIN `tabEnquiry` en ON cl.osduo_enquiry = en.name
-            WHERE en.business = %s AND cl.status = 'Converted'""",
-            (business_name,),
-        )[0][0] or 0
-        converted_count = max(converted_count, crm_converted)
+
+    # Lost = Unqualified, Junk
+    lost_count = frappe.db.count(
+        "Enquiry", filters={"business": business_name, "status": ["in", ["Unqualified", "Junk"]]}
+    )
 
     source_counts = frappe.db.sql(
         """SELECT source, COUNT(name) as cnt
@@ -141,7 +137,8 @@ def get_enquiry_stats(business_name):
     return {
         "total": total,
         "new": new_count,
-        "synced": synced_count,
+        "ongoing": ongoing_count,
         "converted": converted_count,
+        "lost": lost_count,
         "by_source": {row.source: row.cnt for row in source_counts},
     }
