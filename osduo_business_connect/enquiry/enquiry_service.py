@@ -54,8 +54,13 @@ def create_enquiry(business_name, visitor_data, source="Other", references=None)
     enquiry.insert(ignore_permissions=True)
     frappe.db.commit()
 
-    # Track event
-    track_enquiry_event(business_name, enquiry.name, source)
+    # Track event with page references
+    track_enquiry_event(
+        business_name, enquiry.name, source,
+        card=references.get("card") if references else None,
+        product=references.get("product") if references else None,
+        service=references.get("service") if references else None,
+    )
 
     # CRM sync is triggered by Enquiry.on_update hook — do not enqueue here
     # to prevent duplicate Lead creation.
@@ -67,14 +72,17 @@ def create_enquiry(business_name, visitor_data, source="Other", references=None)
     }
 
 
-def track_enquiry_event(business_name, enquiry_name, source):
+def track_enquiry_event(business_name, enquiry_name, source, card=None, product=None, service=None):
     """
-    Track enquiry submission event.
+    Track enquiry submission event with page context.
 
     Args:
         business_name: Business name
         enquiry_name: Enquiry name
         source: Enquiry source
+        card: Digital Card name (if enquiry came from a card page)
+        product: Showcase Product name (if enquiry came from a product page)
+        service: Showcase Service name (if enquiry came from a service page)
     """
     try:
         from osduo_business_connect.analytics.analytics_service import record_engagement
@@ -82,6 +90,9 @@ def track_enquiry_event(business_name, enquiry_name, source):
             business=business_name,
             event_type="enquiry_submitted",
             campaign=source,
+            card=card,
+            product=product,
+            service=service,
         )
     except Exception:
         # Don't fail enquiry creation if event tracking fails
