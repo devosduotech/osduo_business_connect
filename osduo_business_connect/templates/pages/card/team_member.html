@@ -120,6 +120,7 @@
             <h2 class="bc-section-title">Send a Message</h2>
             <form id="card-enquiry-form" class="bc-card bc-enquiry-form" style="padding:1.25rem;">
                 <input type="hidden" name="business" value="{{ doc.business }}">
+                <input type="hidden" name="business_slug" value="{{ business_slug }}">
                 <input type="hidden" name="card" value="{{ doc.name }}">
                 <div style="margin-bottom:0.6rem;">
                     <input type="text" name="visitor_name" placeholder="Your Name" required>
@@ -163,20 +164,35 @@
     document.getElementById('card-enquiry-form').addEventListener('submit', async function(e) {
         e.preventDefault();
         const form = e.target;
-        const data = Object.fromEntries(new FormData(form));
-        data.doctype = 'Enquiry';
-        data.consent = 1;
+        const fd = new FormData(form);
+        const data = {
+            name: fd.get('visitor_name'),
+            email: fd.get('visitor_email'),
+            phone: fd.get('visitor_phone'),
+            message: fd.get('message'),
+        };
+        const refs = {
+            card: fd.get('card'),
+        };
         try {
-            const res = await fetch('/api/resource/Enquiry', {
+            const res = await fetch('/api/method/osduo_business_connect.enquiry.public_enquiry_api.submit_enquiry', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Frappe-CSRF-Token': window.csrf_token || '',
+                },
+                body: JSON.stringify({
+                    business_slug: fd.get('business_slug'),
+                    visitor_data: data,
+                    source: 'Digital Card',
+                    references: refs,
+                })
             });
-            if (res.ok) {
+            const result = await res.json();
+            if (result.message) {
                 form.innerHTML = '<div style="text-align:center;padding:1.25rem;"><h3 style="margin:0 0 0.4rem;">Message Sent!</h3><p style="color:#666;font-size:0.9rem;">Thank you. We will get back to you soon.</p></div>';
             } else {
-                const err = await res.json();
-                alert(err.message || 'Error sending message');
+                alert(result._server_messages ? JSON.parse(result._server_messages).message : 'Error sending message');
             }
         } catch(err) {
             alert('Error sending message');

@@ -13,6 +13,7 @@ from frappe import _
 from osduo_business_connect.enquiry.enquiry_service import create_enquiry
 
 
+@frappe.whitelist(allow_guest=True)
 def submit_enquiry(business_slug, visitor_data, source="Other", references=None):
     """
     Submit a public enquiry.
