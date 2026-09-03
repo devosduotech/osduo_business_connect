@@ -6,10 +6,12 @@ Digital business identity, product/service showcase, lead generation, and CRM in
 
 - Frappe Framework v16
 - Frappe CRM
+- Python: `qrcode[pil]` (for QR code generation)
 
 ## Installation
 
 ```bash
+pip install qrcode[pil]
 bench get-app https://github.com/devosduotech/osduo_business_connect.git
 bench --site <site-name> migrate
 bench build --app osduo_business_connect
@@ -171,6 +173,7 @@ python3 -m unittest discover -s tests -p "test_*.py" -v
 
 ```bash
 cd ~/frappe-bench
+pip install qrcode[pil]
 rm -rf apps/osduo_business_connect
 bench get-app https://github.com/devosduotech/osduo_business_connect.git --branch develop
 bench --site business.local migrate
