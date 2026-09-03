@@ -341,7 +341,7 @@ function render_recent_activity(container_id, data) {
 		__("Device") +
 		"</th></tr></thead><tbody>";
 	data.forEach(function (d) {
-		var page_name = d.card || d.product || d.service || "\u2014";
+		var page_name = d.person_name || d.card || d.product || d.service || "\u2014";
 		html +=
 			"<tr><td>" +
 			frappe.datetime.str_to_user(d.event_time) +

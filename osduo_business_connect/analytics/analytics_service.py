@@ -149,23 +149,17 @@ def get_top_cards(business_name, days=30, limit=5):
 def get_recent_events(business_name, days=30, limit=15):
     from_date = frappe.utils.add_days(frappe.utils.nowdate(), -days)
 
-    events = frappe.get_all(
-        "Engagement Event",
-        filters={
-            "business": business_name,
-            "event_time": [">=", from_date],
-        },
-        fields=[
-            "event_type",
-            "event_time",
-            "card",
-            "product",
-            "service",
-            "device_type",
-            "browser",
-        ],
-        order_by="event_time DESC",
-        limit_page_length=limit,
+    events = frappe.db.sql(
+        """SELECT ee.event_type, ee.event_time, ee.card, ee.product, ee.service,
+        ee.device_type, ee.browser, bm.person_name
+        FROM `tabEngagement Event` ee
+        LEFT JOIN `tabDigital Card` dc ON ee.card = dc.name
+        LEFT JOIN `tabBusiness Member` bm ON dc.member = bm.name
+        WHERE ee.business = %s AND ee.event_time >= %s
+        ORDER BY ee.event_time DESC
+        LIMIT %s""",
+        (business_name, from_date, limit),
+        as_dict=True,
     )
 
     return events
