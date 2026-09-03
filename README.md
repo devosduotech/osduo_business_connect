@@ -27,7 +27,7 @@ bench restart
 | `/b/<business>/products/<product>` | Product page |
 | `/b/<business>/services/<service>` | Service page |
 | `/c/<card>` | Digital Card (short QR/NFC URL) |
-| `/osduo_business_connect/analytics` | Analytics desk dashboard |
+| `/osduo_business_connect/analytics` | Analytics desk dashboard (`/app/analytics`) |
 
 ## Features
 
@@ -68,10 +68,11 @@ bench restart
 - "About Business" section with description & address
 
 ### Analytics
-- Engagement event tracking (11 event types)
-- Desk dashboard with business selector & date range
-- Events by day/type, top cards, enquiry pipeline
-- Event recording on all web pages (non-blocking)
+- Desk page at `/app/analytics` (business selector, date range)
+- Link visits, QR scans, card views, product/service views
+- Events by day/type, top cards, enquiry pipeline, recent activity
+- Device type & browser tracking
+- Event recording on all public pages (non-blocking background jobs)
 
 ### CRM Integration
 ```
@@ -108,6 +109,8 @@ osduo_business_connect/
 │       └── service_benefit/
 ├── analytics/             # Engagement analytics
 │   ├── analytics_service.py
+│   ├── page/
+│   │   └── analytics/      # Desk page (JS + HTML)
 │   └── doctype/
 │       └── engagement_event/
 ├── enquiry/               # Lead generation

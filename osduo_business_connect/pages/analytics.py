@@ -40,8 +40,11 @@ def get_analytics(business, days=30):
     from osduo_business_connect.analytics.analytics_service import (
         get_business_analytics,
         get_top_cards,
+        get_recent_events,
     )
     engagement = get_business_analytics(business, days=days)
+    engagement["qr_scans"] = get_qr_scans(business, days=days)
+    engagement["recent_events"] = get_recent_events(business, days=days, limit=15)
     top_cards = get_top_cards(business, days=days, limit=5)
 
     # Enquiry stats
@@ -99,4 +102,17 @@ def get_business_list():
         filters={"name": ["in", names], "status": "Published"},
         fields=["name", "business_name", "slug"],
         order_by="business_name asc",
+    )
+
+
+def get_qr_scans(business, days=30):
+    """Count QR code scans (qr_landing events) for a business."""
+    from_date = frappe.utils.add_days(frappe.utils.nowdate(), -days)
+    return frappe.db.count(
+        "Engagement Event",
+        filters={
+            "business": business,
+            "event_type": "qr_landing",
+            "event_time": [">=", from_date],
+        },
     )
