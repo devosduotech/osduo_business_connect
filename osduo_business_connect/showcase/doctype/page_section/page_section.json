@@ -164,6 +164,21 @@
       "label": "Custom HTML",
       "options": "HTML",
       "depends_on": "eval:doc.section_type === 'Custom'"
+    },
+    {
+      "fieldname": "config_gallery_source",
+      "fieldtype": "Select",
+      "label": "Gallery Source",
+      "options": "All Products\nAll Services\nAll Products & Services",
+      "default": "All Products & Services",
+      "depends_on": "eval:doc.section_type === 'Gallery'"
+    },
+    {
+      "fieldname": "config_gallery_max_items",
+      "fieldtype": "Int",
+      "label": "Max Images",
+      "default": 12,
+      "depends_on": "eval:doc.section_type === 'Gallery'"
     }
   ],
   "permissions": [

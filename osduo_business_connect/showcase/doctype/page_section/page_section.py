@@ -116,6 +116,11 @@ class PageSection(Document):
             data["custom"] = {
                 "html": self.config_custom_html,
             }
+        elif self.section_type == "Gallery":
+            data["gallery"] = {
+                "source": self.config_gallery_source or "All Products & Services",
+                "max_items": self.config_gallery_max_items or 12,
+            }
 
         return data
 

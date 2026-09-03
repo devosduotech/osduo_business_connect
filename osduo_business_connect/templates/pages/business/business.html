@@ -118,12 +118,29 @@
     </div>
 
     {% elif section.section_type == "Gallery" %}
+    {% if gallery_images %}
     <div class="bc-section{% if loop.index % 2 == 0 %} bc-section-alt{% endif %}" id="bc-gallery">
         <div class="bc-container">
             <h2 class="bc-section-title">{{ section.title or "Gallery" }}</h2>
-            <div class="bc-reading"><p style="color:#64748b;">Coming soon.</p></div>
+            <div class="bc-gallery-grid">
+                {% for image in gallery_images %}
+                <div class="bc-gallery-item">
+                    <img
+                        class="bc-gallery-img"
+                        src="{{ image.image }}"
+                        alt="{{ image.alt_text or image.caption or '' }}"
+                        loading="lazy"
+                        onclick="window.open('{{ image.image }}', '_blank')"
+                    >
+                    {% if image.caption %}
+                    <p class="bc-gallery-caption">{{ image.caption }}</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
+    {% endif %}
 
     {% elif section.section_type == "Custom" and section.custom.html %}
     <div class="bc-section{% if loop.index % 2 == 0 %} bc-section-alt{% endif %}">
