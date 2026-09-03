@@ -107,18 +107,14 @@ def get_enquiry_form_config(business_slug):
     Returns:
         dict: Form configuration
     """
-    # Get business by slug
-    business = frappe.get_all(
-        "Business",
-        filters={"slug": business_slug, "status": "Published"},
-        fields=["name", "business_name"],
-        limit=1,
-    )
+    # Get business by slug (requires Published + public_profile_enabled)
+    from osduo_business_connect.business.core import get_public_business_by_slug
+    business = get_public_business_by_slug(business_slug)
     if not business:
         frappe.throw(_("Business not found"), frappe.DoesNotExistError)
 
     # Get business enquiry settings
-    business_doc = frappe.get_doc("Business", business[0].name)
+    business_doc = frappe.get_doc("Business", business.name)
 
     return {
         "business_name": business_doc.business_name,

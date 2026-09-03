@@ -27,21 +27,17 @@ def get_context(context):
 
     try:
         from osduo_business_connect.enquiry.enquiry_service import create_enquiry
+        from osduo_business_connect.business.core import get_public_business_by_slug
 
-        # Get business by slug
-        business = frappe.get_all(
-            "Business",
-            filters={"slug": business_slug, "status": "Published"},
-            fields=["name"],
-            limit=1,
-        )
+        # Get business by slug (requires Published + public_profile_enabled)
+        business = get_public_business_by_slug(business_slug)
         if not business:
             frappe.response["type"] = "json"
             frappe.response["message"] = {"error": "Business not found"}
             return
 
         result = create_enquiry(
-            business_name=business[0].name,
+            business_name=business.name,
             visitor_data=visitor_data,
             source=source,
             references=references,
