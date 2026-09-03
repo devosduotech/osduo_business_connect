@@ -74,6 +74,22 @@
         </div>
     </div>
 
+    {# ===== BUSINESS ADDRESS ===== #}
+    {% if business.address or business.city %}
+    <div class="bc-section">
+        <div class="bc-reading">
+            <h2 class="bc-section-title">Business Address</h2>
+            <div class="bc-card" style="text-align:center;">
+                <p style="margin:0;color:#475569;">{{ business.address }}{% if business.city %}, {{ business.city }}{% endif %}{% if business.state %}, {{ business.state }}{% endif %}</p>
+                {% if business.website %}
+                <a href="{{ business.website }}" target="_blank" style="color:var(--bc-primary);font-size:0.85rem;text-decoration:none;display:block;margin-top:0.4rem;">{{ business.website }}</a>
+                {% endif %}
+                <a href="/b/{{ business_slug }}" style="color:var(--bc-primary);font-size:0.85rem;text-decoration:none;display:block;margin-top:0.4rem;">{{ business_name }} &rarr;</a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     {# ===== SOCIAL LINKS ===== #}
     {% if links %}
     <div class="bc-section">
