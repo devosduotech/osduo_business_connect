@@ -1,69 +1,81 @@
-{# Card Hero — Minimal template #}
-<div class="bc-card-hero" style="background:transparent;border-radius:0;padding:1.5rem 0;">
-    {% if doc.profile_image %}
-    <img src="{{ doc.profile_image }}" alt="{{ doc.display_name }}" class="bc-card-avatar" style="border-color:#e2e8f0;">
-    {% else %}
-    <div class="bc-card-avatar bc-card-avatar-fallback" style="background:#f1f5f9;color:#475569;">
-        {{ doc.display_name[0] if doc.display_name else '?' }}
+{# Card Hero — Minimal: ultra-clean, no bg, thin borders, uppercase labels #}
+<div class="bc-card-hero bc-hero-minimal">
+    <div class="bc-hero-minimal-header">
+        {% if doc.profile_image %}
+        <img src="{{ doc.profile_image }}" alt="{{ doc.display_name }}" class="bc-hero-minimal-avatar">
+        {% else %}
+        <div class="bc-card-avatar-fallback bc-hero-minimal-avatar-fallback">
+            {{ doc.display_name[0] if doc.display_name else '?' }}
+        </div>
+        {% endif %}
+        <div class="bc-hero-minimal-identity">
+            <h1>{{ doc.display_name }}</h1>
+            {% if doc.designation %}
+            <p class="bc-hero-minimal-designation">{{ doc.designation }}</p>
+            {% endif %}
+        </div>
     </div>
-    {% endif %}
 
-    <h1 style="color:var(--bc-text);">{{ doc.display_name }}</h1>
-    {% if doc.designation %}
-    <p style="color:#64748b;margin:0 0 0.2rem;">{{ doc.designation }}</p>
-    {% endif %}
     {% if doc.show_business and doc.business_name %}
-    <p style="color:#94a3b8;margin:0 0 0.75rem;font-size:0.85rem;">{{ doc.business_name }}</p>
+    <p class="bc-hero-minimal-business">{{ doc.business_name }}</p>
     {% endif %}
 
     {% if doc.bio %}
-    <div class="bc-card-bio" style="background:#f8fafc;border:1px solid #e2e8f0;">{{ doc.bio }}</div>
+    <div class="bc-card-bio bc-hero-minimal-bio">{{ doc.bio }}</div>
     {% endif %}
 
     {% if doc.phone or doc.email %}
-    <div class="bc-card-contact-details" style="margin:0.75rem 0;font-size:0.85rem;color:#64748b;">
+    <div class="bc-hero-minimal-contact">
         {% if doc.phone %}
-        <p style="margin:0.2rem 0;">&#9742; {{ doc.phone }}</p>
+        <a href="tel:{{ doc.phone }}" class="bc-hero-minimal-contact-row">
+            <span class="bc-hero-minimal-contact-label">PHONE</span>
+            <span class="bc-hero-minimal-contact-value">{{ doc.phone }}</span>
+        </a>
         {% endif %}
         {% if doc.email %}
-        <p style="margin:0.2rem 0;">&#9993; {{ doc.email }}</p>
+        <a href="mailto:{{ doc.email }}" class="bc-hero-minimal-contact-row">
+            <span class="bc-hero-minimal-contact-label">EMAIL</span>
+            <span class="bc-hero-minimal-contact-value">{{ doc.email }}</span>
+        </a>
         {% endif %}
     </div>
     {% endif %}
 
-    <div class="bc-card-actions">
+    <div class="bc-hero-minimal-divider"></div>
+
+    <div class="bc-card-actions bc-hero-minimal-actions">
         {% if doc.phone %}
-        <a href="tel:{{ doc.phone }}" class="bc-card-action-btn" style="background:var(--bc-primary);color:white;border-radius:0;">
+        <a href="tel:{{ doc.phone }}" class="bc-card-action-btn bc-hero-minimal-btn">
             <span class="bc-card-action-icon">&#9742;</span> Call
         </a>
         {% endif %}
         {% if doc.whatsapp %}
-        <a href="https://wa.me/{{ doc.whatsapp|replace('+','')|replace(' ','') }}" class="bc-card-action-btn" style="background:#25D366;color:white;border-radius:0;">
+        <a href="https://wa.me/{{ doc.whatsapp|replace('+','')|replace(' ','') }}" class="bc-card-action-btn bc-hero-minimal-btn bc-hero-minimal-btn-whatsapp">
             <span class="bc-card-action-icon">&#128172;</span> WhatsApp
         </a>
         {% endif %}
         {% if doc.email %}
-        <a href="mailto:{{ doc.email }}" class="bc-card-action-btn" style="background:#EA4335;color:white;border-radius:0;">
+        <a href="mailto:{{ doc.email }}" class="bc-card-action-btn bc-hero-minimal-btn bc-hero-minimal-btn-email">
             <span class="bc-card-action-icon">&#9993;</span> Email
         </a>
         {% endif %}
         {% if doc.website %}
-        <a href="{{ doc.website }}" target="_blank" class="bc-card-action-btn" style="background:var(--bc-text);color:white;border-radius:0;">
+        <a href="{{ doc.website }}" target="_blank" class="bc-card-action-btn bc-hero-minimal-btn">
             <span class="bc-card-action-icon">&#127760;</span> Website
         </a>
         {% endif %}
     </div>
 
     {% if links %}
-    <div class="bc-card-links">
+    <div class="bc-card-links bc-hero-minimal-links">
         {% for link in links %}
-        <a href="{{ link.url }}" target="_blank" class="bc-btn bc-btn-secondary" style="font-size:0.75rem;padding:0.4rem 0.75rem;border-radius:0;">{{ link.label or link.link_type }}</a>
+        <a href="{{ link.url }}" target="_blank" class="bc-btn bc-hero-minimal-link-btn">{{ link.label or link.link_type }}</a>
         {% endfor %}
     </div>
     {% endif %}
 
     {% if doc.qr_enabled and doc.qr_image %}
-    <div class="bc-card-qr">
+    <div class="bc-card-qr bc-hero-minimal-qr">
         <img src="{{ doc.qr_image }}" alt="QR Code">
         <p>Scan to view card</p>
     </div>

@@ -186,6 +186,550 @@
 }
 
 /* ======================== */
+/* HERO: MODERN             */
+/* ======================== */
+.bc-hero-modern {
+    background: white;
+    border-radius: var(--bc-card-radius) var(--bc-card-radius) 0 0;
+}
+
+.bc-hero-modern-avatar-wrap {
+    margin-bottom: 0.75rem;
+}
+
+.bc-hero-modern-avatar {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--bc-primary);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    display: block;
+    margin: 0 auto;
+}
+
+.bc-hero-modern-avatar-fallback {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: var(--bc-primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    margin: 0 auto;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    border: 4px solid white;
+}
+
+.bc-hero-modern-name {
+    margin: 0.4rem 0 0.15rem;
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.bc-hero-modern-designation {
+    color: #64748b;
+    margin: 0 0 0.15rem;
+    font-size: 0.95rem;
+}
+
+.bc-hero-modern-business {
+    color: #94a3b8;
+    margin: 0 0 0.75rem;
+    font-size: 0.85rem;
+}
+
+.bc-hero-modern-bio {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    text-align: left;
+}
+
+.bc-hero-modern-contact {
+    margin: 0.75rem 0;
+    font-size: 0.85rem;
+    color: #64748b;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.bc-hero-modern-actions {
+    gap: 0.5rem;
+}
+
+.bc-hero-modern-btn {
+    border-radius: 50px !important;
+    padding: 0.65rem 1.2rem !important;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.bc-hero-modern-links {
+    margin-top: 0.5rem;
+}
+
+.bc-hero-modern-qr {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f1f5f9;
+}
+
+/* ======================== */
+/* HERO: PROFESSIONAL       */
+/* ======================== */
+.bc-hero-professional {
+    text-align: left;
+    padding: 1.5rem;
+}
+
+.bc-hero-professional-top {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.bc-hero-professional-avatar-wrap {
+    flex-shrink: 0;
+}
+
+.bc-hero-professional-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--bc-primary);
+}
+
+.bc-hero-professional-avatar-fallback {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--bc-primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+}
+
+.bc-hero-professional-info h1 {
+    margin: 0 0 0.1rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.bc-hero-professional-designation {
+    color: var(--bc-primary);
+    margin: 0 0 0.1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.bc-hero-professional-business {
+    color: #94a3b8;
+    margin: 0;
+    font-size: 0.8rem;
+}
+
+.bc-hero-professional-bio {
+    background: #f8fafc;
+    border-left: 3px solid var(--bc-primary);
+    border-radius: 0 8px 8px 0;
+    text-align: left;
+}
+
+.bc-hero-professional-contact {
+    margin: 0.75rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.bc-hero-professional-contact-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: #475569;
+    text-decoration: none;
+    padding: 0.4rem 0;
+}
+
+.bc-hero-professional-contact-item:hover {
+    color: var(--bc-primary);
+}
+
+.bc-hero-professional-contact-icon {
+    font-size: 1rem;
+    width: 1.2rem;
+    text-align: center;
+}
+
+.bc-hero-professional-divider {
+    height: 1px;
+    background: #e2e8f0;
+    margin: 0.75rem 0;
+}
+
+.bc-hero-professional-actions {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.bc-hero-professional-btn {
+    flex: 1;
+    min-width: 0;
+    justify-content: center;
+    border: 1px solid #e2e8f0;
+    background: white !important;
+    color: #475569 !important;
+    border-radius: 8px !important;
+    font-size: 0.8rem !important;
+}
+
+.bc-hero-professional-btn-whatsapp {
+    border-color: #25D366;
+    color: #25D366 !important;
+}
+
+.bc-hero-professional-btn-email {
+    border-color: #EA4335;
+    color: #EA4335 !important;
+}
+
+.bc-hero-professional-links {
+    margin-top: 0.75rem;
+    justify-content: flex-start;
+}
+
+.bc-hero-professional-link-btn {
+    border: 1px solid #e2e8f0;
+    background: white;
+    color: #475569;
+    border-radius: 6px;
+    font-size: 0.75rem;
+}
+
+.bc-hero-professional-qr {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #e2e8f0;
+    text-align: left;
+}
+
+/* ======================== */
+/* HERO: MINIMAL            */
+/* ======================== */
+.bc-hero-minimal {
+    background: transparent;
+    text-align: left;
+    padding: 1.5rem 0;
+}
+
+.bc-hero-minimal-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.bc-hero-minimal-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #e2e8f0;
+}
+
+.bc-hero-minimal-avatar-fallback {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+}
+
+.bc-hero-minimal-identity h1 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.bc-hero-minimal-designation {
+    color: #64748b;
+    margin: 0.1rem 0 0;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.bc-hero-minimal-business {
+    color: #94a3b8;
+    margin: 0 0 0.75rem;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.bc-hero-minimal-bio {
+    background: transparent;
+    border: 1px solid #e2e8f0;
+    border-radius: 0;
+    text-align: left;
+    font-size: 0.85rem;
+}
+
+.bc-hero-minimal-contact {
+    margin: 0.75rem 0;
+}
+
+.bc-hero-minimal-contact-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f1f5f9;
+    text-decoration: none;
+    color: #475569;
+}
+
+.bc-hero-minimal-contact-row:hover {
+    color: var(--bc-primary);
+}
+
+.bc-hero-minimal-contact-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #94a3b8;
+    min-width: 50px;
+    font-weight: 500;
+}
+
+.bc-hero-minimal-contact-value {
+    font-size: 0.9rem;
+}
+
+.bc-hero-minimal-divider {
+    height: 1px;
+    background: #e2e8f0;
+    margin: 0.75rem 0;
+}
+
+.bc-hero-minimal-actions {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.bc-hero-minimal-btn {
+    flex: 1;
+    justify-content: center;
+    border: 1px solid #e2e8f0;
+    background: white !important;
+    color: #475569 !important;
+    border-radius: 0 !important;
+    font-size: 0.8rem !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.bc-hero-minimal-btn-whatsapp {
+    border-color: #25D366;
+    color: #25D366 !important;
+}
+
+.bc-hero-minimal-btn-email {
+    border-color: #EA4335;
+    color: #EA4335 !important;
+}
+
+.bc-hero-minimal-links {
+    margin-top: 0.75rem;
+    justify-content: flex-start;
+}
+
+.bc-hero-minimal-link-btn {
+    border: 1px solid #e2e8f0;
+    background: white;
+    color: #475569;
+    border-radius: 0;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.bc-hero-minimal-qr {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #e2e8f0;
+    text-align: left;
+}
+
+/* ======================== */
+/* HERO: CLASSIC            */
+/* ======================== */
+.bc-hero-classic {
+    padding: 0;
+    overflow: hidden;
+}
+
+.bc-hero-classic-banner {
+    background: linear-gradient(135deg, var(--bc-primary), var(--bc-accent));
+    padding: 2rem 1.5rem 2.5rem;
+    text-align: center;
+}
+
+.bc-hero-classic-banner-inner h1 {
+    color: white;
+    margin: 0 0 0.15rem;
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.bc-hero-classic-designation {
+    color: rgba(255,255,255,0.85);
+    margin: 0 0 0.1rem;
+    font-size: 0.9rem;
+}
+
+.bc-hero-classic-business {
+    color: rgba(255,255,255,0.65);
+    margin: 0;
+    font-size: 0.8rem;
+}
+
+.bc-hero-classic-avatar-overlap {
+    text-align: center;
+    margin-top: -40px;
+    position: relative;
+    z-index: 2;
+}
+
+.bc-hero-classic-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid white;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+}
+
+.bc-hero-classic-avatar-fallback {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--bc-primary);
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    border: 4px solid white;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+}
+
+.bc-hero-classic-body {
+    padding: 0.75rem 1.5rem 1.5rem;
+    text-align: center;
+}
+
+.bc-hero-classic-bio {
+    background: #fafafa;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    text-align: left;
+}
+
+.bc-hero-classic-contact {
+    margin: 0.75rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.bc-hero-classic-contact-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    color: #475569;
+    text-decoration: none;
+    padding: 0.3rem 0;
+}
+
+.bc-hero-classic-contact-item:hover {
+    color: var(--bc-primary);
+}
+
+.bc-hero-classic-divider-line {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+    margin: 0.75rem 0;
+}
+
+.bc-hero-classic-actions {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.bc-hero-classic-btn {
+    flex: 1;
+    justify-content: center;
+    border: none;
+    border-radius: 8px !important;
+    font-size: 0.8rem !important;
+    font-weight: 600;
+}
+
+.bc-hero-classic-btn-whatsapp {
+    background: #25D366 !important;
+    color: white !important;
+}
+
+.bc-hero-classic-btn-email {
+    background: #EA4335 !important;
+    color: white !important;
+}
+
+.bc-hero-classic-links {
+    margin-top: 0;
+    justify-content: center;
+}
+
+.bc-hero-classic-link-btn {
+    border: 1px solid #e2e8f0;
+    background: white;
+    color: #475569;
+    border-radius: 6px;
+    font-size: 0.75rem;
+}
+
+.bc-hero-classic-qr {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #eee;
+    text-align: center;
+}
+
+/* ======================== */
 /* CARD: VCF DOWNLOAD       */
 /* ======================== */
 .bc-card-vcf {
