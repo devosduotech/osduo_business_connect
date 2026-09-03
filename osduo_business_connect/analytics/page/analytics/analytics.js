@@ -81,27 +81,27 @@ function render_analytics(page, data) {
 	var html = `
 		<div class="row" style="margin-bottom:1.5rem;">
 			<div class="col-sm-3">
-				<div class="frappe-card" style="padding:1rem;text-align:center;">
-					<div style="font-size:2rem;font-weight:700;color:var(--primary);">${eng.total_events || 0}</div>
-					<div style="font-size:0.8rem;color:#888;">${__("Link Visits")}</div>
+				<div class="frappe-card" style="padding:1rem;text-align:center;border-left:4px solid #4f46e5;">
+					<div style="font-size:2rem;font-weight:700;color:#4f46e5;">${eng.total_events || 0}</div>
+					<div style="font-size:0.8rem;color:#666;">${__("Link Visits")}</div>
 				</div>
 			</div>
 			<div class="col-sm-3">
-				<div class="frappe-card" style="padding:1rem;text-align:center;">
-					<div style="font-size:2rem;font-weight:700;color:#2490ef;">${eng.qr_scans || 0}</div>
-					<div style="font-size:0.8rem;color:#888;">${__("QR Scans")}</div>
+				<div class="frappe-card" style="padding:1rem;text-align:center;border-left:4px solid #0ea5e9;">
+					<div style="font-size:2rem;font-weight:700;color:#0ea5e9;">${eng.qr_scans || 0}</div>
+					<div style="font-size:0.8rem;color:#666;">${__("QR Scans")}</div>
 				</div>
 			</div>
 			<div class="col-sm-3">
-				<div class="frappe-card" style="padding:1rem;text-align:center;">
-					<div style="font-size:2rem;font-weight:700;color:#28a745;">${summary.total_cards || 0}</div>
-					<div style="font-size:0.8rem;color:#888;">${__("Cards")}</div>
+				<div class="frappe-card" style="padding:1rem;text-align:center;border-left:4px solid #10b981;">
+					<div style="font-size:2rem;font-weight:700;color:#10b981;">${summary.total_cards || 0}</div>
+					<div style="font-size:0.8rem;color:#666;">${__("Cards")}</div>
 				</div>
 			</div>
 			<div class="col-sm-3">
-				<div class="frappe-card" style="padding:1rem;text-align:center;">
-					<div style="font-size:2rem;font-weight:700;color:#f5a623;">${summary.total_products || 0}</div>
-					<div style="font-size:0.8rem;color:#888;">${__("Products")}</div>
+				<div class="frappe-card" style="padding:1rem;text-align:center;border-left:4px solid #f59e0b;">
+					<div style="font-size:2rem;font-weight:700;color:#f59e0b;">${summary.total_products || 0}</div>
+					<div style="font-size:0.8rem;color:#666;">${__("Products")}</div>
 				</div>
 			</div>
 		</div>
@@ -161,35 +161,82 @@ function render_bar_chart(container_id, data) {
 		container.innerHTML = `<p style="color:#888;text-align:center;padding:2rem;">${__("No data for this period")}</p>`;
 		return;
 	}
+
+	var w = container.offsetWidth || 700;
+	var h = 200;
+	var pad = { top: 20, right: 20, bottom: 40, left: 40 };
+	var chart_w = w - pad.left - pad.right;
+	var chart_h = h - pad.top - pad.bottom;
+
 	var max = Math.max.apply(
 		null,
 		data.map(function (d) {
 			return d.count;
 		})
 	);
-	var html =
-		'<div style="display:flex;align-items:flex-end;gap:3px;height:180px;padding-top:10px;">';
-	data.forEach(function (d) {
-		var h = max > 0 ? (d.count / max) * 160 : 0;
-		html += '<div style="flex:1;display:flex;flex-direction:column;align-items:center;">';
-		html +=
-			'<div style="font-size:0.65rem;color:#666;margin-bottom:2px;">' + d.count + "</div>";
-		html +=
-			'<div style="width:100%;background:var(--primary);border-radius:3px 3px 0 0;height:' +
-			h +
-			'px;min-height:2px;" title="' +
-			d.date +
-			": " +
-			d.count +
-			'"></div>';
-		html +=
-			'<div style="font-size:0.55rem;color:#888;margin-top:3px;writing-mode:vertical-rl;transform:rotate(180deg);max-height:50px;overflow:hidden;">' +
-			d.date.slice(5) +
-			"</div>";
-		html += "</div>";
+	if (max === 0) max = 1;
+
+	var points = data.map(function (d, i) {
+		var x = pad.left + (i / (data.length - 1 || 1)) * chart_w;
+		var y = pad.top + chart_h - (d.count / max) * chart_h;
+		return { x: x, y: y, date: d.date, count: d.count };
 	});
-	html += "</div>";
-	container.innerHTML = html;
+
+	var path_d = points
+		.map(function (p, i) {
+			return (i === 0 ? "M" : "L") + p.x + "," + p.y;
+		})
+		.join(" ");
+
+	var area_d =
+		path_d +
+		" L" +
+		points[points.length - 1].x +
+		"," +
+		(pad.top + chart_h) +
+		" L" +
+		points[0].x +
+		"," +
+		(pad.top + chart_h) +
+		" Z";
+
+	var svg = `<svg width="${w}" height="${h}" style="display:block;">`;
+	svg += `<defs>
+		<linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
+			<stop offset="0%" stop-color="#4f46e5" stop-opacity="0.3"/>
+			<stop offset="100%" stop-color="#4f46e5" stop-opacity="0.02"/>
+		</linearGradient>
+	</defs>`;
+
+	// Grid lines
+	for (var g = 0; g <= 4; g++) {
+		var gy = pad.top + (chart_h / 4) * g;
+		var gval = Math.round(max - (max / 4) * g);
+		svg += `<line x1="${pad.left}" y1="${gy}" x2="${w - pad.right}" y2="${gy}" stroke="#e5e7eb" stroke-width="1"/>`;
+		svg += `<text x="${pad.left - 6}" y="${gy + 4}" text-anchor="end" fill="#9ca3af" font-size="10">${gval}</text>`;
+	}
+
+	// Area fill
+	svg += `<path d="${area_d}" fill="url(#lineGrad)"/>`;
+
+	// Line
+	svg += `<path d="${path_d}" fill="none" stroke="#4f46e5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>`;
+
+	// Dots
+	points.forEach(function (p) {
+		svg += `<circle cx="${p.x}" cy="${p.y}" r="3.5" fill="#4f46e5" stroke="#fff" stroke-width="2"/>`;
+	});
+
+	// X-axis labels (show every Nth)
+	var label_every = Math.max(1, Math.floor(data.length / 8));
+	points.forEach(function (p, i) {
+		if (i % label_every === 0 || i === points.length - 1) {
+			svg += `<text x="${p.x}" y="${h - 8}" text-anchor="middle" fill="#9ca3af" font-size="9">${p.date.slice(5)}</text>`;
+		}
+	});
+
+	svg += "</svg>";
+	container.innerHTML = svg;
 }
 
 function render_events_by_type(container_id, data) {
@@ -237,14 +284,14 @@ function render_top_cards(container_id, data) {
 	}
 	var html =
 		'<table class="table table-bordered" style="font-size:0.8rem;"><thead><tr><th>' +
-		__("Card") +
+		__("Member") +
 		'</th><th style="text-align:right">' +
 		__("Views") +
 		"</th></tr></thead><tbody>";
 	data.forEach(function (d) {
 		html +=
 			"<tr><td>" +
-			(d.card || "\u2014") +
+			(d.member_name || d.card || "\u2014") +
 			'</td><td style="text-align:right">' +
 			d.views +
 			"</td></tr>";
