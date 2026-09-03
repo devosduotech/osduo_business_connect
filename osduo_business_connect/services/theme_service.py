@@ -65,6 +65,8 @@ def get_theme_data(theme_name):
             "accent": theme.accent_color or "#60A5FA",
             "gradient_start": theme.primary_color or "#2563EB",
             "gradient_end": theme.accent_color or "#60A5FA",
+            "background": theme.background_color or "#F8FAFC",
+            "font_color": theme.font_color or "#1E293B",
         }
 
     return {
@@ -77,6 +79,8 @@ def get_theme_data(theme_name):
         "accent_color": scheme_colors["accent"],
         "gradient_start": scheme_colors["gradient_start"],
         "gradient_end": scheme_colors["gradient_end"],
+        "background_color": scheme_colors.get("background", "#F8FAFC"),
+        "font_color": scheme_colors.get("font_color", "#1E293B"),
         "button_style": theme.button_style or "Filled",
         "font_family": theme.font_family or "inherit",
     }
@@ -99,6 +103,8 @@ def get_default_theme():
         "accent_color": "#60A5FA",
         "gradient_start": "#2563EB",
         "gradient_end": "#60A5FA",
+        "background_color": "#F8FAFC",
+        "font_color": "#1E293B",
         "button_style": "Filled",
         "font_family": "inherit",
     }
@@ -123,6 +129,7 @@ def get_theme_variables(theme_data):
     gradient_end = theme_data.get("gradient_end", accent)
     button_style = theme_data.get("button_style", "Filled")
     font_family = theme_data.get("font_family") or "inherit"
+    color_scheme = theme_data.get("color_scheme", "Blue")
 
     # Card elevation — derived from template
     card_elevation_map = {"Modern": "shadow", "Professional": "border", "Minimal": "none", "Classic": "shadow"}
@@ -138,8 +145,14 @@ def get_theme_variables(theme_data):
     btn_radius_map = {"Filled": card_radius, "Outline": card_radius, "Rounded": "8px", "Pill": "999px"}
     btn_radius = btn_radius_map.get(button_style, card_radius)
 
-    # Background
-    background = "#f8fafc" if template != "Minimal" else "#ffffff"
+    # Background — use custom if scheme is Custom, else template-based default
+    if color_scheme == "Custom":
+        background = theme_data.get("background_color", "#F8FAFC")
+    else:
+        background = "#f8fafc" if template != "Minimal" else "#ffffff"
+
+    # Text color — use custom if scheme is Custom, else default
+    text_color = theme_data.get("font_color", "#1E293B") if color_scheme == "Custom" else "#1e293b"
 
     # Header
     header_style_map = {
@@ -160,7 +173,7 @@ def get_theme_variables(theme_data):
         f"--bc-secondary: {secondary};"
         f"--bc-accent: {accent};"
         f"--bc-background: {background};"
-        f"--bc-text: #1e293b;"
+        f"--bc-text: {text_color};"
         f"--bc-card-radius: {card_radius};"
         f"--bc-btn-radius: {btn_radius};"
         f"--bc-font-family: {font_family};"
