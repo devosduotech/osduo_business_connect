@@ -265,7 +265,7 @@ function render_events_by_type(container_id, data) {
 			var pct = total > 0 ? ((data[k] / total) * 100).toFixed(1) : 0;
 			html +=
 				"<tr><td>" +
-				k.replace(/_/g, " ") +
+				k.replace(/_/g, " ").replace(/\b\w/g, function (c) { return c.toUpperCase(); }) +
 				'</td><td style="text-align:right">' +
 				data[k] +
 				'</td><td style="text-align:right">' +
@@ -346,7 +346,7 @@ function render_recent_activity(container_id, data) {
 			"<tr><td>" +
 			frappe.datetime.str_to_user(d.event_time) +
 			"</td><td>" +
-			(d.event_type || "").replace(/_/g, " ") +
+			(d.event_type || "").replace(/_/g, " ").replace(/\b\w/g, function (c) { return c.toUpperCase(); }) +
 			"</td><td>" +
 			page_name +
 			"</td><td>" +
