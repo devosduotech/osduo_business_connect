@@ -24,6 +24,27 @@ COLOR_SCHEMES = {
     "Red":    {"primary": "#DC2626", "secondary": "#FFFFFF", "accent": "#F87171", "gradient_start": "#DC2626", "gradient_end": "#F87171"},
 }
 
+# Font family mapping — Select label → CSS font-family
+FONT_FAMILY_MAP = {
+    "System Default": "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif",
+    "Inter": "'Inter', sans-serif",
+    "Roboto": "'Roboto', sans-serif",
+    "Open Sans": "'Open Sans', sans-serif",
+    "Lato": "'Lato', sans-serif",
+    "Poppins": "'Poppins', sans-serif",
+    "Montserrat": "'Montserrat', sans-serif",
+    "Nunito": "'Nunito', sans-serif",
+    "Source Sans 3": "'Source Sans 3', sans-serif",
+    "Raleway": "'Raleway', sans-serif",
+}
+
+# Font size presets — label → CSS font-size
+FONT_SIZE_MAP = {
+    "Small": "14px",
+    "Default": "16px",
+    "Large": "18px",
+}
+
 
 def get_business_theme(business_name):
     """
@@ -82,7 +103,8 @@ def get_theme_data(theme_name):
         "background_color": scheme_colors.get("background", "#F8FAFC"),
         "font_color": scheme_colors.get("font_color", "#1E293B"),
         "button_style": theme.button_style or "Filled",
-        "font_family": theme.font_family or "inherit",
+        "font_family": theme.font_family or "System Default",
+        "font_size": theme.font_size or "Default",
     }
 
 
@@ -106,7 +128,8 @@ def get_default_theme():
         "background_color": "#F8FAFC",
         "font_color": "#1E293B",
         "button_style": "Filled",
-        "font_family": "inherit",
+        "font_family": "System Default",
+        "font_size": "Default",
     }
 
 
@@ -128,7 +151,10 @@ def get_theme_variables(theme_data):
     gradient_start = theme_data.get("gradient_start", primary)
     gradient_end = theme_data.get("gradient_end", accent)
     button_style = theme_data.get("button_style", "Filled")
-    font_family = theme_data.get("font_family") or "inherit"
+    font_family_raw = theme_data.get("font_family") or "System Default"
+    font_family = FONT_FAMILY_MAP.get(font_family_raw, FONT_FAMILY_MAP["System Default"])
+    font_size_raw = theme_data.get("font_size") or "Default"
+    font_size = FONT_SIZE_MAP.get(font_size_raw, FONT_SIZE_MAP["Default"])
     color_scheme = theme_data.get("color_scheme", "Blue")
 
     # Card elevation — derived from template
@@ -177,6 +203,7 @@ def get_theme_variables(theme_data):
         f"--bc-card-radius: {card_radius};"
         f"--bc-btn-radius: {btn_radius};"
         f"--bc-font-family: {font_family};"
+        f"--bc-font-size: {font_size};"
         f"--bc-header-bg: {header_bg};"
         f"--bc-header-text: {header_text};"
         f"--bc-section-spacing: {section_spacing};"

@@ -88,6 +88,13 @@
       "description": "PDF files only"
     },
     {
+      "fieldname": "location",
+      "fieldtype": "Data",
+      "label": "Location",
+      "options": "URL",
+      "description": "Google Maps link or any map URL"
+    },
+    {
       "fieldname": "benefits",
       "fieldtype": "Table",
       "label": "Benefits",

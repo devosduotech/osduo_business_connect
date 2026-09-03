@@ -925,6 +925,7 @@
     --bc-text: #1e293b;
     --bc-card-radius: 8px;
     --bc-font-family: inherit;
+    --bc-font-size: 16px;
     --bc-header-bg: linear-gradient(135deg, #2563EB, #60A5FA);
     --bc-header-text: white;
     --bc-section-spacing: 2rem 0;
@@ -933,6 +934,7 @@
     --bc-btn-radius: 8px;
 
     font-family: var(--bc-font-family);
+    font-size: var(--bc-font-size);
     background: white;
     color: var(--bc-text);
     margin: 0;

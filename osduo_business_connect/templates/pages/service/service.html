@@ -43,6 +43,16 @@
     </div>
     {% endif %}
 
+    {# ===== LOCATION ===== #}
+    {% if doc.location %}
+    <div class="bc-section">
+        <div class="bc-reading">
+            <h2 class="bc-section-title">Location</h2>
+            <a href="{{ doc.location }}" target="_blank" class="bc-btn bc-btn-secondary" style="font-size:0.85rem;">&#128205; View on Map &rarr;</a>
+        </div>
+    </div>
+    {% endif %}
+
     {# ===== VIDEO ===== #}
     {% if doc.video_url %}
     <div class="bc-section">

@@ -19,14 +19,24 @@
         {% include "osduo_business_connect/templates/pages/product/parts/hero_modern.html" %}
     {% endif %}
 
-    {# ===== ABOUT ===== #}
+    {# ===== DESCRIPTION ===== #}
     {% if doc.short_description or doc.description %}
     <div class="bc-section">
         <div class="bc-reading bc-bg">
-            <h2 class="bc-section-title">About This Product</h2>
+            <h2 class="bc-section-title">Description</h2>
             <div style="line-height:1.8;color:#475569;">
                 {% if doc.description %}{{ doc.description }}{% else %}{{ doc.short_description }}{% endif %}
             </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {# ===== LOCATION ===== #}
+    {% if doc.location %}
+    <div class="bc-section">
+        <div class="bc-reading">
+            <h2 class="bc-section-title">Location</h2>
+            <a href="{{ doc.location }}" target="_blank" class="bc-btn bc-btn-secondary" style="font-size:0.85rem;">&#128205; View on Map &rarr;</a>
         </div>
     </div>
     {% endif %}
