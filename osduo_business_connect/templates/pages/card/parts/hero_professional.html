@@ -1,11 +1,11 @@
-{# Card Hero — Professional: horizontal split, avatar left, info right #}
+{# Card Hero — Professional: colored header band, info below #}
 <div class="bc-card-hero bc-hero-professional">
     <div class="bc-hero-professional-top">
         <div class="bc-hero-professional-avatar-wrap">
             {% if doc.profile_image %}
             <img src="{{ doc.profile_image }}" alt="{{ doc.display_name }}" class="bc-hero-professional-avatar">
             {% else %}
-            <div class="bc-card-avatar-fallback bc-hero-professional-avatar-fallback">
+            <div class="bc-hero-professional-avatar-fallback">
                 {{ doc.display_name[0] if doc.display_name else '?' }}
             </div>
             {% endif %}
