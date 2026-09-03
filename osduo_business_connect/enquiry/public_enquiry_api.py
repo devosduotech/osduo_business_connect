@@ -20,13 +20,20 @@ def submit_enquiry(business_slug, visitor_data, source="Other", references=None)
 
     Args:
         business_slug: Business slug
-        visitor_data: Dict with visitor information
+        visitor_data: Dict or JSON string with visitor information
         source: Enquiry source
-        references: Dict with optional card/product/service references
+        references: Dict or JSON string with optional card/product/service references
 
     Returns:
         dict: Submission result
     """
+    # Parse JSON strings if needed
+    if isinstance(visitor_data, str):
+        import json
+        visitor_data = json.loads(visitor_data)
+    if isinstance(references, str):
+        import json
+        references = json.loads(references)
     # Get business by slug
     business = frappe.get_all(
         "Business",
