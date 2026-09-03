@@ -180,51 +180,44 @@
 
 {% raw %}
 <script>
-document.getElementById('card-enquiry-form').addEventListener('submit', async function(e) {
+document.getElementById('card-enquiry-form').addEventListener('submit', function(e) {
     e.preventDefault();
     var form = e.target;
     var btn = form.querySelector('button[type="submit"]');
     btn.disabled = true;
     btn.textContent = 'Sending...';
     var fd = new FormData(form);
-    var payload = {
-        business_slug: fd.get('business_slug'),
-        visitor_data: {
-            name: fd.get('visitor_name'),
-            email: fd.get('visitor_email'),
-            phone: fd.get('visitor_phone'),
-            message: fd.get('message'),
+
+    frappe.call({
+        method: 'osduo_business_connect.enquiry.public_enquiry_api.submit_enquiry',
+        args: {
+            business_slug: fd.get('business_slug'),
+            visitor_data: JSON.stringify({
+                name: fd.get('visitor_name'),
+                email: fd.get('visitor_email'),
+                phone: fd.get('visitor_phone'),
+                message: fd.get('message'),
+            }),
+            source: 'Digital Card',
+            references: JSON.stringify({
+                card: fd.get('card'),
+            }),
         },
-        source: 'Digital Card',
-        references: {
-            card: fd.get('card'),
-        },
-    };
-    try {
-        var res = await fetch('/submit-enquiry', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-        });
-        var result = await res.json();
-        if (result.message && result.message.name) {
-            form.innerHTML = '<div style="text-align:center;padding:1.25rem;"><h3 style="margin:0 0 0.4rem;">Message Sent!</h3><p style="color:#666;font-size:0.9rem;">Thank you. We will get back to you soon.</p></div>';
-        } else {
-            var msg = 'Error sending message';
-            if (result._server_messages) {
-                try { msg = JSON.parse(result._server_messages)[0].message; } catch(ex) { msg = result._server_messages; }
-            } else if (result.message) {
-                msg = result.message;
+        callback: function(r) {
+            if (r.message && r.message.name) {
+                form.innerHTML = '<div style="text-align:center;padding:1.25rem;"><h3 style="margin:0 0 0.4rem;">Message Sent!</h3><p style="color:#666;font-size:0.9rem;">Thank you. We will get back to you soon.</p></div>';
+            } else {
+                alert('Error sending message');
+                btn.disabled = false;
+                btn.textContent = 'Send Message';
             }
-            alert(msg);
+        },
+        error: function(r) {
+            alert(r._message || 'Error sending message');
             btn.disabled = false;
             btn.textContent = 'Send Message';
         }
-    } catch(err) {
-        alert('Error sending message');
-        btn.disabled = false;
-        btn.textContent = 'Send Message';
-    }
+    });
 });
 
 document.querySelectorAll('.bc-card-bottom-nav a').forEach(function(link) {
