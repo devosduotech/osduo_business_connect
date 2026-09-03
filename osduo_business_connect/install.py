@@ -253,7 +253,8 @@ def _ensure_allowed_referrers():
     Frappe v16 validates CSRF in HTTPRequest.__init__() before whitelist
     routing.  When the Referer header matches an entry in allowed_referrers,
     CSRF validation is skipped (is_allowed_referrer returns True).  This
-    enables guest form submissions from our own domain.
+    enables guest form submissions from our own domain while keeping CSRF
+    protection for all other requests.
     """
     import json
     import os
@@ -277,9 +278,8 @@ def _ensure_allowed_referrers():
             config["allowed_referrers"] = allowed
             changed = True
 
-    # Also set ignore_csrf as belt-and-suspenders for guest form submissions
-    if not config.get("ignore_csrf"):
-        config["ignore_csrf"] = 1
+    # Remove ignore_csrf if present — we use allowed_referrers instead
+    if config.pop("ignore_csrf", None) is not None:
         changed = True
 
     if changed:
@@ -287,7 +287,8 @@ def _ensure_allowed_referrers():
             json.dump(config, f, indent=1)
 
         frappe.conf.allowed_referrers = config.get("allowed_referrers", [])
-        frappe.conf.ignore_csrf = 1
+        if hasattr(frappe.conf, "ignore_csrf"):
+            delattr(frappe.conf, "ignore_csrf")
 
         # Clear the cached allowed_referrers so Frappe re-reads from conf
         try:
