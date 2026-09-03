@@ -68,7 +68,11 @@ website_route_rules = [
 # Note: All DocTypes are our own, so Frappe automatically calls their
 # controller methods (validate, on_update, after_insert, etc.) from
 # the controller files. No need to register them in doc_events.
-doc_events = {}
+doc_events = {
+    "CRM Lead": {
+        "on_update": "osduo_business_connect.crm_integration.crm_lead_hook.on_crm_lead_update",
+    },
+}
 
 # Scheduled Tasks
 # ---------------
