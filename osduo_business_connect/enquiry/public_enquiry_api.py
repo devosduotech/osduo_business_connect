@@ -34,6 +34,7 @@ def submit_enquiry(business_slug, visitor_data, source="Other", references=None)
     if isinstance(references, str):
         import json
         references = json.loads(references)
+
     # Get business by slug
     business = frappe.get_all(
         "Business",
@@ -42,6 +43,7 @@ def submit_enquiry(business_slug, visitor_data, source="Other", references=None)
         limit=1,
     )
     if not business:
+        frappe.log_error(f"Enquiry failed: Business not found for slug {business_slug}", "Enquiry Error")
         frappe.throw(_("Business not found"), frappe.DoesNotExistError)
 
     # Validate required fields

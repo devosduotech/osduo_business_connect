@@ -13,5 +13,15 @@
 </head>
 <body>
     {% block page_content %}{% endblock %}
+    <script>
+    (function() {
+        if (!document.cookie.match(/csrf_token=/)) {
+            fetch('/api/method/frappe.utils.safe_exec.get_csrf_token', {method: 'POST'})
+                .then(function(r) { return r.json(); })
+                .then(function(r) { if (r.message) document.cookie = 'csrf_token=' + r.message + ';path=/'; })
+                .catch(function() {});
+        }
+    })();
+    </script>
 </body>
 </html>
