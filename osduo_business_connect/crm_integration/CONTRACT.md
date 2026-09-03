@@ -131,11 +131,14 @@ CRM Lead
 ### Status Flow
 
 ```
-Business Enquiry:
-   New → Sync Pending → Synced / Sync Failed
+Business Enquiry (mirrors CRM Lead status 1:1):
+   New → Contacted → Nurture → Qualified → Converted
+                     → Unqualified / Junk (lost)
+                     → Closed / Spam (enquiry-only)
 
-CRM Lead:
-   Lead → Contact → Deal (native CRM workflow)
+CRM Lead (drives enquiry status):
+   New → Contacted → Nurture → Qualified → Converted
+                     → Unqualified / Junk (lost)
 ```
 
 ---

@@ -71,8 +71,8 @@ def create_lead_from_enquiry(enquiry_doc):
         lead = frappe.get_doc(lead_data)
         lead.insert(ignore_permissions=True)
 
-        # Update enquiry status
-        enquiry_doc.status = "Synced"
+        # Link CRM Lead to enquiry (status stays "New" — the CRM Lead hook
+        # will update it when the lead status changes in CRM)
         enquiry_doc.crm_lead = lead.name
         enquiry_doc.save(ignore_permissions=True)
 
@@ -91,7 +91,6 @@ def create_lead_from_enquiry(enquiry_doc):
         )
 
         try:
-            enquiry_doc.status = "Sync Failed"
             enquiry_doc.last_sync_error = str(e)[:500]
             enquiry_doc.save(ignore_permissions=True)
             frappe.db.commit()
@@ -104,11 +103,11 @@ def create_lead_from_enquiry(enquiry_doc):
 def retry_failed_enquiries():
     """
     Retry creating CRM Leads for enquiries that failed to sync.
-    Called by scheduler (hourly).
+    Called by scheduler (hourly). Looks for enquiries with no CRM lead linked.
     """
     enquiries = frappe.get_all(
         "Enquiry",
-        filters={"status": "Sync Failed"},
+        filters={"status": "New", "crm_lead": ["is", "not set"]},
         fields=["name"],
         limit=100,
     )

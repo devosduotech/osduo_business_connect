@@ -94,6 +94,32 @@
         </div>
     </div>
 
+    {# ===== ENQUIRY FORM ===== #}
+    <div class="bc-section" id="bc-enquiry">
+        <div class="bc-reading bc-bg">
+            <h2 class="bc-section-title">Send a Message</h2>
+            <p style="color:#64748b;font-size:0.9rem;margin-bottom:1rem;">Interested in this product? Send us an enquiry and we will get back to you.</p>
+            <form id="product-enquiry-form" class="bc-enquiry-form" style="max-width:480px;">
+                <input type="hidden" name="business_slug" value="{{ business_slug }}">
+                <input type="hidden" name="product" value="{{ doc.name }}">
+                <input type="hidden" name="source" value="Product">
+                <div style="margin-bottom:0.6rem;">
+                    <input type="text" name="visitor_name" placeholder="Your Name" required style="width:100%;padding:0.6rem;border:1px solid #d1d5db;border-radius:6px;font-size:0.9rem;">
+                </div>
+                <div style="margin-bottom:0.6rem;">
+                    <input type="tel" name="visitor_phone" placeholder="Contact Number" required pattern="[0-9+\-\s\(\)]{7,15}" title="Enter a valid phone number (7-15 digits)" style="width:100%;padding:0.6rem;border:1px solid #d1d5db;border-radius:6px;font-size:0.9rem;">
+                </div>
+                <div style="margin-bottom:0.6rem;">
+                    <input type="email" name="visitor_email" placeholder="Email Address" required style="width:100%;padding:0.6rem;border:1px solid #d1d5db;border-radius:6px;font-size:0.9rem;">
+                </div>
+                <div style="margin-bottom:0.6rem;">
+                    <textarea name="message" placeholder="Your Message" rows="3" required style="width:100%;padding:0.6rem;border:1px solid #d1d5db;border-radius:6px;font-size:0.9rem;resize:vertical;"></textarea>
+                </div>
+                <button type="submit" class="bc-btn bc-btn-primary" style="width:100%;padding:0.75rem;">Send Message</button>
+            </form>
+        </div>
+    </div>
+
     <div class="bc-footer"><p>Powered by OSDuo Business Connect</p></div>
 </div>
 
@@ -118,7 +144,60 @@
     }
     checkMobile();
     window.addEventListener('resize', checkMobile);
+
+    var form = document.getElementById('product-enquiry-form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var btn = form.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.textContent = 'Sending...';
+            var fd = new FormData(form);
+            var csrfToken = document.getElementById('bc-csrf-token').getAttribute('data-token') || '';
+
+            fetch('/api/method/osduo_business_connect.enquiry.public_enquiry_api.submit_enquiry', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Frappe-CSRF-Token': csrfToken,
+                },
+                body: JSON.stringify({
+                    business_slug: fd.get('business_slug'),
+                    visitor_data: JSON.stringify({
+                        name: fd.get('visitor_name'),
+                        email: fd.get('visitor_email'),
+                        phone: fd.get('visitor_phone'),
+                        message: fd.get('message'),
+                    }),
+                    source: fd.get('source'),
+                    references: JSON.stringify({
+                        product: fd.get('product'),
+                    }),
+                }),
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(result) {
+                if (result.message && result.message.name) {
+                    form.innerHTML = '<div style="text-align:center;padding:1.25rem;"><h3 style="margin:0 0 0.4rem;">Message Sent!</h3><p style="color:#666;font-size:0.9rem;">Thank you. We will get back to you soon.</p></div>';
+                } else {
+                    var msg = 'Error sending message';
+                    if (result._server_messages) {
+                        try { msg = JSON.parse(result._server_messages)[0].message; } catch(ex) {}
+                    }
+                    alert(msg);
+                    btn.disabled = false;
+                    btn.textContent = 'Send Message';
+                }
+            })
+            .catch(function() {
+                alert('Error sending message');
+                btn.disabled = false;
+                btn.textContent = 'Send Message';
+            });
+        });
+    }
 })();
 </script>
 {% endraw %}
+<div id="bc-csrf-token" data-token="{{ frappe.session.csrf_token or frappe.session.data.csrf_token or '' }}" style="display:none;"></div>
 {%- endblock -%}

@@ -45,7 +45,7 @@ def sync_enquiry_to_crm(enquiry_name):
         return {"status": "error", "message": f"Enquiry {enquiry_name} not found"}
 
     # Already synced — skip
-    if enquiry_doc.status == "Synced" or enquiry_doc.crm_lead:
+    if enquiry_doc.crm_lead:
         return {"status": "skipped", "message": "Already synced"}
 
     # Idempotency check: does a CRM Lead already exist for this enquiry?
@@ -54,10 +54,7 @@ def sync_enquiry_to_crm(enquiry_name):
     )
     if existing_lead:
         # Link existing lead to enquiry and skip creation
-        frappe.db.set_value("Enquiry", enquiry_name, {
-            "status": "Synced",
-            "crm_lead": existing_lead,
-        })
+        frappe.db.set_value("Enquiry", enquiry_name, "crm_lead", existing_lead)
         frappe.db.commit()
         return {"status": "skipped", "message": f"Lead {existing_lead} already exists"}
 

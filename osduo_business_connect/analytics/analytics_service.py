@@ -11,13 +11,13 @@ def record_engagement(business, event_type, **kwargs):
             "business": business,
             "event_type": event_type,
             "event_time": frappe.utils.now_datetime(),
-            "session_id": kwargs.get("session_id"),
+            "session_id": kwargs.get("session_id") or _get_session_id(request),
             "card": kwargs.get("card"),
             "product": kwargs.get("product"),
             "service": kwargs.get("service"),
             "campaign": kwargs.get("campaign"),
-            "landing_url": kwargs.get("landing_url"),
-            "referrer": kwargs.get("referrer"),
+            "landing_url": kwargs.get("landing_url") or _get_landing_url(request),
+            "referrer": kwargs.get("referrer") or _get_referrer(request),
         }
 
         if request:
@@ -64,6 +64,30 @@ def detect_browser(request):
     elif "edg" in user_agent:
         return "Edge"
     return "Unknown"
+
+
+def _get_session_id(request):
+    """Generate a session ID from request context."""
+    if not request:
+        return None
+    user = frappe.session.user if frappe.session and frappe.session.user else "Guest"
+    ip = request.remote_addr or request.headers.get("X-Forwarded-For", "unknown")
+    import hashlib
+    return hashlib.md5(f"{user}:{ip}".encode()).hexdigest()
+
+
+def _get_landing_url(request):
+    """Get the current page URL from the request."""
+    if not request:
+        return None
+    return request.url
+
+
+def _get_referrer(request):
+    """Get the HTTP Referer header from the request."""
+    if not request:
+        return None
+    return request.headers.get("Referer")
 
 
 def get_business_analytics(business_name, days=30):
