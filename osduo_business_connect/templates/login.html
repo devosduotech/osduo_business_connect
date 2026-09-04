@@ -1,0 +1,97 @@
+{%- extends "frappe/templates/pages/login.html" -%}
+
+{# OSDuo Business Connect — Login Page Branding Override #}
+{# This extends Frappe's login page and replaces branding elements. #}
+{# Does NOT modify Frappe core files. #}
+
+{% block head_include %}
+{{ super() }}
+<link rel="icon" href="/assets/osduo_business_connect/images/favicon.svg" type="image/svg+xml">
+<style>
+  /* Brand colors on login */
+  :root {
+    --bc-primary: #0B3D91;
+    --bc-secondary: #1677FF;
+    --bc-accent: #00C49A;
+  }
+
+  /* Login background */
+  .for-login {
+    background-color: #F4F6F8 !important;
+  }
+
+  /* Login card */
+  .login-content {
+    background: #ffffff !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08) !important;
+    padding: 2.5rem !important;
+    max-width: 400px !important;
+  }
+
+  /* Login logo */
+  .page-card-head img {
+    max-width: 180px !important;
+    height: auto !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  /* App title */
+  .page-head-title {
+    font-size: 1.1rem !important;
+    font-weight: 700 !important;
+    color: var(--bc-primary) !important;
+    margin-bottom: 0.25rem !important;
+  }
+
+  /* Tagline */
+  .login-subtitle {
+    font-size: 0.85rem !important;
+    color: #666 !important;
+    margin-bottom: 1.5rem !important;
+  }
+
+  /* Login button */
+  .btn-primary-desk,
+  .btn-primary {
+    background-color: var(--bc-primary) !important;
+    border-color: var(--bc-primary) !important;
+    border-radius: 6px !important;
+    font-weight: 600 !important;
+  }
+
+  .btn-primary-desk:hover,
+  .btn-primary:hover {
+    background-color: #092d6b !important;
+    border-color: #092d6b !important;
+  }
+
+  /* Forgot password */
+  .forgot-password,
+  .forgot-password a {
+    color: var(--bc-secondary) !important;
+  }
+
+  /* Footer — hide Frappe branding */
+  .login-footer {
+    display: none !important;
+  }
+</style>
+{% endblock %}
+
+{% block page_card %}
+<div class="page-card">
+  <div class="page-card-head text-center">
+    <img src="/assets/osduo_business_connect/images/logo.svg"
+         alt="OSDuo Business Connect"
+         style="max-width: 180px; margin-bottom: 0.5rem;">
+    <div class="page-head-title" style="color: #0B3D91; font-weight: 700;">
+      OSDuo Business Connect
+    </div>
+    <div class="login-subtitle" style="font-size: 0.85rem; color: #666;">
+      Connect · Showcase · Grow
+    </div>
+  </div>
+  {{ super() }}
+</div>
+{% endblock %}

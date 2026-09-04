@@ -5,6 +5,24 @@ app_description = "Digital business identity, product/service showcase, lead gen
 app_email = "info@osduo.com"
 app_license = "MIT"
 
+# Branding Configuration — single source of truth
+# ------------------------------------------------
+# Change these values to white-label the application.
+OSDUO_BRANDING = {
+    "app_name": "OSDuo Business Connect",
+    "app_short_name": "Business Connect",
+    "tagline": "Connect \u00b7 Showcase \u00b7 Grow",
+    "logo": "/assets/osduo_business_connect/images/logo.svg",
+    "logo_white": "/assets/osduo_business_connect/images/logo-white.svg",
+    "favicon": "/assets/osduo_business_connect/images/favicon.svg",
+    "logo_mark": "/assets/osduo_business_connect/images/logo-mark.svg",
+    "primary_color": "#0B3D91",
+    "secondary_color": "#1677FF",
+    "accent_color": "#00C49A",
+    "background_color": "#F4F6F8",
+    "text_color": "#333333",
+}
+
 # Apps
 # ------------------
 
@@ -13,7 +31,7 @@ required_apps = ["crm"]
 add_to_apps_screen = [
     {
         "name": "osduo_business_connect",
-        "logo": "/assets/osduo_business_connect/images/logo.svg",
+        "logo": OSDUO_BRANDING["logo"],
         "title": "Business Connect",
         "route": "/app/business-connect",
         "type": "Workspace",
@@ -23,9 +41,8 @@ add_to_apps_screen = [
 # Includes in <head>
 # ------------------
 
-# include js, css files in header of desk.html
-# app_include_css = "/assets/osduo_business_connect/css/osduo_business_connect.css"
-# app_include_js = "/assets/osduo_business_connect/js/osduo_business_connect.js"
+# Desk branding CSS (sidebar logo, app title, browser title)
+app_include_css = "/assets/osduo_business_connect/css/branding.css"
 
 # include js, css files in header of web template
 # NOT using web_include_css — it injects into login/auth pages too.
@@ -177,3 +194,18 @@ after_migrate = "osduo_business_connect.install.after_migrate"
 #     "methods": "osduo_business_connect.utils.jinja_methods",
 #     "filters": "osduo_business_connect.utils.jinja_filters",
 # }
+
+# Template Overrides
+# ------------------
+# Override Frappe's login page with Business Connect branding.
+# This does NOT modify Frappe core files — it uses the template override hook.
+
+template_overrides = {
+    "login.html": "osduo_business_connect.templates.login",
+}
+
+# Website context
+# ---------------
+# Inject branding variables into all web templates.
+
+update_website_context = "osduo_business_connect.utils.website.get_branding_context"
