@@ -5,9 +5,9 @@ import frappe
 from frappe.model.document import Document
 
 
-class Theme(Document):
+class BCTheme(Document):
     """
-    Theme DocType - Defines visual presentation for a Business.
+    BC Theme DocType - Defines visual presentation for a Business.
 
     Template = layout structure (Modern, Professional, Minimal, Classic)
     Color Scheme = color palette (Violet, Indigo, Blue, etc.)
@@ -47,9 +47,13 @@ class Theme(Document):
 
 
 def get_permission_query_conditions(user):
-    """Return SQL conditions for filtering Theme records."""
+    """Return SQL conditions for filtering BC Theme records."""
     if not user:
         user = frappe.session.user
+
+    # Administrator sees all
+    if user == "Administrator":
+        return ""
 
     if "System Manager" in frappe.get_roles(user):
         return ""
@@ -61,15 +65,19 @@ def get_permission_query_conditions(user):
         return "1=0"
 
     business_names = [frappe.db.escape(b["name"]) for b in businesses]
-    return f"`tabTheme`.business IN ({', '.join(business_names)})"
+    return f"`tabBC Theme`.business IN ({', '.join(business_names)})"
 
 
 def has_permission(doc, user=None, ptype=None):
-    """Check if user has permission on Theme document.
-    True → do not deny | False → deny | None → fall back to normal permissions
+    """Check if user has permission on BC Theme document.
+    True -> do not deny | False -> deny | None -> fall back to normal permissions
     """
     if not user:
         user = frappe.session.user
+
+    # Administrator has full access
+    if user == "Administrator":
+        return True
 
     # Guest can read all themes (needed for public page rendering)
     if user == "Guest":

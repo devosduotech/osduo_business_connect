@@ -234,7 +234,7 @@ def test_theme_creation():
     
     # Create theme
     theme = frappe.get_doc({
-        "doctype": "Theme",
+        "doctype": "BC Theme",
         "business": business.name,
         "template": "Modern",
         "primary_color": "#000000",
@@ -250,7 +250,7 @@ def test_theme_creation():
     assert theme.active == 1
     
     # Cleanup
-    frappe.delete_doc("Theme", theme.name)
+    frappe.delete_doc("BC Theme", theme.name)
     frappe.delete_doc("Business", business.name)
 
 

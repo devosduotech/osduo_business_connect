@@ -74,26 +74,34 @@ def get_theme_data(theme_name):
     Returns:
         dict: Theme data
     """
-    theme = frappe.get_doc("Theme", theme_name)
+    theme_data = frappe.db.get_value(
+        "BC Theme", theme_name,
+        ["theme_name", "template", "color_scheme", "primary_color", "secondary_color",
+         "accent_color", "background_color", "font_color", "button_style",
+         "font_family", "font_size"],
+        as_dict=True,
+    )
+    if not theme_data:
+        return get_default_theme()
 
-    scheme = theme.color_scheme or "Blue"
+    scheme = theme_data.color_scheme or "Blue"
     scheme_colors = COLOR_SCHEMES.get(scheme, COLOR_SCHEMES["Blue"])
 
     if scheme == "Custom":
         scheme_colors = {
-            "primary": theme.primary_color or "#2563EB",
-            "secondary": theme.secondary_color or "#FFFFFF",
-            "accent": theme.accent_color or "#60A5FA",
-            "gradient_start": theme.primary_color or "#2563EB",
-            "gradient_end": theme.accent_color or "#60A5FA",
-            "background": theme.background_color or "#F8FAFC",
-            "font_color": theme.font_color or "#1E293B",
+            "primary": theme_data.primary_color or "#2563EB",
+            "secondary": theme_data.secondary_color or "#FFFFFF",
+            "accent": theme_data.accent_color or "#60A5FA",
+            "gradient_start": theme_data.primary_color or "#2563EB",
+            "gradient_end": theme_data.accent_color or "#60A5FA",
+            "background": theme_data.background_color or "#F8FAFC",
+            "font_color": theme_data.font_color or "#1E293B",
         }
 
     return {
-        "name": theme.name,
-        "theme_name": theme.theme_name or theme.name,
-        "template": theme.template or "Modern",
+        "name": theme_name,
+        "theme_name": theme_data.theme_name or theme_name,
+        "template": theme_data.template or "Modern",
         "color_scheme": scheme,
         "primary_color": scheme_colors["primary"],
         "secondary_color": scheme_colors["secondary"],
@@ -102,9 +110,9 @@ def get_theme_data(theme_name):
         "gradient_end": scheme_colors["gradient_end"],
         "background_color": scheme_colors.get("background", "#F8FAFC"),
         "font_color": scheme_colors.get("font_color", "#1E293B"),
-        "button_style": theme.button_style or "Filled",
-        "font_family": theme.font_family or "System Default",
-        "font_size": theme.font_size or "Default",
+        "button_style": theme_data.button_style or "Filled",
+        "font_family": theme_data.font_family or "System Default",
+        "font_size": theme_data.font_size or "Default",
     }
 
 

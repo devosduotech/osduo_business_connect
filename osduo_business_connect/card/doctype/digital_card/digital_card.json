@@ -124,7 +124,7 @@
       "fieldname": "theme",
       "fieldtype": "Link",
       "label": "Theme",
-      "options": "Theme"
+      "options": "BC Theme"
     },
     {
       "fieldname": "status",
