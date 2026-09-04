@@ -17,7 +17,7 @@
 8. [Analytics Dashboard](#8-analytics-dashboard)
 9. [CRM Integration](#9-crm-integration)
 10. [Roles & Permissions](#10-roles--permissions)
-11. [Administration](#11-administration)
+11. [Troubleshooting](#11-troubleshooting)
 12. [FAQ](#12-faq)
 
 ---
@@ -63,7 +63,7 @@ Customer scans QR code or clicks link
 
 ### 2.1 Creating a Business Profile
 
-<!-- Screenshot: 02_create_business_form.png -->
+![Business Creation Form](./images/mockup/02_create_business_form.html)
 
 1. Go to **Business Connect > Business** from the desk
 2. Click **Create New Business**
@@ -99,7 +99,7 @@ Customer scans QR code or clicks link
 
 ### 2.2 Adding Team Members
 
-<!-- Screenshot: 04_add_member.png -->
+![Add Team Member](./images/mockup/05_add_member.html)
 
 1. Open your business record
 2. Go to the **Members** tab
@@ -127,8 +127,6 @@ Customer scans QR code or clicks link
 | **CRM User** | View and manage enquiries and CRM leads |
 
 ### 2.3 Business Hours
-
-<!-- Screenshot: business_hours.png -->
 
 1. Open your business
 2. Go to **Business Hours** tab
@@ -160,8 +158,6 @@ Customer scans QR code or clicks link
 
 ### 3.1 Creating a Card
 
-<!-- Screenshot: 06_create_card.png -->
-
 1. Go to **Business Connect > Digital Card**
 2. Click **Create New Card**
 3. Fill in the required fields:
@@ -189,8 +185,6 @@ Add contact information for the card:
 
 ### 3.3 Social Links
 
-<!-- Screenshot: 08_card_links.png -->
-
 1. Go to **Card Links** section
 2. Add social profiles:
 
@@ -203,8 +197,6 @@ Add contact information for the card:
 
 ### 3.4 Card Options
 
-<!-- Screenshot: 09_card_options.png -->
-
 | Option | Description | Default |
 |--------|-------------|---------|
 | Show Business | Display business name and link on card | On |
@@ -214,8 +206,6 @@ Add contact information for the card:
 | VCF Enabled | Allow vCard download | On |
 
 ### 3.5 Choosing a Template
-
-<!-- Screenshot: 18_template_dropdown.png -->
 
 Click the **Template** dropdown and select:
 
@@ -237,8 +227,6 @@ Click the **Template** dropdown and select:
 
 ### 3.7 QR Code & Sharing
 
-<!-- Screenshot: 27_qr_code.png -->
-
 Once published:
 - **QR Code** appears on the card page — customers scan to view
 - **Copy Link** — share the card URL directly
@@ -251,7 +239,7 @@ Once published:
 
 ### 4.1 Creating Products
 
-<!-- Screenshot: 11_create_product.png -->
+![Create Product](./images/mockup/11_create_product.html)
 
 1. Go to **Business Connect > Showcase Product**
 2. Click **Create New Product**
@@ -269,7 +257,7 @@ Once published:
 
 ### 4.2 Product Pricing
 
-<!-- Screenshot: 12_product_pricing.png -->
+![Product Pricing](./images/mockup/12_product_pricing.html)
 
 | Price Display Mode | What Customers See |
 |--------------------|--------------------|
@@ -284,7 +272,7 @@ For Fixed Price:
 
 ### 4.3 Product Categories
 
-<!-- Screenshot: 16_product_category.png -->
+![Product Category](./images/mockup/16_product_category.html)
 
 Categories help organize your products:
 
@@ -301,7 +289,7 @@ Categories help organize your products:
 
 ### 4.4 Product Gallery
 
-<!-- Screenshot: 13_product_gallery.png -->
+![Product Gallery](./images/mockup/13_product_gallery.html)
 
 Add multiple images to showcase your product:
 
@@ -335,7 +323,7 @@ Add multiple images to showcase your product:
 
 ### 4.6 Creating Services
 
-<!-- Screenshot: 14_create_service.html -->
+![Create Service](./images/mockup/14_create_service.html)
 
 1. Go to **Business Connect > Showcase Service**
 2. Click **Create New Service**
@@ -350,7 +338,7 @@ Add multiple images to showcase your product:
 
 ### 4.7 Service Benefits
 
-<!-- Screenshot: 15_service_benefits.html -->
+![Service Benefits](./images/mockup/15_service_benefits.html)
 
 1. Open your service
 2. Go to **Benefits** section
@@ -368,7 +356,7 @@ Add multiple images to showcase your product:
 
 ### 5.1 Choosing a Template
 
-<!-- Screenshot: 17_theme_form.png -->
+![Theme Form](./images/mockup/17_theme_form.html)
 
 1. Go to **Business Connect > BC Theme**
 2. Open a theme or create new
@@ -382,8 +370,6 @@ Add multiple images to showcase your product:
 | **Classic** | Gradient banner, overlapping elements, decorative |
 
 ### 5.2 Color Schemes
-
-<!-- Screenshot: 19_color_schemes.png -->
 
 Select a preset or create custom:
 
@@ -400,8 +386,6 @@ Select a preset or create custom:
 
 ### 5.3 Custom Colors
 
-<!-- Screenshot: 20_custom_colors.png -->
-
 Select **Custom** from Color Scheme dropdown, then set:
 
 | Field | Description |
@@ -412,8 +396,6 @@ Select **Custom** from Color Scheme dropdown, then set:
 | Background Color | Page background |
 
 ### 5.4 Fonts & Button Styles
-
-<!-- Screenshot: 21_font_options.png, 22_button_styles.png -->
 
 **Font Family:** Inter, Roboto, Open Sans, Lato, Poppins, Montserrat, Nunito, Source Sans 3, Raleway, System Default
 
@@ -473,7 +455,7 @@ Select **Custom** from Color Scheme dropdown, then set:
 
 ### 7.1 Enquiry Forms
 
-<!-- Screenshot: 28_enquiry_form.png -->
+![Enquiry Form](./images/mockup/28_enquiry_form.html)
 
 Enquiry forms appear automatically on:
 - Digital card pages
@@ -498,7 +480,7 @@ Enquiry forms appear automatically on:
 
 ### 7.2 Enquiry List
 
-<!-- Screenshot: 29_enquiry_list.png -->
+![Enquiry List](./images/mockup/29_enquiry_list.html)
 
 1. Go to **Business Connect > Enquiry**
 2. View all enquiries with filters:
@@ -513,7 +495,7 @@ Enquiry forms appear automatically on:
 
 ### 7.3 Enquiry Detail
 
-<!-- Screenshot: 30_enquiry_detail.png -->
+![Enquiry Detail](./images/mockup/30_enquiry_detail.html)
 
 Click any enquiry to see:
 - Visitor contact information
@@ -541,7 +523,7 @@ Click any enquiry to see:
 
 ### 7.5 Enquiry Pipeline
 
-<!-- Screenshot: 31_enquiry_pipeline.png -->
+![Enquiry Pipeline](./images/mockup/31_enquiry_pipeline.html)
 
 Track your sales funnel:
 - **New** → Fresh enquiries needing response
@@ -555,15 +537,13 @@ Track your sales funnel:
 
 ### 8.1 Overview
 
-<!-- Screenshot: 32_analytics_dashboard.png -->
+![Analytics Dashboard](./images/mockup/32_analytics_dashboard.html)
 
 1. Go to **/app/analytics** from the desk
 2. Select your business from the dropdown
 3. Choose date range: 7, 15, 30, 90, or 365 days
 
 ### 8.2 Visits & Scans
-
-<!-- Screenshot: 33_analytics_chart.png, 34_analytics_summary.png -->
 
 **Line Chart:** Shows daily visits over time with gradient fill.
 
@@ -577,16 +557,12 @@ Track your sales funnel:
 
 ### 8.3 Top Cards
 
-<!-- Screenshot: 35_analytics_top_cards.png -->
-
 See which team members' cards get the most views:
 - Member name
 - View count
 - Rank
 
 ### 8.4 Enquiry Pipeline
-
-<!-- Screenshot: 36_analytics_pipeline.png -->
 
 Visual overview of your sales funnel:
 - New enquiries
@@ -595,8 +571,6 @@ Visual overview of your sales funnel:
 - Lost opportunities
 
 ### 8.5 Recent Activity
-
-<!-- Screenshot: 37_analytics_recent.png -->
 
 See the latest events:
 - Event type (Card View, Product View, Enquiry, etc.)
@@ -644,7 +618,7 @@ Status changes sync bidirectionally:
 
 ### 9.4 Custom Fields on CRM Lead
 
-<!-- Screenshot: 39_crm_lead_detail.png -->
+![CRM Lead Detail](./images/mockup/39_crm_lead_detail.html)
 
 | Field | Description |
 |-------|-------------|
@@ -708,53 +682,7 @@ Status changes sync bidirectionally:
 
 ---
 
-## 11. Administration
-
-### 11.1 Installation
-
-```bash
-# Get the app
-bench get-app https://github.com/devosduotech/osduo_business_connect.git
-
-# Install on site
-bench --site <site-name> install-app osduo_business_connect
-
-# Run migrations
-bench --site <site-name> migrate
-
-# Install QR code dependency
-bench --site <site-name> pip install qrcode[pil]
-
-# Build assets
-bench build --app osduo_business_connect
-
-# Restart
-bench restart
-```
-
-### 11.2 CSRF Configuration
-
-For production, add your domain to `site_config.json`:
-
-```json
-{
-  "allowed_referrers": ["your-domain.com"]
-}
-```
-
-### 11.3 Backup & Restore
-
-Standard Frappe backup procedures apply:
-
-```bash
-# Backup
-bench --site <site-name> backup
-
-# Restore
-bench --site <site-name> restore <backup-file>
-```
-
-### 11.4 Troubleshooting
+## 11. Troubleshooting
 
 | Issue | Solution |
 |-------|----------|
