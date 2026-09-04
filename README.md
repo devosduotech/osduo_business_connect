@@ -1,12 +1,131 @@
 # OSDuo Business Connect
 
-Digital business identity, product/service showcase, lead generation, and CRM integration for individuals and small businesses.
+**Your digital identity. Your customers. Your growth.**
+
+Business Connect transforms how small businesses and professionals establish their digital presence. Create a stunning business profile, showcase products and services, capture customer enquiries — all seamlessly integrated with Frappe CRM.
+
+---
+
+## What It Does
+
+| Capability | Description |
+|------------|-------------|
+| **Digital Business Card** | Mobile-first card with VCF download, QR/NFC sharing, and 4 distinct templates |
+| **Business Profile** | Public landing page with hero, about, products, services, gallery, and contact |
+| **Product Showcase** | Product catalog with categories, galleries, pricing, and brochures |
+| **Service Listings** | Service pages with benefits, locations, and descriptions |
+| **Lead Generation** | Enquiry forms that auto-create CRM leads with full tracking |
+| **Analytics Dashboard** | Real-time engagement metrics — visits, scans, top cards, enquiry pipeline |
+
+---
+
+## How It Works
+
+```
+Customer scans QR code
+        ↓
+  Digital Card (/c/<card>)
+  or Business Profile (/b/<business>)
+        ↓
+  Browses products, services, team
+        ↓
+  Submits enquiry form
+        ↓
+  Enquiry created → CRM Lead auto-created
+        ↓
+  Lead owner = card owner → Sales follow-up
+        ↓
+  Analytics tracked throughout
+```
+
+---
+
+## Card Templates
+
+| Template | Style |
+|----------|-------|
+| **Modern** | Centered layout, rounded avatar, pill buttons, soft shadows |
+| **Professional** | Colored header band, horizontal layout, outlined buttons |
+| **Minimal** | Clean, uppercase labels, thin borders, square buttons |
+| **Classic** | Gradient banner, overlapping avatar, decorative dividers |
+
+Each template is fully customizable with:
+- 7 color schemes + custom palette
+- 10 web font families (Inter, Roboto, Open Sans, Lato, Poppins...)
+- 3 font sizes (Small / Default / Large)
+- 4 button styles (Filled / Outline / Rounded / Pill)
+
+---
+
+## Features
+
+### Digital Card
+- VCF download ("Add to Phone Book")
+- QR code generation (print-ready)
+- Contact details — phone, email, WhatsApp, website
+- Social links with icons
+- Products & services showcase
+- Business address with map
+- One-tap share — copy link, WhatsApp, SMS, email
+
+### Business Profile
+- Page Section system — enable/disable, reorder, visibility control
+- Hero section — Modern, Professional, Minimal, Classic layouts
+- About, Products, Services, Contact, Gallery, Custom sections
+- Product & service cards with images and links
+- Contact grid with phone, email, website, address
+- Social links
+
+### Product & Service Pages
+- Rich descriptions with images
+- Location field with Google Maps integration
+- Reusable product categories
+- Gallery — 4-column desktop, 2-column mobile, click-to-open fullscreen
+- Video embedding and brochure downloads
+- "About Business" section with description & address
+
+### Analytics
+- Desk dashboard at `/app/analytics` — business selector, date range
+- SVG line chart with gradient fill (visits by day)
+- Summary cards: Link Visits, QR Scans, Cards, Products
+- Top cards ranked by views with member names
+- Recent activity with member name, device type, browser
+- Enquiry pipeline: New → Ongoing → Converted → Lost
+- Device type & browser tracking
+- Non-blocking background event recording
+
+### CRM Integration
+```
+Enquiry → Background sync → CRM Lead
+    → Lead owner = card owner (Digital Card → Business Member → user)
+    → Status sync: CRM Lead status ≠ New → Enquiry marked "Converted"
+    → Custom fields: business, card, product, service, enquiry
+    → Source: "Business Connect"
+    → Failed syncs retried hourly
+```
+
+---
+
+## URL Structure
+
+| URL | Page |
+|-----|------|
+| `/b/<business>` | Business landing page |
+| `/b/<business>/team/<member>` | Team member profile |
+| `/b/<business>/products/<product>` | Product page |
+| `/b/<business>/services/<service>` | Service page |
+| `/c/<card>` | Digital Card (short QR/NFC URL) |
+| `/app/analytics` | Analytics dashboard |
+
+---
 
 ## Requirements
 
 - Frappe Framework v16
 - Frappe CRM
 - Python: `qrcode[pil]` (for QR code generation)
+
+---
 
 ## Installation
 
@@ -18,77 +137,14 @@ bench build --app osduo_business_connect
 bench restart
 ```
 
-## URL Hierarchy
+### Deployment Notes
 
-| URL | Page |
-|-----|------|
-| `/b/<business>` | Business landing page |
-| `/b/<business>/team/<member>` | Team member / person page |
-| `/b/<business>/products/<product>` | Product page |
-| `/b/<business>/services/<service>` | Service page |
-| `/c/<card>` | Digital Card (short QR/NFC URL) |
-| `/app/analytics` | Analytics desk dashboard |
+- `bench build` must use `--app osduo_business_connect` only (CRM build may exceed memory on small VMs)
+- Roles created on install: **BC Manager**, **BC User**, **BC Viewer**
+- 8 default themes auto-created (Violet, Indigo, Blue, Green, Yellow, Orange, Red + custom)
+- CRM custom fields added to CRM Lead: business, card, product, service, enquiry, source, campaign, landing URL
 
-## Features
-
-### 4 Distinct Card Templates
-- **Modern:** Centered, rounded avatar with shadow, pill buttons
-- **Professional:** Colored header band, horizontal layout, outlined buttons
-- **Minimal:** No background, uppercase labels, thin borders, square buttons
-- **Classic:** Gradient banner, avatar overlapping edge, decorative dividers
-
-### Theme System
-- Template layout (Modern/Professional/Minimal/Classic)
-- 7 color scheme presets + Custom with full color control
-- 10 web font families (Inter, Roboto, Open Sans, Lato, Poppins, etc.)
-- 3 font size presets (Small/Default/Large)
-- 4 button styles (Filled/Outline/Rounded/Pill)
-
-### Digital Card Features
-- VCF download ("Add to Phone Book")
-- QR code generation
-- Contact details (phone/email/WhatsApp/website)
-- Social links
-- Products & services showcase
-- Business address
-- Share section (copy link, WhatsApp, SMS, email)
-
-### Business Landing Page
-- Page Section system (enabled/disabled, ordered, visibility control)
-- Hero, About, Products, Services, Contact, Gallery, Custom sections
-- Product & service cards with links
-- Contact grid with phone/email/website/address
-- Social links
-
-### Product & Service Pages
-- Description section
-- Location field (Google Maps link)
-- Product categories (reusable per business)
-- Gallery — 4-col desktop, 2-col mobile thumbnails, click-to-open full image
-- Gallery sorted by sort_order, captions, alt text, lazy loading
-- Video, brochure
-- "About Business" section with description & address
-
-### Analytics
-- Desk page at `/app/analytics` (business selector, date range)
-- SVG line chart with gradient fill (visits by day)
-- Summary cards: Link Visits, QR Scans, Cards, Products
-- Top cards with member name (not card number)
-- Recent activity with member name, device, browser
-- Event names capitalized (Card View, Profile View, etc.)
-- Enquiry pipeline: New → Converted (manual + CRM sync)
-- Device type & browser tracking
-- Event recording on all public pages (non-blocking background jobs)
-
-### CRM Integration
-```
-Enquiry → on_update() → Background sync → CRM Lead
-    → Lead owner = card owner (Digital Card → Business Member → user)
-    → Status sync: any CRM Lead status ≠ New → Enquiry "Converted"
-    → Custom fields: business, card, product, service, enquiry
-    → Source: "Business Connect"
-    → Failed syncs retried hourly
-```
+---
 
 ## Module Structure
 
@@ -112,7 +168,7 @@ osduo_business_connect/
 │       ├── showcase_service/
 │       ├── product_category/
 │       ├── page_section/
-│       ├── theme/
+│       ├── bc_theme/
 │       ├── product_gallery_item/
 │       └── service_benefit/
 ├── analytics/             # Engagement analytics
@@ -140,9 +196,9 @@ osduo_business_connect/
 │   └── analytics.py       # Analytics dashboard API
 ├── permissions/
 ├── utils/
-├── patches/               # Frappe v16 bug fixes
+├── patches/
 └── templates/
-    ├── base.html
+    ├── bc_base.html       # BC-styled base template
     └── pages/
         ├── business/      # Business landing page
         ├── product/       # Product page
@@ -150,48 +206,47 @@ osduo_business_connect/
         └── card/          # Digital card + team member pages
 ```
 
+---
+
 ## DocTypes (15 total)
 
 | DocType | Module | Purpose |
 |---------|--------|---------|
-| Business | business | Root ownership record |
-| Business Member | business | Team members with roles |
-| Digital Card | card | Public digital business card |
-| Showcase Product | showcase | Product listings |
-| Showcase Service | showcase | Service listings |
-| Theme | showcase | Page themes (template + colors + fonts) |
-| Page Section | showcase | Custom page sections (ordered, toggleable) |
-| Product Category | showcase | Reusable product categories |
-| Enquiry | enquiry | Public enquiry submissions |
-| Engagement Event | analytics | View/click/share tracking |
-| Business Social Link | business | Social media links (child) |
-| Business Hour | business | Operating hours (child) |
-| Digital Card Link | card | Card social links (child) |
-| Product Gallery Item | showcase | Product gallery images (child) |
-| Service Benefit | showcase | Service benefits list (child) |
+| Business | Business | Root ownership record |
+| Business Member | Business | Team members with roles |
+| Digital Card | Card | Public digital business card |
+| Showcase Product | Showcase | Product listings |
+| Showcase Service | Showcase | Service listings |
+| BC Theme | Showcase | Page themes (template + colors + fonts) |
+| Page Section | Showcase | Custom page sections (ordered, toggleable) |
+| Product Category | Showcase | Reusable product categories |
+| Enquiry | Enquiry | Public enquiry submissions |
+| Engagement Event | Analytics | View/click/share tracking |
+| Business Social Link | Business | Social media links (child) |
+| Business Hour | Business | Operating hours (child) |
+| Digital Card Link | Card | Card social links (child) |
+| Product Gallery Item | Showcase | Product gallery images (child) |
+| Service Benefit | Showcase | Service benefits list (child) |
+
+---
 
 ## Testing
 
 ```bash
-# Run on dev machine (no frappe required)
 cd osduo_business_connect
 python3 -m unittest discover -s tests -p "test_*.py" -v
 
-# 109 tests across 9 files
+# 103 tests across 9 files
 ```
 
-## Deployment
+---
 
-```bash
-cd ~/frappe-bench
-rm -rf apps/osduo_business_connect
-bench get-app https://github.com/devosduotech/osduo_business_connect.git --branch develop
-bench --site business.local migrate
-bench --site business.local pip install qrcode[pil]
-bench build --app osduo_business_connect
-bench --site business.local clear-website-cache
-bench restart
-```
+## Built With
+
+- [Frappe Framework](https://frappeframework.com/) — Full-stack web framework
+- [Frappe CRM](https://crm.frappe.io/) — Open source CRM
+
+---
 
 ## License
 
