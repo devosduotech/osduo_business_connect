@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Card — Minimal Theme</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #FFFFFF; min-height: 100vh; display: flex; justify-content: center; padding: 40px 20px; }
+  .card { max-width: 420px; width: 100%; text-align: center; }
+  .avatar { width: 88px; height: 88px; border-radius: 50%; background: #F1F5F9; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; border: 2px solid #E2E8F0; }
+  .avatar span { font-size: 32px; color: #2563EB; font-weight: 600; }
+  h1 { font-size: 1.4rem; font-weight: 600; color: #0F172A; margin-bottom: 6px; letter-spacing: -0.02em; }
+  .designation { font-size: 0.85rem; color: #64748B; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+  .business { font-size: 0.8rem; color: #94A3B8; margin-bottom: 24px; }
+  .section-label { font-size: 0.7rem; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; }
+  .bio { font-size: 0.85rem; color: #475569; line-height: 1.6; margin-bottom: 32px; padding: 0 16px; }
+  .divider { width: 40px; height: 1px; background: #E2E8F0; margin: 0 auto 24px; }
+  .contact { margin-bottom: 32px; }
+  .contact-item { padding: 12px 0; border-bottom: 1px solid #F1F5F9; font-size: 0.85rem; color: #334155; }
+  .contact-item:last-child { border-bottom: none; }
+  .actions { display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px; }
+  .btn { padding: 14px; border: 1px solid #E2E8F0; border-radius: 4px; font-size: 0.85rem; font-weight: 500; text-decoration: none; color: #334155; background: white; display: block; text-align: center; }
+  .btn:hover { background: #F8FAFC; }
+  .links { display: flex; justify-content: center; gap: 24px; margin-bottom: 24px; }
+  .link-btn { font-size: 0.8rem; color: #64748B; text-decoration: none; border-bottom: 1px solid transparent; }
+  .link-btn:hover { border-bottom-color: #64748B; }
+  .label { text-align: center; margin-top: 32px; padding: 14px; background: #F8FAFC; border-radius: 4px; font-size: 0.75rem; color: #64748B; border: 1px solid #F1F5F9; }
+</style>
+</head>
+<body>
+<div>
+  <div class="card">
+    <div class="avatar"><span>SC</span></div>
+    <h1>Sarah Cornor</h1>
+    <p class="designation">Senior Software Engineer</p>
+    <p class="business">OSDuo Tech</p>
+    <div class="divider"></div>
+    <p class="section-label">About</p>
+    <p class="bio">Passionate about building digital solutions that connect businesses with their customers. Specializing in full-stack development and CRM integrations.</p>
+    <p class="section-label">Contact</p>
+    <div class="contact">
+      <div class="contact-item">+91 98765 43210</div>
+      <div class="contact-item">sarah@osduo.com</div>
+    </div>
+    <div class="actions">
+      <a href="#" class="btn">Call</a>
+      <a href="#" class="btn">WhatsApp</a>
+      <a href="#" class="btn">Email</a>
+      <a href="#" class="btn">Website</a>
+    </div>
+    <div class="links">
+      <a href="#" class="link-btn">LinkedIn</a>
+      <a href="#" class="link-btn">Twitter</a>
+      <a href="#" class="link-btn">Portfolio</a>
+    </div>
+  </div>
+  <div class="label">Minimal Theme — Clean whitespace, uppercase labels, thin borders, square buttons</div>
+</div>
+</body>
+</html>

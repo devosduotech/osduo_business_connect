@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product Page — Minimal Theme</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #FFFFFF; }
+  .hero { padding: 80px 40px 40px; max-width: 800px; margin: 0 auto; }
+  .breadcrumb { font-size: 0.75rem; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 24px; }
+  .hero h1 { font-size: 2rem; font-weight: 600; color: #0F172A; margin-bottom: 8px; letter-spacing: -0.02em; }
+  .category { font-size: 0.8rem; color: #2563EB; font-weight: 500; margin-bottom: 16px; }
+  .divider { width: 40px; height: 1px; background: #E2E8F0; margin: 24px 0; }
+  .container { max-width: 800px; margin: 0 auto; padding: 0 40px 40px; }
+  .gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 40px; }
+  .gallery-img { height: 160px; background: #F8FAFC; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+  .gallery-img:first-child { grid-column: span 2; height: 240px; }
+  .section { margin-bottom: 40px; }
+  .section-label { font-size: 0.7rem; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px; }
+  .section p { font-size: 0.9rem; color: #475569; line-height: 1.7; }
+  .details { display: flex; flex-direction: column; gap: 0; }
+  .detail-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #F1F5F9; }
+  .detail-row .label { font-size: 0.8rem; color: #64748B; }
+  .detail-row .value { font-size: 0.85rem; color: #1E293B; font-weight: 500; }
+  .cta { margin-top: 32px; }
+  .cta .btn { display: block; padding: 14px; border: 1px solid #E2E8F0; border-radius: 4px; font-size: 0.85rem; font-weight: 500; text-decoration: none; color: #334155; background: white; text-align: center; }
+  .cta .btn:hover { background: #F8FAFC; }
+  .footer { text-align: center; padding: 24px; color: #94A3B8; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; }
+  .label { text-align: center; margin: 20px auto; max-width: 600px; padding: 16px; background: #F8FAFC; border: 1px solid #F1F5F9; border-radius: 4px; font-size: 0.75rem; color: #64748B; }
+</style>
+</head>
+<body>
+<div class="hero">
+  <p class="breadcrumb">OSDuo Tech / Products</p>
+  <h1>Business Connect</h1>
+  <p class="category">Software Platform</p>
+  <div class="divider"></div>
+</div>
+<div class="container">
+  <div class="gallery">
+    <div class="gallery-img">📦</div>
+    <div class="gallery-img">🖼️</div>
+    <div class="gallery-img">🖼️</div>
+  </div>
+  <div class="section">
+    <p class="section-label">Description</p>
+    <p>Business Connect is a comprehensive digital business identity platform that helps businesses establish their online presence. It includes digital business cards, product showcases, service listings, and integrated CRM for lead management.</p>
+  </div>
+  <div class="section">
+    <p class="section-label">Details</p>
+    <div class="details">
+      <div class="detail-row"><span class="label">Category</span><span class="value">Software Platform</span></div>
+      <div class="detail-row"><span class="label">Version</span><span class="value">1.0.0</span></div>
+      <div class="detail-row"><span class="label">Platform</span><span class="value">Web-Based</span></div>
+      <div class="detail-row"><span class="label">Support</span><span class="value">24/7 Online</span></div>
+    </div>
+  </div>
+  <div class="cta"><a href="#" class="btn">Enquire Now</a></div>
+</div>
+<div class="footer">OSDuo Business Connect</div>
+<div class="label">Minimal Theme — Product Page: Clean whitespace, uppercase labels, thin borders, simple CTA</div>
+</body>
+</html>

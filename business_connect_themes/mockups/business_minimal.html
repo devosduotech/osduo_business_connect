@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Profile — Minimal Theme</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #FFFFFF; }
+  .hero { padding: 80px 40px 40px; text-align: center; }
+  .hero-avatar { width: 100px; height: 100px; border-radius: 50%; background: #F1F5F9; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; border: 2px solid #E2E8F0; }
+  .hero-avatar span { font-size: 40px; font-weight: 600; color: #2563EB; }
+  .hero h1 { font-size: 1.8rem; font-weight: 600; color: #0F172A; margin-bottom: 8px; letter-spacing: -0.02em; }
+  .hero .tagline { font-size: 0.85rem; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 24px; }
+  .divider { width: 40px; height: 1px; background: #E2E8F0; margin: 0 auto 24px; }
+  .stats { display: flex; justify-content: center; gap: 40px; margin-bottom: 24px; }
+  .stat { text-align: center; }
+  .stat-num { font-size: 1.2rem; font-weight: 600; color: #0F172A; }
+  .stat-label { font-size: 0.7rem; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.05em; }
+  .container { max-width: 800px; margin: 0 auto; padding: 0 40px 40px; }
+  .section { margin-bottom: 40px; }
+  .section-label { font-size: 0.7rem; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px; }
+  .about p { font-size: 0.9rem; color: #475569; line-height: 1.7; }
+  .products-list { display: flex; flex-direction: column; gap: 12px; }
+  .product-item { display: flex; align-items: center; gap: 16px; padding: 16px; border: 1px solid #F1F5F9; border-radius: 4px; }
+  .product-icon { width: 48px; height: 48px; background: #F8FAFC; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border-radius: 4px; }
+  .product-text h3 { font-size: 0.85rem; font-weight: 600; color: #1E293B; }
+  .product-text p { font-size: 0.75rem; color: #64748B; }
+  .contact-list { display: flex; flex-direction: column; gap: 8px; }
+  .contact-item { padding: 12px 0; border-bottom: 1px solid #F1F5F9; font-size: 0.85rem; color: #334155; display: flex; justify-content: space-between; }
+  .contact-item:last-child { border-bottom: none; }
+  .footer { text-align: center; padding: 24px; color: #94A3B8; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; }
+  .label { text-align: center; margin: 20px auto; max-width: 600px; padding: 16px; background: #F8FAFC; border: 1px solid #F1F5F9; border-radius: 4px; font-size: 0.75rem; color: #64748B; }
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="hero-avatar"><span>OT</span></div>
+  <h1>OSDuo Tech</h1>
+  <p class="tagline">Building Digital Solutions for Tomorrow</p>
+  <div class="divider"></div>
+  <div class="stats">
+    <div class="stat"><div class="stat-num">12</div><div class="stat-label">Team</div></div>
+    <div class="stat"><div class="stat-num">48</div><div class="stat-label">Products</div></div>
+    <div class="stat"><div class="stat-num">156</div><div class="stat-label">Customers</div></div>
+  </div>
+</div>
+<div class="container">
+  <div class="section">
+    <p class="section-label">About</p>
+    <p>OSDuo Tech is a leading technology company specializing in digital business solutions. We help businesses establish their digital presence through innovative products and services.</p>
+  </div>
+  <div class="section">
+    <p class="section-label">Products</p>
+    <div class="products-list">
+      <div class="product-item"><div class="product-icon">📦</div><div class="product-text"><h3>Business Connect</h3><p>Digital business identity platform</p></div></div>
+      <div class="product-item"><div class="product-icon">🎯</div><div class="product-text"><h3>CRM Integration</h3><p>Customer relationship management</p></div></div>
+      <div class="product-item"><div class="product-icon">📊</div><div class="product-text"><h3>Analytics Suite</h3><p>Business intelligence dashboard</p></div></div>
+    </div>
+  </div>
+  <div class="section">
+    <p class="section-label">Contact</p>
+    <div class="contact-list">
+      <div class="contact-item"><span>Phone</span><span>+91 98765 43210</span></div>
+      <div class="contact-item"><span>Email</span><span>info@osduo.com</span></div>
+      <div class="contact-item"><span>Website</span><span>www.osduo.com</span></div>
+      <div class="contact-item"><span>Address</span><span>Chennai, India</span></div>
+    </div>
+  </div>
+</div>
+<div class="footer">OSDuo Business Connect</div>
+<div class="label">Minimal Theme — Business Profile: Clean whitespace, uppercase labels, thin borders, minimal decoration</div>
+</body>
+</html>

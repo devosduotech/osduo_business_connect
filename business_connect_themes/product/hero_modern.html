@@ -1,0 +1,40 @@
+{# Product/Service Hero — Modern template #}
+<div class="bc-header">
+    <div class="bc-detail">
+        {% if doc.image %}
+        <img src="{{ doc.image }}" alt="{{ doc.product_name or doc.service_name }}" class="bc-cover-img">
+        {% endif %}
+
+        <h1>{{ doc.product_name or doc.service_name }}</h1>
+
+        {% if doc.category %}
+        <span style="display:inline-block;padding:0.3rem 0.75rem;background:rgba(255,255,255,0.2);border-radius:20px;font-size:0.8rem;margin-bottom:0.5rem;">{{ doc.category }}</span>
+        {% endif %}
+
+        {% if doc.short_description %}
+        <p class="bc-tagline">{{ doc.short_description }}</p>
+        {% endif %}
+
+        {% if doc.price_display_mode != "Hidden" and doc.price %}
+        <div style="font-size:1.4rem;font-weight:700;margin:0.75rem 0;">
+            {% if doc.price_display_mode == "Contact" %}
+                Contact for pricing
+            {% else %}
+                {% if doc.currency %}{{ doc.currency }} {% endif %}{{ doc.price }}
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="bc-hero-actions">
+            {% if doc.enquiry_enabled %}
+            <a href="#bc-enquiry" class="bc-btn bc-btn-secondary">&#9993; Send Enquiry</a>
+            {% endif %}
+            {% if business_phone %}
+            <a href="tel:{{ business_phone }}" class="bc-btn bc-btn-secondary">&#9742; Call</a>
+            {% endif %}
+            {% if business_whatsapp %}
+            <a href="https://wa.me/{{ business_whatsapp }}?text=Hi, I'm interested in {{ doc.product_name or doc.service_name }}" class="bc-btn bc-btn-accent">&#128172; WhatsApp</a>
+            {% endif %}
+        </div>
+    </div>
+</div>

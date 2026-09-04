@@ -1,0 +1,205 @@
+{%- extends "osduo_business_connect/templates/bc_base.html" -%}
+
+{%- block page_content -%}
+<div class="bc-page bc-template-{{ theme.template|lower }}" style="{{ theme_vars }}">
+
+    {# Back link #}
+    <div class="bc-detail" style="padding-top:0.75rem;">
+        <a href="/b/{{ business_slug }}" class="bc-back-link">&larr; {{ business_name }}</a>
+    </div>
+
+    {# ===== PRODUCT HERO (varies by template) ===== #}
+    {% if template_type == "Professional" %}
+        {% include "osduo_business_connect/templates/pages/product/parts/hero_professional.html" %}
+    {% elif template_type == "Minimal" %}
+        {% include "osduo_business_connect/templates/pages/product/parts/hero_minimal.html" %}
+    {% elif template_type == "Classic" %}
+        {% include "osduo_business_connect/templates/pages/product/parts/hero_classic.html" %}
+    {% else %}
+        {% include "osduo_business_connect/templates/pages/product/parts/hero_modern.html" %}
+    {% endif %}
+
+    {# ===== DESCRIPTION ===== #}
+    {% if doc.short_description or doc.description %}
+    <div class="bc-section">
+        <div class="bc-reading bc-bg">
+            <h2 class="bc-section-title">Description</h2>
+            <div style="line-height:1.8;color:#475569;">
+                {% if doc.description %}{{ doc.description }}{% else %}{{ doc.short_description }}{% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {# ===== LOCATION ===== #}
+    {% if doc.location %}
+    <div class="bc-section">
+        <div class="bc-reading">
+            <h2 class="bc-section-title">Location</h2>
+            <a href="{{ doc.location }}" target="_blank" class="bc-btn bc-btn-secondary" style="font-size:0.85rem;">&#128205; View on Map &rarr;</a>
+        </div>
+    </div>
+    {% endif %}
+
+    {# ===== VIDEO ===== #}
+    {% if doc.video_url %}
+    <div class="bc-section">
+        <div class="bc-detail">
+            <h2 class="bc-section-title">Video</h2>
+            <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:8px;">
+                <iframe src="{{ doc.video_url }}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {# ===== GALLERY ===== #}
+    {% set gallery_images = doc.gallery %}
+    {% include "osduo_business_connect/templates/pages/product/parts/gallery.html" ignore missing %}
+
+    {# ===== BROCHURE ===== #}
+    {% if doc.brochure %}
+    <div class="bc-section">
+        <div class="bc-reading">
+            <a href="{{ doc.brochure }}" class="bc-btn bc-btn-primary" target="_blank">&#128196; Download Brochure</a>
+        </div>
+    </div>
+    {% endif %}
+
+    {# ===== BUSINESS INFO ===== #}
+    <div class="bc-section">
+        <div class="bc-reading bc-bg">
+            <h2 class="bc-section-title">About {{ business_name }}</h2>
+            {% if business.description %}
+            <p style="line-height:1.8;color:#475569;margin-bottom:1rem;">{{ business.description }}</p>
+            {% endif %}
+            <div class="bc-card" style="text-align:center;">
+                <h3 style="margin:0 0 0.5rem;">{{ business_name }}</h3>
+                {% if business.address or business.city %}
+                <p style="color:#64748b;font-size:0.85rem;margin:0.3rem 0;">&#128205; {{ business.address }}{% if business.city %}, {{ business.city }}{% endif %}{% if business.state %}, {{ business.state }}{% endif %}</p>
+                {% endif %}
+                {% if business.website %}
+                <a href="{{ business.website }}" target="_blank" style="color:var(--bc-primary);font-size:0.85rem;text-decoration:none;">{{ business.website }}</a>
+                {% endif %}
+                <div style="display:flex;gap:0.6rem;justify-content:center;flex-wrap:wrap;margin-top:0.75rem;">
+                    {% if business_phone %}
+                    <a href="tel:{{ business_phone }}" class="bc-btn bc-btn-secondary" style="font-size:0.8rem;">&#9742; Call</a>
+                    {% endif %}
+                    {% if business_whatsapp %}
+                    <a href="https://wa.me/{{ business_whatsapp }}" class="bc-btn bc-btn-secondary" style="font-size:0.8rem;">&#128172; WhatsApp</a>
+                    {% endif %}
+                    <a href="/b/{{ business_slug }}" class="bc-btn bc-btn-secondary" style="font-size:0.8rem;">&#127968; View Business</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# ===== ENQUIRY FORM ===== #}
+    {% if doc.enquiry_enabled %}
+    <div class="bc-section" id="bc-enquiry">
+        <div class="bc-reading bc-bg">
+            <h2 class="bc-section-title">Send a Message</h2>
+            <p style="color:#64748b;font-size:0.9rem;margin-bottom:1rem;">Interested in this product? Send us an enquiry and we will get back to you.</p>
+            <form id="product-enquiry-form" class="bc-enquiry-form" style="max-width:480px;">
+                <input type="hidden" name="business_slug" value="{{ business_slug }}">
+                <input type="hidden" name="product" value="{{ doc.name }}">
+                <input type="hidden" name="source" value="Product">
+                <div style="margin-bottom:0.6rem;">
+                    <input type="text" name="visitor_name" placeholder="Your Name" required style="width:100%;padding:0.6rem;border:1px solid #d1d5db;border-radius:6px;font-size:0.9rem;">
+                </div>
+                <div style="margin-bottom:0.6rem;">
+                    <input type="tel" name="visitor_phone" placeholder="Contact Number" required pattern="[0-9+\-\s\(\)]{7,15}" title="Enter a valid phone number (7-15 digits)" style="width:100%;padding:0.6rem;border:1px solid #d1d5db;border-radius:6px;font-size:0.9rem;">
+                </div>
+                <div style="margin-bottom:0.6rem;">
+                    <input type="email" name="visitor_email" placeholder="Email Address" required style="width:100%;padding:0.6rem;border:1px solid #d1d5db;border-radius:6px;font-size:0.9rem;">
+                </div>
+                <div style="margin-bottom:0.6rem;">
+                    <textarea name="message" placeholder="Your Message" rows="3" required style="width:100%;padding:0.6rem;border:1px solid #d1d5db;border-radius:6px;font-size:0.9rem;resize:vertical;"></textarea>
+                </div>
+                <button type="submit" class="bc-btn bc-btn-primary" style="width:100%;padding:0.75rem;">Send Message</button>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="bc-footer"><p>Powered by OSDuo Business Connect</p></div>
+</div>
+
+<div class="bc-action-bar" style="display:none;">
+    {% if doc.enquiry_enabled %}
+    <a href="#bc-enquiry" class="bc-btn bc-btn-primary">&#9993; Enquiry</a>
+    {% endif %}
+    {% if business_phone %}
+    <a href="tel:{{ business_phone }}" class="bc-btn bc-btn-primary" style="background:#334155;">&#9742; Call</a>
+    {% endif %}
+    {% if business_whatsapp %}
+    <a href="https://wa.me/{{ business_whatsapp }}" class="bc-btn bc-btn-accent">&#128172; WhatsApp</a>
+    {% endif %}
+</div>
+
+{% raw %}
+<script>
+(function() {
+    function checkMobile() {
+        var bar = document.querySelector('.bc-action-bar');
+        if (bar) bar.style.display = window.innerWidth <= 768 ? 'flex' : 'none';
+    }
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    var form = document.getElementById('product-enquiry-form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var btn = form.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.textContent = 'Sending...';
+            var fd = new FormData(form);
+            var csrfToken = document.getElementById('bc-csrf-token').getAttribute('data-token') || '';
+
+            fetch('/api/method/osduo_business_connect.enquiry.public_enquiry_api.submit_enquiry', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Frappe-CSRF-Token': csrfToken,
+                },
+                body: JSON.stringify({
+                    business_slug: fd.get('business_slug'),
+                    visitor_data: JSON.stringify({
+                        name: fd.get('visitor_name'),
+                        email: fd.get('visitor_email'),
+                        phone: fd.get('visitor_phone'),
+                        message: fd.get('message'),
+                    }),
+                    source: fd.get('source'),
+                    references: JSON.stringify({
+                        product: fd.get('product'),
+                    }),
+                }),
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(result) {
+                if (result.message && result.message.name) {
+                    form.innerHTML = '<div style="text-align:center;padding:1.25rem;"><h3 style="margin:0 0 0.4rem;">Message Sent!</h3><p style="color:#666;font-size:0.9rem;">Thank you. We will get back to you soon.</p></div>';
+                } else {
+                    var msg = 'Error sending message';
+                    if (result._server_messages) {
+                        try { msg = JSON.parse(result._server_messages)[0].message; } catch(ex) {}
+                    }
+                    alert(msg);
+                    btn.disabled = false;
+                    btn.textContent = 'Send Message';
+                }
+            })
+            .catch(function() {
+                alert('Error sending message');
+                btn.disabled = false;
+                btn.textContent = 'Send Message';
+            });
+        });
+    }
+})();
+</script>
+{% endraw %}
+<div id="bc-csrf-token" data-token="{{ frappe.session.csrf_token or frappe.session.data.csrf_token or '' }}" style="display:none;"></div>
+{%- endblock -%}

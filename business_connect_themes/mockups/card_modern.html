@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Card — Modern Theme</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #F8FAFC; min-height: 100vh; display: flex; justify-content: center; padding: 40px 20px; }
+  .card-wrapper { max-width: 420px; width: 100%; }
+  .topbar { background: #0B3D91; border-radius: 16px 16px 0 0; padding: 8px 16px; display: flex; align-items: center; justify-content: space-between; }
+  .topbar-brand { display: flex; align-items: center; gap: 6px; }
+  .topbar-brand img { height: 14px; filter: brightness(0) invert(1); }
+  .topbar-brand span { color: white; font-size: 0.6rem; opacity: 0.8; }
+  .card { background: white; border-radius: 0 0 16px 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.08); overflow: hidden; text-align: center; padding: 40px 24px 32px; }
+  .avatar-wrap { margin-bottom: 20px; }
+  .avatar { width: 100px; height: 100px; border-radius: 50%; margin: 0 auto; overflow: hidden; box-shadow: 0 4px 16px rgba(37,99,235,0.3); }
+  .avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .avatar .fallback { width: 100%; height: 100%; background: linear-gradient(135deg, #2563EB, #60A5FA); display: flex; align-items: center; justify-content: center; font-size: 40px; color: white; font-weight: 700; }
+  h1 { font-size: 1.5rem; font-weight: 700; color: #1E293B; margin-bottom: 4px; }
+  .designation { font-size: 0.9rem; color: #64748B; margin-bottom: 4px; }
+  .business { font-size: 0.85rem; color: #2563EB; font-weight: 500; margin-bottom: 16px; }
+  .bio { font-size: 0.85rem; color: #475569; line-height: 1.5; margin-bottom: 20px; padding: 0 8px; }
+  .contact { display: flex; justify-content: center; gap: 16px; margin-bottom: 24px; font-size: 0.8rem; color: #64748B; }
+  .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 24px; }
+  .btn { padding: 10px 20px; border-radius: 999px; font-size: 0.85rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+  .btn-primary { background: #2563EB; color: white; }
+  .btn-whatsapp { background: #25D366; color: white; }
+  .btn-email { background: #EA4335; color: white; }
+  .btn-website { background: #1E293B; color: white; }
+  .links { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 24px; }
+  .link-btn { padding: 8px 16px; border: 1.5px solid #E2E8F0; border-radius: 999px; font-size: 0.8rem; color: #475569; text-decoration: none; background: white; }
+  .qr { margin-top: 16px; }
+  .qr img { width: 80px; height: 80px; border-radius: 8px; border: 2px solid #F1F5F9; }
+  .qr p { font-size: 0.75rem; color: #94A3B8; margin-top: 6px; }
+  .label { text-align: center; margin-top: 16px; padding: 12px; background: #F1F5F9; border-radius: 8px; font-size: 0.7rem; color: #64748B; }
+</style>
+</head>
+<body>
+<div class="card-wrapper">
+  <div class="topbar">
+    <div class="topbar-brand">
+      <img src="../images/logo_mark.png" alt="BC" onerror="this.style.display='none'">
+      <span>OSDuo Business Connect</span>
+    </div>
+  </div>
+  <div class="card">
+    <div class="avatar-wrap">
+      <div class="avatar">
+        <div class="fallback">SC</div>
+      </div>
+    </div>
+    <h1>Sarah Cornor</h1>
+    <p class="designation">Senior Software Engineer</p>
+    <p class="business">OSDuo Tech</p>
+    <p class="bio">Passionate about building digital solutions that connect businesses with their customers. Specializing in full-stack development and CRM integrations.</p>
+    <div class="contact">
+      <span>📞 +91 98765 43210</span>
+      <span>✉️ sarah@osduo.com</span>
+    </div>
+    <div class="actions">
+      <a href="#" class="btn btn-primary">📞 Call</a>
+      <a href="#" class="btn btn-whatsapp">💬 WhatsApp</a>
+      <a href="#" class="btn btn-email">✉️ Email</a>
+      <a href="#" class="btn btn-website">🌐 Website</a>
+    </div>
+    <div class="links">
+      <a href="#" class="link-btn">LinkedIn</a>
+      <a href="#" class="link-btn">Twitter</a>
+      <a href="#" class="link-btn">Portfolio</a>
+    </div>
+    <div class="qr">
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=https://business.osduo.com/c/sarah-cornor" alt="QR Code">
+      <p>Scan to view card</p>
+    </div>
+  </div>
+  <div class="label">Modern Theme — Centered avatar, pill buttons, QR code, soft shadows</div>
+</div>
+</body>
+</html>

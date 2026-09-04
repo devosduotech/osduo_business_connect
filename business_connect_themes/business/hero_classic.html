@@ -1,0 +1,31 @@
+{# Classic Hero — gradient, bottom border accent, italic titles #}
+<div class="bc-header">
+    <div class="bc-container">
+        {% if doc.cover_image %}
+        <img src="{{ doc.cover_image }}" alt="" class="bc-business-cover">
+        {% endif %}
+        {% if doc.logo %}
+        <img src="{{ doc.logo }}" alt="{{ doc.business_name }}" class="bc-logo-img">
+        {% endif %}
+        <h1 style="font-style:italic;">{{ doc.business_name }}</h1>
+        {% if doc.industry %}
+        <p class="bc-tagline">{{ doc.industry }}</p>
+        {% endif %}
+        <div class="bc-hero-actions">
+            {% if doc.phone %}<a href="tel:{{ doc.phone }}" class="bc-btn bc-btn-secondary">&#9742; Call</a>{% endif %}
+            {% if doc.whatsapp %}<a href="https://wa.me/{{ doc.whatsapp }}" class="bc-btn bc-btn-secondary">&#128172; WhatsApp</a>{% endif %}
+            <a href="#bc-contact" class="bc-btn bc-btn-accent">&#9993; Enquiry</a>
+        </div>
+        <nav class="bc-nav">
+            <a href="#bc-about" class="bc-nav-link active">About</a>
+            {% if products %}<a href="#bc-products" class="bc-nav-link">Products</a>{% endif %}
+            {% if services %}<a href="#bc-services" class="bc-nav-link">Services</a>{% endif %}
+            <a href="#bc-contact" class="bc-nav-link">Contact</a>
+        </nav>
+    </div>
+</div>
+<div class="bc-hero-wave">
+    <svg viewBox="0 0 1200 30" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,15 Q300,30 600,10 T1200,15 L1200,30 L0,30 Z" fill="white"/>
+    </svg>
+</div>
