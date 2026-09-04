@@ -32,4 +32,3 @@ def on_crm_lead_update(doc, method):
     current_status = frappe.db.get_value("Enquiry", enquiry_name, "status")
     if current_status != new_status:
         frappe.db.set_value("Enquiry", enquiry_name, "status", new_status)
-        frappe.db.commit()

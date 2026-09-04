@@ -85,7 +85,6 @@ class Business(Document):
                 "status": "Active",
             })
             member.insert(ignore_permissions=True)
-            frappe.db.commit()
 
     def create_default_theme(self):
         """Create a default theme (Modern + Blue) and link it to this business."""
@@ -104,7 +103,6 @@ class Business(Document):
         # Persist to database (self.default_theme on an already-inserted doc
         # doesn't auto-persist)
         frappe.db.set_value("Business", self.name, "default_theme", theme.name)
-        frappe.db.commit()
 
     def normalize_fields(self):
         """Normalize field values."""
