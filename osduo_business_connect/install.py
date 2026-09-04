@@ -29,9 +29,6 @@ def after_install():
     
     # Create CRM Lead Source
     create_crm_lead_source()
-    
-    # Apply OSDuo branding to Frappe settings
-    apply_branding_settings()
 
 
 def create_crm_custom_fields():
@@ -192,7 +189,6 @@ def after_migrate():
     create_default_roles()
     create_builtin_themes()
     create_crm_lead_source()
-    apply_branding_settings()
 
 
 def migrate_crm_custom_fields():
@@ -321,8 +317,17 @@ def apply_branding_settings():
     """
     Apply OSDuo branding to Frappe's Website Settings and System Settings.
     
-    This ensures the favicon, logo, and app name appear correctly
-    without requiring manual configuration via the desk UI.
+    NOTE: This function is available but NOT called automatically.
+    Branding is configured manually per deployment via:
+    
+    1. Website Settings → Set favicon to:
+       /assets/osduo_business_connect/images/favicon.png
+    2. Website Settings → Set app name to: "Business Connect"
+    3. System Settings → Set app name to: "OSDuo Business Connect"
+    
+    The desk sidebar logo is controlled by add_to_apps_screen in hooks.py.
+    The branding.css and branding.js files handle visual overrides once
+    the base settings are configured.
     
     Called from after_install and after_migrate.
     """
