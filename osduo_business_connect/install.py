@@ -330,6 +330,7 @@ def sync_workspace():
     json_path = os.path.join(
         frappe.get_app_path("osduo_business_connect"),
         "workspace",
+        "business_connect",
         "business_connect.json",
     )
     if not os.path.exists(json_path):
