@@ -1,0 +1,153 @@
+/*
+ * OSDuo Business Connect — Desk Branding Overrides
+ *
+ * Replaces Frappe branding in the desk sidebar and header.
+ * Does NOT modify Frappe core files — uses CSS specificity.
+ */
+
+/* ============================================================
+   1. SIDEBAR — App Logo & Title
+   ============================================================ */
+
+/* Replace the sidebar app logo */
+.sidebar-menu .app-logo {
+  width: 120px !important;
+  height: auto !important;
+}
+
+/* App title in sidebar header */
+.sidebar-menu .app-logo + .app-name,
+.sidebar-menu .app-header .app-name {
+  font-weight: 700 !important;
+  color: #ffffff !important;
+}
+
+/* ============================================================
+   2. DESK HEADER — App Title
+   ============================================================ */
+
+/* Page title in desk */
+.page-head .page-title {
+  font-weight: 600 !important;
+}
+
+/* ============================================================
+   3. BROWSER TITLE
+   ============================================================ */
+
+/* Set via JS — see branding.js or inline script */
+
+/* ============================================================
+   4. LOGIN PAGE
+   ============================================================ */
+
+/* Login page container */
+.for-login {
+  background-color: #F4F6F8 !important;
+}
+
+/* Login card */
+.login-content {
+  background: #ffffff !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08) !important;
+  padding: 2.5rem !important;
+}
+
+/* Login logo */
+.login-content .page-card-head img,
+.login-content .app-logo {
+  max-width: 180px !important;
+  height: auto !important;
+}
+
+/* Login button — use brand primary color */
+.btn-primary-desk,
+.login-content .btn-primary,
+.for-login .btn-primary {
+  background-color: #0B3D91 !important;
+  border-color: #0B3D91 !important;
+}
+
+.btn-primary-desk:hover,
+.login-content .btn-primary:hover,
+.for-login .btn-primary:hover {
+  background-color: #092d6b !important;
+  border-color: #092d6b !important;
+}
+
+/* Login page heading */
+.login-content .text-center .page-head-title,
+.for-login .page-head-title {
+  font-size: 1.25rem !important;
+  font-weight: 700 !important;
+  color: #0B3D91 !important;
+}
+
+/* Forgot password link */
+.login-content .forgot-password,
+.for-login .forgot-password {
+  color: #1677FF !important;
+}
+
+/* ============================================================
+   5. APP ICON (Sidebar / Mobile)
+   ============================================================ */
+
+/* App icon in sidebar */
+.sidebar-menu .app-icon {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 6px !important;
+}
+
+/* ============================================================
+   6. FRAPPE BRANDING REMOVAL (optional)
+   ============================================================ */
+
+/* Hide Frappe promotional links in sidebar footer */
+.sidebar-menu .sidebar-footer .frappe-version,
+.sidebar-menu .sidebar-footer a[href*="frappeframework"],
+.sidebar-menu .sidebar-footer a[href*="frappe.io"] {
+  opacity: 0.5;
+  font-size: 0.7rem;
+}
+
+/* ============================================================
+   7. COLOR OVERRIDES (match brand palette)
+   ============================================================ */
+
+/* Primary blue used across desk */
+:root {
+  --primary: #0B3D91;
+  --primary-light: #1677FF;
+  --text-on-blue: #ffffff;
+}
+
+/* Sidebar background (dark navy to match brand) */
+.sidebar-menu {
+  background-color: #0B3D91 !important;
+}
+
+/* Sidebar active item */
+.sidebar-menu .sidebar-label.active,
+.sidebar-menu .sidebar-link.active {
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  border-left-color: #00C49A !important;
+}
+
+/* Sidebar hover */
+.sidebar-menu .sidebar-link:hover {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Sidebar text */
+.sidebar-menu .sidebar-link,
+.sidebar-menu .sidebar-label {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.sidebar-menu .sidebar-link:hover,
+.sidebar-menu .sidebar-label:hover {
+  color: #ffffff !important;
+}
