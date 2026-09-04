@@ -11,8 +11,9 @@
 
 /* Replace the sidebar app logo */
 .sidebar-menu .app-logo {
-  width: 120px !important;
+  width: 140px !important;
   height: auto !important;
+  object-fit: contain !important;
 }
 
 /* App title in sidebar header */

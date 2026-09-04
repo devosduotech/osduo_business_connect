@@ -11,11 +11,12 @@ app_license = "MIT"
 OSDUO_BRANDING = {
     "app_name": "OSDuo Business Connect",
     "app_short_name": "Business Connect",
-    "tagline": "Connect \u00b7 Showcase \u00b7 Grow",
-    "logo": "/assets/osduo_business_connect/images/logo.svg",
-    "logo_white": "/assets/osduo_business_connect/images/logo-white.svg",
-    "favicon": "/assets/osduo_business_connect/images/favicon.svg",
-    "logo_mark": "/assets/osduo_business_connect/images/logo-mark.svg",
+    "tagline": "Business \u00b7 People \u00b7 Opportunities",
+    "logo": "/assets/osduo_business_connect/images/logo.png",
+    "logo_dark": "/assets/osduo_business_connect/images/logo-dark.png",
+    "favicon": "/assets/osduo_business_connect/images/favicon.png",
+    "logo_mark": "/assets/osduo_business_connect/images/logo-mark.png",
+    "og_image": "/assets/osduo_business_connect/images/og-image.png",
     "primary_color": "#0B3D91",
     "secondary_color": "#1677FF",
     "accent_color": "#00C49A",
@@ -31,7 +32,7 @@ required_apps = ["crm"]
 add_to_apps_screen = [
     {
         "name": "osduo_business_connect",
-        "logo": OSDUO_BRANDING["logo"],
+        "logo": OSDUO_BRANDING["logo_mark"],
         "title": "Business Connect",
         "route": "/app/business-connect",
         "type": "Workspace",
