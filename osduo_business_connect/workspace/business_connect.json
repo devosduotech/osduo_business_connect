@@ -70,15 +70,6 @@
       "link": "/app/product-category",
       "description": "Manage product categories",
       "color": "#f5a623"
-    },
-    {
-      "label": "Analytics",
-      "type": "Page",
-      "name": "analytics",
-      "icon": "octicon octicon-graph",
-      "link": "/app/analytics",
-      "description": "View engagement analytics and enquiry stats",
-      "color": "#2490ef"
     }
   ],
   "links": [
@@ -151,12 +142,6 @@
       "name": "Engagement Event",
       "label": "Page Views",
       "description": "Track page engagement analytics"
-    },
-    {
-      "type": "Page",
-      "name": "analytics",
-      "label": "Analytics Dashboard",
-      "description": "View engagement analytics and enquiry stats"
     }
   ]
 }

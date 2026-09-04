@@ -386,5 +386,5 @@ def sync_workspace():
         })
         ws.insert(ignore_permissions=True)
         frappe.db.commit()
-    except Exception:
-        frappe.log_error("sync_business_connect_workspace")
+    except Exception as e:
+        frappe.log_error(f"Failed to create workspace: {e}")
