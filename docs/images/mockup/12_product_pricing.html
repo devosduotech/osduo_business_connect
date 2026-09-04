@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product Pricing Modes — Desk Mockup</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #F8FAFC; padding: 40px; }
+  .container { max-width: 1100px; margin: 0 auto; }
+  h1 { font-size: 1.2rem; font-weight: 700; color: #0F172A; margin-bottom: 8px; }
+  .subtitle { font-size: 0.85rem; color: #64748B; margin-bottom: 32px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .mode-card { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden; }
+  .mode-header { padding: 16px; border-bottom: 1px solid #F1F5F9; }
+  .mode-header h2 { font-size: 0.9rem; font-weight: 700; color: #0F172A; }
+  .mode-header .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 0.6rem; font-weight: 600; margin-top: 4px; }
+  .mode-body { padding: 16px; }
+  .field-row { margin-bottom: 12px; }
+  .field-row label { display: block; font-size: 0.7rem; font-weight: 600; color: #374151; margin-bottom: 4px; }
+  .field-row select, .field-row input { width: 100%; padding: 8px 12px; border: 1px solid #D1D5DB; border-radius: 6px; font-size: 0.8rem; }
+  .field-row .selected { background: #EFF6FF; border-color: #2563EB; }
+  .preview { margin-top: 16px; padding: 16px; background: #F8FAFC; border-radius: 8px; border: 1px solid #E2E8F0; }
+  .preview h4 { font-size: 0.7rem; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+  .preview .price-tag { font-size: 1.2rem; font-weight: 700; color: #2563EB; }
+  .preview .contact-btn { display: inline-block; padding: 8px 16px; background: #2563EB; color: white; border-radius: 6px; font-size: 0.8rem; font-weight: 600; text-decoration: none; }
+  .preview .hidden-text { font-size: 0.8rem; color: #94A3B8; font-style: italic; }
+  .label { text-align: center; margin: 20px auto 0; max-width: 600px; padding: 16px; background: #F1F5F9; border-radius: 8px; font-size: 0.75rem; color: #64748B; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Price Display Modes</h1>
+  <p class="subtitle">Choose how pricing appears on your product page</p>
+  <div class="grid">
+    <!-- Hidden -->
+    <div class="mode-card">
+      <div class="mode-header">
+        <h2>Hidden</h2>
+        <span class="badge" style="background:#F1F5F9;color:#64748B;">No price shown</span>
+      </div>
+      <div class="mode-body">
+        <div class="field-row">
+          <label>Price Display Mode</label>
+          <select class="selected"><option selected>Hidden</option><option>Contact for Pricing</option><option>Fixed Price</option></select>
+        </div>
+        <div class="preview">
+          <h4>Public Page Preview</h4>
+          <p class="hidden-text">No pricing section displayed on the product page.</p>
+        </div>
+      </div>
+    </div>
+    <!-- Contact -->
+    <div class="mode-card">
+      <div class="mode-header">
+        <h2>Contact for Pricing</h2>
+        <span class="badge" style="background:#FEF3C7;color:#92400E;">CTA button</span>
+      </div>
+      <div class="mode-body">
+        <div class="field-row">
+          <label>Price Display Mode</label>
+          <select class="selected"><option>Hidden</option><option selected>Contact for Pricing</option><option>Fixed Price</option></select>
+        </div>
+        <div class="preview">
+          <h4>Public Page Preview</h4>
+          <p class="contact-btn">Enquire for Pricing</p>
+        </div>
+      </div>
+    </div>
+    <!-- Fixed -->
+    <div class="mode-card">
+      <div class="mode-header">
+        <h2>Fixed Price</h2>
+        <span class="badge" style="background:#DCFCE7;color:#166534;">Shows amount</span>
+      </div>
+      <div class="mode-body">
+        <div class="field-row">
+          <label>Price Display Mode</label>
+          <select class="selected"><option>Hidden</option><option>Contact for Pricing</option><option selected>Fixed Price</option></select>
+        </div>
+        <div class="field-row">
+          <label>Price</label>
+          <input type="text" value="25,000">
+        </div>
+        <div class="field-row">
+          <label>Currency</label>
+          <select><option>INR — Indian Rupee</option><option>USD — US Dollar</option></select>
+        </div>
+        <div class="preview">
+          <h4>Public Page Preview</h4>
+          <div class="price-tag">₹25,000</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="label">Desk Mockup — Product Pricing Modes: Hidden, Contact for Pricing, Fixed Price with preview</div>
+</body>
+</html>
