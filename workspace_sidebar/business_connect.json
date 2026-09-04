@@ -1,0 +1,17 @@
+{
+  "doctype": "Workspace Sidebar",
+  "name": "Business Connect",
+  "module": "Business",
+  "title": "Business Connect",
+  "icon": "octicon octicon-briefcase",
+  "standard": 1,
+  "app": "osduo_business_connect",
+  "items": [
+    {
+      "title": "Business Connect",
+      "link_type": "Workspace",
+      "link_to": "Business Connect",
+      "icon": "octicon octicon-briefcase"
+    }
+  ]
+}
