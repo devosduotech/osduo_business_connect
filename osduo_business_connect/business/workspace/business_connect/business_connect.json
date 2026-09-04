@@ -1,144 +1,217 @@
 {
   "name": "Business Connect",
-  "module": "Business",
-  "label": "Business Connect",
-  "title": "Business Connect",
-  "app": "osduo_business_connect",
-  "icon": "octicon octicon-briefcase",
-  "doctype": "Workspace",
-  "is_standard": 1,
-  "public": 1,
-  "is_hidden": 0,
   "owner": "Administrator",
   "modified_by": "Administrator",
   "docstatus": 0,
-  "content": "[{\"type\":\"header\",\"data\":{\"text\":\"Business Connect\",\"col\":12}}]",
-  "charts": [],
+  "idx": 0,
+  "label": "Business Connect",
+  "title": "Business Connect",
+  "module": "Business",
+  "type": "Workspace",
+  "link_type": "DocType",
+  "link_to": null,
+  "external_link": null,
+  "icon": "octicon octicon-briefcase",
+  "indicator_color": "green",
+  "restrict_to_domain": null,
+  "hide_custom": 0,
+  "public": 1,
+  "is_hidden": 0,
+  "for_user": null,
+  "parent_page": null,
+  "sequence_id": 0,
+  "content": "[{\"id\":\"hdr1\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Business Connect</span>\",\"col\":12}},{\"id\":\"sc1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Business\",\"col\":3}},{\"id\":\"sc2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Members\",\"col\":3}},{\"id\":\"sc3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Digital Card\",\"col\":3}},{\"id\":\"sc4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Products\",\"col\":3}},{\"id\":\"sc5\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Services\",\"col\":3}},{\"id\":\"sp1\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"p1\",\"type\":\"paragraph\",\"data\":{\"text\":\"Reports &amp; Analysis\",\"col\":12}},{\"id\":\"sc6\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Enquiries\",\"col\":3}},{\"id\":\"hdr2\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Settings</b></span>\",\"col\":12}},{\"id\":\"sc7\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Card Themes\",\"col\":3}},{\"id\":\"sc8\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Product Category\",\"col\":3}}]",
+  "doctype": "Workspace",
+  "standard": 1,
   "number_cards": [],
-  "quick_lists": [],
+  "charts": [],
   "shortcuts": [
     {
       "type": "DocType",
       "link_to": "Business",
+      "doc_view": "List",
       "label": "Business",
-      "color": "#5e64ff"
+      "color": "Grey",
+      "stats_filter": "[]",
+      "doctype": "Workspace Shortcut"
+    },
+    {
+      "type": "DocType",
+      "link_to": "Business Member",
+      "doc_view": "List",
+      "label": "Members",
+      "color": "Grey",
+      "stats_filter": "[]",
+      "doctype": "Workspace Shortcut"
     },
     {
       "type": "DocType",
       "link_to": "Digital Card",
+      "doc_view": "List",
       "label": "Digital Card",
-      "color": "#ff5858"
-    },
-    {
-      "type": "DocType",
-      "link_to": "BC Theme",
-      "label": "Theme",
-      "color": "#7c3aed"
+      "color": "Grey",
+      "stats_filter": "[]",
+      "doctype": "Workspace Shortcut"
     },
     {
       "type": "DocType",
       "link_to": "Showcase Product",
-      "label": "Product",
-      "color": "#2490ef"
+      "doc_view": "List",
+      "label": "Products",
+      "color": "Grey",
+      "stats_filter": "[]",
+      "doctype": "Workspace Shortcut"
     },
     {
       "type": "DocType",
       "link_to": "Showcase Service",
-      "label": "Service",
-      "color": "#ff7eb3"
+      "doc_view": "List",
+      "label": "Services",
+      "color": "Grey",
+      "stats_filter": "[]",
+      "doctype": "Workspace Shortcut"
     },
     {
       "type": "DocType",
       "link_to": "Enquiry",
-      "label": "Enquiry",
-      "color": "#00bfa5"
+      "doc_view": "List",
+      "label": "Enquiries",
+      "color": "Grey",
+      "stats_filter": "[]",
+      "doctype": "Workspace Shortcut"
+    },
+    {
+      "type": "DocType",
+      "link_to": "BC Theme",
+      "doc_view": "List",
+      "label": "Card Themes",
+      "color": "Grey",
+      "stats_filter": "[]",
+      "doctype": "Workspace Shortcut"
     },
     {
       "type": "DocType",
       "link_to": "Product Category",
-      "label": "Categories",
-      "color": "#f5a623"
+      "doc_view": "List",
+      "label": "Product Category",
+      "color": "Grey",
+      "stats_filter": "[]",
+      "doctype": "Workspace Shortcut"
     }
   ],
   "links": [
     {
       "type": "Card Break",
-      "label": "Content"
+      "label": "Content",
+      "doctype": "Workspace Link"
     },
     {
       "type": "Link",
       "link_type": "DocType",
       "link_to": "Business",
-      "label": "Businesses",
-      "description": "Manage your business profiles"
+      "label": "Business",
+      "onboard": 0,
+      "is_query_report": 0,
+      "link_count": 0,
+      "doctype": "Workspace Link"
     },
     {
       "type": "Link",
       "link_type": "DocType",
       "link_to": "Business Member",
-      "label": "Business Members",
-      "description": "Manage business members"
+      "label": "Business Member",
+      "onboard": 0,
+      "is_query_report": 0,
+      "link_count": 0,
+      "doctype": "Workspace Link"
     },
     {
       "type": "Card Break",
-      "label": "Digital Presence"
+      "label": "Digital Presence",
+      "doctype": "Workspace Link"
     },
     {
       "type": "Link",
       "link_type": "DocType",
       "link_to": "Digital Card",
-      "label": "Digital Cards",
-      "description": "Individual digital business cards"
+      "label": "Digital Card",
+      "onboard": 0,
+      "is_query_report": 0,
+      "link_count": 0,
+      "doctype": "Workspace Link"
     },
     {
       "type": "Link",
       "link_type": "DocType",
       "link_to": "BC Theme",
-      "label": "Themes",
-      "description": "Page themes and visual styles"
+      "label": "Card Theme",
+      "onboard": 0,
+      "is_query_report": 0,
+      "link_count": 0,
+      "doctype": "Workspace Link"
     },
     {
       "type": "Card Break",
-      "label": "Showcase"
+      "label": "Showcase",
+      "doctype": "Workspace Link"
     },
     {
       "type": "Link",
       "link_type": "DocType",
       "link_to": "Showcase Product",
       "label": "Products",
-      "description": "Product showcase items"
-    },
-    {
-      "type": "Link",
-      "link_type": "DocType",
-      "link_to": "Product Category",
-      "label": "Product Categories",
-      "description": "Reusable product categories"
+      "onboard": 0,
+      "is_query_report": 0,
+      "link_count": 0,
+      "doctype": "Workspace Link"
     },
     {
       "type": "Link",
       "link_type": "DocType",
       "link_to": "Showcase Service",
       "label": "Services",
-      "description": "Service showcase items"
+      "onboard": 0,
+      "is_query_report": 0,
+      "link_count": 0,
+      "doctype": "Workspace Link"
+    },
+    {
+      "type": "Link",
+      "link_type": "DocType",
+      "link_to": "Product Category",
+      "label": "Category",
+      "onboard": 0,
+      "is_query_report": 0,
+      "link_count": 0,
+      "doctype": "Workspace Link"
     },
     {
       "type": "Card Break",
-      "label": "Engagement"
+      "label": "Engagement",
+      "doctype": "Workspace Link"
     },
     {
       "type": "Link",
       "link_type": "DocType",
       "link_to": "Enquiry",
-      "label": "Enquiries",
-      "description": "Customer enquiries and messages"
+      "label": "Enquiry",
+      "onboard": 0,
+      "is_query_report": 0,
+      "link_count": 0,
+      "doctype": "Workspace Link"
     },
     {
       "type": "Link",
       "link_type": "DocType",
       "link_to": "Engagement Event",
-      "label": "Page Views",
-      "description": "Track page engagement analytics"
+      "label": "Event",
+      "onboard": 0,
+      "is_query_report": 0,
+      "link_count": 0,
+      "doctype": "Workspace Link"
     }
-  ]
+  ],
+  "quick_lists": [],
+  "custom_blocks": [],
+  "roles": []
 }
