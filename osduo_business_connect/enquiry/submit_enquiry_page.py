@@ -49,4 +49,4 @@ def get_context(context):
     except Exception as e:
         frappe.log_error(f"Enquiry submission failed: {str(e)}", "Enquiry Error")
         frappe.response["type"] = "json"
-        frappe.response["message"] = {"error": str(e)}
+        frappe.response["message"] = {"error": "An error occurred while submitting your enquiry. Please try again later."}

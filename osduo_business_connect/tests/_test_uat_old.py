@@ -320,7 +320,7 @@ def test_crm_sync():
     result = sync_enquiry_to_crm(enquiry.name)
     
     # Verify sync
-    assert result == True
+    assert result["status"] == "success"
     
     # Cleanup
     if enquiry.crm_lead:

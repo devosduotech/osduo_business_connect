@@ -66,7 +66,7 @@ def handle_enquiry_webhook():
         frappe.log_error(f"Enquiry webhook error: {str(e)}")
         return {
             "success": False,
-            "error": str(e),
+            "error": "An error occurred while processing your enquiry. Please try again later.",
         }
 
 

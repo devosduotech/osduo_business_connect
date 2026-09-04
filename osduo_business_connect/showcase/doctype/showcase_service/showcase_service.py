@@ -49,13 +49,10 @@ class ShowcaseService(Document):
         normalize_url_fields(self)
 
     def sanitize_description(self):
-        """Sanitize description field."""
+        """Sanitize description field using Frappe's allowlist-based sanitizer."""
         if self.description:
-            # Remove script tags and event handlers
-            import re
-            self.description = re.sub(r'<script[^>]*>.*?</script>', '', self.description, flags=re.DOTALL | re.IGNORECASE)
-            self.description = re.sub(r'on\w+="[^"]*"', '', self.description)
-            self.description = re.sub(r"on\w+='[^']*'", '', self.description)
+            from osduo_business_connect.utils.sanitize import sanitize_rich_text
+            self.description = sanitize_rich_text(self.description)
 
     def validate_business(self):
         """Validate that business exists and is published."""
