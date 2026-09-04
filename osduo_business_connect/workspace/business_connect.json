@@ -1,6 +1,6 @@
 {
   "name": "Business Connect",
-  "module": "OSDuo Business Connect",
+  "module": "Business",
   "label": "Business Connect",
   "icon": "octicon octicon-briefcase",
   "type": "Workspace",
