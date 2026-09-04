@@ -189,7 +189,6 @@ def after_migrate():
     create_default_roles()
     create_builtin_themes()
     create_crm_lead_source()
-    sync_workspace()
 
 
 def migrate_crm_custom_fields():
@@ -312,80 +311,3 @@ def _get_scheme_accent(scheme):
         "Red": "#F87171",
     }
     return colors.get(scheme, "#60A5FA")
-
-
-def sync_workspace():
-    """Create Business Connect workspace if missing.
-
-    Frappe's auto-sync skips it because ``module: "OSDuo Business Connect"``
-    is not in modules.txt.  Reads the workspace JSON and inserts the record
-    with child tables mapped to actual DB column names.
-    """
-    import json
-    import os
-
-    if frappe.db.exists("Workspace", "Business Connect"):
-        return
-
-    json_path = os.path.join(
-        frappe.get_app_path("osduo_business_connect"),
-        "workspace",
-        "business_connect",
-        "business_connect.json",
-    )
-    if not os.path.exists(json_path):
-        return
-
-    with open(json_path) as f:
-        ws_def = json.load(f)
-
-    # Workspace Link columns: type, label, icon, description, hidden,
-    #   link_type, link_to, report_ref_doctype, dependencies, only_for,
-    #   onboard, is_query_report, link_count
-    links = []
-    for link in ws_def.get("links", []):
-        entry = {
-            "doctype": "Workspace Link",
-            "type": link.get("type", "DocType"),
-            "label": link.get("label", ""),
-            "description": link.get("description", ""),
-        }
-        if link.get("type") in ("DocType", "Page"):
-            entry["link_to"] = link.get("name", "")
-            entry["link_type"] = link.get("type")
-        links.append(entry)
-
-    # Workspace Shortcut columns: type, link_to, url, doc_view,
-    #   kanban_board, label, icon, restrict_to_domain, report_ref_doctype,
-    #   stats_filter, color, format
-    shortcuts = []
-    for sc in ws_def.get("shortcuts", []):
-        shortcuts.append({
-            "doctype": "Workspace Shortcut",
-            "label": sc.get("label", ""),
-            "type": sc.get("type", "DocType"),
-            "link_to": sc.get("name", ""),
-            "url": sc.get("link", ""),
-            "icon": sc.get("icon", ""),
-            "description": sc.get("description", ""),
-            "color": sc.get("color", ""),
-        })
-
-    try:
-        ws = frappe.get_doc({
-            "doctype": "Workspace",
-            "name": ws_def.get("name", "Business Connect"),
-            "module": ws_def.get("module", "Business"),
-            "label": ws_def.get("label", "Business Connect"),
-            "icon": ws_def.get("icon", "octicon octicon-briefcase"),
-            "type": ws_def.get("type", "Workspace"),
-            "system_manager": ws_def.get("system_manager", 1),
-            "restrict_to_role": ws_def.get("restrict_to_role", 0),
-            "is_hidden": ws_def.get("is_hidden", 0),
-            "links": links,
-            "shortcuts": shortcuts,
-        })
-        ws.insert(ignore_permissions=True)
-        frappe.db.commit()
-    except Exception as e:
-        frappe.log_error(f"Failed to create workspace: {e}")

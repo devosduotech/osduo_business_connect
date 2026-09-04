@@ -2,11 +2,23 @@
   "name": "Business Connect",
   "module": "Business",
   "label": "Business Connect",
+  "app": "osduo_business_connect",
   "icon": "octicon octicon-briefcase",
   "type": "Workspace",
+  "doctype": "Workspace",
+  "is_standard": 1,
+  "public": 1,
   "system_manager": 1,
   "restrict_to_role": 0,
   "is_hidden": 0,
+  "owner": "Administrator",
+  "modified_by": "Administrator",
+  "docstatus": 0,
+  "idx": 0,
+  "content": "[{\"type\":\"header\",\"data\":{\"text\":\"Business Connect\",\"col\":12}}]",
+  "charts": [],
+  "number_cards": [],
+  "quick_lists": [],
   "shortcuts": [
     {
       "label": "Business",
@@ -86,8 +98,8 @@
     {
       "type": "DocType",
       "name": "Business Member",
-      "label": "Team Members",
-      "description": "Manage business team members"
+      "label": "Business Members",
+      "description": "Manage business members"
     },
     {
       "type": "Card Break",
