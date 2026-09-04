@@ -329,7 +329,6 @@ def sync_workspace():
 
     json_path = os.path.join(
         frappe.get_app_path("osduo_business_connect"),
-        "osduo_business_connect",
         "workspace",
         "business_connect.json",
     )
@@ -375,7 +374,7 @@ def sync_workspace():
         ws = frappe.get_doc({
             "doctype": "Workspace",
             "name": ws_def.get("name", "Business Connect"),
-            "module": ws_def.get("module", "OSDuo Business Connect"),
+            "module": ws_def.get("module", "Business"),
             "label": ws_def.get("label", "Business Connect"),
             "icon": ws_def.get("icon", "octicon octicon-briefcase"),
             "type": ws_def.get("type", "Workspace"),
