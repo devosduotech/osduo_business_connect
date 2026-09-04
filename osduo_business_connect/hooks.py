@@ -44,6 +44,7 @@ add_to_apps_screen = [
 
 # Desk branding CSS (sidebar logo, app title, browser title)
 app_include_css = "/assets/osduo_business_connect/css/branding.css"
+app_include_js = "/assets/osduo_business_connect/js/branding.js"
 
 # include js, css files in header of web template
 # NOT using web_include_css — it injects into login/auth pages too.
