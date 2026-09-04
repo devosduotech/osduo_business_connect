@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRM Lead Detail — Desk Mockup</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #F8FAFC; }
+  .desk-header { background: #0B3D91; padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; }
+  .desk-header .logo { color: white; font-size: 0.85rem; font-weight: 700; }
+  .breadcrumb { padding: 12px 24px; font-size: 0.75rem; color: #64748B; background: white; border-bottom: 1px solid #E2E8F0; }
+  .breadcrumb a { color: #2563EB; text-decoration: none; }
+  .detail-container { max-width: 1000px; margin: 24px auto; padding: 0 24px; display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+  .detail-card { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden; }
+  .detail-header { padding: 20px 24px; border-bottom: 1px solid #F1F5F9; display: flex; align-items: center; justify-content: space-between; }
+  .detail-header h1 { font-size: 1.1rem; font-weight: 700; color: #0F172A; }
+  .status { padding: 4px 12px; border-radius: 999px; font-size: 0.7rem; font-weight: 600; }
+  .status-new { background: #DBEAFE; color: #1E40AF; }
+  .detail-body { padding: 24px; }
+  .field-group { margin-bottom: 14px; }
+  .field-group label { display: block; font-size: 0.7rem; font-weight: 600; color: #64748B; text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 4px; }
+  .field-group .value { font-size: 0.85rem; color: #1E293B; }
+  .field-group .value a { color: #2563EB; text-decoration: none; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .sidebar-section { padding: 16px 20px; border-bottom: 1px solid #F1F5F9; }
+  .sidebar-section h3 { font-size: 0.8rem; font-weight: 700; color: #0F172A; margin-bottom: 12px; }
+  .sidebar-field { margin-bottom: 10px; }
+  .sidebar-field label { display: block; font-size: 0.65rem; font-weight: 600; color: #64748B; margin-bottom: 2px; }
+  .sidebar-field .value { font-size: 0.8rem; color: #1E293B; }
+  .sidebar-field .value a { color: #2563EB; text-decoration: none; }
+  .osduo-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; background: #EFF6FF; border-radius: 4px; font-size: 0.65rem; color: #2563EB; font-weight: 600; }
+  .label { text-align: center; margin: 20px auto; max-width: 600px; padding: 16px; background: #F1F5F9; border-radius: 8px; font-size: 0.75rem; color: #64748B; }
+</style>
+</head>
+<body>
+<div class="desk-header"><span class="logo">OSDuo Business Connect</span></div>
+<div class="breadcrumb"><a href="#">CRM Lead</a> / <a href="#">CRM-00142</a></div>
+<div class="detail-container">
+  <div class="detail-card">
+    <div class="detail-header">
+      <h1>Rajesh Kumar</h1>
+      <span class="status status-new">New</span>
+    </div>
+    <div class="detail-body">
+      <div class="field-row">
+        <div class="field-group">
+          <label>Lead Name</label>
+          <div class="value">Rajesh Kumar</div>
+        </div>
+        <div class="field-group">
+          <label>Email</label>
+          <div class="value">rajesh@techcorp.in</div>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label>Mobile</label>
+          <div class="value">+91 98765 43210</div>
+        </div>
+        <div class="field-group">
+          <label>Organization</label>
+          <div class="value">TechCorp India</div>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label>Lead Owner</label>
+          <div class="value">sarah@osduo.com</div>
+        </div>
+        <div class="field-group">
+          <label>Source</label>
+          <div class="value"><span class="osduo-badge">Business Connect</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div>
+    <div class="detail-card">
+      <div class="sidebar-section">
+        <h3>OSDuo Business Connect</h3>
+        <div class="sidebar-field">
+          <label>Business</label>
+          <div class="value"><a href="#">OSDuo Tech (BIZ-00001)</a></div>
+        </div>
+        <div class="sidebar-field">
+          <label>Card</label>
+          <div class="value"><a href="#">Sarah Cornor (CARD-00001)</a></div>
+        </div>
+        <div class="sidebar-field">
+          <label>Enquiry</label>
+          <div class="value"><a href="#">ENQ-00024</a></div>
+        </div>
+        <div class="sidebar-field">
+          <label>Product</label>
+          <div class="value">—</div>
+        </div>
+        <div class="sidebar-field">
+          <label>Service</label>
+          <div class="value">—</div>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <h3>Campaign Tracking</h3>
+        <div class="sidebar-field">
+          <label>Campaign</label>
+          <div class="value">—</div>
+        </div>
+        <div class="sidebar-field">
+          <label>Landing URL</label>
+          <div class="value" style="font-size:0.7rem;word-break:break-all">https://business.uat/c/sarah-cornor</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="label">Desk Mockup — CRM Lead Detail: Standard fields + OSDuo custom fields (business, card, enquiry, campaign, landing URL)</div>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Profile — Public Page Mockup</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #F8FAFC; min-height: 100vh; display: flex; justify-content: center; padding: 20px; }
+  .phone-frame { max-width: 375px; width: 100%; background: white; border-radius: 24px; box-shadow: 0 8px 32px rgba(0,0,0,0.12); overflow: hidden; }
+  .topbar { background: #0B3D91; padding: 6px 12px; display: flex; align-items: center; justify-content: space-between; }
+  .topbar-brand span { color: white; font-size: 0.55rem; opacity: 0.7; }
+  .hero { background: linear-gradient(135deg, #2563EB, #1E40AF); padding: 40px 24px 24px; text-align: center; color: white; border-radius: 0 0 24px 24px; }
+  .hero .logo-circle { width: 64px; height: 64px; border-radius: 50%; background: white; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; color: #2563EB; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+  .hero h1 { font-size: 1.3rem; font-weight: 700; margin-bottom: 4px; }
+  .hero .tagline { font-size: 0.85rem; opacity: 0.9; }
+  .hero .location { font-size: 0.75rem; opacity: 0.7; margin-top: 4px; }
+  .hero .stats { display: flex; justify-content: center; gap: 24px; margin-top: 16px; }
+  .hero .stat-num { font-size: 1.2rem; font-weight: 700; }
+  .hero .stat-label { font-size: 0.6rem; opacity: 0.7; }
+  .hero-actions { display: flex; gap: 8px; justify-content: center; margin-top: 16px; padding: 0 24px; }
+  .hero-actions .btn { flex: 1; padding: 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 600; text-decoration: none; text-align: center; }
+  .hero-actions .btn-primary { background: white; color: #2563EB; }
+  .hero-actions .btn-secondary { background: rgba(255,255,255,0.2); color: white; }
+  .nav { display: flex; overflow-x: auto; padding: 12px 16px; gap: 4px; border-bottom: 1px solid #E2E8F0; }
+  .nav a { padding: 6px 12px; border-radius: 999px; font-size: 0.7rem; font-weight: 500; text-decoration: none; white-space: nowrap; color: #64748B; }
+  .nav a.active { background: #2563EB; color: white; }
+  .section { padding: 20px; }
+  .section-title { font-size: 0.9rem; font-weight: 700; color: #0F172A; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #2563EB; display: inline-block; }
+  .section p { font-size: 0.85rem; color: #475569; line-height: 1.6; }
+  .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .product-card { background: #F8FAFC; border-radius: 10px; overflow: hidden; }
+  .product-img { height: 80px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+  .product-info { padding: 10px; }
+  .product-info h4 { font-size: 0.75rem; font-weight: 600; color: #0F172A; }
+  .product-info p { font-size: 0.65rem; color: #64748B; }
+  .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .contact-item { padding: 12px; background: #F8FAFC; border-radius: 8px; text-align: center; }
+  .contact-item .icon { font-size: 1.2rem; margin-bottom: 4px; }
+  .contact-item .label { font-size: 0.6rem; color: #64748B; }
+  .contact-item .value { font-size: 0.7rem; color: #0F172A; font-weight: 600; }
+  .footer { text-align: center; padding: 16px; background: #0B3D91; color: white; font-size: 0.6rem; }
+  .footer a { color: #60A5FA; text-decoration: none; }
+  .label { text-align: center; margin: 16px auto 0; max-width: 375px; padding: 12px; background: #F1F5F9; border-radius: 8px; font-size: 0.7rem; color: #64748B; }
+</style>
+</head>
+<body>
+<div>
+  <div class="phone-frame">
+    <div class="topbar"><div class="topbar-brand"><span>OSDuo Business Connect</span></div></div>
+    <div class="hero">
+      <div class="logo-circle">OT</div>
+      <h1>OSDuo Tech</h1>
+      <p class="tagline">Digital Engineering Solutions</p>
+      <p class="location">📍 Chennai, India</p>
+      <div class="stats">
+        <div class="stat"><div class="stat-num">12</div><div class="stat-label">Team</div></div>
+        <div class="stat"><div class="stat-num">48</div><div class="stat-label">Products</div></div>
+        <div class="stat"><div class="stat-num">156</div><div class="stat-label">Customers</div></div>
+      </div>
+    </div>
+    <div class="hero-actions" style="margin-top:-12px;position:relative;z-index:1">
+      <a href="#" class="btn btn-primary">💬 WhatsApp</a>
+      <a href="#" class="btn btn-primary">📞 Call</a>
+      <a href="#" class="btn btn-secondary">✉️ Enquiry</a>
+    </div>
+    <div class="nav">
+      <a href="#" class="active">About</a>
+      <a href="#">Products</a>
+      <a href="#">Services</a>
+      <a href="#">Team</a>
+      <a href="#">Contact</a>
+    </div>
+    <div class="section">
+      <h2 class="section-title">About Us</h2>
+      <p>OSDuo Tech is a leading technology company specializing in digital business solutions. We help businesses establish their digital presence through innovative products and services.</p>
+    </div>
+    <div class="section" style="padding-top:0">
+      <h2 class="section-title">Products</h2>
+      <div class="product-grid">
+        <div class="product-card"><div class="product-img" style="background:#EFF6FF">📦</div><div class="product-info"><h4>Business Connect</h4><p>Identity platform</p></div></div>
+        <div class="product-card"><div class="product-img" style="background:#F0FDF4">🎯</div><div class="product-info"><h4>CRM Integration</h4><p>Lead management</p></div></div>
+        <div class="product-card"><div class="product-img" style="background:#FFF7ED">📊</div><div class="product-info"><h4>Analytics Suite</h4><p>Business intelligence</p></div></div>
+        <div class="product-card"><div class="product-img" style="background:#FDF2F8">🔒</div><div class="product-info"><h4>Security Pack</h4><p>Data protection</p></div></div>
+      </div>
+    </div>
+    <div class="section" style="padding-top:0">
+      <h2 class="section-title">Contact</h2>
+      <div class="contact-grid">
+        <div class="contact-item"><div class="icon">📞</div><div class="label">Phone</div><div class="value">+91 98765 43210</div></div>
+        <div class="contact-item"><div class="icon">✉️</div><div class="label">Email</div><div class="value">info@osduo.com</div></div>
+        <div class="contact-item"><div class="icon">🌐</div><div class="label">Website</div><div class="value">osduo.com</div></div>
+        <div class="contact-item"><div class="icon">📍</div><div class="label">Address</div><div class="value">Chennai</div></div>
+      </div>
+    </div>
+    <div class="footer">Powered by <a href="#">OSDuo Business Connect</a></div>
+  </div>
+  <div class="label">Public Mockup — Business Profile (Mobile): Identity hero, nav, about, products, contact</div>
+</div>
+</body>
+</html>

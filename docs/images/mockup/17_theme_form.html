@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BC Theme Form — Desk Mockup</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #F8FAFC; }
+  .desk-header { background: #0B3D91; padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; }
+  .desk-header .logo { color: white; font-size: 0.85rem; font-weight: 700; }
+  .breadcrumb { padding: 12px 24px; font-size: 0.75rem; color: #64748B; background: white; border-bottom: 1px solid #E2E8F0; }
+  .breadcrumb a { color: #2563EB; text-decoration: none; }
+  .form-container { max-width: 900px; margin: 24px auto; padding: 0 24px; }
+  .form-card { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden; }
+  .form-header { padding: 20px 24px; border-bottom: 1px solid #F1F5F9; display: flex; align-items: center; justify-content: space-between; }
+  .form-header h1 { font-size: 1.1rem; font-weight: 700; color: #0F172A; }
+  .form-section { padding: 12px 24px; background: #F8FAFC; border-top: 1px solid #F1F5F9; font-size: 0.8rem; font-weight: 600; color: #374151; }
+  .form-body { padding: 24px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .form-row.full { grid-template-columns: 1fr; }
+  .form-group { display: flex; flex-direction: column; gap: 4px; }
+  .form-group label { font-size: 0.75rem; font-weight: 600; color: #374151; }
+  .form-group label .req { color: #DC2626; }
+  .form-group input, .form-group select { padding: 8px 12px; border: 1px solid #D1D5DB; border-radius: 6px; font-size: 0.8rem; color: #1E293B; background: white; }
+  .color-row { display: flex; gap: 16px; align-items: center; }
+  .color-input { display: flex; align-items: center; gap: 8px; }
+  .color-input input[type="color"] { width: 32px; height: 32px; border: 1px solid #D1D5DB; border-radius: 6px; cursor: pointer; padding: 2px; }
+  .color-input span { font-size: 0.75rem; color: #475569; }
+  .color-preview { display: flex; gap: 8px; margin-top: 12px; }
+  .color-swatch { width: 36px; height: 36px; border-radius: 8px; border: 2px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  .template-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .template-option { padding: 12px; border: 2px solid #E2E8F0; border-radius: 8px; text-align: center; cursor: pointer; }
+  .template-option.selected { border-color: #2563EB; background: #EFF6FF; }
+  .template-option .name { font-size: 0.8rem; font-weight: 600; color: #0F172A; }
+  .template-option .desc { font-size: 0.6rem; color: #64748B; margin-top: 2px; }
+  .form-actions { padding: 16px 24px; border-top: 1px solid #F1F5F9; display: flex; gap: 8px; justify-content: flex-end; }
+  .btn { padding: 8px 16px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: none; }
+  .btn-primary { background: #2563EB; color: white; }
+  .btn-secondary { background: #F1F5F9; color: #475569; border: 1px solid #E2E8F0; }
+  .label { text-align: center; margin: 20px auto; max-width: 600px; padding: 16px; background: #F1F5F9; border-radius: 8px; font-size: 0.75rem; color: #64748B; }
+</style>
+</head>
+<body>
+<div class="desk-header"><span class="logo">OSDuo Business Connect</span></div>
+<div class="breadcrumb"><a href="#">BC Theme</a> / <a href="#">THEME-00003</a></div>
+<div class="form-container">
+  <div class="form-card">
+    <div class="form-header">
+      <h1>Edit Theme — OSDuo Tech Theme</h1>
+    </div>
+    <div class="form-section">Template</div>
+    <div class="form-body">
+      <div class="form-row full">
+        <div class="form-group">
+          <label>Template <span class="req">*</span></label>
+          <div class="template-grid">
+            <div class="template-option selected">
+              <div class="name">Modern</div>
+              <div class="desc">Rounded, gradient</div>
+            </div>
+            <div class="template-option">
+              <div class="name">Professional</div>
+              <div class="desc">Corporate, structured</div>
+            </div>
+            <div class="template-option">
+              <div class="name">Minimal</div>
+              <div class="desc">Clean, understated</div>
+            </div>
+            <div class="template-option">
+              <div class="name">Classic</div>
+              <div class="desc">Traditional, elegant</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="form-section">Color Scheme</div>
+    <div class="form-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Color Scheme <span class="req">*</span></label>
+          <select><option>Blue</option><option>Violet</option><option>Indigo</option><option>Green</option><option>Yellow</option><option>Orange</option><option>Red</option><option>Custom</option></select>
+        </div>
+        <div class="form-group">
+          <label>Button Style <span class="req">*</span></label>
+          <select><option>Filled</option><option>Outline</option><option>Rounded</option><option>Pill</option></select>
+        </div>
+      </div>
+      <div class="form-row full">
+        <div class="form-group">
+          <label>Brand Colors</label>
+          <div class="color-row">
+            <div class="color-input"><input type="color" value="#2563EB"><span>Primary</span></div>
+            <div class="color-input"><input type="color" value="#FFFFFF"><span>Secondary</span></div>
+            <div class="color-input"><input type="color" value="#60A5FA"><span>Accent</span></div>
+          </div>
+          <div class="color-preview">
+            <div class="color-swatch" style="background:#2563EB"></div>
+            <div class="color-swatch" style="background:#FFFFFF;border-color:#E2E8F0"></div>
+            <div class="color-swatch" style="background:#60A5FA"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="form-section">Typography</div>
+    <div class="form-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Font Family</label>
+          <select><option>Inter</option><option>Roboto</option><option>Open Sans</option><option>Lato</option><option>Poppins</option><option>Montserrat</option><option>Nunito</option><option>Source Sans 3</option><option>Raleway</option><option>System Default</option></select>
+        </div>
+        <div class="form-group">
+          <label>Font Size</label>
+          <select><option>Default (16px)</option><option>Small (14px)</option><option>Large (18px)</option></select>
+        </div>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-secondary">Cancel</button>
+      <button class="btn btn-primary">Save Theme</button>
+    </div>
+  </div>
+</div>
+<div class="label">Desk Mockup — BC Theme Form: Template grid selector, color scheme, brand colors, typography</div>
+</body>
+</html>
