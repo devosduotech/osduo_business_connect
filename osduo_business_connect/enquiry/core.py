@@ -45,8 +45,11 @@ class Enquiry(Document):
             try:
                 from osduo_business_connect.crm_integration.crm_sync import enqueue_sync
                 enqueue_sync(self.name)
-            except Exception:
-                pass  # Don't fail enquiry save if sync enqueue fails
+            except Exception as e:
+                frappe.log_error(
+                    title="Enquiry CRM Sync Failed",
+                    message=f"Enquiry {self.name}: {str(e)}",
+                )
 
     def normalize_fields(self):
         """Normalize field values."""
@@ -72,11 +75,10 @@ class Enquiry(Document):
             self.visitor_company = self.visitor_company.strip()
 
     def sanitize_message(self):
-        """Sanitize message field."""
+        """Sanitize message field using Frappe's allowlist-based sanitizer."""
         if self.message:
-            self.message = re.sub(r'<script[^>]*>.*?</script>', '', self.message, flags=re.DOTALL | re.IGNORECASE)
-            self.message = re.sub(r'on\w+="[^"]*"', '', self.message)
-            self.message = re.sub(r"on\w+='[^']*'", '', self.message)
+            from osduo_business_connect.utils.sanitize import sanitize_rich_text
+            self.message = sanitize_rich_text(self.message)
 
     def set_submitted_at(self):
         """Set submitted_at if not already set."""

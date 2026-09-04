@@ -1,6 +1,7 @@
 import frappe
 from frappe import _
 from ....services.theme_service import get_business_theme, get_theme_variables
+from ....analytics.tracking import capture_analytics_context, track_event
 
 
 def get_context(context):
@@ -74,51 +75,8 @@ def get_context(context):
         context.meta_description = doc["seo_description"]
 
     # Track profile view (non-blocking)
-    analytics_ctx = _capture_analytics_context()
-    _track_event(doc.name, "profile_view", **analytics_ctx)
-
-
-def _capture_analytics_context():
-    """Extract request metadata for analytics before background job."""
-    ctx = {}
-    request = frappe.request if frappe.request else None
-    if request:
-        ctx["landing_url"] = request.url
-        ctx["referrer"] = request.headers.get("Referer")
-        user_agent = request.headers.get("User-Agent", "").lower()
-        if any(x in user_agent for x in ["mobile", "android", "iphone"]):
-            ctx["device_type"] = "Mobile"
-        elif any(x in user_agent for x in ["tablet", "ipad"]):
-            ctx["device_type"] = "Tablet"
-        elif any(x in user_agent for x in ["mozilla", "chrome", "safari", "firefox"]):
-            ctx["device_type"] = "Desktop"
-        else:
-            ctx["device_type"] = "Unknown"
-        if "chrome" in user_agent and "edg" not in user_agent:
-            ctx["browser"] = "Chrome"
-        elif "firefox" in user_agent:
-            ctx["browser"] = "Firefox"
-        elif "safari" in user_agent and "chrome" not in user_agent:
-            ctx["browser"] = "Safari"
-        elif "edg" in user_agent:
-            ctx["browser"] = "Edge"
-        else:
-            ctx["browser"] = "Unknown"
-    return ctx
-
-
-def _track_event(business, event_type, **kwargs):
-    """Record engagement event in background. Never blocks page load."""
-    try:
-        from osduo_business_connect.analytics.analytics_service import record_engagement
-        frappe.enqueue(
-            "osduo_business_connect.analytics.analytics_service.record_engagement",
-            business=business,
-            event_type=event_type,
-            **kwargs,
-        )
-    except Exception:
-        pass
+    analytics_ctx = capture_analytics_context()
+    track_event(doc.name, "profile_view", **analytics_ctx)
 
 
 def _get_gallery_images(business_name):

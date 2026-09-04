@@ -97,7 +97,7 @@ def create_lead_from_enquiry(enquiry_doc):
         except Exception:
             pass
 
-        return {"status": "error", "message": str(e)}
+        return {"status": "error", "message": "Failed to create CRM Lead. Please try again later."}
 
 
 def retry_failed_enquiries():
