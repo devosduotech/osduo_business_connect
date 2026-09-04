@@ -2,6 +2,7 @@
   "name": "Business Connect",
   "module": "Business",
   "label": "Business Connect",
+  "title": "Business Connect",
   "app": "osduo_business_connect",
   "icon": "octicon octicon-briefcase",
   "doctype": "Workspace",
@@ -15,7 +16,50 @@
   "charts": [],
   "number_cards": [],
   "quick_lists": [],
-  "shortcuts": [],
+  "shortcuts": [
+    {
+      "type": "DocType",
+      "link_to": "Business",
+      "label": "Business",
+      "color": "#5e64ff"
+    },
+    {
+      "type": "DocType",
+      "link_to": "Digital Card",
+      "label": "Digital Card",
+      "color": "#ff5858"
+    },
+    {
+      "type": "DocType",
+      "link_to": "BC Theme",
+      "label": "Theme",
+      "color": "#7c3aed"
+    },
+    {
+      "type": "DocType",
+      "link_to": "Showcase Product",
+      "label": "Product",
+      "color": "#2490ef"
+    },
+    {
+      "type": "DocType",
+      "link_to": "Showcase Service",
+      "label": "Service",
+      "color": "#ff7eb3"
+    },
+    {
+      "type": "DocType",
+      "link_to": "Enquiry",
+      "label": "Enquiry",
+      "color": "#00bfa5"
+    },
+    {
+      "type": "DocType",
+      "link_to": "Product Category",
+      "label": "Categories",
+      "color": "#f5a623"
+    }
+  ],
   "links": [
     {
       "type": "Card Break",
@@ -23,12 +67,14 @@
     },
     {
       "type": "Link",
+      "link_type": "DocType",
       "link_to": "Business",
       "label": "Businesses",
       "description": "Manage your business profiles"
     },
     {
       "type": "Link",
+      "link_type": "DocType",
       "link_to": "Business Member",
       "label": "Business Members",
       "description": "Manage business members"
@@ -39,12 +85,14 @@
     },
     {
       "type": "Link",
+      "link_type": "DocType",
       "link_to": "Digital Card",
       "label": "Digital Cards",
       "description": "Individual digital business cards"
     },
     {
       "type": "Link",
+      "link_type": "DocType",
       "link_to": "BC Theme",
       "label": "Themes",
       "description": "Page themes and visual styles"
@@ -55,18 +103,21 @@
     },
     {
       "type": "Link",
+      "link_type": "DocType",
       "link_to": "Showcase Product",
       "label": "Products",
       "description": "Product showcase items"
     },
     {
       "type": "Link",
+      "link_type": "DocType",
       "link_to": "Product Category",
       "label": "Product Categories",
       "description": "Reusable product categories"
     },
     {
       "type": "Link",
+      "link_type": "DocType",
       "link_to": "Showcase Service",
       "label": "Services",
       "description": "Service showcase items"
@@ -77,12 +128,14 @@
     },
     {
       "type": "Link",
+      "link_type": "DocType",
       "link_to": "Enquiry",
       "label": "Enquiries",
       "description": "Customer enquiries and messages"
     },
     {
       "type": "Link",
+      "link_type": "DocType",
       "link_to": "Engagement Event",
       "label": "Page Views",
       "description": "Track page engagement analytics"
