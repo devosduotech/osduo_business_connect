@@ -69,8 +69,8 @@ def has_permission(doc, user=None, ptype=None):
         )
         return event_has_permission(doc, user=user, ptype=ptype)
 
-    elif doctype == "Theme":
-        from osduo_business_connect.showcase.doctype.theme.theme import (
+    elif doctype == "BC Theme":
+        from osduo_business_connect.showcase.doctype.bc_theme.bc_theme import (
             has_permission as theme_has_permission,
         )
         return theme_has_permission(doc, user=user, ptype=ptype)

@@ -90,7 +90,7 @@ class Business(Document):
     def create_default_theme(self):
         """Create a default theme (Modern + Blue) and link it to this business."""
         theme = frappe.get_doc({
-            "doctype": "Theme",
+            "doctype": "BC Theme",
             "theme_name": f"{self.business_name or self.name} Theme",
             "business": self.name,
             "template": "Modern",

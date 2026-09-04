@@ -15,10 +15,10 @@ def load_json(path):
 
 
 class TestThemeDocType(unittest.TestCase):
-    """Verify Theme DocType JSON structure."""
+    """Verify BC Theme DocType JSON structure."""
 
     def setUp(self):
-        self.json_path = os.path.join(SHOWCASE_DIR, "doctype", "theme", "theme.json")
+        self.json_path = os.path.join(SHOWCASE_DIR, "doctype", "bc_theme", "bc_theme.json")
         self.data = load_json(self.json_path)
 
     def test_json_exists(self):
@@ -52,11 +52,11 @@ class TestThemeDocType(unittest.TestCase):
         self.assertTrue(len(roles) > 0)
 
     def test_controller_exists(self):
-        path = os.path.join(SHOWCASE_DIR, "doctype", "theme", "theme.py")
+        path = os.path.join(SHOWCASE_DIR, "doctype", "bc_theme", "bc_theme.py")
         self.assertTrue(os.path.exists(path))
 
     def test_controller_has_validate(self):
-        path = os.path.join(SHOWCASE_DIR, "doctype", "theme", "theme.py")
+        path = os.path.join(SHOWCASE_DIR, "doctype", "bc_theme", "bc_theme.py")
         with open(path) as f:
             content = f.read()
         self.assertIn("validate", content)

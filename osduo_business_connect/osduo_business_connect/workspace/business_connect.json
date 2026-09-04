@@ -29,9 +29,9 @@
     {
       "label": "Theme",
       "type": "DocType",
-      "name": "Theme",
+      "name": "BC Theme",
       "icon": "octicon octicon-paintcan",
-      "link": "/app/theme/new",
+      "link": "/app/bc-theme/new",
       "description": "Manage page themes and styles",
       "color": "#7c3aed"
     },
@@ -110,7 +110,7 @@
     },
     {
       "type": "DocType",
-      "name": "Theme",
+      "name": "BC Theme",
       "label": "Themes",
       "description": "Page themes and visual styles"
     },
