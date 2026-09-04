@@ -29,6 +29,9 @@ def after_install():
     
     # Create CRM Lead Source
     create_crm_lead_source()
+    
+    # Apply OSDuo branding to Frappe settings
+    apply_branding_settings()
 
 
 def create_crm_custom_fields():
@@ -189,6 +192,7 @@ def after_migrate():
     create_default_roles()
     create_builtin_themes()
     create_crm_lead_source()
+    apply_branding_settings()
 
 
 def migrate_crm_custom_fields():
@@ -311,3 +315,34 @@ def _get_scheme_accent(scheme):
         "Red": "#F87171",
     }
     return colors.get(scheme, "#60A5FA")
+
+
+def apply_branding_settings():
+    """
+    Apply OSDuo branding to Frappe's Website Settings and System Settings.
+    
+    This ensures the favicon, logo, and app name appear correctly
+    without requiring manual configuration via the desk UI.
+    
+    Called from after_install and after_migrate.
+    """
+    from osduo_business_connect.hooks import OSDUO_BRANDING
+    
+    # Website Settings — favicon and app name
+    try:
+        website_settings = frappe.get_single("Website Settings")
+        website_settings.favicon = OSDUO_BRANDING["favicon"]
+        website_settings.app_name = OSDUO_BRANDING["app_short_name"]
+        website_settings.save(ignore_permissions=True)
+        frappe.db.commit()
+    except Exception:
+        frappe.log_error("Failed to update Website Settings branding")
+    
+    # System Settings — app name and logo
+    try:
+        system_settings = frappe.get_single("System Settings")
+        system_settings.app_name = OSDUO_BRANDING["app_name"]
+        system_settings.save(ignore_permissions=True)
+        frappe.db.commit()
+    except Exception:
+        frappe.log_error("Failed to update System Settings branding")
