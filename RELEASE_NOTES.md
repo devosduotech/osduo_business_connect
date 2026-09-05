@@ -37,11 +37,11 @@ OSDuo Business Connect v1.0.1 is the initial production release of a Frappe Fram
 
 ### Product & Service Showcase
 - Showcase products with galleries, pricing, and brochures
-- Showcase services with benefits (title + description) and galleries
+- Showcase services with features (title + description + image) and galleries
 - Reusable product categories (shared between products and services)
 - Product/service pages at `/b/<slug>/products/<product>` and `/b/<slug>/services/<service>`
 - Gallery with click-to-open fullscreen, lazy loading, captions
-- Generic section headings (About, Benefits, Gallery, Location, Video, Contact)
+- Generic section headings (About, Features, Gallery, Location, Video, Contact)
 - Configurable "About Business" section per product/service page
 - Naming series: PROD-.#####, SVC-.#####
 

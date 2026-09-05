@@ -29,21 +29,26 @@
     </div>
     {% endif %}
 
-    {# ===== BENEFITS ===== #}
-    {% if doc.benefits %}
+    {# ===== FEATURES ===== #}
+    {% if doc.features %}
     <div class="bc-section">
         <div class="bc-reading">
-            <h2 class="bc-section-title">Benefits</h2>
-            <ul style="line-height:2;color:#475569;">
-                {% for benefit in doc.benefits %}
-                <li>
-                    <strong>{{ benefit.title }}</strong>
-                    {% if benefit.description %}
-                    <br><span style="font-weight:normal;color:#64748b;">{{ benefit.description }}</span>
+            <h2 class="bc-section-title">Features</h2>
+            <div style="display:flex;flex-direction:column;gap:0.75rem;">
+                {% for feature in doc.features %}
+                <div style="display:flex;align-items:flex-start;gap:0.75rem;">
+                    {% if feature.image %}
+                    <img src="{{ feature.image }}" alt="{{ feature.title }}" style="width:48px;height:48px;border-radius:8px;object-fit:cover;flex-shrink:0;">
                     {% endif %}
-                </li>
+                    <div>
+                        <strong style="color:#1e293b;">{{ feature.title }}</strong>
+                        {% if feature.description %}
+                        <p style="margin:0.15rem 0 0;color:#64748b;font-size:0.9rem;">{{ feature.description }}</p>
+                        {% endif %}
+                    </div>
+                </div>
                 {% endfor %}
-            </ul>
+            </div>
         </div>
     </div>
     {% endif %}

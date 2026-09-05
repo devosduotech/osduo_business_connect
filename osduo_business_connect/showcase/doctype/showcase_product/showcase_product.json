@@ -100,6 +100,12 @@
       "options": "Product Gallery Item"
     },
     {
+      "fieldname": "features",
+      "fieldtype": "Table",
+      "label": "Features",
+      "options": "Feature"
+    },
+    {
       "fieldname": "section_pricing",
       "fieldtype": "Section Break",
       "label": "Pricing"

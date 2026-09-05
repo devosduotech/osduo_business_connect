@@ -102,10 +102,10 @@
       "description": "Google Maps link or any map URL"
     },
     {
-      "fieldname": "benefits",
+      "fieldname": "features",
       "fieldtype": "Table",
-      "label": "Benefits",
-      "options": "Service Benefit"
+      "label": "Features",
+      "options": "Feature"
     },
     {
       "fieldname": "gallery",

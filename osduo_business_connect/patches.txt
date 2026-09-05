@@ -2,3 +2,5 @@
 #
 # Patches are now handled by install.py
 # See osduo_business_connect/install.py for role and custom field setup
+
+osduo_business_connect.patches.v1_0.rename_service_benefit_to_feature

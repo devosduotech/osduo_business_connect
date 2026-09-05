@@ -29,6 +29,13 @@ class TestShowcaseProductDocType(unittest.TestCase):
         for req in ["business", "product_name", "slug", "price_display_mode", "status"]:
             self.assertIn(req, fieldnames)
 
+    def test_has_features_table(self):
+        fieldnames = [f["fieldname"] for f in self.data["fields"]]
+        self.assertIn("features", fieldnames)
+        features_field = next(f for f in self.data["fields"] if f["fieldname"] == "features")
+        self.assertEqual(features_field["fieldtype"], "Table")
+        self.assertEqual(features_field["options"], "Feature")
+
     def test_status_options(self):
         status_field = next(f for f in self.data["fields"] if f["fieldname"] == "status")
         options = status_field["options"]
@@ -80,6 +87,13 @@ class TestShowcaseServiceDocType(unittest.TestCase):
         for req in ["business", "service_name", "slug", "status"]:
             self.assertIn(req, fieldnames)
 
+    def test_has_features_table(self):
+        fieldnames = [f["fieldname"] for f in self.data["fields"]]
+        self.assertIn("features", fieldnames)
+        features_field = next(f for f in self.data["fields"] if f["fieldname"] == "features")
+        self.assertEqual(features_field["fieldtype"], "Table")
+        self.assertEqual(features_field["options"], "Feature")
+
     def test_status_options(self):
         status_field = next(f for f in self.data["fields"] if f["fieldname"] == "status")
         options = status_field["options"]
@@ -95,11 +109,11 @@ class TestShowcaseServiceDocType(unittest.TestCase):
         self.assertTrue(os.path.exists(path))
 
 
-class TestServiceBenefit(unittest.TestCase):
-    """Verify Service Benefit child table."""
+class TestFeature(unittest.TestCase):
+    """Verify Feature child table."""
 
     def setUp(self):
-        self.json_path = os.path.join(SHOWCASE_DIR, "doctype", "service_benefit", "service_benefit.json")
+        self.json_path = os.path.join(SHOWCASE_DIR, "doctype", "feature", "feature.json")
         self.data = load_json(self.json_path)
 
     def test_json_exists(self):
@@ -108,6 +122,15 @@ class TestServiceBenefit(unittest.TestCase):
     def test_required_fields(self):
         fieldnames = [f["fieldname"] for f in self.data["fields"]]
         self.assertIn("title", fieldnames)
+
+    def test_image_field(self):
+        fieldnames = [f["fieldname"] for f in self.data["fields"]]
+        self.assertIn("image", fieldnames)
+        image_field = next(f for f in self.data["fields"] if f["fieldname"] == "image")
+        self.assertEqual(image_field["fieldtype"], "Attach Image")
+
+    def test_is_child_table(self):
+        self.assertEqual(self.data.get("istable"), 1)
 
 
 if __name__ == "__main__":

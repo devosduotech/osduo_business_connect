@@ -5,5 +5,5 @@ import frappe
 from frappe.model.document import Document
 
 
-class ServiceBenefit(Document):
+class Feature(Document):
 	pass

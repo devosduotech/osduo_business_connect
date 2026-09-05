@@ -354,24 +354,25 @@ Add multiple images to showcase your product:
 | Field | Description |
 |-------|-------------|
 | Category | Service category (same as Product Category) |
-| Benefits | List of service benefits (title + description) |
+| Features | List of features (title + description + image) |
 | Gallery | Same as product gallery |
 
-### 4.7 Service Benefits
+### 4.7 Features
 
-![Service Benefits](./images/mockup/15_service_benefits.html)
+Features display on both product and service pages with an optional icon beside the title.
 
-1. Open your service
-2. Go to **Benefits** section
-3. Add each benefit:
+1. Open your product or service
+2. Go to **Features** section
+3. Add each feature:
 
 | Field | Description |
 |-------|-------------|
-| Title | Benefit name (e.g., "Custom Design") |
+| Title | Feature name (e.g., "Custom Design") |
 | Description | What's included |
+| Image | Optional icon or photo (48x48 displayed) |
 | Sort Order | Display order |
 
-Benefits display on the service page with the title in bold and description below it.
+Features display on the page with an optional image icon beside the bold title and description below it.
 
 ---
 
