@@ -9,6 +9,7 @@
     {% if og_description %}<meta property="og:description" content="{{ og_description }}">{% endif %}
     {% if og_image %}<meta property="og:image" content="{{ og_image }}">{% endif %}
     <link rel="icon" href="{{ bc_favicon or '/assets/osduo_business_connect/images/favicon.png' }}" type="image/png">
+    <meta name="csrf-token" content="{{ frappe.session.csrf_token or '' }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="/assets/osduo_business_connect/css/business_connect.css">
     <style>
