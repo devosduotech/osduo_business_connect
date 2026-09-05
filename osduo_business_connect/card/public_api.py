@@ -84,7 +84,7 @@ def get_public_card(slug):
     social_links = frappe.get_all(
         "Digital Card Link",
         filters={"parent": card.name, "enabled": 1},
-        fields=["link_type", "label", "value", "url"],
+        fields=["link_type", "label", "value", "url", "icon_class"],
         order_by="sort_order asc",
     )
 
@@ -108,6 +108,7 @@ def get_public_card(slug):
                 "label": link.label,
                 "value": link.value,
                 "url": link.url,
+                "icon_class": link.icon_class,
             }
             for link in social_links
         ],

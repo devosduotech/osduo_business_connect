@@ -33,7 +33,15 @@
             "fieldtype": "Data",
             "label": "URL",
             "options": "URL",
-            "description": "Full URL (auto-generated if not provided)"
+            "description": "Select a link type above to see the expected URL format"
+        },
+        {
+            "fieldname": "icon_class",
+            "fieldtype": "Data",
+            "label": "Icon Class",
+            "hidden": 1,
+            "read_only": 1,
+            "description": "Auto-set from link type selection"
         },
         {
             "fieldname": "enabled",

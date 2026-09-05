@@ -30,7 +30,9 @@
         <div class="bc-card-page" style="padding:1.25rem 0;">
             <div class="bc-card-links" style="margin:0;">
                 {% for link in links %}
-                <a href="{{ link.url }}" target="_blank" class="bc-btn bc-btn-secondary" style="font-size:0.8rem;">{{ link.label or link.link_type }}</a>
+                <a href="{{ link.url }}" target="_blank" class="bc-btn bc-btn-secondary" style="font-size:0.8rem;">
+                    {% if link.icon_class %}<i class="{{ link.icon_class }}" style="margin-right:0.3rem;"></i>{% endif %}{{ link.label or link.link_type }}
+                </a>
                 {% endfor %}
             </div>
         </div>
@@ -153,7 +155,7 @@
         </div>
 
         <div class="bc-card-share" style="padding:0.75rem 0 1.5rem;text-align:center;">
-            <p style="color:#94a3b8;font-size:0.7rem;">Powered by OSDuo Business Connect</p>
+            <p style="color:#94a3b8;font-size:0.7rem;">Powered by <a href="https://connect.osduotech.com" target="_blank" rel="noopener" style="color:#94a3b8;text-decoration:underline;">OSDuo Business Connect</a></p>
         </div>
     </div>
 </div>

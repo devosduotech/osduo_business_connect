@@ -26,13 +26,16 @@
             "label": "URL",
             "reqd": 1,
             "options": "URL",
-            "in_list_view": 1
+            "in_list_view": 1,
+            "description": "Select a platform above to see the expected URL format"
         },
         {
-            "fieldname": "icon",
+            "fieldname": "icon_class",
             "fieldtype": "Data",
-            "label": "Icon",
-            "description": "Internal icon key"
+            "label": "Icon Class",
+            "hidden": 1,
+            "read_only": 1,
+            "description": "Auto-set from platform selection"
         },
         {
             "fieldname": "enabled",
