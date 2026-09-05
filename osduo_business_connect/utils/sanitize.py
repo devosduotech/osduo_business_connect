@@ -70,7 +70,7 @@ def sanitize_text(text):
     """
     Sanitize plain text content.
 
-    Removes any HTML tags and escapes special characters.
+    Strips HTML tags and trims whitespace.
 
     Args:
         text: Text content to sanitize
@@ -81,9 +81,8 @@ def sanitize_text(text):
     if not text:
         return text
 
-    # Use Frappe's text sanitizer
-    from frappe.utils import cstr
-    return cstr(text).strip()
+    from frappe.utils import strip_html_tags, cstr
+    return strip_html_tags(cstr(text)).strip()
 
 
 def normalize_url(url):

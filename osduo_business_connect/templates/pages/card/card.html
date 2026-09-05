@@ -118,7 +118,7 @@
         <div class="bc-card-page bc-card-share" style="padding:1.25rem 0;">
             <h2 style="font-size:1rem;color:var(--bc-primary);">Share Card</h2>
 
-            <div class="bc-card-share-link" onclick="navigator.clipboard.writeText('{{ card_url }}').then(function(){document.getElementById('bc-copy-toast').textContent='Copied!';document.getElementById('bc-copy-toast').style.display='block';setTimeout(function(){document.getElementById('bc-copy-toast').style.display='none';},1500);})">
+            <div class="bc-card-share-link" data-copy-url="{{ card_url }}">
                 <span class="bc-card-share-url">{{ card_url }}</span>
                 <span class="bc-card-share-copy">Copy</span>
             </div>
@@ -228,6 +228,20 @@ document.querySelectorAll('.bc-card-bottom-nav a').forEach(function(link) {
             var target = document.getElementById(href.substring(1));
             if (target) target.scrollIntoView({ behavior: 'smooth' });
         }
+    });
+});
+
+document.querySelectorAll('.bc-card-share-link[data-copy-url]').forEach(function(el) {
+    el.addEventListener('click', function() {
+        var url = this.getAttribute('data-copy-url');
+        var toast = document.getElementById('bc-copy-toast');
+        navigator.clipboard.writeText(url).then(function() {
+            if (toast) {
+                toast.textContent = 'Copied!';
+                toast.style.display = 'block';
+                setTimeout(function() { toast.style.display = 'none'; }, 1500);
+            }
+        });
     });
 });
 </script>

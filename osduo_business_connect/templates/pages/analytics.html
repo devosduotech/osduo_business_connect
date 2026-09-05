@@ -73,6 +73,13 @@
 <script>
 var CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
 
+function escapeHtml(str) {
+    if (!str) return '';
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode(str));
+    return div.innerHTML;
+}
+
 function apiCall(method, args) {
     return fetch("/api/method/" + method, {
         method: "POST",
@@ -96,7 +103,7 @@ document.addEventListener("DOMContentLoaded", function() {
         .then(function(r) {
             if (r.message && r.message.length) {
                 bSelect.innerHTML = r.message.map(function(b) {
-                    return '<option value="' + b.name + '">' + b.business_name + '</option>';
+                    return '<option value="' + escapeHtml(b.name) + '">' + escapeHtml(b.business_name) + '</option>';
                 }).join("");
                 loadAnalytics();
             } else {
@@ -106,8 +113,8 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         })
         .catch(function(err) {
-            document.getElementById("analytics-loading").innerHTML =
-                '<div style="color:#dc3545;">Error loading: ' + err.message + '</div>';
+                document.getElementById("analytics-loading").innerHTML =
+                    '<div style="color:#dc3545;">Error loading: ' + escapeHtml(err.message) + '</div>';
         });
 
     function loadAnalytics() {
@@ -126,7 +133,7 @@ document.addEventListener("DOMContentLoaded", function() {
             })
             .catch(function(err) {
                 document.getElementById("analytics-loading").innerHTML =
-                    '<div style="color:#dc3545;">Error: ' + err.message + '</div>';
+                    '<div style="color:#dc3545;">Error: ' + escapeHtml(err.message) + '</div>';
             });
     }
 
@@ -203,7 +210,7 @@ document.addEventListener("DOMContentLoaded", function() {
             var c = colors[i % colors.length];
             html += '<div style="margin-bottom:0.75rem;">' +
                 '<div style="display:flex;justify-content:space-between;margin-bottom:0.25rem;">' +
-                '<span style="font-size:0.8rem;color:#334155;">' + k.replace(/_/g," ").replace(/\b\w/g,function(c){return c.toUpperCase();}) + '</span>' +
+                '<span style="font-size:0.8rem;color:#334155;">' + escapeHtml(k.replace(/_/g," ").replace(/\b\w/g,function(c){return c.toUpperCase();})) + '</span>' +
                 '<span style="font-size:0.8rem;color:#64748b;">' + data[k] + ' (' + pct + '%)</span></div>' +
                 '<div style="height:6px;background:#f1f5f9;border-radius:3px;overflow:hidden;">' +
                 '<div style="height:100%;width:' + pct + '%;background:' + c + ';border-radius:3px;"></div></div></div>';
@@ -220,7 +227,7 @@ document.addEventListener("DOMContentLoaded", function() {
             '<th style="text-align:right;padding:0.5rem 0;color:#64748b;font-weight:500;">Views</th></tr></thead><tbody>';
         data.forEach(function(d){
             html += '<tr style="border-bottom:1px solid #f1f5f9;">' +
-                '<td style="padding:0.5rem 0;color:#334155;">' + (d.member_name||d.card||"—") + '</td>' +
+                '<td style="padding:0.5rem 0;color:#334155;">' + escapeHtml(d.member_name||d.card||"—") + '</td>' +
                 '<td style="padding:0.5rem 0;text-align:right;font-weight:600;color:#334155;">' + d.views + '</td></tr>';
         });
         html += "</tbody></table>"; el.innerHTML = html;
@@ -255,10 +262,10 @@ document.addEventListener("DOMContentLoaded", function() {
         data.forEach(function(d){
             var pg = d.person_name||d.card||d.product_name||d.service_name||"—";
             html += '<tr style="border-bottom:1px solid #f1f5f9;">' +
-                '<td style="padding:0.5rem 0;color:#64748b;white-space:nowrap;">' + (d.event_time||"") + '</td>' +
-                '<td style="padding:0.5rem 0;color:#334155;">' + (d.event_type||"").replace(/_/g," ").replace(/\b\w/g,function(c){return c.toUpperCase();}) + '</td>' +
-                '<td style="padding:0.5rem 0;color:#334155;">' + pg + '</td>' +
-                '<td style="padding:0.5rem 0;color:#64748b;">' + (d.device_type||"Unknown") + '</td></tr>';
+                '<td style="padding:0.5rem 0;color:#64748b;white-space:nowrap;">' + escapeHtml(d.event_time||"") + '</td>' +
+                '<td style="padding:0.5rem 0;color:#334155;">' + escapeHtml((d.event_type||"").replace(/_/g," ").replace(/\b\w/g,function(c){return c.toUpperCase();})) + '</td>' +
+                '<td style="padding:0.5rem 0;color:#334155;">' + escapeHtml(pg) + '</td>' +
+                '<td style="padding:0.5rem 0;color:#64748b;">' + escapeHtml(d.device_type||"Unknown") + '</td></tr>';
         });
         html += "</tbody></table>"; el.innerHTML = html;
     }
