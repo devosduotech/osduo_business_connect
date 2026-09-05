@@ -173,6 +173,18 @@
       "default": 1
     },
     {
+      "fieldname": "show_about_in_product_page",
+      "fieldtype": "Check",
+      "label": "Show About Business in Product Pages",
+      "default": 1
+    },
+    {
+      "fieldname": "show_about_in_service_page",
+      "fieldtype": "Check",
+      "label": "Show About Business in Service Pages",
+      "default": 1
+    },
+    {
       "fieldname": "column_break_branding",
       "fieldtype": "Column Break"
     },

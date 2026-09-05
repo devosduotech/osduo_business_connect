@@ -68,6 +68,7 @@
     {% endif %}
 
     {# ===== BUSINESS INFO ===== #}
+    {% if business.show_about_in_product_page %}
     <div class="bc-section">
         <div class="bc-reading bc-bg">
             <h2 class="bc-section-title">About {{ business_name }}</h2>
@@ -94,6 +95,7 @@
             </div>
         </div>
     </div>
+    {% endif %}
 
     {# ===== ENQUIRY FORM ===== #}
     {% if doc.enquiry_enabled %}
