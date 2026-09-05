@@ -15,12 +15,6 @@
             "in_list_view": 1
         },
         {
-            "fieldname": "label",
-            "fieldtype": "Data",
-            "label": "Label",
-            "description": "Custom label for this link"
-        },
-        {
             "fieldname": "url",
             "fieldtype": "Data",
             "label": "URL",
@@ -34,8 +28,7 @@
             "fieldtype": "Data",
             "label": "Icon Class",
             "hidden": 1,
-            "read_only": 1,
-            "description": "Auto-set from platform selection"
+            "read_only": 1
         },
         {
             "fieldname": "enabled",
