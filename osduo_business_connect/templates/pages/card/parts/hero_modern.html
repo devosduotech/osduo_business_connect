@@ -63,11 +63,4 @@
         {% endfor %}
     </div>
     {% endif %}
-
-    {% if doc.qr_enabled and doc.qr_image %}
-    <div class="bc-card-qr bc-hero-modern-qr">
-        <img src="{{ doc.qr_image }}" alt="QR Code">
-        <p>Scan to view card</p>
-    </div>
-    {% endif %}
 </div>
