@@ -59,5 +59,8 @@ def track_event(business, event_type, **kwargs):
             event_type=event_type,
             **kwargs,
         )
-    except Exception:
-        pass
+    except Exception as e:
+        frappe.log_error(
+            title="Analytics Track Event Failed",
+            message=f"Failed to enqueue {event_type} for {business}: {str(e)}",
+        )

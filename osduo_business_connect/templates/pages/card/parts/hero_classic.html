@@ -61,7 +61,7 @@
             </a>
             {% endif %}
             {% if doc.website %}
-            <a href="{{ doc.website }}" target="_blank" class="bc-card-action-btn bc-hero-classic-btn">
+            <a href="{{ doc.website | safe_url }}" target="_blank" class="bc-card-action-btn bc-hero-classic-btn">
                 <span class="bc-card-action-icon">&#127760;</span> Website
             </a>
             {% endif %}
@@ -71,7 +71,7 @@
         <div class="bc-hero-classic-divider-line"></div>
         <div class="bc-card-links bc-hero-classic-links">
             {% for link in links %}
-            <a href="{{ link.url }}" target="_blank" class="bc-btn bc-hero-classic-link-btn">{% if link.icon_class %}<i class="{{ link.icon_class }}" style="margin-right:0.3rem;"></i>{% endif %}{{ link.label or link.link_type }}</a>
+            <a href="{{ link.url | safe_url }}" target="_blank" class="bc-btn bc-hero-classic-link-btn">{% if link.icon_class %}<i class="{{ link.icon_class }}" style="margin-right:0.3rem;"></i>{% endif %}{{ link.label or link.link_type }}</a>
             {% endfor %}
         </div>
         {% endif %}

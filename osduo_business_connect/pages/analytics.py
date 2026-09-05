@@ -11,7 +11,7 @@ import frappe
 from frappe import _
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def get_analytics(business, days=30):
     """
     Get analytics data for a business.
@@ -78,7 +78,7 @@ def get_analytics(business, days=30):
     }
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def get_business_list():
     """Get list of businesses the current user has access to."""
     from osduo_business_connect.business.core import get_user_businesses

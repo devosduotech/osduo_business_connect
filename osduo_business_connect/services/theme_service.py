@@ -9,8 +9,29 @@ Static CSS is in public/css/business_connect.css.
 Theme only supplies CSS custom properties.
 """
 
+import re
 import frappe
 from frappe import _
+
+
+def sanitize_css_value(value, fallback=""):
+    """Sanitize a value for safe CSS interpolation.
+
+    Only allows safe characters: hex colors, px, rem, em, %, rgba, etc.
+    Strips anything that could inject CSS (semicolons, braces, url(), etc.).
+    """
+    if not value:
+        return fallback
+    value = str(value).strip()
+    # Remove dangerous patterns
+    value = re.sub(r'[;{}()]\s*', '', value)
+    value = re.sub(r'url\s*\(', '', value, flags=re.IGNORECASE)
+    value = re.sub(r'expression\s*\(', '', value, flags=re.IGNORECASE)
+    value = re.sub(r'javascript:', '', value, flags=re.IGNORECASE)
+    # Limit length to prevent abuse
+    if len(value) > 200:
+        value = value[:200]
+    return value or fallback
 
 
 # Color scheme definitions
@@ -203,20 +224,20 @@ def get_theme_variables(theme_data):
     section_spacing = spacing_map.get(template, "2rem 1.5rem")
 
     vars_css = (
-        f"--bc-primary: {primary};"
-        f"--bc-secondary: {secondary};"
-        f"--bc-accent: {accent};"
-        f"--bc-background: {background};"
-        f"--bc-text: {text_color};"
-        f"--bc-card-radius: {card_radius};"
-        f"--bc-btn-radius: {btn_radius};"
-        f"--bc-font-family: {font_family};"
-        f"--bc-font-size: {font_size};"
-        f"--bc-header-bg: {header_bg};"
-        f"--bc-header-text: {header_text};"
-        f"--bc-section-spacing: {section_spacing};"
-        f"--bc-card-shadow: {shadow};"
-        f"--bc-card-border: {border};"
+        f"--bc-primary: {sanitize_css_value(primary)};"
+        f"--bc-secondary: {sanitize_css_value(secondary)};"
+        f"--bc-accent: {sanitize_css_value(accent)};"
+        f"--bc-background: {sanitize_css_value(background)};"
+        f"--bc-text: {sanitize_css_value(text_color)};"
+        f"--bc-card-radius: {sanitize_css_value(card_radius)};"
+        f"--bc-btn-radius: {sanitize_css_value(btn_radius)};"
+        f"--bc-font-family: {sanitize_css_value(font_family)};"
+        f"--bc-font-size: {sanitize_css_value(font_size)};"
+        f"--bc-header-bg: {sanitize_css_value(header_bg)};"
+        f"--bc-header-text: {sanitize_css_value(header_text)};"
+        f"--bc-section-spacing: {sanitize_css_value(section_spacing)};"
+        f"--bc-card-shadow: {sanitize_css_value(shadow)};"
+        f"--bc-card-border: {sanitize_css_value(border)};"
     )
 
     return vars_css
