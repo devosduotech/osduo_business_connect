@@ -225,7 +225,7 @@ bench restart
 cd osduo_business_connect
 python3 -m unittest discover -s tests -p "test_*.py" -v
 
-# 109+ tests across 9 files
+# 103 tests across 9 files
 ```
 
 ---
