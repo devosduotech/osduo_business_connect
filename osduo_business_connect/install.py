@@ -30,6 +30,9 @@ def after_install():
     # Create CRM Lead Source
     create_crm_lead_source()
 
+    # Ensure desk pages exist
+    ensure_desk_pages()
+
 
 def create_crm_custom_fields():
     """
@@ -189,6 +192,7 @@ def after_migrate():
     create_default_roles()
     create_builtin_themes()
     create_crm_lead_source()
+    ensure_desk_pages()
 
 
 def migrate_crm_custom_fields():
@@ -311,6 +315,29 @@ def _get_scheme_accent(scheme):
         "Red": "#F87171",
     }
     return colors.get(scheme, "#60A5FA")
+
+
+def ensure_desk_pages():
+    """Ensure required Page records exist for desk pages."""
+    pages = [
+        {"name": "analytics", "title": "Analytics Dashboard", "icon": "octicon octicon-graph"},
+    ]
+    for page_cfg in pages:
+        if not frappe.db.exists("Page", page_cfg["name"]):
+            try:
+                doc = frappe.get_doc({
+                    "doctype": "Page",
+                    "name": page_cfg["name"],
+                    "module": "Osduo Business Connect",
+                    "page_name": page_cfg["name"],
+                    "title": page_cfg["title"],
+                    "icon": page_cfg["icon"],
+                    "docstatus": 0,
+                })
+                doc.insert(ignore_permissions=True)
+            except Exception:
+                frappe.log_error(f"Failed to create Page: {page_cfg['name']}")
+    frappe.db.commit()
 
 
 def apply_branding_settings():

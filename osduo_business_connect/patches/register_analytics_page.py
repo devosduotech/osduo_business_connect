@@ -3,28 +3,19 @@ import frappe
 
 def execute():
     """Register the Analytics desk page in the Page DocType."""
-
     page_name = "analytics"
 
     if frappe.db.exists("Page", page_name):
         return
 
-    frappe.flags.in_patch = True
-
-    frappe.db.sql(
-        """INSERT INTO `tabPage`
-        (name, module, page_name, title, icon,
-         creation, modified, modified_by, owner, docstatus)
-        VALUES (%s, %s, %s, %s, %s, NOW(), NOW(), %s, %s, 0)""",
-        (
-            page_name,
-            "Osduo Business Connect",
-            page_name,
-            "Analytics Dashboard",
-            "octicon octicon-graph",
-            frappe.session.user,
-            frappe.session.user,
-        ),
-    )
+    doc = frappe.get_doc({
+        "doctype": "Page",
+        "name": page_name,
+        "module": "Osduo Business Connect",
+        "page_name": page_name,
+        "title": "Analytics Dashboard",
+        "icon": "octicon octicon-graph",
+        "docstatus": 0,
+    })
+    doc.insert(ignore_permissions=True)
     frappe.db.commit()
-    frappe.flags.in_patch = False
