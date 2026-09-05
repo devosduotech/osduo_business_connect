@@ -25,20 +25,6 @@
         {# ===== STRIPE SEPARATOR ===== #}
         <div class="bc-card-stripe"></div>
 
-        {# ===== SOCIAL LINKS ===== #}
-        {% if links %}
-        <div class="bc-card-page" style="padding:1.25rem 0;">
-            <div class="bc-card-links" style="margin:0;">
-                {% for link in links %}
-                <a href="{{ link.url }}" target="_blank" class="bc-btn bc-btn-secondary" style="font-size:0.8rem;">
-                    {% if link.icon_class %}<i class="{{ link.icon_class }}" style="margin-right:0.3rem;"></i>{% endif %}{{ link.label or link.link_type }}
-                </a>
-                {% endfor %}
-            </div>
-        </div>
-        <div class="bc-card-stripe"></div>
-        {% endif %}
-
         {# ===== BUSINESS LINK ===== #}
         {% if doc.show_business and doc.business_slug %}
         <div class="bc-card-page" style="padding:1rem 0 0.5rem;text-align:center;">
