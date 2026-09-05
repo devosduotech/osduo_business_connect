@@ -7,7 +7,7 @@
   "naming_rule": "By \"Series\" field",
   "autoname": "naming_series:",
   "title_field": "service_name",
-  "search_fields": "service_name,short_description",
+  "search_fields": "service_name,short_description,category",
   "is_submittable": 0,
   "issingle": 0,
   "istable": 0,
@@ -50,6 +50,13 @@
       "unique": 0,
       "in_list_view": 1,
       "description": "URL-friendly identifier"
+    },
+    {
+      "fieldname": "category",
+      "fieldtype": "Link",
+      "label": "Category",
+      "options": "Product Category",
+      "in_standard_filter": 1
     },
     {
       "fieldname": "section_description",
