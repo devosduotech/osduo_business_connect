@@ -85,7 +85,7 @@ Each template is fully customizable with:
 - "About Business" section with description & address
 
 ### Analytics
-- Desk dashboard at `/app/analytics` — business selector, date range
+- Web dashboard at `/analytics` — business selector, date range
 - SVG line chart with gradient fill (visits by day)
 - Summary cards: Link Visits, QR Scans, Cards, Products
 - Top cards ranked by views with member names
@@ -115,7 +115,7 @@ Enquiry → Background sync → CRM Lead
 | `/b/<business>/products/<product>` | Product page |
 | `/b/<business>/services/<service>` | Service page |
 | `/c/<card>` | Digital Card (short QR/NFC URL) |
-| `/app/analytics` | Analytics dashboard |
+| `/analytics` | Analytics dashboard |
 
 ---
 
