@@ -37,7 +37,7 @@
 - [x] Product page (`/b/<slug>/products/<product>`)
 - [x] Service page (`/b/<slug>/services/<service>`)
 - [x] Team member page (`/b/<slug>/team/<member>`)
-- [x] Analytics desk page (`/osduo_business_connect/analytics`)
+- [x] Analytics web page (`/analytics`) with sidebar navigation
 - [x] Monkey-patch for Frappe v16 routing bug
 - [x] Guest access without has_permission hook
 
@@ -157,21 +157,42 @@
 - [x] API gallery serialization includes sort_order
 - [x] API service serialization includes gallery
 
-### v1.4.0 — Security Hardening & Status Alignment
-- [x] P0-1: Permission hooks restored for 9 DocTypes via centralized dispatcher
-- [x] P0-2: Route monkey patch removed (native Frappe v16 routing)
-- [x] P0-3: Enquiry Guest create permission removed (whitelisted API only)
-- [x] P0-4: Rate limiting — 10 enquiries per IP per business per hour
-- [x] P0-5: CRM sync idempotent (duplicate enqueue removed)
-- [x] P0-6: Service query fixed (removed nonexistent price/currency)
-- [x] CSRF fix: `allowed_referrers` replaces `ignore_csrf` (production-safe)
-- [x] Analytics context auto-populated: session_id, landing_url, referrer
-- [x] Enquiry status aligned 1:1 with CRM Lead statuses
-- [x] CRM hook maps statuses bidirectionally (Lead ↔ Enquiry)
-- [x] Enquiry forms added to product and service pages
-- [x] CRM sync no longer changes enquiry status (status driven by Lead)
-- [x] Enquiry stats updated: New, Ongoing, Converted, Lost pipeline
-- [x] Dead route modules removed (public_route.py, product_route.py, service_route.py)
+### v1.0.1 — UI Fixes & Release Prep
+- [x] Service page: benefits field name fix (`benefit` → `title`)
+- [x] Service page: benefits description display (title + description)
+- [x] Service page: gallery heading "Gallery" (not service name)
+- [x] Product page: gallery heading "Gallery" (not product name)
+- [x] Service page: "About This Service" → generic "About"
+- [x] All section headings made generic (About, Benefits, Gallery, Location, Video, Contact)
+- [x] Business DocType: `show_about_in_product_page` checkbox (default=1)
+- [x] Business DocType: `show_about_in_service_page` checkbox (default=1)
+- [x] Product/service pages: About Business section wrapped in conditional
+- [x] `get_public_business_by_slug()` fetches both visibility flags
+- [x] Gallery section removed from business page (images come from products/services)
+- [x] `_get_gallery_images()` controller function removed from business.py
+- [x] Category field added to Showcase Service (links to Product Category)
+- [x] Service search_fields includes category
+- [x] Analytics dashboard converted from desk page to web page at `/analytics`
+- [x] Analytics: sidebar navigation, stat cards, bar chart, events, pipeline, recent activity
+- [x] CSRF token embedded via `<meta>` tag in bc_base.html for web page API calls
+- [x] Analytics API endpoints: `allow_guest=True` for web page access
+- [x] Social link icons: `icon_class` field on Business Social Link and Digital Card Link
+- [x] Social link icons: Font Awesome 6.5.1 CDN loaded in bc_base.html
+- [x] Social link icons: auto-set server-side in `Business.before_save()` and `DigitalCard.before_save()`
+- [x] Social link URL hints: static reference showing all platform formats
+- [x] Footer link: "Powered by OSDuo Business Connect" → `https://connect.osduotech.com`
+- [x] Footer link added to all 5 page templates (business, card, product, service, team_member)
+- [x] Duplicate social links removed from card.html body (only hero partial renders them)
+- [x] QR code removed from all 4 hero partials (modern, professional, minimal, classic)
+- [x] Label field removed from Business Social Link (unused — card uses label, business uses platform)
+- [x] `frappe.db.commit()` cleanup from business/core.py and crm_lead_hook.py
+
+### v1.0.1 — Audit Fixes (Priority)
+- [x] C-3: XSS sanitization for rich text fields (sanitize_rich_text utility)
+- [x] C-5: Generic error messages in enquiry controllers (no stack traces to users)
+- [x] M-1: Analytics event deduplication via tracking.py module
+- [x] M-8: CRM sync logging via log_error instead of print
+- [x] L-8: Test assertion fix (_test_uat_old.py result["status"] == "success")
 
 ---
 
@@ -184,6 +205,14 @@
 | 1 | VM smoke test | ✅ Done |
 | 2 | User manual creation | ✅ Done (`docs/USER_MANUAL.md`) |
 | 3 | Screenshot capture (43 images) | ⏳ In Progress (mockups in `docs/images/mockup/`) |
+| 4 | Social link icons | ✅ Done (Font Awesome + auto-set) |
+| 5 | Footer link | ✅ Done (connect.osduotech.com) |
+| 6 | Service page benefits fix | ✅ Done (title + description) |
+| 7 | Generic section headings | ✅ Done |
+| 8 | About Business visibility toggles | ✅ Done (checkboxes on Business) |
+| 9 | Gallery removed from business page | ✅ Done |
+| 10 | Category field on services | ✅ Done |
+| 11 | Analytics dashboard UI | ✅ Done (web page with sidebar) |
 
 ### Phase 2 — v1.0.2 Theme & UX (Next Release)
 
@@ -407,5 +436,5 @@ python3 -m unittest discover -s tests -p "test_*.py" -v
 /b/<business>/products/<product> → Product page
 /b/<business>/services/<service> → Service page
 /c/<card>                        → Digital Card (short QR/NFC URL)
-/analytics                       → Analytics desk dashboard
+/analytics                       → Analytics dashboard (requires login)
 ```

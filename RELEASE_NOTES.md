@@ -20,8 +20,9 @@ OSDuo Business Connect v1.0.1 is the initial production release of a Frappe Fram
 ### Business Identity Management
 - Create and manage business profiles with public slug
 - Team member management with role-based access (Owner, Manager, Member, Marketing, CRM User)
-- Business hours and social links
+- Business hours and social links with auto-detected platform icons
 - Public business landing page at `/b/<slug>`
+- Configurable "About Business" section visibility on product/service pages
 - Naming series: BIZ-.#####, BM-.#####
 
 ### Digital Business Cards
@@ -31,14 +32,17 @@ OSDuo Business Connect v1.0.1 is the initial production release of a Frappe Fram
 - VCF download ("Add to Phone Book")
 - Share via WhatsApp, email, SMS, or direct link
 - QR code generation (print-ready)
+- Social links with auto-detected platform icons (Font Awesome)
 - Naming series: CARD-.#####
 
 ### Product & Service Showcase
 - Showcase products with galleries, pricing, and brochures
-- Showcase services with benefits and descriptions
-- Reusable product categories per business
+- Showcase services with benefits (title + description) and galleries
+- Reusable product categories (shared between products and services)
 - Product/service pages at `/b/<slug>/products/<product>` and `/b/<slug>/services/<service>`
 - Gallery with click-to-open fullscreen, lazy loading, captions
+- Generic section headings (About, Benefits, Gallery, Location, Video, Contact)
+- Configurable "About Business" section per product/service page
 - Naming series: PROD-.#####, SVC-.#####
 
 ### Branding & Theming
@@ -69,19 +73,16 @@ OSDuo Business Connect v1.0.1 is the initial production release of a Frappe Fram
 - Source attribution: "Business Connect"
 
 ### Analytics Dashboard
-- Desk dashboard at `/app/analytics` with business selector and date range
+- Web dashboard at `/analytics` with sidebar navigation
+- Business selector and date range filter (7/15/30/90/365 days)
 - SVG line chart with gradient fill (visits by day)
 - Summary cards: Link Visits, QR Scans, Cards, Products
+- Events by type with horizontal progress bars
 - Top cards ranked by views with member names
-- Recent activity with member name, device type, browser
+- Recent activity with event type, page, and device
 - Enquiry pipeline: New → Ongoing → Converted → Lost
 - Device type & browser tracking
 - Non-blocking background event recording
-
-### Page Section System
-- Enable/disable, reorder, and control visibility of page sections
-- Section types: Hero, About, Products, Services, Contact, Gallery, Custom
-- Drag-and-drop ordering via sequence field
 
 ### Security & Permissions
 - 7 custom roles: BC Manager, BC User, BC Viewer, BC Content, BC Analytics, BC Enquiry, BC Settings
@@ -101,17 +102,16 @@ OSDuo Business Connect v1.0.1 is the initial production release of a Frappe Fram
 | `/b/<business>/products/<product>` | Product page |
 | `/b/<business>/services/<service>` | Service page |
 | `/c/<card>` | Digital Card (short QR/NFC URL) |
-| `/app/analytics` | Analytics dashboard |
+| `/analytics` | Analytics dashboard (requires login) |
 
 ---
 
 ## How It Works
 
 ```
-Customer scans QR code
+Customer scans QR code or clicks link
         ↓
-  Digital Card (/c/<card>)
-  or Business Profile (/b/<business>)
+  Views your Digital Card or Business Profile
         ↓
   Browses products, services, team
         ↓
@@ -212,6 +212,7 @@ bench restart
 - **Permission separation** — Centralized dispatcher in `permissions/__init__.py`
 - **Background jobs** — CRM sync via `frappe.enqueue` with retry logic
 - **Theme service** — Guest-safe theme resolution via `frappe.db.get_value()`
+- **Analytics** — Web page at `/analytics` with sidebar navigation (not desk page)
 
 ---
 
@@ -221,7 +222,7 @@ bench restart
 cd osduo_business_connect
 python3 -m unittest discover -s tests -p "test_*.py" -v
 
-# 103 tests across 9 files
+# 109+ tests across 9 files
 ```
 
 ---
@@ -239,7 +240,7 @@ bench restart
 
 ## Known Issues
 
-None at release.
+- Analytics dashboard has basic theming (sidebar color does not match BC theme yet) — deferred to v1.0.2
 
 ---
 

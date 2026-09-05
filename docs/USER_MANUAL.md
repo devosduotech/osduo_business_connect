@@ -126,7 +126,18 @@ Customer scans QR code or clicks link
 | **Marketing** | Manage products, services, themes, analytics |
 | **CRM User** | View and manage enquiries and CRM leads |
 
-### 2.3 Business Hours
+### 2.5 Page Visibility Settings
+
+Control what appears on your public product and service pages:
+
+| Field | Default | Description |
+|-------|---------|-------------|
+| Show About Business in Product Pages | On | Display "About {business}" section on product pages |
+| Show About Business in Service Pages | On | Display "About {business}" section on service pages |
+
+Both are enabled by default. Uncheck to hide the "About Business" section on specific page types.
+
+### 2.6 Business Hours
 
 1. Open your business
 2. Go to **Business Hours** tab
@@ -140,7 +151,7 @@ Customer scans QR code or clicks link
 | Close Time | When business closes |
 | Is 24 Hours | Toggle for 24-hour operation |
 
-### 2.4 Social Links
+### 2.7 Social Links
 
 1. Open your business
 2. Go to **Social Links** tab
@@ -149,8 +160,17 @@ Customer scans QR code or clicks link
 | Field | Description |
 |-------|-------------|
 | Platform | Facebook, Instagram, LinkedIn, X, YouTube, Telegram, Website, Portfolio, Other |
-| Label | Display text (e.g., "Follow us on Instagram") |
 | URL | Full URL to your profile |
+| Icon Class | Auto-set based on platform (Font Awesome icon) |
+
+**Platform icons are auto-detected:**
+- Facebook → `fa-brands fa-facebook`
+- Instagram → `fa-brands fa-instagram`
+- LinkedIn → `fa-brands fa-linkedin`
+- X → `fa-brands fa-x-twitter`
+- YouTube → `fa-brands fa-youtube`
+- Telegram → `fa-brands fa-telegram`
+- Website → `fa-solid fa-globe`
 
 ---
 
@@ -333,6 +353,7 @@ Add multiple images to showcase your product:
 
 | Field | Description |
 |-------|-------------|
+| Category | Service category (same as Product Category) |
 | Benefits | List of service benefits (title + description) |
 | Gallery | Same as product gallery |
 
@@ -349,6 +370,8 @@ Add multiple images to showcase your product:
 | Title | Benefit name (e.g., "Custom Design") |
 | Description | What's included |
 | Sort Order | Display order |
+
+Benefits display on the service page with the title in bold and description below it.
 
 ---
 
@@ -539,7 +562,7 @@ Track your sales funnel:
 
 ![Analytics Dashboard](./images/mockup/32_analytics_dashboard.html)
 
-1. Go to **/app/analytics** from the desk
+1. Go to **/analytics** from the desk (requires login)
 2. Select your business from the dropdown
 3. Choose date range: 7, 15, 30, 90, or 365 days
 
