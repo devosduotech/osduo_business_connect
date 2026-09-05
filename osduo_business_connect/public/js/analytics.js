@@ -1,6 +1,12 @@
 // Copyright (c) 2026, OSDuo and contributors
 // For license information, please see license.txt
 
+frappe.provide("frappe.pages");
+
+if (!frappe.pages["analytics"]) {
+	frappe.pages["analytics"] = {};
+}
+
 frappe.pages["analytics"].on_page_load = function (wrapper) {
 	var page = frappe.ui.make_app_page({
 		parent: wrapper,
