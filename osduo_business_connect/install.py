@@ -318,7 +318,11 @@ def _get_scheme_accent(scheme):
 
 
 def ensure_desk_pages():
-    """Ensure required Page records exist for desk pages."""
+    """Ensure required Page records exist for desk pages.
+    
+    The analytics page JS is loaded via app_include_js (public/js/analytics.js).
+    This function ensures the Page DocType record exists for /desk/analytics routing.
+    """
     pages = [
         {"name": "analytics", "title": "Analytics Dashboard", "icon": "octicon octicon-graph"},
     ]
