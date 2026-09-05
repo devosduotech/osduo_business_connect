@@ -77,30 +77,6 @@
     {% endif %}
 
     {# ===== GALLERY ===== #}
-    {% if gallery_images %}
-    <div class="bc-section bc-section-alt" id="bc-gallery">
-        <div class="bc-container">
-            <h2 class="bc-section-title">Gallery</h2>
-            <div class="bc-gallery-grid">
-                {% for image in gallery_images %}
-                <div class="bc-gallery-item">
-                    <img
-                        class="bc-gallery-img"
-                        src="{{ image.image }}"
-                        alt="{{ image.alt_text or image.caption or '' }}"
-                        loading="lazy"
-                        onclick="window.open('{{ image.image }}', '_blank')"
-                    >
-                    {% if image.caption %}
-                    <p class="bc-gallery-caption">{{ image.caption }}</p>
-                    {% endif %}
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-    {% endif %}
-
     {# ===== CONTACT ===== #}
     <div class="bc-section bc-section-alt" id="bc-contact">
         <div class="bc-container">
