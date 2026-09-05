@@ -1,0 +1,165 @@
+{%- extends "osduo_business_connect/templates/bc_base.html" -%}
+
+{%- block page_content -%}
+<div class="bc-page" style="background:var(--bc-bg, #f4f6f8);min-height:100vh;padding:2rem 1rem;">
+    <div style="max-width:1100px;margin:0 auto;">
+        <h1 style="font-size:1.6rem;font-weight:700;margin-bottom:1.5rem;">Analytics Dashboard</h1>
+
+        <div style="display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+            <select id="analytics-business" style="padding:0.5rem;border:1px solid #d1d5db;border-radius:6px;min-width:250px;font-size:0.9rem;">
+                <option value="">Loading businesses...</option>
+            </select>
+            <select id="analytics-days" style="padding:0.5rem;border:1px solid #d1d5db;border-radius:6px;font-size:0.9rem;">
+                <option value="7">Last 7 days</option>
+                <option value="15">Last 15 days</option>
+                <option value="30" selected>Last 30 days</option>
+                <option value="90">Last 90 days</option>
+                <option value="365">Last year</option>
+            </select>
+        </div>
+
+        <div id="analytics-loading" style="text-align:center;padding:3rem;color:#888;">Loading analytics...</div>
+        <div id="analytics-content" style="display:none;"></div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    var bSelect = document.getElementById("analytics-business");
+    var dSelect = document.getElementById("analytics-days");
+
+    bSelect.addEventListener("change", loadAnalytics);
+    dSelect.addEventListener("change", loadAnalytics);
+
+    frappe.call({
+        method: "osduo_business_connect.pages.analytics.get_business_list",
+        callback: function(r) {
+            if (r.message && r.message.length) {
+                bSelect.innerHTML = r.message.map(function(b) {
+                    return '<option value="' + b.name + '">' + b.business_name + '</option>';
+                }).join("");
+                loadAnalytics();
+            } else {
+                bSelect.innerHTML = '<option value="">No businesses found</option>';
+                document.getElementById("analytics-loading").innerHTML = "No businesses found for your account.";
+            }
+        }
+    });
+
+    function loadAnalytics() {
+        var business = bSelect.value;
+        var days = dSelect.value;
+        if (!business) return;
+
+        document.getElementById("analytics-loading").style.display = "block";
+        document.getElementById("analytics-content").style.display = "none";
+
+        frappe.call({
+            method: "osduo_business_connect.pages.analytics.get_analytics",
+            args: { business: business, days: days },
+            callback: function(r) {
+                document.getElementById("analytics-loading").style.display = "none";
+                document.getElementById("analytics-content").style.display = "block";
+                if (r.message) renderAnalytics(r.message);
+            }
+        });
+    }
+
+    function renderAnalytics(data) {
+        var eng = data.engagement;
+        var enq = data.enquiry_stats;
+        var summary = data.summary;
+        var container = document.getElementById("analytics-content");
+
+        var html = '<div class="row" style="margin-bottom:1.5rem;">' +
+            statCard(eng.total_events || 0, "Link Visits", "#4f46e5") +
+            statCard(eng.qr_scans || 0, "QR Scans", "#0ea5e9") +
+            statCard(summary.total_cards || 0, "Cards", "#10b981") +
+            statCard(summary.total_products || 0, "Products", "#f59e0b") +
+            '</div>' +
+            '<div class="row" style="margin-bottom:1.5rem;">' +
+            '<div class="col-sm-8"><div class="frappe-card" style="padding:1.2rem;"><h5 style="margin-bottom:1rem;">Visits by Day</h5><div id="chart-visits" style="height:220px;"></div></div></div>' +
+            '<div class="col-sm-4"><div class="frappe-card" style="padding:1.2rem;"><h5 style="margin-bottom:1rem;">Events by Type</h5><div id="events-type"></div></div></div>' +
+            '</div>' +
+            '<div class="row" style="margin-bottom:1.5rem;">' +
+            '<div class="col-sm-6"><div class="frappe-card" style="padding:1.2rem;"><h5 style="margin-bottom:1rem;">Top Cards</h5><div id="top-cards"></div></div></div>' +
+            '<div class="col-sm-6"><div class="frappe-card" style="padding:1.2rem;"><h5 style="margin-bottom:1rem;">Enquiry Pipeline</h5><div id="enquiry-pipe"></div></div></div>' +
+            '</div>' +
+            '<div class="row"><div class="col-sm-12"><div class="frappe-card" style="padding:1.2rem;"><h5 style="margin-bottom:1rem;">Recent Activity</h5><div id="recent-act"></div></div></div></div>';
+
+        container.innerHTML = html;
+
+        renderBarChart("chart-visits", eng.events_by_day || []);
+        renderEventsByType("events-type", eng.events_by_type || {});
+        renderTopCards("top-cards", data.top_cards || []);
+        renderEnquiryPipeline("enquiry-pipe", enq);
+        renderRecentActivity("recent-act", eng.recent_events || []);
+    }
+
+    function statCard(value, label, color) {
+        return '<div class="col-sm-3"><div class="frappe-card" style="padding:1rem;text-align:center;border-left:4px solid ' + color + ';">' +
+            '<div style="font-size:2rem;font-weight:700;color:' + color + ';">' + value + '</div>' +
+            '<div style="font-size:0.8rem;color:#666;">' + label + '</div></div></div>';
+    }
+
+    function renderBarChart(id, data) {
+        var el = document.getElementById(id);
+        if (!data.length) { el.innerHTML = '<p style="color:#888;text-align:center;padding:2rem;">No data for this period</p>'; return; }
+        var w = el.offsetWidth || 700, h = 200, pad = {t:20,r:20,b:40,l:40};
+        var cw = w-pad.l-pad.r, ch = h-pad.t-pad.b;
+        var max = Math.max.apply(null, data.map(function(d){return d.count;})) || 1;
+        var pts = data.map(function(d,i){return {x:pad.l+(i/(data.length-1||1))*cw, y:pad.t+ch-(d.count/max)*ch, date:d.date, count:d.count};});
+        var path = pts.map(function(p,i){return (i===0?"M":"L")+p.x+","+p.y;}).join(" ");
+        var area = path + " L"+pts[pts.length-1].x+","+(pad.t+ch)+" L"+pts[0].x+","+(pad.t+ch)+" Z";
+        var svg = '<svg width="'+w+'" height="'+h+'" style="display:block;">';
+        svg += '<defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4f46e5" stop-opacity="0.3"/><stop offset="100%" stop-color="#4f46e5" stop-opacity="0.02"/></linearGradient></defs>';
+        for(var g=0;g<=4;g++){var gy=pad.t+(ch/4)*g;var gv=Math.round(max-(max/4)*g);svg+='<line x1="'+pad.l+'" y1="'+gy+'" x2="'+(w-pad.r)+'" y2="'+gy+'" stroke="#e5e7eb" stroke-width="1"/><text x="'+(pad.l-6)+'" y="'+(gy+4)+'" text-anchor="end" fill="#9ca3af" font-size="10">'+gv+'</text>';}
+        svg += '<path d="'+area+'" fill="url(#lg)"/><path d="'+path+'" fill="none" stroke="#4f46e5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>';
+        pts.forEach(function(p){svg+='<circle cx="'+p.x+'" cy="'+p.y+'" r="3.5" fill="#4f46e5" stroke="#fff" stroke-width="2"/>';});
+        var le=Math.max(1,Math.floor(data.length/8));
+        pts.forEach(function(p,i){if(i%le===0||i===pts.length-1)svg+='<text x="'+p.x+'" y="'+(h-8)+'" text-anchor="middle" fill="#9ca3af" font-size="9">'+p.date.slice(5)+'</text>';});
+        svg += "</svg>"; el.innerHTML = svg;
+    }
+
+    function renderEventsByType(id, data) {
+        var el = document.getElementById(id);
+        var keys = Object.keys(data);
+        if (!keys.length) { el.innerHTML = '<p style="color:#888;">No events recorded</p>'; return; }
+        var total = keys.reduce(function(s,k){return s+data[k];},0);
+        var html = '<table class="table table-bordered" style="font-size:0.8rem;"><thead><tr><th>Event</th><th style="text-align:right">Count</th><th style="text-align:right">Share</th></tr></thead><tbody>';
+        keys.sort(function(a,b){return data[b]-data[a];}).forEach(function(k){
+            var pct = total>0?((data[k]/total)*100).toFixed(1):0;
+            html += "<tr><td>"+k.replace(/_/g," ").replace(/\b\w/g,function(c){return c.toUpperCase();})+'</td><td style="text-align:right">'+data[k]+'</td><td style="text-align:right">'+pct+"%</td></tr>";
+        });
+        html += "</tbody></table>"; el.innerHTML = html;
+    }
+
+    function renderTopCards(id, data) {
+        var el = document.getElementById(id);
+        if (!data.length) { el.innerHTML = '<p style="color:#888;">No card views yet</p>'; return; }
+        var html = '<table class="table table-bordered" style="font-size:0.8rem;"><thead><tr><th>Member</th><th style="text-align:right">Views</th></tr></thead><tbody>';
+        data.forEach(function(d){html += "<tr><td>"+(d.member_name||d.card||"—")+'</td><td style="text-align:right">'+d.views+"</td></tr>";});
+        html += "</tbody></table>"; el.innerHTML = html;
+    }
+
+    function renderEnquiryPipeline(id, data) {
+        var el = document.getElementById(id);
+        var items = [{l:"New",v:data.new||0,c:"#2490ef"},{l:"Ongoing",v:data.ongoing||0,c:"#f5a623"},{l:"Converted",v:data.converted||0,c:"#28a745"},{l:"Lost",v:data.lost||0,c:"#dc3545"}];
+        var html = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">';
+        items.forEach(function(i){html+='<div style="text-align:center;padding:0.8rem;border:1px solid #e2e8f0;border-radius:6px;"><div style="font-size:1.4rem;font-weight:700;color:'+i.c+'">'+i.v+'</div><div style="font-size:0.75rem;color:#666">'+i.l+'</div></div>';});
+        html += "</div>"; el.innerHTML = html;
+    }
+
+    function renderRecentActivity(id, data) {
+        var el = document.getElementById(id);
+        if (!data.length) { el.innerHTML = '<p style="color:#888;">No recent activity</p>'; return; }
+        var html = '<table class="table table-bordered" style="font-size:0.8rem;"><thead><tr><th>Time</th><th>Event</th><th>Page</th><th>Device</th></tr></thead><tbody>';
+        data.forEach(function(d){
+            var pg = d.person_name||d.card||d.product_name||d.service_name||"—";
+            html += "<tr><td>"+frappe.datetime.str_to_user(d.event_time)+"</td><td>"+(d.event_type||"").replace(/_/g," ").replace(/\b\w/g,function(c){return c.toUpperCase();})+"</td><td>"+pg+"</td><td>"+(d.device_type||"Unknown")+"</td></tr>";
+        });
+        html += "</tbody></table>"; el.innerHTML = html;
+    }
+});
+</script>
+{%- endblock -%}
