@@ -24,6 +24,22 @@
 </div>
 
 <script>
+function getCookie(name) {
+    var v = document.cookie.match('(^|;)\\s*' + name + '=([^;]*)');
+    return v ? v[2] : '';
+}
+
+function apiCall(method, args) {
+    return fetch("/api/method/" + method, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-Frappe-CSRF-Token": getCookie("csrf_token")
+        },
+        body: JSON.stringify(args || {})
+    }).then(function(r) { return r.json(); });
+}
+
 document.addEventListener("DOMContentLoaded", function() {
     var bSelect = document.getElementById("analytics-business");
     var dSelect = document.getElementById("analytics-days");
@@ -31,9 +47,8 @@ document.addEventListener("DOMContentLoaded", function() {
     bSelect.addEventListener("change", loadAnalytics);
     dSelect.addEventListener("change", loadAnalytics);
 
-    frappe.call({
-        method: "osduo_business_connect.pages.analytics.get_business_list",
-        callback: function(r) {
+    apiCall("osduo_business_connect.pages.analytics.get_business_list")
+        .then(function(r) {
             if (r.message && r.message.length) {
                 bSelect.innerHTML = r.message.map(function(b) {
                     return '<option value="' + b.name + '">' + b.business_name + '</option>';
@@ -43,8 +58,10 @@ document.addEventListener("DOMContentLoaded", function() {
                 bSelect.innerHTML = '<option value="">No businesses found</option>';
                 document.getElementById("analytics-loading").innerHTML = "No businesses found for your account.";
             }
-        }
-    });
+        })
+        .catch(function(err) {
+            document.getElementById("analytics-loading").innerHTML = "Error: " + err.message;
+        });
 
     function loadAnalytics() {
         var business = bSelect.value;
@@ -54,15 +71,15 @@ document.addEventListener("DOMContentLoaded", function() {
         document.getElementById("analytics-loading").style.display = "block";
         document.getElementById("analytics-content").style.display = "none";
 
-        frappe.call({
-            method: "osduo_business_connect.pages.analytics.get_analytics",
-            args: { business: business, days: days },
-            callback: function(r) {
+        apiCall("osduo_business_connect.pages.analytics.get_analytics", { business: business, days: days })
+            .then(function(r) {
                 document.getElementById("analytics-loading").style.display = "none";
                 document.getElementById("analytics-content").style.display = "block";
                 if (r.message) renderAnalytics(r.message);
-            }
-        });
+            })
+            .catch(function(err) {
+                document.getElementById("analytics-loading").innerHTML = "Error loading analytics: " + err.message;
+            });
     }
 
     function renderAnalytics(data) {
@@ -156,7 +173,7 @@ document.addEventListener("DOMContentLoaded", function() {
         var html = '<table class="table table-bordered" style="font-size:0.8rem;"><thead><tr><th>Time</th><th>Event</th><th>Page</th><th>Device</th></tr></thead><tbody>';
         data.forEach(function(d){
             var pg = d.person_name||d.card||d.product_name||d.service_name||"—";
-            html += "<tr><td>"+frappe.datetime.str_to_user(d.event_time)+"</td><td>"+(d.event_type||"").replace(/_/g," ").replace(/\b\w/g,function(c){return c.toUpperCase();})+"</td><td>"+pg+"</td><td>"+(d.device_type||"Unknown")+"</td></tr>";
+            html += "<tr><td>"+(d.event_time||"")+"</td><td>"+(d.event_type||"").replace(/_/g," ").replace(/\b\w/g,function(c){return c.toUpperCase();})+"</td><td>"+pg+"</td><td>"+(d.device_type||"Unknown")+"</td></tr>";
         });
         html += "</tbody></table>"; el.innerHTML = html;
     }
