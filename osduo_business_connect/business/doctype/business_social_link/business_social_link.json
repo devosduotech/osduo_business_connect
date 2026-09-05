@@ -27,7 +27,7 @@
             "reqd": 1,
             "options": "URL",
             "in_list_view": 1,
-            "description": "Select a platform above to see the expected URL format"
+            "description": "Facebook: https://facebook.com/page | Instagram: https://instagram.com/handle | LinkedIn: https://linkedin.com/in/profile | X: https://x.com/handle | YouTube: https://youtube.com/@channel | Telegram: https://t.me/handle | Website: https://your-site.com | Portfolio: https://your-portfolio.com"
         },
         {
             "fieldname": "icon_class",

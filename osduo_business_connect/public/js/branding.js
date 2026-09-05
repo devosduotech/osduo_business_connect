@@ -32,54 +32,44 @@
   // ── Social Links ──────────────────────────────────────────
 
   var PLATFORM_CONFIG = {
-    Facebook: { icon: "fa-brands fa-facebook", hint: "https://facebook.com/your-page" },
-    Instagram: { icon: "fa-brands fa-instagram", hint: "https://instagram.com/your-handle" },
-    LinkedIn: { icon: "fa-brands fa-linkedin", hint: "https://linkedin.com/in/your-profile" },
-    X: { icon: "fa-brands fa-x-twitter", hint: "https://x.com/your-handle" },
-    YouTube: { icon: "fa-brands fa-youtube", hint: "https://youtube.com/@your-channel" },
-    Telegram: { icon: "fa-brands fa-telegram", hint: "https://t.me/your-handle" },
-    Website: { icon: "fa-solid fa-globe", hint: "https://your-website.com" },
-    Portfolio: { icon: "fa-brands fa-solid fa-briefcase", hint: "https://your-portfolio.com" },
-    Other: { icon: "fa-solid fa-link", hint: "Enter the full URL" },
+    Facebook: { icon: "fa-brands fa-facebook" },
+    Instagram: { icon: "fa-brands fa-instagram" },
+    LinkedIn: { icon: "fa-brands fa-linkedin" },
+    X: { icon: "fa-brands fa-x-twitter" },
+    YouTube: { icon: "fa-brands fa-youtube" },
+    Telegram: { icon: "fa-brands fa-telegram" },
+    Website: { icon: "fa-solid fa-globe" },
+    Portfolio: { icon: "fa-solid fa-briefcase" },
+    Other: { icon: "fa-solid fa-link" },
   };
 
-  function apply_platform_config(parent_doc, child_doc, platform_field, url_field) {
-    var platform = child_doc[platform_field];
-    if (!platform) return;
-    var config = PLATFORM_CONFIG[platform];
-    if (!config) return;
-
-    // Set icon_class on the child row
-    frappe.model.set_value(child_doc.doctype, child_doc.name, "icon_class", config.icon);
-
-    // Update URL field description with format hint
-    var url_df = frappe.meta.get_docfield(child_doc.doctype, url_field, parent_doc.doctype);
-    if (url_df) {
-      url_df.description = "Example: " + config.hint;
-    }
+  function set_icon(frm, cdt, cdn, platform_field) {
+    // Use setTimeout to let Frappe sync the model first
+    // Without this, locals[cdt][cdn] still has the OLD value
+    setTimeout(function () {
+      var child = locals[cdt][cdn];
+      if (!child) return;
+      var platform = child[platform_field];
+      if (!platform) return;
+      var config = PLATFORM_CONFIG[platform];
+      if (!config) return;
+      frappe.model.set_value(cdt, cdn, "icon_class", config.icon);
+    }, 100);
   }
 
   // ── Business Social Links ─────────────────────────────────
-  // Child table: Business Social Link | parent field: social_links
-  // Platform select field: platform | URL field: url
 
   frappe.ui.form.on("Business Social Link", {
     platform: function (frm, cdt, cdn) {
-      var child = locals[cdt][cdn];
-      apply_platform_config(frm.doc, child, "platform", "url");
-      frm.refresh_field("social_links");
+      set_icon(frm, cdt, cdn, "platform");
     },
   });
 
   // ── Digital Card Links ────────────────────────────────────
-  // Child table: Digital Card Link | parent field: links
-  // Link type select field: link_type | URL field: url
 
   frappe.ui.form.on("Digital Card Link", {
     link_type: function (frm, cdt, cdn) {
-      var child = locals[cdt][cdn];
-      apply_platform_config(frm.doc, child, "link_type", "url");
-      frm.refresh_field("links");
+      set_icon(frm, cdt, cdn, "link_type");
     },
   });
 })();

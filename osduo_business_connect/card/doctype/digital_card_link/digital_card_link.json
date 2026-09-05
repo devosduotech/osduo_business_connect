@@ -33,7 +33,7 @@
             "fieldtype": "Data",
             "label": "URL",
             "options": "URL",
-            "description": "Select a link type above to see the expected URL format"
+            "description": "LinkedIn: https://linkedin.com/in/profile | Instagram: https://instagram.com/handle | Facebook: https://facebook.com/page | X: https://x.com/handle | YouTube: https://youtube.com/@channel | Telegram: https://t.me/handle | Website: https://your-site.com | Portfolio: https://your-portfolio.com"
         },
         {
             "fieldname": "icon_class",
