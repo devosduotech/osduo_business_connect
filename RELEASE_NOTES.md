@@ -141,28 +141,31 @@ Customer scans QR code or clicks link
 
 ## Installation
 
+### Prerequisites
+- Frappe v16+ installed and running
+- **Frappe CRM** must be installed first
+
+### Step 1 — Install Frappe CRM (if not already installed)
+
 ```bash
-# Get the app
+bench get-app https://github.com/frappe/crm
+bench --site <site-name> install-app crm
+```
+
+### Step 2 — Install Business Connect
+
+```bash
 bench get-app https://github.com/devosduotech/osduo_business_connect.git
-
-# Install on site
 bench --site <site-name> install-app osduo_business_connect
-
-# Run migrations
 bench --site <site-name> migrate
-
-# Install QR code dependency
 bench --site <site-name> pip install qrcode[pil]
-
-# Build assets
 bench build --app osduo_business_connect
-
-# Restart
 bench restart
 ```
 
 ### Deployment Notes
 
+- CRM must be installed **before** Business Connect (`required_apps = ["crm"]`)
 - `bench build` must use `--app osduo_business_connect` only (CRM build may exceed memory on small VMs)
 - Roles created on install: **BC Manager**, **BC User**, **BC Viewer**
 - 8 default themes auto-created (Violet, Indigo, Blue, Green, Yellow, Orange, Red + custom)

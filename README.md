@@ -129,8 +129,22 @@ Enquiry → Background sync → CRM Lead
 
 ## Installation
 
+### Prerequisites
+- Frappe v16+ installed and running
+- **Frappe CRM** must be installed first
+
+### Step 1 — Install Frappe CRM (if not already installed)
+
+```bash
+bench get-app https://github.com/frappe/crm
+bench --site <site-name> install-app crm
+```
+
+### Step 2 — Install Business Connect
+
 ```bash
 bench get-app https://github.com/devosduotech/osduo_business_connect.git
+bench --site <site-name> install-app osduo_business_connect
 bench --site <site-name> migrate
 bench --site <site-name> pip install qrcode[pil]
 bench build --app osduo_business_connect
@@ -139,6 +153,7 @@ bench restart
 
 ### Deployment Notes
 
+- CRM must be installed **before** Business Connect (`required_apps = ["crm"]`)
 - `bench build` must use `--app osduo_business_connect` only (CRM build may exceed memory on small VMs)
 - Roles created on install: **BC Manager**, **BC User**, **BC Viewer**
 - 8 default themes auto-created (Violet, Indigo, Blue, Green, Yellow, Orange, Red + custom)
