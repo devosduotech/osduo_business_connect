@@ -47,10 +47,16 @@ def submit_enquiry(business_slug, visitor_data, source="Other", references=None)
     # Parse JSON strings if needed
     if isinstance(visitor_data, str):
         import json
-        visitor_data = json.loads(visitor_data)
+        try:
+            visitor_data = json.loads(visitor_data)
+        except (json.JSONDecodeError, ValueError):
+            frappe.throw(_("Invalid visitor data format"))
     if isinstance(references, str):
         import json
-        references = json.loads(references)
+        try:
+            references = json.loads(references)
+        except (json.JSONDecodeError, ValueError):
+            frappe.throw(_("Invalid references format"))
 
     # Get business by slug (requires Published + public_profile_enabled)
     from osduo_business_connect.business.core import get_public_business_by_slug

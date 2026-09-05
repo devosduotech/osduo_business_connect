@@ -12,7 +12,7 @@
                     src="{{ image.image }}"
                     alt="{{ image.alt_text or image.caption or '' }}"
                     loading="lazy"
-                    onclick="window.open('{{ image.image }}', '_blank')"
+                    data-full-url="{{ image.image }}"
                 >
                 {% if image.caption %}
                 <p class="bc-gallery-caption">{{ image.caption }}</p>
@@ -22,4 +22,11 @@
         </div>
     </div>
 </div>
+<script>
+document.querySelectorAll('.bc-gallery-img[data-full-url]').forEach(function(img) {
+    img.addEventListener('click', function() {
+        window.open(this.getAttribute('data-full-url'), '_blank');
+    });
+});
+</script>
 {% endif %}
