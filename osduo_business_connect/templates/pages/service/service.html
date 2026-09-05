@@ -36,7 +36,12 @@
             <h2 class="bc-section-title">Benefits</h2>
             <ul style="line-height:2;color:#475569;">
                 {% for benefit in doc.benefits %}
-                <li>{{ benefit.title }}</li>
+                <li>
+                    <strong>{{ benefit.title }}</strong>
+                    {% if benefit.description %}
+                    <br><span style="font-weight:normal;color:#64748b;">{{ benefit.description }}</span>
+                    {% endif %}
+                </li>
                 {% endfor %}
             </ul>
         </div>
