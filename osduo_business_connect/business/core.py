@@ -44,6 +44,7 @@ class Business(Document):
     def before_save(self):
         """Pre-save operations."""
         self.set_defaults()
+        self.set_social_link_icons()
 
     def after_insert(self):
         """Post-insert operations - create owner membership and default theme."""
@@ -195,6 +196,23 @@ class Business(Document):
     def set_defaults(self):
         """Set default values."""
         pass
+
+    def set_social_link_icons(self):
+        """Auto-set icon_class for social links based on platform."""
+        icons = {
+            "Facebook": "fa-brands fa-facebook",
+            "Instagram": "fa-brands fa-instagram",
+            "LinkedIn": "fa-brands fa-linkedin",
+            "X": "fa-brands fa-x-twitter",
+            "YouTube": "fa-brands fa-youtube",
+            "Telegram": "fa-brands fa-telegram",
+            "Website": "fa-solid fa-globe",
+            "Portfolio": "fa-solid fa-briefcase",
+            "Other": "fa-solid fa-link",
+        }
+        for link in self.social_links or []:
+            if link.platform and not link.icon_class:
+                link.icon_class = icons.get(link.platform, "")
 
 
 def get_permission_query_conditions(user):
