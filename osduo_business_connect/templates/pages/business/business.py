@@ -65,9 +65,6 @@ def get_context(context):
         order_by="sort_order asc",
     )
 
-    # Gallery images (from products and services)
-    context.gallery_images = _get_gallery_images(doc.name)
-
     # SEO
     if doc.get("seo_title"):
         context.title = doc["seo_title"]
@@ -77,45 +74,3 @@ def get_context(context):
     # Track profile view (non-blocking)
     analytics_ctx = capture_analytics_context()
     track_event(doc.name, "profile_view", **analytics_ctx)
-
-
-def _get_gallery_images(business_name):
-    """Collect gallery images from all published products and services."""
-    images = []
-
-    products = frappe.get_all(
-        "Showcase Product",
-        filters={"business": business_name, "status": "Published"},
-        fields=["name"],
-    )
-    for p in products:
-        doc = frappe.get_doc("Showcase Product", p.name)
-        if doc.gallery:
-            for item in doc.gallery:
-                images.append({
-                    "image": item.image,
-                    "caption": item.caption,
-                    "alt_text": item.alt_text,
-                    "sort_order": item.sort_order or 0,
-                    "source": doc.product_name,
-                })
-
-    services = frappe.get_all(
-        "Showcase Service",
-        filters={"business": business_name, "status": "Published"},
-        fields=["name"],
-    )
-    for s in services:
-        doc = frappe.get_doc("Showcase Service", s.name)
-        if hasattr(doc, "gallery") and doc.gallery:
-            for item in doc.gallery:
-                images.append({
-                    "image": item.image,
-                    "caption": item.caption,
-                    "alt_text": item.alt_text,
-                    "sort_order": item.sort_order or 0,
-                    "source": doc.service_name,
-                })
-
-    images.sort(key=lambda x: x["sort_order"])
-    return images
