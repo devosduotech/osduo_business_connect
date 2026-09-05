@@ -13,7 +13,7 @@ Business Connect transforms how small businesses and professionals establish the
 | **Digital Business Card** | Mobile-first card with VCF download, QR/NFC sharing, and 4 distinct templates |
 | **Business Profile** | Public landing page with hero, about, products, services, gallery, and contact |
 | **Product Showcase** | Product catalog with categories, galleries, pricing, and brochures |
-| **Service Listings** | Service pages with benefits, locations, and descriptions |
+| **Service Listings** | Service pages with features, locations, and descriptions |
 | **Lead Generation** | Enquiry forms that auto-create CRM leads with full tracking |
 | **Analytics Dashboard** | Real-time engagement metrics — visits, scans, top cards, enquiry pipeline |
 
@@ -185,7 +185,7 @@ osduo_business_connect/
 │       ├── page_section/
 │       ├── bc_theme/
 │       ├── product_gallery_item/
-│       └── service_benefit/
+│       └── feature/
 ├── analytics/             # Engagement analytics
 │   ├── analytics_service.py
 │   ├── page/
@@ -241,7 +241,7 @@ osduo_business_connect/
 | Business Hour | Business | Operating hours (child) |
 | Digital Card Link | Card | Card social links (child) |
 | Product Gallery Item | Showcase | Product gallery images (child) |
-| Service Benefit | Showcase | Service benefits list (child) |
+| Feature | Showcase | Product/service features list (child) |
 
 ---
 

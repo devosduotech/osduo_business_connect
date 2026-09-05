@@ -1,5 +1,5 @@
 {
-    "name": "Service Benefit",
+    "name": "Feature",
     "module": "Showcase",
     "doctype": "DocType",
     "document_type": "Document",
@@ -18,6 +18,11 @@
             "fieldtype": "Small Text",
             "label": "Description",
             "in_list_view": 1
+        },
+        {
+            "fieldname": "image",
+            "fieldtype": "Attach Image",
+            "label": "Image"
         },
         {
             "fieldname": "sort_order",
