@@ -37,7 +37,7 @@ def get_context(context):
     context.social_links = frappe.get_all(
         "Business Social Link",
         filters={"parent": doc.name, "parenttype": "Business"},
-        fields=["platform", "url"],
+        fields=["platform", "url", "icon_class"],
         order_by="idx asc",
     )
 

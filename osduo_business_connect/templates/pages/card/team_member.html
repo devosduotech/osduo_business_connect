@@ -97,7 +97,7 @@
             <h2 class="bc-section-title">Connect</h2>
             <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
                 {% for link in links %}
-                <a href="{{ link.url }}" target="_blank" class="bc-btn bc-btn-secondary" style="font-size:0.8rem;">{{ link.label or link.link_type }}</a>
+                <a href="{{ link.url }}" target="_blank" class="bc-btn bc-btn-secondary" style="font-size:0.8rem;">{% if link.icon_class %}<i class="{{ link.icon_class }}" style="margin-right:0.3rem;"></i>{% endif %}{{ link.label or link.link_type }}</a>
                 {% endfor %}
             </div>
         </div>
@@ -140,7 +140,7 @@
     </div>
 
     <div class="bc-footer">
-        <p>Powered by OSDuo Business Connect</p>
+        <p>Powered by <a href="https://connect.osduotech.com" target="_blank" rel="noopener">OSDuo Business Connect</a></p>
     </div>
 </div>
 

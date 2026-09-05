@@ -70,7 +70,7 @@
     {% if links %}
     <div class="bc-card-links bc-hero-professional-links">
         {% for link in links %}
-        <a href="{{ link.url }}" target="_blank" class="bc-btn bc-hero-professional-link-btn">{{ link.label or link.link_type }}</a>
+        <a href="{{ link.url }}" target="_blank" class="bc-btn bc-hero-professional-link-btn">{% if link.icon_class %}<i class="{{ link.icon_class }}" style="margin-right:0.3rem;"></i>{% endif %}{{ link.label or link.link_type }}</a>
         {% endfor %}
     </div>
     {% endif %}
