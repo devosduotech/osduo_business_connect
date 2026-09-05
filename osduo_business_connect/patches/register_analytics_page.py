@@ -18,7 +18,7 @@ def execute():
         VALUES (%s, %s, %s, %s, %s, NOW(), NOW(), %s, %s, 0)""",
         (
             page_name,
-            "Analytics",
+            "Osduo Business Connect",
             page_name,
             "Analytics Dashboard",
             "octicon octicon-graph",
