@@ -36,7 +36,7 @@
             <h2 class="bc-section-title">Benefits</h2>
             <ul style="line-height:2;color:#475569;">
                 {% for benefit in doc.benefits %}
-                <li>{{ benefit.benefit }}</li>
+                <li>{{ benefit.title }}</li>
                 {% endfor %}
             </ul>
         </div>
@@ -67,6 +67,7 @@
 
     {# ===== GALLERY ===== #}
     {% set gallery_images = doc.gallery %}
+    {% set title = "Gallery" %}
     {% include "osduo_business_connect/templates/pages/product/parts/gallery.html" ignore missing %}
 
     {# ===== BUSINESS INFO ===== #}
