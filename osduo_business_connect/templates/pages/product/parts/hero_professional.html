@@ -35,7 +35,7 @@
             <a href="tel:{{ business_phone }}" class="bc-btn bc-btn-secondary">&#9742; Call</a>
             {% endif %}
             {% if business_whatsapp %}
-            <a href="https://wa.me/{{ business_whatsapp }}?text=Hi, I'm interested in {{ doc.product_name or doc.service_name }}" class="bc-btn bc-btn-accent">&#128172; WhatsApp</a>
+            <a href="https://wa.me/{{ business_whatsapp }}?text={{ 'Hi, I am interested in ' ~ (doc.product_name or doc.service_name) | urlencode }}" class="bc-btn bc-btn-accent">&#128172; WhatsApp</a>
             {% endif %}
         </div>
     </div>

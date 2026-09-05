@@ -35,3 +35,19 @@ def get_branding_context(context):
         "bc_background_color": OSDUO_BRANDING["background_color"],
         "bc_text_color": OSDUO_BRANDING["text_color"],
     })
+
+
+def safe_url(url):
+    """Jinja filter: sanitize URL to prevent javascript: protocol injection.
+
+    Returns empty string for dangerous protocols.
+    """
+    if not url:
+        return ""
+    url = str(url).strip()
+    url_lower = url.lower()
+    dangerous = ["javascript:", "data:", "vbscript:", "file:"]
+    for proto in dangerous:
+        if url_lower.startswith(proto):
+            return ""
+    return url

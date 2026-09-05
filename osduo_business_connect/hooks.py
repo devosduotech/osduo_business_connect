@@ -191,11 +191,9 @@ after_migrate = "osduo_business_connect.install.after_migrate"
 # Jinja
 # ----------
 
-# add methods and filters to jinja environment
-# jinja = {
-#     "methods": "osduo_business_connect.utils.jinja_methods",
-#     "filters": "osduo_business_connect.utils.jinja_filters",
-# }
+jinja = {
+    "filters": "osduo_business_connect.utils.website.safe_url",
+}
 
 # Template Overrides
 # ------------------
