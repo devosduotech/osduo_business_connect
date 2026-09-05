@@ -31,61 +31,55 @@
 
   // ── Social Links ──────────────────────────────────────────
 
-  var SOCIAL_PLATFORM_CONFIG = {
-    Facebook: { icon: "fa-brands fa-facebook", url_hint: "https://facebook.com/your-page" },
-    Instagram: { icon: "fa-brands fa-instagram", url_hint: "https://instagram.com/your-handle" },
-    LinkedIn: { icon: "fa-brands fa-linkedin", url_hint: "https://linkedin.com/in/your-profile" },
-    X: { icon: "fa-brands fa-x-twitter", url_hint: "https://x.com/your-handle" },
-    YouTube: { icon: "fa-brands fa-youtube", url_hint: "https://youtube.com/@your-channel" },
-    Telegram: { icon: "fa-brands fa-telegram", url_hint: "https://t.me/your-handle" },
-    Website: { icon: "fa-solid fa-globe", url_hint: "https://your-website.com" },
-    Portfolio: { icon: "fa-solid fa-briefcase", url_hint: "https://your-portfolio.com" },
-    Other: { icon: "fa-solid fa-link", url_hint: "Enter the full URL" },
+  var PLATFORM_CONFIG = {
+    Facebook: { icon: "fa-brands fa-facebook", hint: "https://facebook.com/your-page" },
+    Instagram: { icon: "fa-brands fa-instagram", hint: "https://instagram.com/your-handle" },
+    LinkedIn: { icon: "fa-brands fa-linkedin", hint: "https://linkedin.com/in/your-profile" },
+    X: { icon: "fa-brands fa-x-twitter", hint: "https://x.com/your-handle" },
+    YouTube: { icon: "fa-brands fa-youtube", hint: "https://youtube.com/@your-channel" },
+    Telegram: { icon: "fa-brands fa-telegram", hint: "https://t.me/your-handle" },
+    Website: { icon: "fa-solid fa-globe", hint: "https://your-website.com" },
+    Portfolio: { icon: "fa-brands fa-solid fa-briefcase", hint: "https://your-portfolio.com" },
+    Other: { icon: "fa-solid fa-link", hint: "Enter the full URL" },
   };
 
-  function set_icon_and_hint(row, platform_field) {
-    var platform = row[platform_field];
+  function apply_platform_config(parent_doc, child_doc, platform_field, url_field) {
+    var platform = child_doc[platform_field];
     if (!platform) return;
-    var config = SOCIAL_PLATFORM_CONFIG[platform];
+    var config = PLATFORM_CONFIG[platform];
     if (!config) return;
 
-    frappe.model.set_value(row.doctype, row.name, "icon_class", config.icon);
+    // Set icon_class on the child row
+    frappe.model.set_value(child_doc.doctype, child_doc.name, "icon_class", config.icon);
 
     // Update URL field description with format hint
-    var url_df = frappe.meta.get_docfield(row.doctype, "url", row.parenttype);
+    var url_df = frappe.meta.get_docfield(child_doc.doctype, url_field, parent_doc.doctype);
     if (url_df) {
-      url_df.description = "Expected format: " + config.url_hint;
+      url_df.description = "Example: " + config.hint;
     }
   }
 
-  // Attach to form refresh for Business and Digital Card
-  $(document).on("form-refresh", function (e, frm) {
-    var doctype = frm.doc.doctype || frm.doc.__doctype;
+  // ── Business Social Links ─────────────────────────────────
+  // Child table: Business Social Link | parent field: social_links
+  // Platform select field: platform | URL field: url
 
-    if (doctype === "Business") {
-      var grid = frm.fields_dict.social_links && frm.fields_dict.social_links.grid;
-      if (grid && grid.wrapper) {
-        grid.wrapper.off("change.social_links").on("change.social_links", "[data-fieldname='platform']", function () {
-          var row = $(this).closest(".grid-row").data("doc");
-          if (row) {
-            set_icon_and_hint(row, "platform");
-            frm.refresh_field("social_links");
-          }
-        });
-      }
-    }
+  frappe.ui.form.on("Business Social Link", {
+    platform: function (frm, cdt, cdn) {
+      var child = locals[cdt][cdn];
+      apply_platform_config(frm.doc, child, "platform", "url");
+      frm.refresh_field("social_links");
+    },
+  });
 
-    if (doctype === "Digital Card") {
-      var grid = frm.fields_dict.links && frm.fields_dict.links.grid;
-      if (grid && grid.wrapper) {
-        grid.wrapper.off("change.card_links").on("change.card_links", "[data-fieldname='link_type']", function () {
-          var row = $(this).closest(".grid-row").data("doc");
-          if (row) {
-            set_icon_and_hint(row, "link_type");
-            frm.refresh_field("links");
-          }
-        });
-      }
-    }
+  // ── Digital Card Links ────────────────────────────────────
+  // Child table: Digital Card Link | parent field: links
+  // Link type select field: link_type | URL field: url
+
+  frappe.ui.form.on("Digital Card Link", {
+    link_type: function (frm, cdt, cdn) {
+      var child = locals[cdt][cdn];
+      apply_platform_config(frm.doc, child, "link_type", "url");
+      frm.refresh_field("links");
+    },
   });
 })();
