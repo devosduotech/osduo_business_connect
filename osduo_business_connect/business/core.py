@@ -387,7 +387,8 @@ def get_public_business_by_slug(slug):
         {"slug": slug, "status": "Published", "public_profile_enabled": 1},
         ["name", "slug", "business_name", "logo", "status",
          "description", "website", "email", "phone", "whatsapp",
-         "address", "city", "state"],
+         "address", "city", "state",
+         "show_about_in_product_page", "show_about_in_service_page"],
         as_dict=True,
     )
 

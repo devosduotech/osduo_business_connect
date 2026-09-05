@@ -76,6 +76,7 @@
     {% include "osduo_business_connect/templates/pages/product/parts/gallery.html" ignore missing %}
 
     {# ===== BUSINESS INFO ===== #}
+    {% if business.show_about_in_service_page %}
     <div class="bc-section">
         <div class="bc-reading bc-bg">
             <h2 class="bc-section-title">About {{ business_name }}</h2>
@@ -102,6 +103,7 @@
             </div>
         </div>
     </div>
+    {% endif %}
 
     {# ===== ENQUIRY FORM ===== #}
     {% if doc.enquiry_enabled %}
