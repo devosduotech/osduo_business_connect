@@ -328,7 +328,7 @@ def ensure_desk_pages():
                 doc = frappe.get_doc({
                     "doctype": "Page",
                     "name": page_cfg["name"],
-                    "module": "Osduo Business Connect",
+                    "module": "Analytics",
                     "page_name": page_cfg["name"],
                     "title": page_cfg["title"],
                     "icon": page_cfg["icon"],
