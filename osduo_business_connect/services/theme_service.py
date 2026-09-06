@@ -18,7 +18,8 @@ def sanitize_css_value(value, fallback=""):
     """Sanitize a value for safe CSS interpolation.
 
     Only allows safe characters: hex colors, px, rem, em, %, rgba, etc.
-    Strips anything that could inject CSS (semicolons, braces, url(), etc.).
+    Strips anything that could inject CSS (semicolons, braces, url(), etc.)
+    or break out of an HTML style attribute (quotes).
     """
     if not value:
         return fallback
@@ -28,6 +29,8 @@ def sanitize_css_value(value, fallback=""):
     value = re.sub(r'url\s*\(', '', value, flags=re.IGNORECASE)
     value = re.sub(r'expression\s*\(', '', value, flags=re.IGNORECASE)
     value = re.sub(r'javascript:', '', value, flags=re.IGNORECASE)
+    # Strip quotes to prevent style attribute breakout
+    value = value.replace("'", '').replace('"', '')
     # Limit length to prevent abuse
     if len(value) > 200:
         value = value[:200]
@@ -80,15 +83,7 @@ LAYOUT_MAP = {
     "Creative": "Editorial",
 }
 
-# Template → default font category
-FONT_CATEGORY_MAP = {
-    "Modern": "Sans",
-    "Professional": "Sans",
-    "Minimal": "Sans",
-    "Classic": "Sans",
-    "Luxury": "Serif",
-    "Creative": "Editorial",
-}
+# Template → default font category (kept for reference, field removed from DocType)
 
 # Template → default dark mode
 DARK_MODE_MAP = {
@@ -133,7 +128,7 @@ def get_theme_data(theme_name):
         "BC Theme", theme_name,
         ["theme_name", "template", "color_scheme", "primary_color", "secondary_color",
          "accent_color", "background_color", "font_color", "button_style",
-         "font_family", "font_size", "layout_mode", "font_category", "dark_mode"],
+         "font_family", "font_size", "layout_mode", "dark_mode"],
         as_dict=True,
     )
     if not theme_data:
@@ -170,7 +165,6 @@ def get_theme_data(theme_name):
         "font_family": theme_data.font_family or "System Default",
         "font_size": theme_data.font_size or "Default",
         "layout_mode": theme_data.layout_mode or LAYOUT_MAP.get(template, "Centered"),
-        "font_category": theme_data.font_category or FONT_CATEGORY_MAP.get(template, "Sans"),
         "dark_mode": theme_data.dark_mode if theme_data.dark_mode is not None else DARK_MODE_MAP.get(template, False),
     }
 
@@ -198,7 +192,6 @@ def get_default_theme():
         "font_family": "System Default",
         "font_size": "Default",
         "layout_mode": "Centered",
-        "font_category": "Sans",
         "dark_mode": False,
     }
 

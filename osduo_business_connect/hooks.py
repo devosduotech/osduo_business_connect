@@ -192,7 +192,10 @@ after_migrate = "osduo_business_connect.install.after_migrate"
 # ----------
 
 jinja = {
-    "filters": "osduo_business_connect.utils.website.safe_url",
+    "filters": {
+        "safe_url": "osduo_business_connect.utils.website.safe_url",
+        "safe_video_url": "osduo_business_connect.utils.website.safe_video_url",
+    },
 }
 
 # Template Overrides
