@@ -1,0 +1,58 @@
+{# Card Hero — Creative: asymmetric layout, bold typography, visual emphasis #}
+<div class="bc-card-hero bc-hero-creative">
+    <div class="bc-hero-creative-layout">
+        {% if doc.profile_image %}
+        <div class="bc-hero-creative-image">
+            <img src="{{ doc.profile_image }}" alt="{{ doc.display_name }}">
+        </div>
+        {% endif %}
+
+        <div class="bc-hero-creative-info">
+            <h1 class="bc-hero-creative-name">{{ doc.display_name }}</h1>
+            {% if doc.designation %}
+            <p class="bc-hero-creative-designation">{{ doc.designation }}</p>
+            {% endif %}
+            {% if doc.show_business and doc.business_name %}
+            <p class="bc-hero-creative-business">{{ doc.business_name }}</p>
+            {% endif %}
+
+            {% if doc.bio %}
+            <div class="bc-hero-creative-bio">{{ doc.bio }}</div>
+            {% endif %}
+
+            {% if doc.phone or doc.email %}
+            <div class="bc-hero-creative-contact">
+                {% if doc.phone %}
+                <span>&#9742; {{ doc.phone }}</span>
+                {% endif %}
+                {% if doc.email %}
+                <span>&#9993; {{ doc.email }}</span>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <div class="bc-hero-creative-actions">
+                {% if doc.phone %}
+                <a href="tel:{{ doc.phone }}" class="bc-btn bc-btn-primary">Call</a>
+                {% endif %}
+                {% if doc.whatsapp %}
+                <a href="https://wa.me/{{ doc.whatsapp|replace('+','')|replace(' ','') }}" class="bc-btn bc-btn-accent">WhatsApp</a>
+                {% endif %}
+                {% if doc.email %}
+                <a href="mailto:{{ doc.email }}" class="bc-btn bc-btn-secondary">Email</a>
+                {% endif %}
+                {% if doc.website %}
+                <a href="{{ doc.website | safe_url }}" target="_blank" class="bc-btn bc-btn-secondary">Website</a>
+                {% endif %}
+            </div>
+
+            {% if links %}
+            <div class="bc-hero-creative-links">
+                {% for link in links %}
+                <a href="{{ link.url | safe_url }}" target="_blank" class="bc-btn bc-btn-secondary">{% if link.icon_class %}<i class="{{ link.icon_class }}" style="margin-right:0.3rem;"></i>{% endif %}{{ link.label or link.link_type }}</a>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

@@ -55,9 +55,17 @@
       "label": "Template (Layout)",
       "reqd": 1,
       "default": "Modern",
-      "options": "Modern\nProfessional\nMinimal\nClassic",
+      "options": "Modern\nProfessional\nMinimal\nClassic\nLuxury\nCreative",
       "in_list_view": 1,
       "description": "Controls the page structure and layout"
+    },
+    {
+      "fieldname": "layout_mode",
+      "fieldtype": "Select",
+      "label": "Layout Mode",
+      "default": "Centered",
+      "options": "Centered\nWide\nSplit\nEditorial",
+      "description": "Content width and column behavior (auto-set from template, can override)"
     },
     {
       "fieldname": "column_break_look",
@@ -69,7 +77,7 @@
       "label": "Color Scheme",
       "reqd": 1,
       "default": "Blue",
-      "options": "Violet\nIndigo\nBlue\nGreen\nYellow\nOrange\nRed\nCustom",
+      "options": "Violet\nIndigo\nBlue\nGreen\nYellow\nOrange\nRed\nGold\nCustom",
       "in_list_view": 1,
       "description": "Select a preset or 'Custom' to choose your own colors"
     },
@@ -141,8 +149,16 @@
       "fieldtype": "Select",
       "label": "Font Family",
       "default": "System Default",
-      "options": "System Default\nInter\nRoboto\nOpen Sans\nLato\nPoppins\nMontserrat\nNunito\nSource Sans 3\nRaleway",
+      "options": "System Default\nInter\nRoboto\nOpen Sans\nLato\nPoppins\nMontserrat\nNunito\nSource Sans 3\nRaleway\nPlayfair Display\nMerriweather\nSpace Grotesk",
       "in_list_view": 1
+    },
+    {
+      "fieldname": "font_category",
+      "fieldtype": "Select",
+      "label": "Font Category",
+      "default": "Sans",
+      "options": "Sans\nSerif\nEditorial",
+      "description": "Determines available fonts (auto-set from template)"
     },
     {
       "fieldname": "font_size",
@@ -152,6 +168,13 @@
       "options": "Small\nDefault\nLarge",
       "in_list_view": 1,
       "description": "Base font size preset"
+    },
+    {
+      "fieldname": "dark_mode",
+      "fieldtype": "Check",
+      "label": "Dark Mode",
+      "default": 0,
+      "description": "Enable dark background variant (default for Luxury theme)"
     },
     {
       "fieldname": "section_advanced",

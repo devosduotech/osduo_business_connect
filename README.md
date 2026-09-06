@@ -10,7 +10,7 @@ Business Connect transforms how small businesses and professionals establish the
 
 | Capability | Description |
 |------------|-------------|
-| **Digital Business Card** | Mobile-first card with VCF download, QR/NFC sharing, and 4 distinct templates |
+| **Digital Business Card** | Mobile-first card with VCF download, QR/NFC sharing, and 6 distinct templates |
 | **Business Profile** | Public landing page with hero, about, products, services, gallery, and contact |
 | **Product Showcase** | Product catalog with categories, galleries, pricing, and brochures |
 | **Service Listings** | Service pages with features, locations, and descriptions |
@@ -48,12 +48,16 @@ Customer scans QR code
 | **Professional** | Colored header band, horizontal layout, outlined buttons |
 | **Minimal** | Clean, uppercase labels, thin borders, square buttons |
 | **Classic** | Gradient banner, overlapping avatar, decorative dividers |
+| **Luxury** | Dark backgrounds, serif typography, cinematic, editorial |
+| **Creative** | Asymmetric layouts, bold typography, visual emphasis |
 
 Each template is fully customizable with:
-- 7 color schemes + custom palette
-- 10 web font families (Inter, Roboto, Open Sans, Lato, Poppins...)
+- 8 color schemes + custom palette
+- 13 web font families (Inter, Roboto, Open Sans, Lato, Poppins, Playfair Display, Merriweather, Space Grotesk...)
 - 3 font sizes (Small / Default / Large)
 - 4 button styles (Filled / Outline / Rounded / Pill)
+- Layout modes (Centered / Wide / Split / Editorial)
+- Dark mode toggle (default ON for Luxury)
 
 ---
 
@@ -156,7 +160,7 @@ bench restart
 - CRM must be installed **before** Business Connect (`required_apps = ["crm"]`)
 - `bench build` must use `--app osduo_business_connect` only (CRM build may exceed memory on small VMs)
 - Roles created on install: **BC Manager**, **BC User**, **BC Viewer**
-- 8 default themes auto-created (Violet, Indigo, Blue, Green, Yellow, Orange, Red + custom)
+- 8 default themes auto-created (Violet, Indigo, Blue, Green, Yellow, Orange, Red, Gold + custom)
 - CRM custom fields added to CRM Lead: business, card, product, service, enquiry, source, campaign, landing URL
 
 ---
