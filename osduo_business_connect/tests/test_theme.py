@@ -26,7 +26,7 @@ class TestThemeDocType(unittest.TestCase):
 
     def test_required_fields(self):
         fieldnames = [f["fieldname"] for f in self.data["fields"]]
-        for req in ["theme_name", "template", "color_scheme", "primary_color", "secondary_color", "button_style", "layout_mode", "font_category", "dark_mode"]:
+        for req in ["theme_name", "template", "color_scheme", "primary_color", "secondary_color", "button_style", "layout_mode", "dark_mode"]:
             self.assertIn(req, fieldnames)
 
     def test_template_options(self):
@@ -98,12 +98,6 @@ class TestThemeService(unittest.TestCase):
         with open(path) as f:
             content = f.read()
         self.assertIn("LAYOUT_MAP", content)
-
-    def test_has_font_category_map(self):
-        path = os.path.join(APP_DIR, "services", "theme_service.py")
-        with open(path) as f:
-            content = f.read()
-        self.assertIn("FONT_CATEGORY_MAP", content)
 
     def test_has_dark_mode_map(self):
         path = os.path.join(APP_DIR, "services", "theme_service.py")

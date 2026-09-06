@@ -51,3 +51,49 @@ def safe_url(url):
         if url_lower.startswith(proto):
             return ""
     return url
+
+
+def safe_video_url(url):
+    """Jinja filter: sanitize video iframe src to prevent XSS.
+
+    Only allows https/http URLs from known video embed domains.
+    Returns empty string for invalid or dangerous URLs.
+    """
+    if not url:
+        return ""
+    url = str(url).strip()
+    url_lower = url.lower()
+
+    # Block dangerous protocols
+    dangerous = ["javascript:", "data:", "vbscript:", "file:"]
+    for proto in dangerous:
+        if url_lower.startswith(proto):
+            return ""
+
+    # Only allow https or http
+    if not url_lower.startswith("http://") and not url_lower.startswith("https://"):
+        return ""
+
+    # Allow known video embed domains
+    allowed_domains = [
+        "youtube.com", "www.youtube.com", "youtu.be",
+        "vimeo.com", "www.vimeo.com",
+        "player.vimeo.com",
+        "dailymotion.com", "www.dailymotion.com",
+        "wistia.com", "www.wistia.com",
+        "loom.com", "www.loom.com",
+        "streamable.com", "www.streamable.com",
+        "facebook.com", "www.facebook.com",
+        "drive.google.com",
+    ]
+
+    from urllib.parse import urlparse
+    try:
+        parsed = urlparse(url)
+        host = parsed.hostname or ""
+        if host and any(host == d or host.endswith("." + d) for d in allowed_domains):
+            return url
+    except Exception:
+        pass
+
+    return ""

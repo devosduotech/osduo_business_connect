@@ -153,14 +153,6 @@
       "in_list_view": 1
     },
     {
-      "fieldname": "font_category",
-      "fieldtype": "Select",
-      "label": "Font Category",
-      "default": "Sans",
-      "options": "Sans\nSerif\nEditorial",
-      "description": "Determines available fonts (auto-set from template)"
-    },
-    {
       "fieldname": "font_size",
       "fieldtype": "Select",
       "label": "Font Size",
