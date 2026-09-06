@@ -967,6 +967,15 @@
     color: var(--bc-header-text);
 }
 
+/* Hero action buttons — flex container */
+.bc-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-top: 1rem;
+}
+
 /* Cover image — full image, no crop */
 .bc-cover-img {
     width: 100%;
@@ -1811,6 +1820,7 @@
     .bc-contact-grid { grid-template-columns: 1fr; }
 
     .bc-btn { padding: 0.6rem 1.1rem; font-size: 0.85rem; }
+    .bc-hero-actions { gap: 0.5rem; margin-top: 0.75rem; }
     .bc-action-bar { display: flex !important; padding: 0.5rem; }
     .bc-action-bar .bc-btn { font-size: 0.75rem; padding: 0.5rem 0.3rem; }
 
@@ -1837,8 +1847,12 @@
     .bc-container { width: calc(100% - 32px); }
 
     .bc-header { padding: 0.75rem 0; }
+    .bc-header h1 { font-size: 1.2rem; }
     .bc-cover-img { max-height: 160px; }
     .bc-business-cover { max-height: 180px; }
+    .bc-logo-img { width: 56px; height: 56px; }
+    .bc-hero-actions { gap: 0.4rem; }
+    .bc-hero-actions .bc-btn { padding: 0.5rem 0.9rem; font-size: 0.8rem; }
 
     .bc-section { padding: 1rem 0; }
     .bc-product-grid { grid-template-columns: 1fr; gap: 0.75rem; }
