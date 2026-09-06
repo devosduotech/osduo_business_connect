@@ -1,0 +1,46 @@
+{# Product/Service Hero — Creative: asymmetric layout, bold typography, visual emphasis #}
+<div class="bc-header bc-hero-creative-header">
+    <div class="bc-detail">
+        <div class="bc-hero-creative-product-layout">
+            {% if doc.image %}
+            <div class="bc-hero-creative-product-image">
+                <img src="{{ doc.image }}" alt="{{ doc.product_name or doc.service_name }}">
+            </div>
+            {% endif %}
+
+            <div class="bc-hero-creative-product-info">
+                <h1>{{ doc.product_name or doc.service_name }}</h1>
+
+                {% if doc.category %}
+                <span class="bc-hero-creative-category">{{ doc.category }}</span>
+                {% endif %}
+
+                {% if doc.short_description %}
+                <p class="bc-tagline">{{ doc.short_description }}</p>
+                {% endif %}
+
+                {% if doc.price_display_mode != "Hidden" and doc.price %}
+                <div class="bc-hero-creative-price">
+                    {% if doc.price_display_mode == "Contact" %}
+                        Contact for pricing
+                    {% else %}
+                        {% if doc.currency %}{{ doc.currency }} {% endif %}{{ doc.price }}
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <div class="bc-hero-actions">
+                    {% if doc.enquiry_enabled %}
+                    <a href="#bc-enquiry" class="bc-btn bc-btn-primary">Send Enquiry</a>
+                    {% endif %}
+                    {% if business_phone %}
+                    <a href="tel:{{ business_phone }}" class="bc-btn bc-btn-secondary">Call</a>
+                    {% endif %}
+                    {% if business_whatsapp %}
+                    <a href="https://wa.me/{{ business_whatsapp }}?text={{ 'Hi, I am interested in ' ~ (doc.product_name or doc.service_name) | urlencode }}" class="bc-btn bc-btn-accent">WhatsApp</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

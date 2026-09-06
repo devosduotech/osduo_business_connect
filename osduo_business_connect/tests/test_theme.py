@@ -26,19 +26,19 @@ class TestThemeDocType(unittest.TestCase):
 
     def test_required_fields(self):
         fieldnames = [f["fieldname"] for f in self.data["fields"]]
-        for req in ["theme_name", "template", "color_scheme", "primary_color", "secondary_color", "button_style"]:
+        for req in ["theme_name", "template", "color_scheme", "primary_color", "secondary_color", "button_style", "layout_mode", "font_category", "dark_mode"]:
             self.assertIn(req, fieldnames)
 
     def test_template_options(self):
         template_field = next(f for f in self.data["fields"] if f["fieldname"] == "template")
         options = template_field["options"]
-        for tmpl in ["Modern", "Professional", "Minimal", "Classic"]:
+        for tmpl in ["Modern", "Professional", "Minimal", "Classic", "Luxury", "Creative"]:
             self.assertIn(tmpl, options)
 
     def test_color_scheme_options(self):
         color_field = next(f for f in self.data["fields"] if f["fieldname"] == "color_scheme")
         options = color_field["options"]
-        for scheme in ["Violet", "Indigo", "Blue", "Green", "Yellow", "Orange", "Red", "Custom"]:
+        for scheme in ["Violet", "Indigo", "Blue", "Green", "Yellow", "Orange", "Red", "Gold", "Custom"]:
             self.assertIn(scheme, options)
 
     def test_button_style_options(self):
@@ -92,6 +92,24 @@ class TestThemeService(unittest.TestCase):
         with open(path) as f:
             content = f.read()
         self.assertIn("def get_theme_variables", content)
+
+    def test_has_layout_map(self):
+        path = os.path.join(APP_DIR, "services", "theme_service.py")
+        with open(path) as f:
+            content = f.read()
+        self.assertIn("LAYOUT_MAP", content)
+
+    def test_has_font_category_map(self):
+        path = os.path.join(APP_DIR, "services", "theme_service.py")
+        with open(path) as f:
+            content = f.read()
+        self.assertIn("FONT_CATEGORY_MAP", content)
+
+    def test_has_dark_mode_map(self):
+        path = os.path.join(APP_DIR, "services", "theme_service.py")
+        with open(path) as f:
+            content = f.read()
+        self.assertIn("DARK_MODE_MAP", content)
 
 
 class TestScheduler(unittest.TestCase):

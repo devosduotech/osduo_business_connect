@@ -43,6 +43,7 @@ COLOR_SCHEMES = {
     "Yellow": {"primary": "#EAB308", "secondary": "#FFFFFF", "accent": "#FDE047", "gradient_start": "#EAB308", "gradient_end": "#FDE047"},
     "Orange": {"primary": "#EA580C", "secondary": "#FFFFFF", "accent": "#FB923C", "gradient_start": "#EA580C", "gradient_end": "#FB923C"},
     "Red":    {"primary": "#DC2626", "secondary": "#FFFFFF", "accent": "#F87171", "gradient_start": "#DC2626", "gradient_end": "#F87171"},
+    "Gold":   {"primary": "#D4AF37", "secondary": "#1A1A2E", "accent": "#F5D060", "gradient_start": "#D4AF37", "gradient_end": "#F5D060"},
 }
 
 # Font family mapping — Select label → CSS font-family
@@ -57,6 +58,9 @@ FONT_FAMILY_MAP = {
     "Nunito": "'Nunito', sans-serif",
     "Source Sans 3": "'Source Sans 3', sans-serif",
     "Raleway": "'Raleway', sans-serif",
+    "Playfair Display": "'Playfair Display', serif",
+    "Merriweather": "'Merriweather', serif",
+    "Space Grotesk": "'Space Grotesk', sans-serif",
 }
 
 # Font size presets — label → CSS font-size
@@ -64,6 +68,36 @@ FONT_SIZE_MAP = {
     "Small": "14px",
     "Default": "16px",
     "Large": "18px",
+}
+
+# Template → default layout mode
+LAYOUT_MAP = {
+    "Modern": "Centered",
+    "Professional": "Wide",
+    "Minimal": "Centered",
+    "Classic": "Centered",
+    "Luxury": "Editorial",
+    "Creative": "Editorial",
+}
+
+# Template → default font category
+FONT_CATEGORY_MAP = {
+    "Modern": "Sans",
+    "Professional": "Sans",
+    "Minimal": "Sans",
+    "Classic": "Sans",
+    "Luxury": "Serif",
+    "Creative": "Editorial",
+}
+
+# Template → default dark mode
+DARK_MODE_MAP = {
+    "Modern": False,
+    "Professional": False,
+    "Minimal": False,
+    "Classic": False,
+    "Luxury": True,
+    "Creative": False,
 }
 
 
@@ -99,12 +133,13 @@ def get_theme_data(theme_name):
         "BC Theme", theme_name,
         ["theme_name", "template", "color_scheme", "primary_color", "secondary_color",
          "accent_color", "background_color", "font_color", "button_style",
-         "font_family", "font_size"],
+         "font_family", "font_size", "layout_mode", "font_category", "dark_mode"],
         as_dict=True,
     )
     if not theme_data:
         return get_default_theme()
 
+    template = theme_data.template or "Modern"
     scheme = theme_data.color_scheme or "Blue"
     scheme_colors = COLOR_SCHEMES.get(scheme, COLOR_SCHEMES["Blue"])
 
@@ -122,7 +157,7 @@ def get_theme_data(theme_name):
     return {
         "name": theme_name,
         "theme_name": theme_data.theme_name or theme_name,
-        "template": theme_data.template or "Modern",
+        "template": template,
         "color_scheme": scheme,
         "primary_color": scheme_colors["primary"],
         "secondary_color": scheme_colors["secondary"],
@@ -134,6 +169,9 @@ def get_theme_data(theme_name):
         "button_style": theme_data.button_style or "Filled",
         "font_family": theme_data.font_family or "System Default",
         "font_size": theme_data.font_size or "Default",
+        "layout_mode": theme_data.layout_mode or LAYOUT_MAP.get(template, "Centered"),
+        "font_category": theme_data.font_category or FONT_CATEGORY_MAP.get(template, "Sans"),
+        "dark_mode": theme_data.dark_mode if theme_data.dark_mode is not None else DARK_MODE_MAP.get(template, False),
     }
 
 
@@ -159,6 +197,9 @@ def get_default_theme():
         "button_style": "Filled",
         "font_family": "System Default",
         "font_size": "Default",
+        "layout_mode": "Centered",
+        "font_category": "Sans",
+        "dark_mode": False,
     }
 
 
@@ -185,43 +226,93 @@ def get_theme_variables(theme_data):
     font_size_raw = theme_data.get("font_size") or "Default"
     font_size = FONT_SIZE_MAP.get(font_size_raw, FONT_SIZE_MAP["Default"])
     color_scheme = theme_data.get("color_scheme", "Blue")
+    layout_mode = theme_data.get("layout_mode") or LAYOUT_MAP.get(template, "Centered")
+    dark_mode = theme_data.get("dark_mode", False)
 
     # Card elevation — derived from template
-    card_elevation_map = {"Modern": "shadow", "Professional": "border", "Minimal": "none", "Classic": "shadow"}
+    card_elevation_map = {
+        "Modern": "shadow", "Professional": "border", "Minimal": "none",
+        "Classic": "shadow", "Luxury": "none", "Creative": "shadow",
+    }
     card_elevation = card_elevation_map.get(template, "shadow")
     shadow = "0 1px 3px rgba(0,0,0,0.1)" if card_elevation == "shadow" else "none"
     border = "1px solid #e2e8f0" if card_elevation == "border" else "none"
 
     # Border radius — derived from template
-    radius_map = {"Modern": "8px", "Professional": "4px", "Minimal": "0px", "Classic": "12px"}
+    radius_map = {
+        "Modern": "8px", "Professional": "4px", "Minimal": "0px",
+        "Classic": "12px", "Luxury": "2px", "Creative": "8px",
+    }
     card_radius = radius_map.get(template, "8px")
 
     # Button radius
     btn_radius_map = {"Filled": card_radius, "Outline": card_radius, "Rounded": "8px", "Pill": "999px"}
     btn_radius = btn_radius_map.get(button_style, card_radius)
 
-    # Background — use custom if scheme is Custom, else template-based default
-    if color_scheme == "Custom":
+    # Background — dark mode or template-based
+    if dark_mode:
+        background = "#0f172a"
+    elif color_scheme == "Custom":
         background = theme_data.get("background_color", "#F8FAFC")
     else:
-        background = "#f8fafc" if template != "Minimal" else "#ffffff"
+        bg_map = {"Minimal": "#ffffff", "Luxury": "#0f172a", "Creative": "#fafafa"}
+        background = bg_map.get(template, "#f8fafc")
 
-    # Text color — use custom if scheme is Custom, else default
-    text_color = theme_data.get("font_color", "#1E293B") if color_scheme == "Custom" else "#1e293b"
+    # Text color
+    if dark_mode:
+        text_color = "#e2e8f0"
+    elif color_scheme == "Custom":
+        text_color = theme_data.get("font_color", "#1E293B")
+    else:
+        text_color = "#0f172a" if template == "Luxury" else "#1e293b"
+
+    # Surface color (cards, sections)
+    surface = "#1e293b" if dark_mode else "#ffffff"
+
+    # Border color
+    border_color = "#334155" if dark_mode else "#e2e8f0"
 
     # Header
-    header_style_map = {
-        "Modern": f"linear-gradient(135deg, {gradient_start}, {gradient_end})",
-        "Professional": primary,
-        "Minimal": secondary,
-        "Classic": f"linear-gradient(180deg, {gradient_start}, {gradient_end})",
-    }
-    header_bg = header_style_map.get(template, header_style_map["Modern"])
-    header_text = "white" if template != "Minimal" else primary
+    if template == "Luxury":
+        header_bg = "transparent"
+    elif template == "Creative":
+        header_bg = f"linear-gradient(135deg, {gradient_start}, {gradient_end})"
+    elif template == "Modern":
+        header_bg = f"linear-gradient(135deg, {gradient_start}, {gradient_end})"
+    elif template == "Professional":
+        header_bg = primary
+    elif template == "Minimal":
+        header_bg = "transparent"
+    elif template == "Classic":
+        header_bg = f"linear-gradient(180deg, {gradient_start}, {gradient_end})"
+    else:
+        header_bg = f"linear-gradient(135deg, {gradient_start}, {gradient_end})"
+
+    if template == "Minimal":
+        header_text = primary
+    elif template == "Luxury":
+        header_text = "#e2e8f0" if dark_mode else "#ffffff"
+    else:
+        header_text = "white"
 
     # Section spacing
-    spacing_map = {"Modern": "2rem 1.5rem", "Professional": "1.5rem 1.5rem", "Minimal": "1rem 1.5rem", "Classic": "2rem 1.5rem"}
+    spacing_map = {
+        "Modern": "2rem 1.5rem", "Professional": "1.5rem 1.5rem",
+        "Minimal": "1rem 1.5rem", "Classic": "2rem 1.5rem",
+        "Luxury": "3rem 2rem", "Creative": "2.5rem 1.5rem",
+    }
     section_spacing = spacing_map.get(template, "2rem 1.5rem")
+
+    # Display font (for hero/title text)
+    display_font_map = {
+        "Modern": font_family,
+        "Professional": font_family,
+        "Minimal": font_family,
+        "Classic": font_family,
+        "Luxury": "'Playfair Display', serif",
+        "Creative": "'Space Grotesk', sans-serif",
+    }
+    display_font = display_font_map.get(template, font_family)
 
     vars_css = (
         f"--bc-primary: {sanitize_css_value(primary)};"
@@ -229,9 +320,12 @@ def get_theme_variables(theme_data):
         f"--bc-accent: {sanitize_css_value(accent)};"
         f"--bc-background: {sanitize_css_value(background)};"
         f"--bc-text: {sanitize_css_value(text_color)};"
+        f"--bc-surface: {sanitize_css_value(surface)};"
+        f"--bc-border-color: {sanitize_css_value(border_color)};"
         f"--bc-card-radius: {sanitize_css_value(card_radius)};"
         f"--bc-btn-radius: {sanitize_css_value(btn_radius)};"
         f"--bc-font-family: {sanitize_css_value(font_family)};"
+        f"--bc-display-font: {sanitize_css_value(display_font)};"
         f"--bc-font-size: {sanitize_css_value(font_size)};"
         f"--bc-header-bg: {sanitize_css_value(header_bg)};"
         f"--bc-header-text: {sanitize_css_value(header_text)};"

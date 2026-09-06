@@ -1,13 +1,17 @@
 {%- extends "osduo_business_connect/templates/bc_base.html" -%}
 
 {%- block page_content -%}
-<div class="bc-page bc-template-{{ theme.template|lower }}" style="{{ theme_vars }}">
+<div class="bc-page bc-template-{{ theme.template|lower }}" data-layout="{{ theme.layout_mode }}" data-dark="{{ 'true' if theme.dark_mode else 'false' }}" style="{{ theme_vars }}">
 
     {# ===== HERO (varies by template) ===== #}
     {% if template_type == "Professional" %}
         {% include "osduo_business_connect/templates/pages/business/parts/hero_professional.html" %}
     {% elif template_type == "Minimal" %}
         {% include "osduo_business_connect/templates/pages/business/parts/hero_minimal.html" %}
+    {% elif template_type == "Luxury" %}
+        {% include "osduo_business_connect/templates/pages/business/parts/hero_luxury.html" %}
+    {% elif template_type == "Creative" %}
+        {% include "osduo_business_connect/templates/pages/business/parts/hero_creative.html" %}
     {% elif template_type == "Classic" %}
         {% include "osduo_business_connect/templates/pages/business/parts/hero_classic.html" %}
     {% else %}

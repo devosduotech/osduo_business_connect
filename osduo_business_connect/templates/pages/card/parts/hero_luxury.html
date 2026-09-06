@@ -1,0 +1,47 @@
+{# Card Hero — Luxury: dark editorial, large serif typography, understated CTA #}
+<div class="bc-card-hero bc-hero-luxury">
+    {% if doc.profile_image %}
+    <div class="bc-hero-luxury-bg" style="background-image:url({{ doc.profile_image }})"></div>
+    {% endif %}
+
+    <div class="bc-hero-luxury-content">
+        {% if doc.profile_image %}
+        <img src="{{ doc.profile_image }}" alt="{{ doc.display_name }}" class="bc-hero-luxury-avatar">
+        {% else %}
+        <div class="bc-hero-luxury-avatar bc-hero-luxury-avatar-fallback">
+            {{ doc.display_name[0] if doc.display_name else '?' }}
+        </div>
+        {% endif %}
+
+        <h1 class="bc-hero-luxury-name">{{ doc.display_name }}</h1>
+        {% if doc.designation %}
+        <p class="bc-hero-luxury-designation">{{ doc.designation }}</p>
+        {% endif %}
+        {% if doc.show_business and doc.business_name %}
+        <p class="bc-hero-luxury-business">{{ doc.business_name }}</p>
+        {% endif %}
+
+        <div class="bc-separator"></div>
+
+        {% if doc.bio %}
+        <div class="bc-hero-luxury-bio">{{ doc.bio }}</div>
+        {% endif %}
+
+        <div class="bc-hero-luxury-actions">
+            {% if doc.phone %}
+            <a href="tel:{{ doc.phone }}" class="bc-btn bc-btn-primary">Save Contact</a>
+            {% endif %}
+            {% if doc.whatsapp %}
+            <a href="https://wa.me/{{ doc.whatsapp|replace('+','')|replace(' ','') }}" class="bc-btn bc-btn-primary">Contact Me</a>
+            {% endif %}
+        </div>
+
+        {% if links %}
+        <div class="bc-hero-luxury-links">
+            {% for link in links %}
+            <a href="{{ link.url | safe_url }}" target="_blank" class="bc-hero-luxury-social">{% if link.icon_class %}<i class="{{ link.icon_class }}"></i>{% endif %}{{ link.label or link.link_type }}</a>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>

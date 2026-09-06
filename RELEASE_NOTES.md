@@ -28,7 +28,7 @@ OSDuo Business Connect v1.0.1 is the initial production release of a Frappe Fram
 ### Digital Business Cards
 - Create digital cards for team members
 - Public card pages at `/c/<slug>` (mobile-first, QR/NFC ready)
-- 4 distinct templates: Modern, Professional, Minimal, Classic
+- 6 distinct templates: Modern, Professional, Minimal, Classic, Luxury, Creative
 - VCF download ("Add to Phone Book")
 - Share via WhatsApp, email, SMS, or direct link
 - QR code generation (print-ready)
@@ -46,11 +46,14 @@ OSDuo Business Connect v1.0.1 is the initial production release of a Frappe Fram
 - Naming series: PROD-.#####, SVC-.#####
 
 ### Branding & Theming
-- 4 page templates (Modern, Professional, Minimal, Classic)
-- 8 color scheme presets + custom palette
-- 10 web font families (Inter, Roboto, Open Sans, Lato, Poppins, etc.)
+- 6 page templates (Modern, Professional, Minimal, Classic, Luxury, Creative)
+- 9 color scheme presets + custom palette
+- 13 web font families (Inter, Roboto, Open Sans, Lato, Poppins, Playfair Display, Merriweather, Space Grotesk, etc.)
 - 3 font size presets (Small, Default, Large)
 - 4 button styles (Filled, Outline, Rounded, Pill)
+- Layout modes: Centered, Wide, Split, Editorial (auto-set per theme)
+- Font categories: Sans, Serif, Editorial (limited per theme)
+- Dark mode toggle (default ON for Luxury)
 - Official OSDuo brand assets (logo, favicon, app icon, social sharing image)
 - Desk sidebar branding and login page customization
 - Naming series: THEME-.#####
@@ -168,7 +171,7 @@ bench restart
 - CRM must be installed **before** Business Connect (`required_apps = ["crm"]`)
 - `bench build` must use `--app osduo_business_connect` only (CRM build may exceed memory on small VMs)
 - Roles created on install: **BC Manager**, **BC User**, **BC Viewer**
-- 8 default themes auto-created (Violet, Indigo, Blue, Green, Yellow, Orange, Red + custom)
+- 8 default themes auto-created (Violet, Indigo, Blue, Green, Yellow, Orange, Red, Gold + custom)
 - CRM custom fields added to CRM Lead: business, card, product, service, enquiry, source, campaign, landing URL
 - `allowed_referrers` must be set in site_config.json for production CSRF protection
 
@@ -198,8 +201,10 @@ bench restart
 
 ### 5. Configure Theme
 1. Go to BC Theme
-2. Select template, colors, fonts, and button style
-3. Link theme to business
+2. Select template (Modern, Professional, Minimal, Classic, Luxury, Creative)
+3. Choose layout mode, font category, color scheme, and button style
+4. Toggle dark mode (recommended for Luxury)
+5. Link theme to business
 
 ### 6. Publish
 1. Set business status to "Published"

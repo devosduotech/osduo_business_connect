@@ -1,0 +1,26 @@
+{# Luxury Hero — fullscreen dark editorial, large serif typography #}
+<div class="bc-header">
+    {% if doc.cover_image %}
+    <div class="bc-hero-luxury-bg" style="background-image:url({{ doc.cover_image }})"></div>
+    {% endif %}
+
+    <div class="bc-hero-luxury-content">
+        {% if doc.logo %}
+        <img src="{{ doc.logo }}" alt="{{ doc.business_name }}" class="bc-logo-img">
+        {% endif %}
+
+        <h1>{{ doc.business_name }}</h1>
+
+        {% if doc.industry %}
+        <p class="bc-hero-luxury-designation">{{ doc.industry }}</p>
+        {% endif %}
+
+        <div class="bc-separator"></div>
+
+        <div class="bc-hero-actions">
+            {% if doc.phone %}<a href="tel:{{ doc.phone }}" class="bc-btn bc-btn-primary">Call</a>{% endif %}
+            {% if doc.whatsapp %}<a href="https://wa.me/{{ doc.whatsapp }}" class="bc-btn bc-btn-primary">WhatsApp</a>{% endif %}
+            <a href="#bc-contact" class="bc-btn bc-btn-primary">Enquire</a>
+        </div>
+    </div>
+</div>

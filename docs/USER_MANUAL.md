@@ -235,6 +235,8 @@ Click the **Template** dropdown and select:
 | **Professional** | Corporate, B2B, industrial | Dark header, structured, outlined |
 | **Minimal** | Freelancers, designers, personal | White, thin borders, understated |
 | **Classic** | Traditional, legal, real estate | Gradient banner, decorative |
+| **Luxury** | Premium, high-end, editorial | Dark backgrounds, serif typography, cinematic |
+| **Creative** | Agencies, designers, innovators | Asymmetric layouts, bold typography, editorial |
 
 ### 3.6 Publishing Your Card
 
@@ -392,8 +394,35 @@ Features display on the page with an optional image icon beside the bold title a
 | **Professional** | Dark header band, horizontal layout, outlined buttons |
 | **Minimal** | Clean whitespace, thin borders, understated |
 | **Classic** | Gradient banner, overlapping elements, decorative |
+| **Luxury** | Dark backgrounds, serif typography, cinematic |
+| **Creative** | Asymmetric layouts, bold typography, editorial |
 
-### 5.2 Color Schemes
+### 5.2 Layout Mode
+
+Each theme sets a default layout mode. You can override it:
+
+| Layout Mode | Description |
+|-------------|-------------|
+| **Centered** | Content centered, max-width container |
+| **Wide** | Full-width sections, edge-to-edge |
+| **Split** | Side-by-side grid layouts |
+| **Editorial** | Magazine-style, large typography |
+
+### 5.3 Font Category
+
+Themes restrict available fonts:
+
+| Font Category | Fonts | Default Theme |
+|---------------|-------|---------------|
+| **Sans** | Inter, Roboto, Open Sans, Lato, Poppins, Montserrat, Nunito, Raleway, Source Sans 3, Space Grotesk | Modern, Professional, Minimal, Classic |
+| **Serif** | Playfair Display, Merriweather | Luxury |
+| **Editorial** | Space Grotesk, Playfair Display | Creative |
+
+### 5.4 Dark Mode
+
+Toggle dark mode for supported themes. **Luxury** defaults to dark mode ON.
+
+### 5.5 Color Schemes
 
 Select a preset or create custom:
 
@@ -406,9 +435,10 @@ Select a preset or create custom:
 | Yellow | Warm yellow |
 | Orange | Vibrant orange |
 | Red | Bold red |
+| Gold | Premium gold tones |
 | Custom | Your own colors |
 
-### 5.3 Custom Colors
+### 5.6 Custom Colors
 
 Select **Custom** from Color Scheme dropdown, then set:
 
@@ -419,9 +449,9 @@ Select **Custom** from Color Scheme dropdown, then set:
 | Accent Color | Highlight color |
 | Background Color | Page background |
 
-### 5.4 Fonts & Button Styles
+### 5.7 Fonts & Button Styles
 
-**Font Family:** Inter, Roboto, Open Sans, Lato, Poppins, Montserrat, Nunito, Source Sans 3, Raleway, System Default
+**Font Family:** Inter, Roboto, Open Sans, Lato, Poppins, Montserrat, Nunito, Source Sans 3, Raleway, Space Grotesk, Playfair Display, Merriweather, System Default
 
 **Font Size:** Small (14px) / Default (16px) / Large (18px)
 
@@ -433,7 +463,7 @@ Select **Custom** from Color Scheme dropdown, then set:
 | Rounded | Rounded corners |
 | Pill | Fully rounded (stadium shape) |
 
-### 5.5 Linking Theme to Business
+### 5.8 Linking Theme to Business
 
 1. Open your Business record
 2. Select the theme in **Default Theme** field

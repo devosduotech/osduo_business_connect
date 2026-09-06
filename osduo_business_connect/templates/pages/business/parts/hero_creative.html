@@ -1,0 +1,37 @@
+{# Creative Hero — asymmetric layout, bold typography, visual emphasis #}
+<div class="bc-header">
+    <div class="bc-container">
+        <div class="bc-hero-creative-header-layout">
+            {% if doc.cover_image %}
+            <div class="bc-hero-creative-header-image">
+                <img src="{{ doc.cover_image }}" alt="{{ doc.business_name }}">
+            </div>
+            {% endif %}
+
+            <div class="bc-hero-creative-header-info">
+                {% if doc.logo %}
+                <img src="{{ doc.logo }}" alt="{{ doc.business_name }}" class="bc-logo-img">
+                {% endif %}
+
+                <h1>{{ doc.business_name }}</h1>
+
+                {% if doc.industry %}
+                <p class="bc-hero-creative-designation">{{ doc.industry }}</p>
+                {% endif %}
+
+                <div class="bc-hero-actions">
+                    {% if doc.phone %}<a href="tel:{{ doc.phone }}" class="bc-btn bc-btn-primary">Call</a>{% endif %}
+                    {% if doc.whatsapp %}<a href="https://wa.me/{{ doc.whatsapp }}" class="bc-btn bc-btn-accent">WhatsApp</a>{% endif %}
+                    <a href="#bc-contact" class="bc-btn bc-btn-secondary">Enquiry</a>
+                </div>
+            </div>
+        </div>
+
+        <nav class="bc-nav">
+            <a href="#bc-about" class="bc-nav-link active">About</a>
+            {% if products %}<a href="#bc-products" class="bc-nav-link">Products</a>{% endif %}
+            {% if services %}<a href="#bc-services" class="bc-nav-link">Services</a>{% endif %}
+            <a href="#bc-contact" class="bc-nav-link">Contact</a>
+        </nav>
+    </div>
+</div>

@@ -1,0 +1,40 @@
+{# Product/Service Hero — Luxury: full-width editorial, dark overlay, serif typography #}
+<div class="bc-header bc-hero-luxury-header">
+    {% if doc.image %}
+    <div class="bc-hero-luxury-bg" style="background-image:url({{ doc.image }})"></div>
+    {% endif %}
+
+    <div class="bc-hero-luxury-content">
+        <h1>{{ doc.product_name or doc.service_name }}</h1>
+
+        {% if doc.category %}
+        <span class="bc-hero-luxury-category">{{ doc.category }}</span>
+        {% endif %}
+
+        {% if doc.short_description %}
+        <p class="bc-tagline">{{ doc.short_description }}</p>
+        {% endif %}
+
+        {% if doc.price_display_mode != "Hidden" and doc.price %}
+        <div class="bc-hero-luxury-price">
+            {% if doc.price_display_mode == "Contact" %}
+                Contact for pricing
+            {% else %}
+                {% if doc.currency %}{{ doc.currency }} {% endif %}{{ doc.price }}
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="bc-hero-actions">
+            {% if doc.enquiry_enabled %}
+            <a href="#bc-enquiry" class="bc-btn bc-btn-primary">Enquire</a>
+            {% endif %}
+            {% if business_phone %}
+            <a href="tel:{{ business_phone }}" class="bc-btn bc-btn-primary">Call</a>
+            {% endif %}
+            {% if business_whatsapp %}
+            <a href="https://wa.me/{{ business_whatsapp }}?text={{ 'Hi, I am interested in ' ~ (doc.product_name or doc.service_name) | urlencode }}" class="bc-btn bc-btn-primary">WhatsApp</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
