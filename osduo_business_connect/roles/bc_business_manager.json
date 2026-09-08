@@ -1,6 +1,6 @@
 {
-    "role": "OSDuo Business Manager",
-    "role_name": "OSDuo Business Manager",
+    "role": "BC Business Manager",
+    "role_name": "BC Business Manager",
     "description": "Manage business content/team",
     "is_custom": 1,
     "is_standard": 0,

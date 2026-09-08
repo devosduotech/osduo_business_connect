@@ -1,6 +1,6 @@
 {
-    "role": "OSDuo Business Member",
-    "role_name": "OSDuo Business Member",
+    "role": "BC Business Member",
+    "role_name": "BC Business Member",
     "description": "Manage own card/content allowed by role",
     "is_custom": 1,
     "is_standard": 0,

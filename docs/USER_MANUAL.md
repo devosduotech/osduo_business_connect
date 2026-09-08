@@ -693,13 +693,12 @@ Status changes sync bidirectionally:
 
 | Role | Description |
 |------|-------------|
-| **BC Manager** | Full business management |
-| **BC User** | General user access |
-| **BC Viewer** | Read-only access |
-| **BC Content** | Manage products, services, galleries |
-| **BC Analytics** | View analytics dashboard |
-| **BC Enquiry** | Manage enquiries |
-| **BC Settings** | System configuration |
+| **BC Business Owner** | Full business management |
+| **BC Business Manager** | Business management access |
+| **BC Business Member** | General user access |
+| **BC Marketing Manager** | Marketing and content management |
+| **BC CRM User** | CRM integration access |
+| **BC System Manager** | System configuration |
 
 ### 10.2 Permission Matrix
 

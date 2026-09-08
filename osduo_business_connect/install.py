@@ -162,12 +162,12 @@ def create_custom_field_if_not_exists(dt, field):
 def create_default_roles():
     """Create default OSDuo roles if they don't exist."""
     roles = [
-        "OSDuo Business Owner",
-        "OSDuo Business Manager",
-        "OSDuo Business Member",
-        "OSDuo Marketing Manager",
-        "OSDuo CRM User",
-        "OSDuo System Manager",
+        "BC Business Owner",
+        "BC Business Manager",
+        "BC Business Member",
+        "BC Marketing Manager",
+        "BC CRM User",
+        "BC System Manager",
     ]
 
     for role_name in roles:

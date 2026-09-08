@@ -1,4 +1,43 @@
-# OSDuo Business Connect v1.0.1 Release Notes
+# OSDuo Business Connect Release Notes
+
+---
+
+## Version 1.0.2 — Theme System Expansion
+
+**Release Date:** September 2026
+
+### What's New
+
+**6-Theme System**
+- Expanded from 8 color-variant themes to 6 distinct design templates
+- Modern (clean white, primary buttons), Professional (colored band header), Minimal (uppercase, thin borders), Classic (gradient banner), Luxury (dark editorial), Creative (asymmetric 2-column)
+- Layout modes: Centered, Wide, Split, Editorial
+- Dark mode support via CSS `data-dark` attribute (default ON for Luxury)
+
+**Digital Card Redesign (v1.0.2)**
+- Prominent full-width VCF "Save Contact to Phone" button with pill shape and shadow
+- Larger avatars (120px desktop, 100px mobile, 90px small)
+- Equal-width action buttons with hover lift effects
+- 1px gradient separators between sections
+- 13 Google Fonts including Playfair Display, Space Grotesk, DM Sans
+- Social links with brand-colored icons (Facebook, LinkedIn, Instagram, etc.)
+
+**Card Business Hero Templates**
+- New `hero_luxury.html` and `hero_creative.html` for business pages
+- Asymmetric grid layout for Creative, dark editorial for Luxury
+
+### Bug Fixes
+- Fixed Creative theme white background — now uses `var(--bc-surface)` with gradient fallback
+- Fixed Luxury theme excessive blank spaces — reduced padding across all breakpoints
+- Fixed `jinja.filters` hook format — must be list of module paths per Frappe docs
+- Fixed 5 critical security audit issues (XSS, CSS injection, video URL sanitization)
+- Fixed mobile button overlap on small screens
+
+### CSS Changes
+- Removed `web_include_css` from hooks.py — CSS loaded via `bc_base.html` only
+- All theme CSS consolidated into single `business_connect.css` (2300+ lines)
+
+---
 
 ## Version 1.0.1 — Core Edition
 
@@ -88,7 +127,7 @@ OSDuo Business Connect v1.0.1 is the initial production release of a Frappe Fram
 - Non-blocking background event recording
 
 ### Security & Permissions
-- 7 custom roles: BC Manager, BC User, BC Viewer, BC Content, BC Analytics, BC Enquiry, BC Settings
+- 7 custom roles: BC Business Owner, BC Business Manager, BC Business Member, BC Marketing Manager, BC CRM User, BC System Manager, BC Support
 - Centralized permission dispatcher for 9 DocTypes
 - Cross-business data isolation
 - Guest access for published records and enquiry creation
@@ -170,7 +209,7 @@ bench restart
 
 - CRM must be installed **before** Business Connect (`required_apps = ["crm"]`)
 - `bench build` must use `--app osduo_business_connect` only (CRM build may exceed memory on small VMs)
-- Roles created on install: **BC Manager**, **BC User**, **BC Viewer**
+- Roles created on install: **BC Business Owner**, **BC Business Manager**, **BC Business Member**, **BC Marketing Manager**, **BC CRM User**, **BC System Manager**
 - 8 default themes auto-created (Violet, Indigo, Blue, Green, Yellow, Orange, Red, Gold + custom)
 - CRM custom fields added to CRM Lead: business, card, product, service, enquiry, source, campaign, landing URL
 - `allowed_referrers` must be set in site_config.json for production CSRF protection

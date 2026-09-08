@@ -260,7 +260,7 @@ def has_permission(doc, user=None, ptype=None):
     # Business creation: allow if user has OSDuo Business Owner role
     # (before_insert won't have membership yet)
     if ptype == "create":
-        if "OSDuo Business Owner" in frappe.get_roles(user):
+        if "BC Business Owner" in frappe.get_roles(user):
             return True
         return False
 
