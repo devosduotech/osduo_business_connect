@@ -143,7 +143,7 @@
   ],
   "permissions": [
     {
-      "role": "OSDuo Business Owner",
+      "role": "BC Business Owner",
       "read": 1,
       "write": 0,
       "create": 0,
@@ -160,7 +160,7 @@
       "user_permission": 0
     },
     {
-      "role": "OSDuo Business Manager",
+      "role": "BC Business Manager",
       "read": 1,
       "write": 0,
       "create": 0,
@@ -177,7 +177,7 @@
       "user_permission": 0
     },
     {
-      "role": "OSDuo Marketing Manager",
+      "role": "BC Marketing Manager",
       "read": 1,
       "write": 0,
       "create": 0,
@@ -194,7 +194,7 @@
       "user_permission": 0
     },
     {
-      "role": "OSDuo System Manager",
+      "role": "BC System Manager",
       "read": 1,
       "write": 1,
       "create": 0,

@@ -1,6 +1,6 @@
 {
-    "role": "OSDuo System Manager",
-    "role_name": "OSDuo System Manager",
+    "role": "BC System Manager",
+    "role_name": "BC System Manager",
     "description": "Full application administration",
     "is_custom": 1,
     "is_standard": 0,

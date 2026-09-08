@@ -1,6 +1,6 @@
 {
-    "role": "OSDuo CRM User",
-    "role_name": "OSDuo CRM User",
+    "role": "BC CRM User",
+    "role_name": "BC CRM User",
     "description": "CRM-related access where required",
     "is_custom": 1,
     "is_standard": 0,

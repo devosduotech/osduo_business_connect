@@ -1,6 +1,6 @@
 # OSDuo Business Connect
 
-**Your digital identity. Your customers. Your growth.**
+**v1.0.2** | **Your digital identity. Your customers. Your growth.**
 
 Business Connect transforms how small businesses and professionals establish their digital presence. Create a stunning business profile, showcase products and services, capture customer enquiries — all seamlessly integrated with Frappe CRM.
 
@@ -159,8 +159,8 @@ bench restart
 
 - CRM must be installed **before** Business Connect (`required_apps = ["crm"]`)
 - `bench build` must use `--app osduo_business_connect` only (CRM build may exceed memory on small VMs)
-- Roles created on install: **BC Manager**, **BC User**, **BC Viewer**
-- 8 default themes auto-created (Violet, Indigo, Blue, Green, Yellow, Orange, Red, Gold + custom)
+- Roles created on install: **BC Business Owner**, **BC Business Manager**, **BC Business Member**, **BC Marketing Manager**, **BC CRM User**, **BC System Manager**
+- 6 distinct card themes: Modern, Professional, Minimal, Classic, Luxury, Creative
 - CRM custom fields added to CRM Lead: business, card, product, service, enquiry, source, campaign, landing URL
 
 ---
