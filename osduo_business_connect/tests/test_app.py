@@ -23,7 +23,7 @@ class TestAppStructure(unittest.TestCase):
     def test_app_version_in_init(self):
         content = self._read("__init__.py")
         self.assertIn("__version__", content)
-        self.assertIn("1.0.1", content)
+        self.assertIn("1.0.2", content)
 
     def test_app_name_in_init(self):
         content = self._read("__init__.py")
