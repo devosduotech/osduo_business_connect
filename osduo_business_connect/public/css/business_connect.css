@@ -68,7 +68,7 @@
 
 .bc-card-hero {
     text-align: center;
-    padding: 1.5rem;
+    padding: 1.25rem;
 }
 
 .bc-card-avatar {
@@ -736,7 +736,7 @@
 .bc-card-vcf {
     display: flex;
     gap: 0.5rem;
-    margin: 1rem 0;
+    margin: 0.75rem 0;
     justify-content: center;
     flex-wrap: wrap;
 }
@@ -1276,7 +1276,7 @@
     position: relative;
     z-index: 1;
     text-align: center;
-    padding: 3rem 1.5rem 2rem;
+    padding: 2rem 1.5rem 1.5rem;
     width: 100%;
     max-width: 760px;
     margin: 0 auto;
@@ -1293,9 +1293,8 @@
 /* Luxury Card Hero */
 .bc-hero-luxury {
     position: relative;
-    min-height: 100vh;
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     justify-content: center;
     background: #0f172a;
     color: #ffffff;
@@ -1350,7 +1349,7 @@
     font-size: 0.95rem;
     line-height: 1.7;
     color: rgba(255,255,255,0.75);
-    margin: 0 0 2rem;
+    margin: 0 0 1rem;
     max-width: 500px;
     margin-left: auto;
     margin-right: auto;
@@ -1361,7 +1360,7 @@
     flex-wrap: wrap;
     justify-content: center;
     gap: 1rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
 }
 
 .bc-hero-luxury-links {
@@ -1369,7 +1368,7 @@
     flex-wrap: wrap;
     justify-content: center;
     gap: 1.5rem;
-    padding-bottom: 3rem;
+    padding-bottom: 1.5rem;
 }
 
 .bc-hero-luxury-social {
@@ -1596,7 +1595,6 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 0;
-    min-height: 100vh;
 }
 
 .bc-hero-creative-image {
@@ -1612,7 +1610,7 @@
 }
 
 .bc-hero-creative-info {
-    padding: 3rem 2rem;
+    padding: 2rem 1.5rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -2205,7 +2203,7 @@
     .bc-template-luxury .bc-header { min-height: 50vh; }
     .bc-template-luxury .bc-header h1 { font-size: 2rem; }
     .bc-template-luxury .bc-header-content { padding: 2rem 1.25rem 1.5rem; }
-    .bc-hero-luxury { min-height: auto; padding: 2rem 0; }
+    .bc-hero-luxury { min-height: auto; padding: 1.25rem 0; }
     .bc-hero-luxury-name { font-size: 2rem; }
     .bc-hero-luxury-avatar, .bc-hero-luxury-avatar-fallback { width: 72px; height: 72px; }
 
