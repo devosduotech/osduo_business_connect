@@ -23,4 +23,13 @@
             <a href="#bc-contact" class="bc-btn bc-btn-primary">Enquire</a>
         </div>
     </div>
+
+    <nav class="bc-nav" style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.3);border-top:1px solid rgba(255,255,255,0.1);z-index:2;">
+        <div class="bc-container" style="display:flex;gap:0;overflow-x:auto;justify-content:center;">
+            <a href="#bc-about" class="bc-nav-link" style="color:rgba(255,255,255,0.6);">About</a>
+            {% if products %}<a href="#bc-products" class="bc-nav-link" style="color:rgba(255,255,255,0.6);">Products</a>{% endif %}
+            {% if services %}<a href="#bc-services" class="bc-nav-link" style="color:rgba(255,255,255,0.6);">Services</a>{% endif %}
+            <a href="#bc-contact" class="bc-nav-link" style="color:rgba(255,255,255,0.6);">Contact</a>
+        </div>
+    </nav>
 </div>

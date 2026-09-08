@@ -17,20 +17,19 @@ from frappe import _
 def sanitize_css_value(value, fallback=""):
     """Sanitize a value for safe CSS interpolation.
 
-    Only allows safe characters: hex colors, px, rem, em, %, rgba, etc.
-    Strips anything that could inject CSS (semicolons, braces, url(), etc.)
-    or break out of an HTML style attribute (quotes).
+    Only allows safe characters: hex colors, px, rem, em, %, rgba, gradients, etc.
+    Strips anything that could inject CSS (semicolons, braces) or break HTML attributes.
+    Preserves parentheses (needed for linear-gradient, rgba, etc.) and quotes
+    (needed for multi-word font names like 'Playfair Display').
     """
     if not value:
         return fallback
     value = str(value).strip()
-    # Remove dangerous patterns
-    value = re.sub(r'[;{}()]\s*', '', value)
+    # Remove dangerous patterns (but preserve parens for CSS functions)
+    value = re.sub(r'[;{}]\s*', '', value)
     value = re.sub(r'url\s*\(', '', value, flags=re.IGNORECASE)
     value = re.sub(r'expression\s*\(', '', value, flags=re.IGNORECASE)
     value = re.sub(r'javascript:', '', value, flags=re.IGNORECASE)
-    # Strip quotes to prevent style attribute breakout
-    value = value.replace("'", '').replace('"', '')
     # Limit length to prevent abuse
     if len(value) > 200:
         value = value[:200]

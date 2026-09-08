@@ -4,7 +4,7 @@
         {% if doc.profile_image %}
         <img src="{{ doc.profile_image }}" alt="{{ doc.display_name }}" class="bc-card-avatar bc-hero-modern-avatar">
         {% else %}
-        <div class="bc-card-avatar bc-card-avatar-fallback bc-hero-modern-avatar">
+        <div class="bc-card-avatar bc-hero-modern-avatar-fallback">
             {{ doc.display_name[0] if doc.display_name else '?' }}
         </div>
         {% endif %}
