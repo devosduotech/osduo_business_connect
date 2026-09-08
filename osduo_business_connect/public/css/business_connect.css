@@ -68,35 +68,38 @@
 
 .bc-card-hero {
     text-align: center;
-    padding: 1rem 1rem 0.75rem;
+    padding: 1.5rem 1.25rem 1rem;
 }
 
 .bc-card-avatar {
-    width: 96px;
-    height: 96px;
+    width: 120px;
+    height: 120px;
     border-radius: 50%;
     object-fit: cover;
     border: 3px solid var(--bc-accent);
-    margin: 0 auto 0.5rem;
+    margin: 0 auto 0.75rem;
     display: block;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
 }
 
 .bc-card-avatar-fallback {
-    width: 96px;
-    height: 96px;
+    width: 120px;
+    height: 120px;
     border-radius: 50%;
     background: var(--bc-primary);
     color: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.8rem;
-    margin: 0 auto 0.5rem;
+    font-size: 2.2rem;
+    margin: 0 auto 0.75rem;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
 }
 
 .bc-card-hero h1 {
-    margin: 0.25rem 0 0.1rem;
-    font-size: 1.25rem;
+    margin: 0.3rem 0 0.15rem;
+    font-size: 1.5rem;
+    font-weight: 700;
     line-height: 1.2;
     word-wrap: break-word;
     overflow-wrap: break-word;
@@ -104,15 +107,22 @@
 
 .bc-card-links {
     display: flex;
-    gap: 0.35rem;
+    gap: 0.4rem;
     justify-content: center;
     flex-wrap: wrap;
-    margin: 0.6rem 0;
+    margin: 0.75rem 0;
 }
 
 .bc-card-links .bc-btn {
-    padding: 0.4rem 0.75rem;
-    font-size: 0.75rem;
+    padding: 0.45rem 0.8rem;
+    font-size: 0.78rem;
+    border-radius: 50px;
+    transition: opacity 0.2s, transform 0.15s;
+}
+
+.bc-card-links .bc-btn:hover {
+    opacity: 0.85;
+    transform: translateY(-1px);
 }
 
 .bc-card-business-link {
@@ -150,8 +160,8 @@
 .bc-card-actions {
     display: flex;
     flex-direction: row;
-    gap: 0.4rem;
-    margin: 0.6rem 0;
+    gap: 0.5rem;
+    margin: 0.75rem 0;
     justify-content: center;
     flex-wrap: wrap;
 }
@@ -159,17 +169,22 @@
 .bc-card-action-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.25rem;
-    padding: 0.5rem 0.85rem;
+    justify-content: center;
+    gap: 0.3rem;
+    padding: 0.6rem 1rem;
     border-radius: var(--bc-btn-radius);
     text-decoration: none;
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     font-weight: 500;
-    transition: opacity 0.2s;
+    transition: all 0.2s;
+    flex: 1;
+    min-width: 0;
 }
 
 .bc-card-action-btn:hover {
-    opacity: 0.85;
+    opacity: 0.88;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
 }
 
 .bc-card-action-icon {
@@ -180,81 +195,87 @@
 /* HERO: MODERN             */
 /* ======================== */
 .bc-hero-modern {
-    background: var(--bc-background);
+    background: var(--bc-surface);
     border-radius: var(--bc-card-radius) var(--bc-card-radius) 0 0;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--bc-border-color);
 }
 
 .bc-hero-modern-avatar-wrap {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
 }
 
 .bc-hero-modern-avatar {
-    width: 100px;
-    height: 100px;
+    width: 120px;
+    height: 120px;
     border-radius: 50%;
     object-fit: cover;
     border: 4px solid var(--bc-primary);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
     display: block;
     margin: 0 auto;
 }
 
 .bc-hero-modern-avatar-fallback {
-    width: 100px;
-    height: 100px;
+    width: 120px;
+    height: 120px;
     border-radius: 50%;
     background: var(--bc-primary);
     color: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2rem;
+    font-size: 2.4rem;
     margin: 0 auto;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
     border: 4px solid white;
 }
 
 .bc-hero-modern-name {
-    margin: 0.25rem 0 0.1rem;
-    font-size: 1.3rem;
+    margin: 0.3rem 0 0.15rem;
+    font-size: 1.5rem;
     font-weight: 700;
 }
 
 .bc-hero-modern-designation {
     color: #64748b;
-    margin: 0 0 0.1rem;
-    font-size: 0.9rem;
+    margin: 0 0 0.15rem;
+    font-size: 0.95rem;
 }
 
 .bc-hero-modern-business {
     color: #94a3b8;
-    margin: 0 0 0.5rem;
-    font-size: 0.8rem;
+    margin: 0 0 0.6rem;
+    font-size: 0.85rem;
 }
 
 .bc-hero-modern-contact {
-    margin: 0.5rem 0;
-    font-size: 0.8rem;
+    margin: 0.6rem 0;
+    font-size: 0.85rem;
     color: #64748b;
     display: flex;
     flex-direction: column;
-    gap: 0.15rem;
+    gap: 0.2rem;
 }
 
 .bc-hero-modern-actions {
-    gap: 0.4rem;
+    gap: 0.5rem;
 }
 
 .bc-hero-modern-btn {
     border-radius: 50px !important;
-    padding: 0.5rem 1rem !important;
+    padding: 0.6rem 1.1rem !important;
     font-weight: 600;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: all 0.2s;
+}
+
+.bc-hero-modern-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
 }
 
 .bc-hero-modern-links {
-    margin-top: 0.35rem;
+    margin-top: 0.5rem;
 }
 
 .bc-hero-modern-qr {
@@ -274,8 +295,8 @@
 .bc-hero-professional-top {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 1rem;
+    gap: 1rem;
+    padding: 1.25rem;
     background: var(--bc-primary);
     color: white;
 }
@@ -285,28 +306,30 @@
 }
 
 .bc-hero-professional-avatar {
-    width: 80px;
-    height: 80px;
+    width: 90px;
+    height: 90px;
     border-radius: 50%;
     object-fit: cover;
     border: 3px solid rgba(255,255,255,0.4);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 .bc-hero-professional-avatar-fallback {
-    width: 80px;
-    height: 80px;
+    width: 90px;
+    height: 90px;
     border-radius: 50%;
     background: rgba(255,255,255,0.2);
     color: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.8rem;
+    font-size: 2rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 .bc-hero-professional-info h1 {
-    margin: 0 0 0.1rem;
-    font-size: 1.25rem;
+    margin: 0 0 0.15rem;
+    font-size: 1.4rem;
     font-weight: 700;
     color: white;
 }
@@ -314,32 +337,33 @@
 .bc-hero-professional-designation {
     color: rgba(255,255,255,0.85);
     margin: 0 0 0.1rem;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-weight: 500;
 }
 
 .bc-hero-professional-business {
     color: rgba(255,255,255,0.6);
     margin: 0;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
 }
 
 .bc-hero-professional-contact {
     margin: 0;
-    padding: 0.75rem 1rem;
+    padding: 0.75rem 1.25rem;
     display: flex;
     flex-direction: column;
-    gap: 0.3rem;
+    gap: 0.35rem;
 }
 
 .bc-hero-professional-contact-item {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
-    font-size: 0.8rem;
+    gap: 0.5rem;
+    font-size: 0.85rem;
     color: #475569;
     text-decoration: none;
-    padding: 0.25rem 0;
+    padding: 0.3rem 0;
+    transition: color 0.2s;
 }
 
 .bc-hero-professional-contact-item:hover {
@@ -354,27 +378,33 @@
 
 .bc-hero-professional-divider {
     height: 1px;
-    background: #e2e8f0;
-    margin: 0 1rem;
+    background: var(--bc-border-color);
+    margin: 0 1.25rem;
 }
 
 .bc-hero-professional-actions {
     display: flex;
     flex-direction: row;
-    gap: 0.4rem;
+    gap: 0.5rem;
     flex-wrap: wrap;
-    padding: 0.75rem 1rem;
+    padding: 0.75rem 1.25rem;
 }
 
 .bc-hero-professional-btn {
     flex: 1;
     min-width: 0;
     justify-content: center;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--bc-border-color);
     background: white !important;
     color: #475569 !important;
     border-radius: 8px !important;
-    font-size: 0.8rem !important;
+    font-size: 0.82rem !important;
+    transition: all 0.2s;
+}
+
+.bc-hero-professional-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
 }
 
 .bc-hero-professional-btn-whatsapp {
@@ -389,12 +419,12 @@
 
 .bc-hero-professional-links {
     margin: 0;
-    padding: 0 1.5rem 1rem;
+    padding: 0 1.25rem 1rem;
     justify-content: flex-start;
 }
 
 .bc-hero-professional-link-btn {
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--bc-border-color);
     background: white;
     color: #475569;
     border-radius: 6px;
@@ -412,41 +442,41 @@
 /* HERO: MINIMAL            */
 /* ======================== */
 .bc-hero-minimal {
-    background: transparent;
+    background: var(--bc-surface);
     text-align: left;
-    padding: 1.25rem 1rem 0.75rem;
+    padding: 1.5rem 1.25rem 1rem;
 }
 
 .bc-hero-minimal-header {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 0.4rem;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 .bc-hero-minimal-avatar {
-    width: 64px;
-    height: 64px;
+    width: 72px;
+    height: 72px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid #e2e8f0;
+    border: 2px solid var(--bc-border-color);
 }
 
 .bc-hero-minimal-avatar-fallback {
-    width: 64px;
-    height: 64px;
+    width: 72px;
+    height: 72px;
     border-radius: 50%;
     background: #f1f5f9;
     color: #475569;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.4rem;
+    font-size: 1.6rem;
 }
 
 .bc-hero-minimal-identity h1 {
     margin: 0;
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.03em;
@@ -454,32 +484,33 @@
 
 .bc-hero-minimal-designation {
     color: #64748b;
-    margin: 0.1rem 0 0;
-    font-size: 0.8rem;
+    margin: 0.15rem 0 0;
+    font-size: 0.85rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
 }
 
 .bc-hero-minimal-business {
     color: #94a3b8;
-    margin: 0 0 0.5rem;
-    font-size: 0.75rem;
+    margin: 0 0 0.6rem;
+    font-size: 0.8rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
 
 .bc-hero-minimal-contact {
-    margin: 0.5rem 0;
+    margin: 0.6rem 0;
 }
 
 .bc-hero-minimal-contact-row {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.35rem 0;
-    border-bottom: 1px solid #f1f5f9;
+    gap: 1rem;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid var(--bc-border-color);
     text-decoration: none;
     color: #475569;
+    transition: color 0.2s;
 }
 
 .bc-hero-minimal-contact-row:hover {
@@ -487,41 +518,47 @@
 }
 
 .bc-hero-minimal-contact-label {
-    font-size: 0.7rem;
+    font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: #94a3b8;
-    min-width: 50px;
+    min-width: 55px;
     font-weight: 500;
 }
 
 .bc-hero-minimal-contact-value {
-    font-size: 0.85rem;
+    font-size: 0.88rem;
 }
 
 .bc-hero-minimal-divider {
     height: 1px;
-    background: #e2e8f0;
-    margin: 0.5rem 0;
+    background: var(--bc-border-color);
+    margin: 0.6rem 0;
 }
 
 .bc-hero-minimal-actions {
     display: flex;
     flex-direction: row;
-    gap: 0.4rem;
+    gap: 0.5rem;
     flex-wrap: wrap;
 }
 
 .bc-hero-minimal-btn {
     flex: 1;
     justify-content: center;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--bc-border-color);
     background: white !important;
     color: #475569 !important;
     border-radius: 0 !important;
-    font-size: 0.8rem !important;
+    font-size: 0.82rem !important;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    transition: all 0.2s;
+}
+
+.bc-hero-minimal-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
 }
 
 .bc-hero-minimal-btn-whatsapp {
@@ -540,11 +577,11 @@
 }
 
 .bc-hero-minimal-link-btn {
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--bc-border-color);
     background: white;
     color: #475569;
     border-radius: 0;
-    font-size: 0.7rem;
+    font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
 }
@@ -566,80 +603,81 @@
 
 .bc-hero-classic-banner {
     background: linear-gradient(135deg, var(--bc-primary), var(--bc-accent));
-    padding: 1.5rem 1rem 1.75rem;
+    padding: 2rem 1.25rem 2.25rem;
     text-align: center;
 }
 
 .bc-hero-classic-banner-inner h1 {
     color: white;
-    margin: 0 0 0.15rem;
-    font-size: 1.4rem;
+    margin: 0 0 0.2rem;
+    font-size: 1.5rem;
     font-weight: 700;
 }
 
 .bc-hero-classic-designation {
     color: rgba(255,255,255,0.85);
     margin: 0 0 0.1rem;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
 }
 
 .bc-hero-classic-business {
     color: rgba(255,255,255,0.65);
     margin: 0;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
 }
 
 .bc-hero-classic-avatar-overlap {
     text-align: center;
-    margin-top: -40px;
+    margin-top: -45px;
     position: relative;
     z-index: 2;
 }
 
 .bc-hero-classic-avatar {
-    width: 80px;
-    height: 80px;
+    width: 90px;
+    height: 90px;
     border-radius: 50%;
     object-fit: cover;
     border: 4px solid white;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
 }
 
 .bc-hero-classic-avatar-fallback {
-    width: 80px;
-    height: 80px;
+    width: 90px;
+    height: 90px;
     border-radius: 50%;
     background: var(--bc-primary);
     color: white;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.8rem;
+    font-size: 2rem;
     border: 4px solid white;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
 }
 
 .bc-hero-classic-body {
-    padding: 0.5rem 1rem 1rem;
+    padding: 0.6rem 1.25rem 1.25rem;
     text-align: center;
 }
 
 .bc-hero-classic-contact {
-    margin: 0.5rem 0;
+    margin: 0.6rem 0;
     display: flex;
     flex-direction: column;
-    gap: 0.2rem;
+    gap: 0.25rem;
 }
 
 .bc-hero-classic-contact-item {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.4rem;
-    font-size: 0.85rem;
+    gap: 0.5rem;
+    font-size: 0.88rem;
     color: #475569;
     text-decoration: none;
     padding: 0.3rem 0;
+    transition: color 0.2s;
 }
 
 .bc-hero-classic-contact-item:hover {
@@ -648,7 +686,7 @@
 
 .bc-hero-classic-divider-line {
     height: 1px;
-    background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+    background: linear-gradient(90deg, transparent, var(--bc-border-color), transparent);
     margin: 0.75rem 0;
 }
 
@@ -664,8 +702,14 @@
     justify-content: center;
     border: none;
     border-radius: 8px !important;
-    font-size: 0.8rem !important;
+    font-size: 0.82rem !important;
     font-weight: 600;
+    transition: all 0.2s;
+}
+
+.bc-hero-classic-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 .bc-hero-classic-btn-whatsapp {
@@ -684,7 +728,7 @@
 }
 
 .bc-hero-classic-link-btn {
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--bc-border-color);
     background: white;
     color: #475569;
     border-radius: 6px;
@@ -703,8 +747,8 @@
 /* ======================== */
 .bc-card-vcf {
     display: flex;
-    gap: 0.4rem;
-    margin: 0.5rem 0;
+    gap: 0.5rem;
+    margin: 0.75rem 1.25rem;
     justify-content: center;
     flex-wrap: wrap;
 }
@@ -712,28 +756,32 @@
 .bc-card-vcf-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
-    padding: 0.5rem 1rem;
-    border-radius: var(--bc-btn-radius);
+    gap: 0.4rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
     background: var(--bc-primary);
     color: white;
     text-decoration: none;
-    font-size: 0.8rem;
-    font-weight: 500;
-    transition: opacity 0.2s;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(37,99,235,0.25);
+    width: 100%;
+    justify-content: center;
 }
 
 .bc-card-vcf-btn:hover {
-    opacity: 0.85;
+    opacity: 0.9;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(37,99,235,0.3);
 }
 
 /* ======================== */
 /* CARD: SECTION SEPARATOR  */
 /* ======================== */
 .bc-card-stripe {
-    height: 2px;
-    background: var(--bc-primary);
-    opacity: 0.12;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--bc-border-color), transparent);
     margin: 0;
 }
 
@@ -1271,48 +1319,50 @@
 }
 
 .bc-hero-luxury-avatar {
-    width: 88px;
-    height: 88px;
+    width: 96px;
+    height: 96px;
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid rgba(255,255,255,0.3);
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
 }
 
 .bc-hero-luxury-avatar-fallback {
-    width: 88px;
-    height: 88px;
+    width: 96px;
+    height: 96px;
     border-radius: 50%;
     background: rgba(255,255,255,0.1);
     border: 2px solid rgba(255,255,255,0.3);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.8rem;
+    font-size: 2rem;
     font-family: var(--bc-display-font);
     color: rgba(255,255,255,0.6);
-    margin: 0 auto 1rem;
+    margin: 0 auto 1.25rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
 }
 
 .bc-hero-luxury-name {
     font-family: var(--bc-display-font);
-    font-size: 2rem;
+    font-size: 2.25rem;
     font-weight: 400;
     letter-spacing: 0.02em;
-    margin: 0 0 0.25rem;
+    margin: 0 0 0.3rem;
     color: #ffffff;
     line-height: 1.15;
 }
 
 .bc-hero-luxury .bc-hero-luxury-designation {
     color: rgba(255,255,255,0.7);
-    font-size: 0.85rem;
+    font-size: 0.9rem;
 }
 
 .bc-hero-luxury-business {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     color: var(--bc-accent);
-    margin: 0 0 0.75rem;
+    margin: 0 0 1rem;
 }
 
 .bc-hero-luxury-actions {
@@ -1320,21 +1370,21 @@
     flex-wrap: wrap;
     justify-content: center;
     gap: 0.75rem;
-    margin-bottom: 0.75rem;
+    margin-bottom: 1rem;
 }
 
 .bc-hero-luxury-links {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 1rem;
-    padding-bottom: 1rem;
+    gap: 1.25rem;
+    padding-bottom: 1.25rem;
 }
 
 .bc-hero-luxury-social {
     color: rgba(255,255,255,0.5);
     text-decoration: none;
-    font-size: 0.85rem;
+    font-size: 0.88rem;
     letter-spacing: 0.05em;
     transition: color 0.2s;
 }
@@ -1570,7 +1620,7 @@
 }
 
 .bc-hero-creative-info {
-    padding: 1.25rem 1.25rem;
+    padding: 1.5rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -1578,44 +1628,44 @@
 
 .bc-hero-creative-name {
     font-family: var(--bc-display-font);
-    font-size: 1.75rem;
+    font-size: 1.85rem;
     font-weight: 700;
-    margin: 0 0 0.15rem;
+    margin: 0 0 0.2rem;
     color: var(--bc-text);
     line-height: 1.15;
 }
 
 .bc-hero-creative .bc-hero-creative-designation {
     color: var(--bc-primary);
-    font-size: 0.85rem;
+    font-size: 0.9rem;
 }
 
 .bc-hero-creative-business {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: #64748b;
-    margin: 0 0 0.6rem;
+    margin: 0 0 0.75rem;
 }
 
 .bc-hero-creative-contact {
     display: flex;
     flex-direction: column;
-    gap: 0.2rem;
-    font-size: 0.8rem;
+    gap: 0.25rem;
+    font-size: 0.85rem;
     color: #64748b;
-    margin-bottom: 0.75rem;
+    margin-bottom: 1rem;
 }
 
 .bc-hero-creative-actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.4rem;
-    margin-bottom: 0.75rem;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
 }
 
 .bc-hero-creative-links {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.4rem;
+    gap: 0.5rem;
 }
 
 /* Creative Product/Service Hero */
@@ -2162,22 +2212,29 @@
     .bc-hero-luxury-avatar, .bc-hero-luxury-avatar-fallback { width: 72px; height: 72px; }
 
     /* Card heroes mobile */
-    .bc-card-hero { padding: 0.75rem 0.75rem 0.5rem; }
-    .bc-card-hero h1 { font-size: 1.1rem; }
-    .bc-hero-modern-avatar, .bc-hero-modern-avatar-fallback { width: 88px; height: 88px; }
-    .bc-hero-modern-name { font-size: 1.15rem; }
-    .bc-hero-modern-btn { padding: 0.45rem 0.8rem !important; font-size: 0.75rem !important; }
-    .bc-hero-professional-info h1 { font-size: 1.1rem; }
-    .bc-hero-professional-top { padding: 0.75rem; }
-    .bc-hero-professional-actions { padding: 0.6rem 0.75rem; }
-    .bc-hero-minimal-identity h1 { font-size: 1rem; }
-    .bc-hero-minimal-avatar, .bc-hero-minimal-avatar-fallback { width: 56px; height: 56px; }
-    .bc-hero-classic-banner { padding: 1.25rem 0.75rem 1.5rem; }
-    .bc-hero-classic-banner-inner h1 { font-size: 1.2rem; }
-    .bc-hero-classic-body { padding: 0.4rem 0.75rem 0.75rem; }
-    .bc-hero-luxury-content { padding: 1.5rem 1rem 1rem; }
-    .bc-hero-creative-info { padding: 1rem; }
-    .bc-hero-creative-name { font-size: 1.4rem; }
+    .bc-card-hero { padding: 1.25rem 1rem 0.75rem; }
+    .bc-card-hero h1 { font-size: 1.3rem; }
+    .bc-card-avatar, .bc-card-avatar-fallback { width: 100px; height: 100px; font-size: 1.8rem; }
+    .bc-hero-modern-avatar, .bc-hero-modern-avatar-fallback { width: 100px; height: 100px; }
+    .bc-hero-modern-name { font-size: 1.3rem; }
+    .bc-hero-modern-btn { padding: 0.5rem 0.9rem !important; font-size: 0.78rem !important; }
+    .bc-hero-professional-info h1 { font-size: 1.25rem; }
+    .bc-hero-professional-top { padding: 1rem; }
+    .bc-hero-professional-actions { padding: 0.75rem 1rem; }
+    .bc-hero-professional-avatar, .bc-hero-professional-avatar-fallback { width: 80px; height: 80px; }
+    .bc-hero-minimal-identity h1 { font-size: 1.15rem; }
+    .bc-hero-minimal-avatar, .bc-hero-minimal-avatar-fallback { width: 64px; height: 64px; }
+    .bc-hero-classic-banner { padding: 1.5rem 1rem 1.75rem; }
+    .bc-hero-classic-banner-inner h1 { font-size: 1.3rem; }
+    .bc-hero-classic-body { padding: 0.5rem 1rem 1rem; }
+    .bc-hero-classic-avatar, .bc-hero-classic-avatar-fallback { width: 80px; height: 80px; }
+    .bc-hero-luxury-content { padding: 1.75rem 1.25rem 1.25rem; }
+    .bc-hero-luxury-name { font-size: 1.85rem; }
+    .bc-hero-luxury-avatar, .bc-hero-luxury-avatar-fallback { width: 84px; height: 84px; }
+    .bc-hero-creative-info { padding: 1.25rem; }
+    .bc-hero-creative-name { font-size: 1.5rem; }
+    .bc-card-vcf { margin: 0.75rem 1rem; }
+    .bc-card-vcf-btn { font-size: 0.85rem; padding: 0.65rem 1.25rem; }
 
     /* Creative mobile */
     .bc-template-creative .bc-header-content {
@@ -2207,16 +2264,21 @@
     .bc-hero-actions .bc-btn { padding: 0.5rem 0.9rem; font-size: 0.8rem; }
 
     /* Small mobile card heroes */
-    .bc-card-hero { padding: 0.6rem; }
-    .bc-card-hero h1 { font-size: 1rem; }
-    .bc-card-action-btn { padding: 0.4rem 0.7rem; font-size: 0.75rem; }
-    .bc-hero-modern-avatar, .bc-hero-modern-avatar-fallback { width: 80px; height: 80px; }
-    .bc-hero-modern-name { font-size: 1.05rem; }
-    .bc-hero-professional-info h1 { font-size: 1rem; }
-    .bc-hero-minimal-identity h1 { font-size: 0.9rem; }
-    .bc-hero-luxury-name { font-size: 1.5rem; }
-    .bc-hero-creative-name { font-size: 1.2rem; }
-    .bc-hero-creative-info { padding: 0.75rem; }
+    .bc-card-hero { padding: 1rem 0.75rem 0.6rem; }
+    .bc-card-hero h1 { font-size: 1.15rem; }
+    .bc-card-avatar, .bc-card-avatar-fallback { width: 90px; height: 90px; font-size: 1.6rem; }
+    .bc-card-action-btn { padding: 0.5rem 0.8rem; font-size: 0.78rem; }
+    .bc-hero-modern-avatar, .bc-hero-modern-avatar-fallback { width: 90px; height: 90px; }
+    .bc-hero-modern-name { font-size: 1.2rem; }
+    .bc-hero-professional-info h1 { font-size: 1.1rem; }
+    .bc-hero-professional-avatar, .bc-hero-professional-avatar-fallback { width: 72px; height: 72px; }
+    .bc-hero-minimal-identity h1 { font-size: 1rem; }
+    .bc-hero-minimal-avatar, .bc-hero-minimal-avatar-fallback { width: 56px; height: 56px; }
+    .bc-hero-luxury-name { font-size: 1.6rem; }
+    .bc-hero-luxury-avatar, .bc-hero-luxury-avatar-fallback { width: 76px; height: 76px; }
+    .bc-hero-creative-name { font-size: 1.3rem; }
+    .bc-hero-creative-info { padding: 1rem; }
+    .bc-card-vcf-btn { font-size: 0.82rem; padding: 0.6rem 1rem; }
 
     .bc-section { padding: 1rem 0; }
     .bc-product-grid { grid-template-columns: 1fr; gap: 0.75rem; }
