@@ -109,13 +109,6 @@
     border-radius: var(--bc-card-radius);
 }
 
-.bc-card-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-    margin: 1.25rem 0;
-}
-
 .bc-card-links {
     display: flex;
     gap: 0.4rem;
@@ -932,6 +925,9 @@
     --bc-card-shadow: 0 1px 3px rgba(0,0,0,0.1);
     --bc-card-border: none;
     --bc-btn-radius: 8px;
+    --bc-surface: #ffffff;
+    --bc-border-color: #e2e8f0;
+    --bc-display-font: inherit;
 
     font-family: var(--bc-font-family);
     font-size: var(--bc-font-size);
@@ -1739,6 +1735,10 @@
     color: var(--bc-text);
 }
 
+.bc-page[data-dark="true"] .bc-section-alt {
+    background: rgba(255, 255, 255, 0.03);
+}
+
 .bc-page[data-dark="true"] .bc-section-title {
     color: var(--bc-text);
 }
@@ -2037,6 +2037,20 @@
     font-size: 0.9rem;
     color: var(--bc-text);
     word-break: break-word;
+}
+
+.bc-contact-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    font-size: 0.9rem;
+    color: var(--bc-text);
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.bc-contact-item:last-child {
+    border-bottom: none;
 }
 
 /* ======================== */
