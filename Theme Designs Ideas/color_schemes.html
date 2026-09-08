@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OSDuo Business Connect — Color Schemes</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #F1F5F9; padding: 40px 20px; }
+  h1 { text-align: center; font-size: 1.8rem; font-weight: 700; color: #0F172A; margin-bottom: 8px; }
+  .subtitle { text-align: center; font-size: 0.9rem; color: #64748B; margin-bottom: 40px; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; max-width: 1200px; margin: 0 auto; }
+  @media (max-width: 1000px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+  .color-card { background: white; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); overflow: hidden; }
+  .color-header { padding: 16px 20px; display: flex; align-items: center; gap: 12px; }
+  .color-dot { width: 32px; height: 32px; border-radius: 50%; }
+  .color-info h3 { font-size: 0.9rem; font-weight: 700; color: #0F172A; }
+  .color-info p { font-size: 0.7rem; color: #64748B; }
+  .color-preview { padding: 20px; text-align: center; }
+  .mini-card { max-width: 280px; margin: 0 auto; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+  .mini-banner { height: 48px; border-radius: 12px 12px 0 0; }
+  .mini-avatar-wrap { position: relative; margin-top: -20px; }
+  .mini-avatar { width: 40px; height: 40px; border-radius: 50%; background: white; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: 0 2px 6px rgba(0,0,0,0.1); border: 2px solid white; }
+  .mini-avatar span { font-size: 14px; font-weight: 700; }
+  .mini-body { padding: 8px 12px 12px; text-align: center; background: white; border-radius: 0 0 12px 12px; }
+  .mini-body h4 { font-size: 0.75rem; color: #1E293B; margin-bottom: 2px; }
+  .mini-body p { font-size: 0.65rem; color: #64748B; margin-bottom: 8px; }
+  .mini-btns { display: flex; gap: 4px; justify-content: center; }
+  .mini-btn { padding: 4px 8px; border-radius: 999px; font-size: 0.6rem; font-weight: 600; color: white; text-decoration: none; }
+  .hex { font-family: monospace; font-size: 0.65rem; color: #94A3B8; }
+</style>
+</head>
+<body>
+<h1>OSDuo Business Connect</h1>
+<p class="subtitle">8 Color Schemes — 7 Presets + Custom</p>
+
+<div class="grid">
+  <!-- Violet -->
+  <div class="color-card">
+    <div class="color-header">
+      <div class="color-dot" style="background: #7C3AED"></div>
+      <div class="color-info">
+        <h3>Violet</h3>
+        <p>Creative, Luxury</p>
+      </div>
+    </div>
+    <div class="color-preview">
+      <div class="mini-card">
+        <div class="mini-banner" style="background: linear-gradient(135deg, #7C3AED, #A78BFA)"></div>
+        <div class="mini-avatar-wrap">
+          <div class="mini-avatar"><span style="color:#7C3AED">SC</span></div>
+        </div>
+        <div class="mini-body">
+          <h4>Sarah Cornor</h4>
+          <p>Software Engineer</p>
+          <div class="mini-btns">
+            <a href="#" class="mini-btn" style="background:#7C3AED">Call</a>
+            <a href="#" class="mini-btn" style="background:#A78BFA">WhatsApp</a>
+          </div>
+        </div>
+      </div>
+      <p class="hex">#7C3AED</p>
+    </div>
+  </div>
+
+  <!-- Indigo -->
+  <div class="color-card">
+    <div class="color-header">
+      <div class="color-dot" style="background: #4F46E5"></div>
+      <div class="color-info">
+        <h3>Indigo</h3>
+        <p>Tech, SaaS</p>
+      </div>
+    </div>
+    <div class="color-preview">
+      <div class="mini-card">
+        <div class="mini-banner" style="background: linear-gradient(135deg, #4F46E5, #818CF8)"></div>
+        <div class="mini-avatar-wrap">
+          <div class="mini-avatar"><span style="color:#4F46E5">SC</span></div>
+        </div>
+        <div class="mini-body">
+          <h4>Sarah Cornor</h4>
+          <p>Software Engineer</p>
+          <div class="mini-btns">
+            <a href="#" class="mini-btn" style="background:#4F46E5">Call</a>
+            <a href="#" class="mini-btn" style="background:#818CF8">WhatsApp</a>
+          </div>
+        </div>
+      </div>
+      <p class="hex">#4F46E5</p>
+    </div>
+  </div>
+
+  <!-- Blue -->
+  <div class="color-card">
+    <div class="color-header">
+      <div class="color-dot" style="background: #2563EB"></div>
+      <div class="color-info">
+        <h3>Blue</h3>
+        <p>Corporate, Trust</p>
+      </div>
+    </div>
+    <div class="color-preview">
+      <div class="mini-card">
+        <div class="mini-banner" style="background: linear-gradient(135deg, #2563EB, #60A5FA)"></div>
+        <div class="mini-avatar-wrap">
+          <div class="mini-avatar"><span style="color:#2563EB">SC</span></div>
+        </div>
+        <div class="mini-body">
+          <h4>Sarah Cornor</h4>
+          <p>Software Engineer</p>
+          <div class="mini-btns">
+            <a href="#" class="mini-btn" style="background:#2563EB">Call</a>
+            <a href="#" class="mini-btn" style="background:#60A5FA">WhatsApp</a>
+          </div>
+        </div>
+      </div>
+      <p class="hex">#2563EB</p>
+    </div>
+  </div>
+
+  <!-- Green -->
+  <div class="color-card">
+    <div class="color-header">
+      <div class="color-dot" style="background: #16A34A"></div>
+      <div class="color-info">
+        <h3>Green</h3>
+        <p>Health, Eco, Food</p>
+      </div>
+    </div>
+    <div class="color-preview">
+      <div class="mini-card">
+        <div class="mini-banner" style="background: linear-gradient(135deg, #16A34A, #4ADE80)"></div>
+        <div class="mini-avatar-wrap">
+          <div class="mini-avatar"><span style="color:#16A34A">SC</span></div>
+        </div>
+        <div class="mini-body">
+          <h4>Sarah Cornor</h4>
+          <p>Software Engineer</p>
+          <div class="mini-btns">
+            <a href="#" class="mini-btn" style="background:#16A34A">Call</a>
+            <a href="#" class="mini-btn" style="background:#4ADE80">WhatsApp</a>
+          </div>
+        </div>
+      </div>
+      <p class="hex">#16A34A</p>
+    </div>
+  </div>
+
+  <!-- Yellow -->
+  <div class="color-card">
+    <div class="color-header">
+      <div class="color-dot" style="background: #EAB308"></div>
+      <div class="color-info">
+        <h3>Yellow</h3>
+        <p>Energy, Youth</p>
+      </div>
+    </div>
+    <div class="color-preview">
+      <div class="mini-card">
+        <div class="mini-banner" style="background: linear-gradient(135deg, #EAB308, #FDE047)"></div>
+        <div class="mini-avatar-wrap">
+          <div class="mini-avatar"><span style="color:#EAB308">SC</span></div>
+        </div>
+        <div class="mini-body">
+          <h4>Sarah Cornor</h4>
+          <p>Software Engineer</p>
+          <div class="mini-btns">
+            <a href="#" class="mini-btn" style="background:#EAB308;color:#1E293B">Call</a>
+            <a href="#" class="mini-btn" style="background:#FDE047;color:#1E293B">WhatsApp</a>
+          </div>
+        </div>
+      </div>
+      <p class="hex">#EAB308</p>
+    </div>
+  </div>
+
+  <!-- Orange -->
+  <div class="color-card">
+    <div class="color-header">
+      <div class="color-dot" style="background: #EA580C"></div>
+      <div class="color-info">
+        <h3>Orange</h3>
+        <p>Food, Retail</p>
+      </div>
+    </div>
+    <div class="color-preview">
+      <div class="mini-card">
+        <div class="mini-banner" style="background: linear-gradient(135deg, #EA580C, #FB923C)"></div>
+        <div class="mini-avatar-wrap">
+          <div class="mini-avatar"><span style="color:#EA580C">SC</span></div>
+        </div>
+        <div class="mini-body">
+          <h4>Sarah Cornor</h4>
+          <p>Software Engineer</p>
+          <div class="mini-btns">
+            <a href="#" class="mini-btn" style="background:#EA580C">Call</a>
+            <a href="#" class="mini-btn" style="background:#FB923C">WhatsApp</a>
+          </div>
+        </div>
+      </div>
+      <p class="hex">#EA580C</p>
+    </div>
+  </div>
+
+  <!-- Red -->
+  <div class="color-card">
+    <div class="color-header">
+      <div class="color-dot" style="background: #DC2626"></div>
+      <div class="color-info">
+        <h3>Red</h3>
+        <p>Bold, Passion</p>
+      </div>
+    </div>
+    <div class="color-preview">
+      <div class="mini-card">
+        <div class="mini-banner" style="background: linear-gradient(135deg, #DC2626, #F87171)"></div>
+        <div class="mini-avatar-wrap">
+          <div class="mini-avatar"><span style="color:#DC2626">SC</span></div>
+        </div>
+        <div class="mini-body">
+          <h4>Sarah Cornor</h4>
+          <p>Software Engineer</p>
+          <div class="mini-btns">
+            <a href="#" class="mini-btn" style="background:#DC2626">Call</a>
+            <a href="#" class="mini-btn" style="background:#F87171">WhatsApp</a>
+          </div>
+        </div>
+      </div>
+      <p class="hex">#DC2626</p>
+    </div>
+  </div>
+
+  <!-- Custom -->
+  <div class="color-card">
+    <div class="color-header">
+      <div class="color-dot" style="background: linear-gradient(135deg, #0B3D91, #00C49A)"></div>
+      <div class="color-info">
+        <h3>Custom</h3>
+        <p>Your brand colors</p>
+      </div>
+    </div>
+    <div class="color-preview">
+      <div class="mini-card">
+        <div class="mini-banner" style="background: linear-gradient(135deg, #0B3D91, #00C49A)"></div>
+        <div class="mini-avatar-wrap">
+          <div class="mini-avatar"><span style="color:#0B3D91">SC</span></div>
+        </div>
+        <div class="mini-body">
+          <h4>Sarah Cornor</h4>
+          <p>Software Engineer</p>
+          <div class="mini-btns">
+            <a href="#" class="mini-btn" style="background:#0B3D91">Call</a>
+            <a href="#" class="mini-btn" style="background:#00C49A">WhatsApp</a>
+          </div>
+        </div>
+      </div>
+      <p class="hex">User-defined</p>
+    </div>
+  </div>
+</div>
+</body>
+</html>
