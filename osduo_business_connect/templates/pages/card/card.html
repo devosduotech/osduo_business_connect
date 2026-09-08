@@ -31,31 +31,31 @@
 
         {# ===== BUSINESS LINK ===== #}
         {% if doc.show_business and doc.business_slug %}
-        <div class="bc-card-page" style="padding:1rem 0 0.5rem;text-align:center;">
-            <a href="/b/{{ doc.business_slug }}" style="color:var(--bc-primary);text-decoration:none;font-size:0.85rem;">{{ doc.business_name }} &rarr;</a>
+        <div class="bc-card-page" style="padding:0.75rem 0 0.35rem;text-align:center;">
+            <a href="/b/{{ doc.business_slug }}" style="color:var(--bc-primary);text-decoration:none;font-size:0.8rem;">{{ doc.business_name }} &rarr;</a>
         </div>
         <div class="bc-card-stripe"></div>
         {% endif %}
 
         {# ===== PRODUCTS ===== #}
         {% if doc.show_products and products %}
-        <div class="bc-card-page" style="padding:1.25rem 0;">
-            <h2 style="font-size:1rem;color:var(--bc-primary);margin-bottom:0.75rem;">Products</h2>
-            <div style="display:flex;flex-direction:column;gap:0.75rem;">
+        <div class="bc-card-page" style="padding:0.75rem 0;">
+            <h2 style="font-size:0.9rem;color:var(--bc-primary);margin-bottom:0.5rem;">Products</h2>
+            <div style="display:flex;flex-direction:column;gap:0.5rem;">
                 {% for product in products %}
                 <a href="/b/{{ doc.business_slug }}/products/{{ product.slug }}" style="text-decoration:none;">
-                <div class="bc-card" style="padding:0.75rem;display:flex;gap:0.75rem;align-items:center;">
+                <div class="bc-card" style="padding:0.5rem;display:flex;gap:0.5rem;align-items:center;">
                     {% if product.image %}
-                    <img src="{{ product.image }}" alt="{{ product.product_name }}" style="width:48px;height:48px;border-radius:8px;object-fit:cover;">
+                    <img src="{{ product.image }}" alt="{{ product.product_name }}" style="width:40px;height:40px;border-radius:6px;object-fit:cover;">
                     {% endif %}
                     <div style="flex:1;min-width:0;">
-                        <p style="margin:0;font-size:0.85rem;font-weight:600;color:var(--bc-text);">{{ product.product_name }}</p>
+                        <p style="margin:0;font-size:0.8rem;font-weight:600;color:var(--bc-text);">{{ product.product_name }}</p>
                         {% if product.short_description %}
-                        <p style="margin:0.15rem 0 0;font-size:0.75rem;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ product.short_description }}</p>
+                        <p style="margin:0.1rem 0 0;font-size:0.7rem;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ product.short_description }}</p>
                         {% endif %}
                     </div>
                     {% if product.price %}
-                    <span style="font-size:0.8rem;font-weight:600;color:var(--bc-primary);white-space:nowrap;">{{ product.currency }} {{ product.price }}</span>
+                    <span style="font-size:0.75rem;font-weight:600;color:var(--bc-primary);white-space:nowrap;">{{ product.currency }} {{ product.price }}</span>
                     {% endif %}
                 </div>
                 </a>
@@ -67,23 +67,23 @@
 
         {# ===== SERVICES ===== #}
         {% if doc.show_services and services %}
-        <div class="bc-card-page" style="padding:1.25rem 0;">
-            <h2 style="font-size:1rem;color:var(--bc-primary);margin-bottom:0.75rem;">Services</h2>
-            <div style="display:flex;flex-direction:column;gap:0.75rem;">
+        <div class="bc-card-page" style="padding:0.75rem 0;">
+            <h2 style="font-size:0.9rem;color:var(--bc-primary);margin-bottom:0.5rem;">Services</h2>
+            <div style="display:flex;flex-direction:column;gap:0.5rem;">
                 {% for service in services %}
                 <a href="/b/{{ doc.business_slug }}/services/{{ service.slug }}" style="text-decoration:none;">
-                <div class="bc-card" style="padding:0.75rem;display:flex;gap:0.75rem;align-items:center;">
+                <div class="bc-card" style="padding:0.5rem;display:flex;gap:0.5rem;align-items:center;">
                     {% if service.image %}
-                    <img src="{{ service.image }}" alt="{{ service.service_name }}" style="width:48px;height:48px;border-radius:8px;object-fit:cover;">
+                    <img src="{{ service.image }}" alt="{{ service.service_name }}" style="width:40px;height:40px;border-radius:6px;object-fit:cover;">
                     {% endif %}
                     <div style="flex:1;min-width:0;">
-                        <p style="margin:0;font-size:0.85rem;font-weight:600;color:var(--bc-text);">{{ service.service_name }}</p>
+                        <p style="margin:0;font-size:0.8rem;font-weight:600;color:var(--bc-text);">{{ service.service_name }}</p>
                         {% if service.short_description %}
-                        <p style="margin:0.15rem 0 0;font-size:0.75rem;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ service.short_description }}</p>
+                        <p style="margin:0.1rem 0 0;font-size:0.7rem;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ service.short_description }}</p>
                         {% endif %}
                     </div>
                     {% if service.price %}
-                    <span style="font-size:0.8rem;font-weight:600;color:var(--bc-primary);white-space:nowrap;">{{ service.currency }} {{ service.price }}</span>
+                    <span style="font-size:0.75rem;font-weight:600;color:var(--bc-primary);white-space:nowrap;">{{ service.currency }} {{ service.price }}</span>
                     {% endif %}
                 </div>
                 </a>
@@ -94,39 +94,39 @@
         {% endif %}
 
         {# ===== ENQUIRY FORM ===== #}
-        <div class="bc-card-page" style="padding:1.25rem 0;" id="bc-enquiry">
-            <h2 style="font-size:1rem;text-align:center;color:var(--bc-primary);margin-bottom:0.75rem;">Send a Message</h2>
-            <form id="card-enquiry-form" class="bc-card bc-enquiry-form" style="padding:1.25rem;">
+        <div class="bc-card-page" style="padding:0.75rem 0;" id="bc-enquiry">
+            <h2 style="font-size:0.9rem;text-align:center;color:var(--bc-primary);margin-bottom:0.5rem;">Send a Message</h2>
+            <form id="card-enquiry-form" class="bc-card bc-enquiry-form" style="padding:0.75rem;">
                 <input type="hidden" name="business" value="{{ doc.business }}">
                 <input type="hidden" name="business_slug" value="{{ doc.business_slug }}">
                 <input type="hidden" name="card" value="{{ doc.name }}">
-                <div style="margin-bottom:0.6rem;">
+                <div style="margin-bottom:0.4rem;">
                     <input type="text" name="visitor_name" placeholder="Your Name" required>
                 </div>
-                <div style="margin-bottom:0.6rem;">
+                <div style="margin-bottom:0.4rem;">
                     <input type="tel" name="visitor_phone" placeholder="Contact Number" required pattern="[0-9+\-\s\(\)]{7,15}" title="Enter a valid phone number (7-15 digits)">
                 </div>
-                <div style="margin-bottom:0.6rem;">
+                <div style="margin-bottom:0.4rem;">
                     <input type="email" name="visitor_email" placeholder="Email Address" required>
                 </div>
-                <div style="margin-bottom:0.6rem;">
+                <div style="margin-bottom:0.4rem;">
                     <textarea name="message" placeholder="Your Message" rows="3" required></textarea>
                 </div>
-                <button type="submit" class="bc-btn bc-btn-primary" style="width:100%;padding:0.75rem;">Send Message</button>
+                <button type="submit" class="bc-btn bc-btn-primary" style="width:100%;padding:0.6rem;">Send Message</button>
             </form>
         </div>
 
         <div class="bc-card-stripe"></div>
 
         {# ===== SHARE SECTION ===== #}
-        <div class="bc-card-page bc-card-share" style="padding:1.25rem 0;">
-            <h2 style="font-size:1rem;color:var(--bc-primary);">Share Card</h2>
+        <div class="bc-card-page bc-card-share" style="padding:0.75rem 0;">
+            <h2 style="font-size:0.9rem;color:var(--bc-primary);">Share Card</h2>
 
             <div class="bc-card-share-link" data-copy-url="{{ card_url }}">
                 <span class="bc-card-share-url">{{ card_url }}</span>
                 <span class="bc-card-share-copy">Copy</span>
             </div>
-            <div id="bc-copy-toast" style="display:none;text-align:center;color:var(--bc-primary);font-size:0.8rem;margin-top:0.3rem;">Copied!</div>
+            <div id="bc-copy-toast" style="display:none;text-align:center;color:var(--bc-primary);font-size:0.75rem;margin-top:0.25rem;">Copied!</div>
 
             {% if doc.qr_enabled and doc.qr_image %}
             <div class="bc-card-share-qr">
@@ -137,15 +137,15 @@
 
             <div class="bc-card-share-buttons">
                 {% if doc.phone %}
-                <a href="https://wa.me/?text={{ card_url|urlencode }}" target="_blank" class="bc-btn bc-btn-secondary" style="font-size:0.8rem;">&#128172; WhatsApp</a>
+                <a href="https://wa.me/?text={{ card_url|urlencode }}" target="_blank" class="bc-btn bc-btn-secondary" style="font-size:0.75rem;">&#128172; WhatsApp</a>
                 {% endif %}
-                <a href="sms:?body={{ card_url|urlencode }}" class="bc-btn bc-btn-secondary" style="font-size:0.8rem;">&#128172; SMS</a>
-                <a href="mailto:?subject=Digital Card&body=Check out this card: {{ card_url }}" class="bc-btn bc-btn-secondary" style="font-size:0.8rem;">&#9993; Email</a>
+                <a href="sms:?body={{ card_url|urlencode }}" class="bc-btn bc-btn-secondary" style="font-size:0.75rem;">&#128172; SMS</a>
+                <a href="mailto:?subject=Digital Card&body=Check out this card: {{ card_url }}" class="bc-btn bc-btn-secondary" style="font-size:0.75rem;">&#9993; Email</a>
             </div>
         </div>
 
-        <div class="bc-card-share" style="padding:0.75rem 0 1.5rem;text-align:center;">
-            <p style="color:#94a3b8;font-size:0.7rem;">Powered by <a href="https://connect.osduotech.com" target="_blank" rel="noopener" style="color:#94a3b8;text-decoration:underline;">OSDuo Business Connect</a></p>
+        <div class="bc-card-share" style="padding:0.5rem 0 1rem;text-align:center;">
+            <p style="color:#94a3b8;font-size:0.65rem;">Powered by <a href="https://connect.osduotech.com" target="_blank" rel="noopener" style="color:#94a3b8;text-decoration:underline;">OSDuo Business Connect</a></p>
         </div>
     </div>
 </div>

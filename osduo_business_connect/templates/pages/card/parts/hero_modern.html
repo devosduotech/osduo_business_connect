@@ -1,10 +1,10 @@
-{# Card Hero — Modern: clean centered, rounded avatar with shadow, soft buttons #}
+{# Card Hero — Modern: clean centered, rounded avatar, soft buttons #}
 <div class="bc-card-hero bc-hero-modern">
     <div class="bc-hero-modern-avatar-wrap">
         {% if doc.profile_image %}
-        <img src="{{ doc.profile_image }}" alt="{{ doc.display_name }}" class="bc-card-avatar bc-hero-modern-avatar">
+        <img src="{{ doc.profile_image }}" alt="{{ doc.display_name }}" class="bc-hero-modern-avatar">
         {% else %}
-        <div class="bc-card-avatar bc-hero-modern-avatar-fallback">
+        <div class="bc-hero-modern-avatar-fallback">
             {{ doc.display_name[0] if doc.display_name else '?' }}
         </div>
         {% endif %}
@@ -16,10 +16,6 @@
     {% endif %}
     {% if doc.show_business and doc.business_name %}
     <p class="bc-hero-modern-business">{{ doc.business_name }}</p>
-    {% endif %}
-
-    {% if doc.bio %}
-    <div class="bc-card-bio bc-hero-modern-bio">{{ doc.bio }}</div>
     {% endif %}
 
     {% if doc.phone or doc.email %}

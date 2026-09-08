@@ -68,53 +68,51 @@
 
 .bc-card-hero {
     text-align: center;
-    padding: 1.25rem;
+    padding: 1rem 1rem 0.75rem;
 }
 
 .bc-card-avatar {
-    width: 100px;
-    height: 100px;
+    width: 96px;
+    height: 96px;
     border-radius: 50%;
     object-fit: cover;
     border: 3px solid var(--bc-accent);
-    margin: 0 auto 0.75rem;
+    margin: 0 auto 0.5rem;
     display: block;
 }
 
 .bc-card-avatar-fallback {
-    width: 100px;
-    height: 100px;
+    width: 96px;
+    height: 96px;
     border-radius: 50%;
     background: var(--bc-primary);
     color: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2rem;
-    margin: 0 auto 0.75rem;
+    font-size: 1.8rem;
+    margin: 0 auto 0.5rem;
 }
 
 .bc-card-hero h1 {
-    margin: 0.4rem 0 0.2rem;
-    font-size: 1.35rem;
-}
-
-.bc-card-bio {
-    color: #555;
-    font-size: 0.9rem;
-    line-height: 1.6;
-    margin: 0.75rem 0;
-    padding: 0.75rem;
-    background: var(--bc-background);
-    border-radius: var(--bc-card-radius);
+    margin: 0.25rem 0 0.1rem;
+    font-size: 1.25rem;
+    line-height: 1.2;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .bc-card-links {
     display: flex;
-    gap: 0.4rem;
+    gap: 0.35rem;
     justify-content: center;
     flex-wrap: wrap;
-    margin: 1.25rem 0;
+    margin: 0.6rem 0;
+}
+
+.bc-card-links .bc-btn {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.75rem;
 }
 
 .bc-card-business-link {
@@ -152,8 +150,8 @@
 .bc-card-actions {
     display: flex;
     flex-direction: row;
-    gap: 0.5rem;
-    margin: 1.25rem 0;
+    gap: 0.4rem;
+    margin: 0.6rem 0;
     justify-content: center;
     flex-wrap: wrap;
 }
@@ -161,11 +159,11 @@
 .bc-card-action-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
-    padding: 0.6rem 1rem;
+    gap: 0.25rem;
+    padding: 0.5rem 0.85rem;
     border-radius: var(--bc-btn-radius);
     text-decoration: none;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 500;
     transition: opacity 0.2s;
 }
@@ -188,82 +186,75 @@
 }
 
 .bc-hero-modern-avatar-wrap {
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
 }
 
 .bc-hero-modern-avatar {
-    width: 110px;
-    height: 110px;
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
     object-fit: cover;
     border: 4px solid var(--bc-primary);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
     display: block;
     margin: 0 auto;
 }
 
 .bc-hero-modern-avatar-fallback {
-    width: 110px;
-    height: 110px;
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
     background: var(--bc-primary);
     color: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2.2rem;
+    font-size: 2rem;
     margin: 0 auto;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
     border: 4px solid white;
 }
 
 .bc-hero-modern-name {
-    margin: 0.4rem 0 0.15rem;
-    font-size: 1.4rem;
+    margin: 0.25rem 0 0.1rem;
+    font-size: 1.3rem;
     font-weight: 700;
 }
 
 .bc-hero-modern-designation {
     color: #64748b;
-    margin: 0 0 0.15rem;
-    font-size: 0.95rem;
+    margin: 0 0 0.1rem;
+    font-size: 0.9rem;
 }
 
 .bc-hero-modern-business {
     color: #94a3b8;
-    margin: 0 0 0.75rem;
-    font-size: 0.85rem;
-}
-
-.bc-hero-modern-bio {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    text-align: left;
+    margin: 0 0 0.5rem;
+    font-size: 0.8rem;
 }
 
 .bc-hero-modern-contact {
-    margin: 0.75rem 0;
-    font-size: 0.85rem;
+    margin: 0.5rem 0;
+    font-size: 0.8rem;
     color: #64748b;
     display: flex;
     flex-direction: column;
-    gap: 0.2rem;
+    gap: 0.15rem;
 }
 
 .bc-hero-modern-actions {
-    gap: 0.5rem;
+    gap: 0.4rem;
 }
 
 .bc-hero-modern-btn {
     border-radius: 50px !important;
-    padding: 0.65rem 1.2rem !important;
+    padding: 0.5rem 1rem !important;
     font-weight: 600;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
 
 .bc-hero-modern-links {
-    margin-top: 0.5rem;
+    margin-top: 0.35rem;
 }
 
 .bc-hero-modern-qr {
@@ -283,8 +274,8 @@
 .bc-hero-professional-top {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    padding: 1.5rem;
+    gap: 0.75rem;
+    padding: 1rem;
     background: var(--bc-primary);
     color: white;
 }
@@ -333,30 +324,22 @@
     font-size: 0.8rem;
 }
 
-.bc-hero-professional-bio {
-    background: #f8fafc;
-    border-left: 3px solid var(--bc-primary);
-    border-radius: 0 8px 8px 0;
-    text-align: left;
-    margin: 1.25rem 1.5rem;
-}
-
 .bc-hero-professional-contact {
     margin: 0;
-    padding: 1rem 1.5rem;
+    padding: 0.75rem 1rem;
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
+    gap: 0.3rem;
 }
 
 .bc-hero-professional-contact-item {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 0.85rem;
+    gap: 0.4rem;
+    font-size: 0.8rem;
     color: #475569;
     text-decoration: none;
-    padding: 0.4rem 0;
+    padding: 0.25rem 0;
 }
 
 .bc-hero-professional-contact-item:hover {
@@ -372,15 +355,15 @@
 .bc-hero-professional-divider {
     height: 1px;
     background: #e2e8f0;
-    margin: 0 1.5rem;
+    margin: 0 1rem;
 }
 
 .bc-hero-professional-actions {
     display: flex;
     flex-direction: row;
-    gap: 0.5rem;
+    gap: 0.4rem;
     flex-wrap: wrap;
-    padding: 1rem 1.5rem;
+    padding: 0.75rem 1rem;
 }
 
 .bc-hero-professional-btn {
@@ -431,14 +414,14 @@
 .bc-hero-minimal {
     background: transparent;
     text-align: left;
-    padding: 1.5rem 0;
+    padding: 1.25rem 1rem 0.75rem;
 }
 
 .bc-hero-minimal-header {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    margin-bottom: 0.5rem;
+    gap: 0.75rem;
+    margin-bottom: 0.4rem;
 }
 
 .bc-hero-minimal-avatar {
@@ -479,29 +462,21 @@
 
 .bc-hero-minimal-business {
     color: #94a3b8;
-    margin: 0 0 0.75rem;
-    font-size: 0.8rem;
+    margin: 0 0 0.5rem;
+    font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
 
-.bc-hero-minimal-bio {
-    background: transparent;
-    border: 1px solid #e2e8f0;
-    border-radius: 0;
-    text-align: left;
-    font-size: 0.85rem;
-}
-
 .bc-hero-minimal-contact {
-    margin: 0.75rem 0;
+    margin: 0.5rem 0;
 }
 
 .bc-hero-minimal-contact-row {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    padding: 0.5rem 0;
+    gap: 0.75rem;
+    padding: 0.35rem 0;
     border-bottom: 1px solid #f1f5f9;
     text-decoration: none;
     color: #475569;
@@ -521,19 +496,19 @@
 }
 
 .bc-hero-minimal-contact-value {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }
 
 .bc-hero-minimal-divider {
     height: 1px;
     background: #e2e8f0;
-    margin: 0.75rem 0;
+    margin: 0.5rem 0;
 }
 
 .bc-hero-minimal-actions {
     display: flex;
     flex-direction: row;
-    gap: 0.5rem;
+    gap: 0.4rem;
     flex-wrap: wrap;
 }
 
@@ -591,7 +566,7 @@
 
 .bc-hero-classic-banner {
     background: linear-gradient(135deg, var(--bc-primary), var(--bc-accent));
-    padding: 2rem 1.5rem 2.5rem;
+    padding: 1.5rem 1rem 1.75rem;
     text-align: center;
 }
 
@@ -645,22 +620,15 @@
 }
 
 .bc-hero-classic-body {
-    padding: 0.75rem 1.5rem 1.5rem;
+    padding: 0.5rem 1rem 1rem;
     text-align: center;
 }
 
-.bc-hero-classic-bio {
-    background: #fafafa;
-    border: 1px solid #eee;
-    border-radius: 8px;
-    text-align: left;
-}
-
 .bc-hero-classic-contact {
-    margin: 0.75rem 0;
+    margin: 0.5rem 0;
     display: flex;
     flex-direction: column;
-    gap: 0.3rem;
+    gap: 0.2rem;
 }
 
 .bc-hero-classic-contact-item {
@@ -735,8 +703,8 @@
 /* ======================== */
 .bc-card-vcf {
     display: flex;
-    gap: 0.5rem;
-    margin: 0.75rem 0;
+    gap: 0.4rem;
+    margin: 0.5rem 0;
     justify-content: center;
     flex-wrap: wrap;
 }
@@ -744,13 +712,13 @@
 .bc-card-vcf-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    padding: 0.65rem 1.2rem;
+    gap: 0.3rem;
+    padding: 0.5rem 1rem;
     border-radius: var(--bc-btn-radius);
     background: var(--bc-primary);
     color: white;
     text-decoration: none;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 500;
     transition: opacity 0.2s;
 }
@@ -763,9 +731,9 @@
 /* CARD: SECTION SEPARATOR  */
 /* ======================== */
 .bc-card-stripe {
-    height: 3px;
+    height: 2px;
     background: var(--bc-primary);
-    opacity: 0.15;
+    opacity: 0.12;
     margin: 0;
 }
 
@@ -1303,72 +1271,64 @@
 }
 
 .bc-hero-luxury-avatar {
-    width: 96px;
-    height: 96px;
+    width: 88px;
+    height: 88px;
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid rgba(255,255,255,0.3);
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 .bc-hero-luxury-avatar-fallback {
-    width: 96px;
-    height: 96px;
+    width: 88px;
+    height: 88px;
     border-radius: 50%;
     background: rgba(255,255,255,0.1);
     border: 2px solid rgba(255,255,255,0.3);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2rem;
+    font-size: 1.8rem;
     font-family: var(--bc-display-font);
     color: rgba(255,255,255,0.6);
-    margin: 0 auto 1.5rem;
+    margin: 0 auto 1rem;
 }
 
 .bc-hero-luxury-name {
     font-family: var(--bc-display-font);
-    font-size: 2.75rem;
+    font-size: 2rem;
     font-weight: 400;
     letter-spacing: 0.02em;
-    margin: 0 0 0.5rem;
+    margin: 0 0 0.25rem;
     color: #ffffff;
+    line-height: 1.15;
 }
 
 .bc-hero-luxury .bc-hero-luxury-designation {
     color: rgba(255,255,255,0.7);
+    font-size: 0.85rem;
 }
 
 .bc-hero-luxury-business {
-    font-size: 1rem;
+    font-size: 0.85rem;
     color: var(--bc-accent);
-    margin: 0 0 1.5rem;
-}
-
-.bc-hero-luxury-bio {
-    font-size: 0.95rem;
-    line-height: 1.7;
-    color: rgba(255,255,255,0.75);
-    margin: 0 0 1rem;
-    max-width: 500px;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 0 0.75rem;
 }
 
 .bc-hero-luxury-actions {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 1rem;
-    margin-bottom: 1rem;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
 }
 
 .bc-hero-luxury-links {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 1.5rem;
-    padding-bottom: 1.5rem;
+    gap: 1rem;
+    padding-bottom: 1rem;
 }
 
 .bc-hero-luxury-social {
@@ -1610,7 +1570,7 @@
 }
 
 .bc-hero-creative-info {
-    padding: 2rem 1.5rem;
+    padding: 1.25rem 1.25rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -1618,50 +1578,44 @@
 
 .bc-hero-creative-name {
     font-family: var(--bc-display-font);
-    font-size: 2.5rem;
+    font-size: 1.75rem;
     font-weight: 700;
-    margin: 0 0 0.25rem;
+    margin: 0 0 0.15rem;
     color: var(--bc-text);
-    line-height: 1.1;
+    line-height: 1.15;
 }
 
 .bc-hero-creative .bc-hero-creative-designation {
     color: var(--bc-primary);
+    font-size: 0.85rem;
 }
 
 .bc-hero-creative-business {
-    font-size: 0.95rem;
+    font-size: 0.8rem;
     color: #64748b;
-    margin: 0 0 1rem;
-}
-
-.bc-hero-creative-bio {
-    font-size: 0.95rem;
-    line-height: 1.7;
-    color: #475569;
-    margin: 0 0 1.5rem;
+    margin: 0 0 0.6rem;
 }
 
 .bc-hero-creative-contact {
     display: flex;
     flex-direction: column;
-    gap: 0.3rem;
-    font-size: 0.85rem;
+    gap: 0.2rem;
+    font-size: 0.8rem;
     color: #64748b;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.75rem;
 }
 
 .bc-hero-creative-actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.6rem;
-    margin-bottom: 1.5rem;
+    gap: 0.4rem;
+    margin-bottom: 0.75rem;
 }
 
 .bc-hero-creative-links {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.6rem;
+    gap: 0.4rem;
 }
 
 /* Creative Product/Service Hero */
@@ -2204,8 +2158,26 @@
     .bc-template-luxury .bc-header h1 { font-size: 2rem; }
     .bc-template-luxury .bc-header-content { padding: 2rem 1.25rem 1.5rem; }
     .bc-hero-luxury { min-height: auto; padding: 1.25rem 0; }
-    .bc-hero-luxury-name { font-size: 2rem; }
+    .bc-hero-luxury-name { font-size: 1.75rem; }
     .bc-hero-luxury-avatar, .bc-hero-luxury-avatar-fallback { width: 72px; height: 72px; }
+
+    /* Card heroes mobile */
+    .bc-card-hero { padding: 0.75rem 0.75rem 0.5rem; }
+    .bc-card-hero h1 { font-size: 1.1rem; }
+    .bc-hero-modern-avatar, .bc-hero-modern-avatar-fallback { width: 88px; height: 88px; }
+    .bc-hero-modern-name { font-size: 1.15rem; }
+    .bc-hero-modern-btn { padding: 0.45rem 0.8rem !important; font-size: 0.75rem !important; }
+    .bc-hero-professional-info h1 { font-size: 1.1rem; }
+    .bc-hero-professional-top { padding: 0.75rem; }
+    .bc-hero-professional-actions { padding: 0.6rem 0.75rem; }
+    .bc-hero-minimal-identity h1 { font-size: 1rem; }
+    .bc-hero-minimal-avatar, .bc-hero-minimal-avatar-fallback { width: 56px; height: 56px; }
+    .bc-hero-classic-banner { padding: 1.25rem 0.75rem 1.5rem; }
+    .bc-hero-classic-banner-inner h1 { font-size: 1.2rem; }
+    .bc-hero-classic-body { padding: 0.4rem 0.75rem 0.75rem; }
+    .bc-hero-luxury-content { padding: 1.5rem 1rem 1rem; }
+    .bc-hero-creative-info { padding: 1rem; }
+    .bc-hero-creative-name { font-size: 1.4rem; }
 
     /* Creative mobile */
     .bc-template-creative .bc-header-content {
@@ -2233,6 +2205,18 @@
     .bc-logo-img { width: 56px; height: 56px; }
     .bc-hero-actions { gap: 0.4rem; }
     .bc-hero-actions .bc-btn { padding: 0.5rem 0.9rem; font-size: 0.8rem; }
+
+    /* Small mobile card heroes */
+    .bc-card-hero { padding: 0.6rem; }
+    .bc-card-hero h1 { font-size: 1rem; }
+    .bc-card-action-btn { padding: 0.4rem 0.7rem; font-size: 0.75rem; }
+    .bc-hero-modern-avatar, .bc-hero-modern-avatar-fallback { width: 80px; height: 80px; }
+    .bc-hero-modern-name { font-size: 1.05rem; }
+    .bc-hero-professional-info h1 { font-size: 1rem; }
+    .bc-hero-minimal-identity h1 { font-size: 0.9rem; }
+    .bc-hero-luxury-name { font-size: 1.5rem; }
+    .bc-hero-creative-name { font-size: 1.2rem; }
+    .bc-hero-creative-info { padding: 0.75rem; }
 
     .bc-section { padding: 1rem 0; }
     .bc-product-grid { grid-template-columns: 1fr; gap: 0.75rem; }
