@@ -41,6 +41,14 @@ add_to_apps_screen = [
 
 # Includes in <head>
 # ------------------
+home_page = "login"
+web_include_css = [
+    "/assets/osduo_business_connect/css/login.css"
+]
+
+web_include_js = [
+    "/assets/osduo_business_connect/js/login-layout.js"
+]
 
 # Desk branding CSS (sidebar logo, app title, browser title)
 app_include_css = "/assets/osduo_business_connect/css/branding.css"
@@ -202,9 +210,9 @@ jinja = {
 # Override Frappe's login page with Business Connect branding.
 # This does NOT modify Frappe core files — it uses the template override hook.
 
-template_overrides = {
-    "login.html": "osduo_business_connect.templates.login",
-}
+#template_overrides = {
+#    "login.html": "osduo_business_connect.templates.login",
+#}
 
 # Website context
 # ---------------
