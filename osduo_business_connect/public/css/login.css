@@ -1,0 +1,646 @@
+
+/* =========================================================
+   OSDuo Business Connect — Login Page
+   Responsive layout for Frappe
+   ========================================================= */
+
+/* 1. Page defaults */
+body[data-path="login"] {
+    margin: 0;
+    padding: 0;
+    background: #f4f7fb;
+}
+
+body[data-path="login"] #page-login,
+body[data-path="login"] #page-login .page-content-wrapper,
+body[data-path="login"] #page-login .page_content {
+    min-height: 100vh;
+}
+
+body[data-path="login"] #page-login main.container {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body[data-path="login"] #page-login .page-header-wrapper,
+body[data-path="login"] #page-login .page-breadcrumbs {
+    display: none;
+}
+
+/* 2. Split-screen layout */
+body[data-path="login"] section.for-login.bc-login-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
+    width: 100%;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    background: #f4f7fb;
+    box-sizing: border-box;
+}
+
+/* 3. Image-led left branding panel */
+body[data-path="login"] section.for-login.bc-login-layout
+.bc-brand-panel {
+    position: relative;
+    display: block;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
+    padding: 0;
+    box-sizing: border-box;
+
+    background-color: #062653;
+    background-image:
+        linear-gradient(
+            90deg,
+            rgba(3, 27, 65, 0.96) 0%,
+            rgba(3, 34, 75, 0.91) 34%,
+            rgba(3, 34, 75, 0.70) 52%,
+            rgba(3, 34, 75, 0.18) 100%
+        ),
+        url("/files/OSDuo%20Digital%20Business%20Card%20Login%20Left%20Panel.png");
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+/* 4. Branding content container */
+body[data-path="login"] .bc-brand-inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(18px, 2.6vh, 30px);
+
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    max-width: none;
+    margin: 0;
+    padding: 34px clamp(28px, 4.5vw, 68px) 66px;
+
+    box-sizing: border-box;
+}
+
+/* 5. Logo and brand identity */
+body[data-path="login"] .bc-brand-heading {
+    width: 100%;
+    max-width: 440px;
+    color: #fff;
+}
+
+body[data-path="login"] .bc-brand-identity {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+body[data-path="login"] .bc-brand-logo {
+    display: block;
+    flex: 0 0 58px;
+    width: 58px;
+    height: 58px;
+    max-width: 58px;
+    max-height: 58px;
+    margin: 0;
+    object-fit: contain;
+    object-position: center;
+}
+
+body[data-path="login"] .bc-brand-identity-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+body[data-path="login"] .bc-brand-name {
+    color: #fff;
+    font-size: 29px;
+    font-weight: 750;
+    line-height: 1.05;
+    letter-spacing: -0.7px;
+}
+
+body[data-path="login"] .bc-brand-product {
+    color: #82dcf6;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.5;
+    letter-spacing: 1.3px;
+}
+
+/* Accent line */
+body[data-path="login"] .bc-brand-accent {
+    width: 40px;
+    height: 3px;
+    margin: 0 0 22px;
+    border-radius: 3px;
+    background: #16d6d0;
+}
+
+/* 6. Headline and description */
+body[data-path="login"] .bc-brand-heading h1 {
+    margin: 0 0 16px;
+    color: #fff;
+    font-size: clamp(30px, 2.7vw, 43px);
+    font-weight: 750;
+    line-height: 1.12;
+    letter-spacing: -0.9px;
+}
+
+body[data-path="login"] .bc-brand-heading h1 span {
+    color: #9cecff;
+}
+
+body[data-path="login"] .bc-brand-description {
+    max-width: 390px;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+/* 7. Feature list */
+body[data-path="login"] .bc-brand-features {
+    display: flex;
+    flex-direction: column;
+    gap: 17px;
+    width: 100%;
+    max-width: 390px;
+}
+
+body[data-path="login"] .bc-feature {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    min-width: 0;
+}
+
+body[data-path="login"] .bc-feature-icon {
+    display: flex;
+    flex: 0 0 44px;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid rgba(100, 224, 255, 0.22);
+    border-radius: 50%;
+    background: rgba(0, 164, 218, 0.28);
+    color: #70f2ed;
+}
+
+body[data-path="login"] .bc-feature-icon svg {
+    display: block;
+    width: 23px;
+    height: 23px;
+}
+
+body[data-path="login"] .bc-feature-copy {
+    min-width: 0;
+}
+
+body[data-path="login"] .bc-feature-copy h3 {
+    margin: 0 0 3px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+body[data-path="login"] .bc-feature-copy p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+/* 8. Bottom tagline */
+body[data-path="login"] .bc-brand-footer {
+    position: absolute;
+    left: clamp(28px, 4.5vw, 68px);
+    bottom: 23px;
+    margin: 0;
+    padding: 0;
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 11px;
+    letter-spacing: 0.8px;
+}
+
+/* =========================================================
+   9. Native Frappe login card
+   ========================================================= */
+
+body[data-path="login"] section.for-login.bc-login-layout
+.login-content.page-card {
+    align-self: center;
+    justify-self: center;
+
+    width: calc(100% - 48px);
+    max-width: 440px;
+    min-width: 0;
+
+    margin: 24px auto;
+    padding: 28px 32px;
+
+    background: #fff;
+    border: 1px solid #e8edf2;
+    border-radius: 16px;
+    box-shadow: 0 16px 50px rgba(20, 43, 70, 0.09);
+
+    box-sizing: border-box;
+}
+
+body[data-path="login"] .login-content .page-card-head {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+body[data-path="login"] .login-content .page-card-head .app-logo {
+    display: none;
+}
+
+body[data-path="login"] .login-content .page-card-head h4 {
+    margin-top: 0;
+    color: #142b46;
+    font-size: 27px;
+    font-weight: 700;
+}
+
+body[data-path="login"] .login-content .page-card-subtitle {
+    color: #687587;
+    font-size: 14px;
+}
+
+body[data-path="login"] .login-content .form-control {
+    min-height: 42px;
+    border-radius: 7px;
+}
+
+body[data-path="login"] .login-content .btn-primary {
+    min-height: 42px;
+    border-radius: 7px;
+    background: #0b3d91;
+    border-color: #0b3d91;
+    font-weight: 600;
+}
+
+body[data-path="login"] .login-content .btn-primary:hover {
+    background: #092d6b;
+    border-color: #092d6b;
+}
+
+body[data-path="login"] .login-content a {
+    color: #1677ff;
+}
+
+/* =========================================================
+   10. Desktop — full viewport
+   ========================================================= */
+
+@media (min-width: 901px) {
+    html,
+    body[data-path="login"] {
+        height: 100%;
+        min-height: 0;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+    }
+
+    body[data-path="login"] #page-login,
+    body[data-path="login"] #page-login .page-content-wrapper,
+    body[data-path="login"] #page-login .page_content,
+    body[data-path="login"] #page-login main.container {
+        height: 100vh;
+        min-height: 0;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body[data-path="login"] #page-login main.container {
+        width: 100%;
+        max-width: none;
+    }
+
+    body[data-path="login"] section.for-login.bc-login-layout {
+        display: grid;
+        grid-template-columns: 58% 42%;
+        align-items: stretch;
+        width: 100%;
+        height: 100vh;
+        min-height: 0;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+    }
+
+    body[data-path="login"] .bc-brand-panel {
+        height: 100%;
+        min-height: 0;
+    }
+
+    body[data-path="login"] .bc-brand-inner {
+        gap: clamp(18px, 2.6vh, 30px);
+    }
+
+    body[data-path="login"] section.for-login.bc-login-layout
+    .login-content.page-card {
+        width: calc(100% - 40px);
+        max-width: 420px;
+        max-height: calc(100vh - 32px);
+        margin: 16px 20px;
+        padding: 24px;
+        overflow-y: auto;
+    }
+
+    body[data-path="login"] .login-content .page-card-head {
+        margin-bottom: 14px;
+    }
+
+    body[data-path="login"] .login-content .page-card-head h4 {
+        font-size: 24px;
+    }
+
+    body[data-path="login"] .login-content .form-control,
+    body[data-path="login"] .login-content .btn-primary {
+        min-height: 40px;
+    }
+}
+
+/* =========================================================
+   11. Short desktop screens
+   ========================================================= */
+
+@media (min-width: 901px) and (max-height: 760px) {
+    body[data-path="login"] .bc-brand-inner {
+        gap: 14px;
+        padding-top: 20px;
+        padding-bottom: 48px;
+    }
+
+    body[data-path="login"] .bc-brand-identity {
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+
+    body[data-path="login"] .bc-brand-logo {
+        flex-basis: 46px;
+        width: 46px;
+        height: 46px;
+    }
+
+    body[data-path="login"] .bc-brand-name {
+        font-size: 24px;
+    }
+
+    body[data-path="login"] .bc-brand-product {
+        font-size: 9px;
+    }
+
+    body[data-path="login"] .bc-brand-accent {
+        margin-bottom: 12px;
+    }
+
+    body[data-path="login"] .bc-brand-heading h1 {
+        margin-bottom: 10px;
+        font-size: 30px;
+    }
+
+    body[data-path="login"] .bc-brand-description {
+        font-size: 12px;
+        line-height: 1.45;
+    }
+
+    body[data-path="login"] .bc-brand-features {
+        gap: 9px;
+    }
+
+    body[data-path="login"] .bc-feature-icon {
+        flex-basis: 35px;
+        width: 35px;
+        height: 35px;
+    }
+
+    body[data-path="login"] .bc-feature-icon svg {
+        width: 19px;
+        height: 19px;
+    }
+
+    body[data-path="login"] .bc-feature-copy h3 {
+        font-size: 12px;
+    }
+
+    body[data-path="login"] .bc-feature-copy p {
+        font-size: 11px;
+    }
+
+    body[data-path="login"] .bc-brand-footer {
+        bottom: 15px;
+    }
+}
+
+/* =========================================================
+   12. Tablet
+   ========================================================= */
+
+@media (min-width: 641px) and (max-width: 900px) {
+    body[data-path="login"] section.for-login.bc-login-layout {
+        grid-template-columns: minmax(0, 1fr) minmax(320px, 0.9fr);
+    }
+
+    body[data-path="login"] .bc-brand-panel {
+        background-position: 58% center;
+    }
+
+    body[data-path="login"] .bc-brand-inner {
+        gap: 20px;
+        padding: 28px 24px 58px;
+    }
+
+    body[data-path="login"] .bc-brand-identity {
+        gap: 10px;
+        margin-bottom: 16px;
+    }
+
+    body[data-path="login"] .bc-brand-logo {
+        flex-basis: 48px;
+        width: 48px;
+        height: 48px;
+    }
+
+    body[data-path="login"] .bc-brand-name {
+        font-size: 24px;
+    }
+
+    body[data-path="login"] .bc-brand-product {
+        font-size: 9px;
+        letter-spacing: 0.8px;
+    }
+
+    body[data-path="login"] .bc-brand-heading h1 {
+        font-size: 32px;
+    }
+
+    body[data-path="login"] .bc-brand-description {
+        font-size: 13px;
+    }
+
+    body[data-path="login"] .bc-brand-features {
+        gap: 13px;
+    }
+
+    body[data-path="login"] .bc-feature-icon {
+        flex-basis: 38px;
+        width: 38px;
+        height: 38px;
+    }
+
+    body[data-path="login"] .bc-feature-copy h3 {
+        font-size: 12px;
+    }
+
+    body[data-path="login"] .bc-feature-copy p {
+        font-size: 11px;
+    }
+
+    body[data-path="login"] section.for-login.bc-login-layout
+    .login-content.page-card {
+        width: calc(100% - 32px);
+        padding: 24px;
+    }
+}
+
+/* =========================================================
+   13. Mobile
+   ========================================================= */
+
+@media (max-width: 640px) {
+    body[data-path="login"] #page-login,
+    body[data-path="login"] #page-login .page-content-wrapper,
+    body[data-path="login"] #page-login .page_content,
+    body[data-path="login"] #page-login main.container {
+        height: auto;
+        min-height: 100vh;
+    }
+
+    body[data-path="login"] section.for-login.bc-login-layout {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: auto;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        overflow: visible;
+    }
+
+    body[data-path="login"] .bc-brand-panel {
+        height: auto;
+        min-height: 0;
+        background-position: 64% center;
+    }
+
+    body[data-path="login"] .bc-brand-inner {
+        height: auto;
+        min-height: 0;
+        gap: 20px;
+        padding: 24px 22px 28px;
+        background: linear-gradient(
+            90deg,
+            rgba(3, 27, 65, 0.18),
+            rgba(3, 27, 65, 0.02)
+        );
+    }
+
+    body[data-path="login"] .bc-brand-identity {
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+
+    body[data-path="login"] .bc-brand-logo {
+        flex-basis: 44px;
+        width: 44px;
+        height: 44px;
+    }
+
+    body[data-path="login"] .bc-brand-name {
+        font-size: 23px;
+    }
+
+    body[data-path="login"] .bc-brand-product {
+        font-size: 9px;
+        letter-spacing: 0.8px;
+    }
+
+    body[data-path="login"] .bc-brand-accent {
+        margin-bottom: 14px;
+    }
+
+    body[data-path="login"] .bc-brand-heading h1 {
+        font-size: 29px;
+        margin-bottom: 12px;
+    }
+
+    body[data-path="login"] .bc-brand-description {
+        max-width: 330px;
+        font-size: 13px;
+        line-height: 1.55;
+    }
+
+    body[data-path="login"] .bc-brand-features {
+        gap: 12px;
+    }
+
+    body[data-path="login"] .bc-feature {
+        gap: 10px;
+    }
+
+    body[data-path="login"] .bc-feature-icon {
+        flex-basis: 36px;
+        width: 36px;
+        height: 36px;
+    }
+
+    body[data-path="login"] .bc-feature-icon svg {
+        width: 19px;
+        height: 19px;
+    }
+
+    body[data-path="login"] .bc-feature-copy h3 {
+        font-size: 12px;
+    }
+
+    body[data-path="login"] .bc-feature-copy p {
+        font-size: 11px;
+    }
+
+    body[data-path="login"] .bc-brand-footer {
+        display: none;
+    }
+
+    body[data-path="login"] section.for-login.bc-login-layout
+    .login-content.page-card {
+        align-self: center;
+        width: calc(100% - 32px);
+        max-width: 440px;
+        margin: 20px auto 24px;
+        padding: 24px;
+    }
+
+    body[data-path="login"] .login-content .page-card-head {
+        margin-bottom: 18px;
+    }
+
+    body[data-path="login"] .login-content .page-card-head h4 {
+        font-size: 25px;
+    }
+}
