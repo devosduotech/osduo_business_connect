@@ -4,11 +4,11 @@
   "doctype": "DocType",
   "document_type": "Document",
   "engine": "InnoDB",
-  "naming_rule": "By \"Series\" field",
+  "naming_rule": "By \"Naming Series\" field",
   "autoname": "naming_series:",
   "title_field": "display_name",
   "search_fields": "display_name,slug,business",
-  "is_submittable": 0,
+  "is_submittable": 1,
   "issingle": 0,
   "istable": 0,
   "is_tree": 0,
@@ -58,7 +58,8 @@
       "reqd": 1,
       "unique": 1,
       "in_list_view": 1,
-      "description": "Unique identifier for public URLs. Only lowercase letters, numbers, and hyphens."
+      "description": "Unique identifier for public URLs. Only lowercase letters, numbers, and hyphens.",
+      "set_only_once": 1
     },
     {
       "fieldname": "designation",
@@ -134,7 +135,8 @@
       "default": "Draft",
       "options": "Draft\nPublished\nUnpublished\nSuspended",
       "in_list_view": 1,
-      "in_standard_filter": 1
+      "in_standard_filter": 1,
+      "allow_on_submit": 1
     },
     {
       "fieldname": "column_break_settings",
@@ -144,7 +146,8 @@
       "fieldname": "public_profile_enabled",
       "fieldtype": "Check",
       "label": "Public Profile Enabled",
-      "default": 1
+      "default": 1,
+      "allow_on_submit": 1
     },
     {
       "fieldname": "qr_enabled",
@@ -162,19 +165,22 @@
       "fieldname": "show_business",
       "fieldtype": "Check",
       "label": "Show Business",
-      "default": 1
+      "default": 1,
+      "allow_on_submit": 1
     },
     {
       "fieldname": "show_products",
       "fieldtype": "Check",
       "label": "Show Products",
-      "default": 0
+      "default": 0,
+      "allow_on_submit": 1
     },
     {
       "fieldname": "show_services",
       "fieldtype": "Check",
       "label": "Show Services",
-      "default": 0
+      "default": 0,
+      "allow_on_submit": 1
     },
     {
       "fieldname": "sort_order",
@@ -198,6 +204,14 @@
       "fieldtype": "Attach Image",
       "label": "QR Code Image",
       "read_only": 1
+    },
+    {
+      "fieldname": "amended_from",
+      "fieldtype": "Link",
+      "label": "Amended From",
+      "options": "Digital Card",
+      "reqd": 0,
+      "hidden": 1
     }
   ],
   "permissions": [
