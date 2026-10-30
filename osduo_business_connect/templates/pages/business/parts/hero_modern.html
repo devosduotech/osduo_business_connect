@@ -1,6 +1,11 @@
-{# Classic Hero — gradient, bottom border accent, italic titles #}
-<header class="bc-prof-band bc-hero-classic">
+{# Modern Hero — gradient, rounded bottom, nav inside hero #}
+<header class="bc-prof-band bc-hero-modern">
     <div class="bc-container bc-prof-band-inner">
+        {% if doc.cover_image %}
+        <div class="bc-prof-cover-wrap">
+            <img src="{{ doc.cover_image }}" alt="" class="bc-prof-cover-img">
+        </div>
+        {% endif %}
         <div class="bc-prof-logo">
             {% if doc.logo %}
             <img src="{{ doc.logo }}" alt="{{ doc.business_name }}">
@@ -9,7 +14,7 @@
             {% endif %}
         </div>
         <div class="bc-prof-band-info">
-            <h1 class="bc-prof-band-name" style="font-style: italic;">{{ doc.business_name }}</h1>
+            <h1 class="bc-prof-band-name">{{ doc.business_name }}</h1>
             {% if doc.industry %}
             <p class="bc-prof-band-tagline">{{ doc.industry }}</p>
             {% endif %}
@@ -29,7 +34,7 @@
         </div>
     </div>
 </header>
-<nav class="bc-prof-nav bc-hero-classic-nav" aria-label="Business sections">
+<nav class="bc-prof-nav bc-hero-modern-nav" aria-label="Business sections">
     <div class="bc-container bc-prof-nav-inner">
         {% if doc.description %}<a href="#bc-about" class="bc-prof-nav-link">About</a>{% endif %}
         {% if products %}<a href="#bc-products" class="bc-prof-nav-link">Products</a>{% endif %}
