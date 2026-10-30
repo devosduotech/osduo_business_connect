@@ -49,7 +49,8 @@
       "reqd": 1,
       "unique": 0,
       "in_list_view": 1,
-      "description": "URL-friendly identifier"
+      "description": "URL-friendly identifier",
+      "set_only_once": 1
     },
     {
       "fieldname": "category",
