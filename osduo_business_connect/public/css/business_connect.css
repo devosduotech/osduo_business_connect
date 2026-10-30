@@ -245,18 +245,21 @@
 }
 
 .bc-hero-modern-designation {
+    color: var(--bc-text-muted);
     color: #64748b;
     margin: 0 0 0.15rem;
     font-size: 0.95rem;
 }
 
 .bc-hero-modern-business {
+    color: var(--bc-text-faint);
     color: #94a3b8;
     margin: 0 0 0.6rem;
     font-size: 0.85rem;
 }
 
 .bc-hero-modern-contact {
+    color: var(--bc-text-muted);
     margin: 0.6rem 0;
     font-size: 0.85rem;
     color: #64748b;
@@ -270,6 +273,8 @@
 }
 
 .bc-hero-modern-btn {
+    background: var(--bc-primary-fill);
+    color: var(--bc-on-primary);
     border-radius: 50px !important;
     padding: 0.6rem 1.1rem !important;
     font-weight: 600;
@@ -559,6 +564,8 @@
 }
 
 .bc-hero-minimal-avatar-fallback {
+    background: var(--bc-background);
+    color: var(--bc-text-muted);
     width: 72px;
     height: 72px;
     border-radius: 50%;
@@ -579,6 +586,7 @@
 }
 
 .bc-hero-minimal-designation {
+    color: var(--bc-text-muted);
     color: #64748b;
     margin: 0.15rem 0 0;
     font-size: 0.85rem;
@@ -587,6 +595,7 @@
 }
 
 .bc-hero-minimal-business {
+    color: var(--bc-text-faint);
     color: #94a3b8;
     margin: 0 0 0.6rem;
     font-size: 0.8rem;
@@ -599,6 +608,7 @@
 }
 
 .bc-hero-minimal-contact-row {
+    color: var(--bc-text-muted);
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -614,6 +624,7 @@
 }
 
 .bc-hero-minimal-contact-label {
+    color: var(--bc-text-faint);
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;
@@ -640,6 +651,7 @@
 }
 
 .bc-hero-minimal-btn {
+    color: var(--bc-text-muted) !important;
     flex: 1;
     justify-content: center;
     border: 1px solid var(--bc-border-color);
@@ -673,6 +685,7 @@
 }
 
 .bc-hero-minimal-link-btn {
+    color: var(--bc-text-muted);
     border: 1px solid var(--bc-border-color);
     background: white;
     color: #475569;
@@ -698,12 +711,14 @@
 }
 
 .bc-hero-classic-banner {
+    background: linear-gradient(135deg, var(--bc-primary-fill), var(--bc-accent-fill));
     background: linear-gradient(135deg, var(--bc-primary), var(--bc-accent));
     padding: 2rem 1.25rem 2.25rem;
     text-align: center;
 }
 
 .bc-hero-classic-banner-inner h1 {
+    color: var(--bc-on-primary);
     color: white;
     margin: 0 0 0.2rem;
     font-size: 1.5rem;
@@ -711,12 +726,14 @@
 }
 
 .bc-hero-classic-designation {
+    color: var(--bc-on-primary);
     color: rgba(255,255,255,0.85);
     margin: 0 0 0.1rem;
     font-size: 0.95rem;
 }
 
 .bc-hero-classic-business {
+    color: var(--bc-on-primary);
     color: rgba(255,255,255,0.65);
     margin: 0;
     font-size: 0.85rem;
@@ -765,6 +782,7 @@
 }
 
 .bc-hero-classic-contact-item {
+    color: var(--bc-text-muted);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -777,6 +795,7 @@
 }
 
 .bc-hero-classic-contact-item:hover {
+    color: var(--bc-primary-text);
     color: var(--bc-primary);
 }
 
@@ -824,6 +843,7 @@
 }
 
 .bc-hero-classic-link-btn {
+    color: var(--bc-text-muted);
     border: 1px solid var(--bc-border-color);
     background: white;
     color: #475569;
@@ -2322,11 +2342,17 @@
     .bc-card-avatar, .bc-card-avatar-fallback { width: 100px; height: 100px; font-size: 1.8rem; }
     .bc-hero-modern-avatar, .bc-hero-modern-avatar-fallback { width: 100px; height: 100px; }
     .bc-hero-modern-name { font-size: 1.3rem; }
-    .bc-hero-modern-btn { padding: 0.5rem 0.9rem !important; font-size: 0.78rem !important; }
+    .bc-hero-modern-btn {
+    background: var(--bc-primary-fill);
+    color: var(--bc-on-primary); padding: 0.5rem 0.9rem !important; font-size: 0.78rem !important; }
     .bc-hero-minimal-identity h1 { font-size: 1.15rem; }
-    .bc-hero-minimal-avatar, .bc-hero-minimal-avatar-fallback { width: 64px; height: 64px; }
-    .bc-hero-classic-banner { padding: 1.5rem 1rem 1.75rem; }
-    .bc-hero-classic-banner-inner h1 { font-size: 1.3rem; }
+    .bc-hero-minimal-avatar, .bc-hero-minimal-avatar-fallback {
+    background: var(--bc-background);
+    color: var(--bc-text-muted); width: 64px; height: 64px; }
+    .bc-hero-classic-banner {
+    background: linear-gradient(135deg, var(--bc-primary-fill), var(--bc-accent-fill)); padding: 1.5rem 1rem 1.75rem; }
+    .bc-hero-classic-banner-inner h1 {
+    color: var(--bc-on-primary); font-size: 1.3rem; }
     .bc-hero-classic-body { padding: 0.5rem 1rem 1rem; }
     .bc-hero-classic-avatar, .bc-hero-classic-avatar-fallback { width: 80px; height: 80px; }
     .bc-hero-luxury-content { padding: 1.25rem 1rem 0.75rem; }
@@ -2375,7 +2401,9 @@
     .bc-hero-modern-avatar, .bc-hero-modern-avatar-fallback { width: 90px; height: 90px; }
     .bc-hero-modern-name { font-size: 1.2rem; }
     .bc-hero-minimal-identity h1 { font-size: 1rem; }
-    .bc-hero-minimal-avatar, .bc-hero-minimal-avatar-fallback { width: 56px; height: 56px; }
+    .bc-hero-minimal-avatar, .bc-hero-minimal-avatar-fallback {
+    background: var(--bc-background);
+    color: var(--bc-text-muted); width: 56px; height: 56px; }
     .bc-hero-luxury-name { font-size: 1.5rem; }
     .bc-hero-luxury-avatar, .bc-hero-luxury-avatar-fallback { width: 72px; height: 72px; }
     .bc-hero-creative-name { font-size: 1.2rem; }
