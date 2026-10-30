@@ -27,16 +27,12 @@ class DigitalCard(Document):
             old_doc = self.get_doc_before_save()
             if old_doc and old_doc.slug != self.slug:
                 frappe.throw("The Public Slug cannot be changed once the record is saved to ensure NFC cards remain functional.")
-
-                self.validate_slug()
+        
+        self.validate_slug()
         self.validate_member()
         self.validate_contact_methods()
 
-before_save(self):
-        """Pre-save operations."""
-        self.set_social_link_icons()
-
-    def set_social_link_icons(self):
+set_social_link_icons(self):
         """Auto-set icon_class for card links based on link_type."""
         icons = {
             "Facebook": "fa-brands fa-facebook",
