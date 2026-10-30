@@ -24,3 +24,41 @@ class DigitalCard(Document):
 
     def normalize_urls(self):
         if hasattr(self, 'email') and self.email: self.email = self.email.lower().strip()
+
+
+def get_permission_query_conditions(user):
+    if not user:
+        user = frappe.session.user
+
+    if "System Manager" in frappe.get_roles(user):
+        return ""
+
+    from osduo_business_connect.business.core import get_user_businesses
+    businesses = get_user_businesses(user)
+    if not businesses:
+        return "1=0"
+
+    business_names = [frappe.db.escape(b["name"]) for b in businesses]
+    # Digital Card belongs to a business, so we filter by the business field
+    return f"`tabDigital Card`.business IN ({', '.join(business_names)})"
+
+def has_permission(doc, user=None, ptype=None):
+    if not user:
+        user = frappe.session.user
+
+    if "System Manager" in frappe.get_roles(user):
+        return True
+
+    from osduo_business_connect.business.core import get_user_role_in_business
+    member_role = get_user_role_in_business(user, doc.business)
+    if not member_role:
+        return False
+
+    if ptype == "read":
+        return True
+    elif ptype == "write":
+        return member_role in ["Owner", "Manager", "Marketing"]
+    elif ptype == "delete":
+        return member_role == "Owner"
+
+    return False
