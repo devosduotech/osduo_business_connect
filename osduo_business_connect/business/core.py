@@ -1,18 +1,18 @@
-# Copyright (c) 2026, OSDuo and contributors
-# For license information, please see license.txt
+    # Copyright (c) 2026, OSDuo and contributors
+    # For license information, please see license.txt
 
-"""
-Business Core Module
+    """
+    Business Core Module
 
-Contains the Business class and all helper functions.
-Separated from the doctype directory to avoid Python import conflicts
-when module name == doctype name == file name (all 'business').
-"""
+    Contains the Business class and all helper functions.
+    Separated from the doctype directory to avoid Python import conflicts
+    when module name == doctype name == file name (all 'business').
+    """
 
-import re
+    import re
 
-import frappe
-from frappe.model.document import Document
+    import frappe
+    from frappe.model.document import Document
 
 
 class Business(Document):
@@ -35,7 +35,7 @@ class Business(Document):
         self.normalize_fields()
         self.normalize_urls()
 
-                def validate(self):
+    def validate(self):
         if self.db_exists():
             old_doc = self.get_doc_before_save()
             if old_doc and old_doc.slug != self.slug:
@@ -45,12 +45,7 @@ class Business(Document):
         self.validate_owner_user()
         self.validate_contact_methods()
 
-after_insert(self):
-        """Post-insert operations - create owner membership and default theme."""
-        self.create_owner_membership()
-        self.create_default_theme()
-
-    def on_submit(self):
+on_submit(self):
         # Finalize public URL on submission
         self.set_public_url()
         self.save()
@@ -62,47 +57,47 @@ after_insert(self):
     def create_owner_membership(self):
         """
         Automatically create Business Member record for the owner.
-        
+
         This ensures the owner can manage the business immediately after creation.
         """
         # Check if owner membership already exists
         existing = frappe.get_all(
-            "Business Member",
-            filters={
-                "business": self.name,
-                "user": self.owner_user,
-                "role": "Owner",
-            },
-            fields=["name"],
-            limit=1,
+        "Business Member",
+        filters={
+        "business": self.name,
+        "user": self.owner_user,
+        "role": "Owner",
+        },
+        fields=["name"],
+        limit=1,
         )
-        
+
         if not existing:
-            user_doc = frappe.get_doc("User", self.owner_user)
-            member = frappe.get_doc({
-                "doctype": "Business Member",
-                "business": self.name,
-                "user": self.owner_user,
-                "person_name": user_doc.full_name or self.owner_user,
-                "email": self.owner_user,
-                "role": "Owner",
-                "is_owner": 1,
-                "status": "Active",
-            })
-            member.insert(ignore_permissions=True)
+        user_doc = frappe.get_doc("User", self.owner_user)
+        member = frappe.get_doc({
+        "doctype": "Business Member",
+        "business": self.name,
+        "user": self.owner_user,
+        "person_name": user_doc.full_name or self.owner_user,
+        "email": self.owner_user,
+        "role": "Owner",
+        "is_owner": 1,
+        "status": "Active",
+        })
+        member.insert(ignore_permissions=True)
 
     def create_default_theme(self):
         """Create a default theme (Modern + Blue) and link it to this business."""
         theme = frappe.get_doc({
-            "doctype": "BC Theme",
-            "theme_name": f"{self.business_name or self.name} Theme",
-            "business": self.name,
-            "template": "Modern",
-            "color_scheme": "Blue",
-            "primary_color": "#2563EB",
-            "secondary_color": "#FFFFFF",
-            "accent_color": "#60A5FA",
-            "button_style": "Filled",
+        "doctype": "BC Theme",
+        "theme_name": f"{self.business_name or self.name} Theme",
+        "business": self.name,
+        "template": "Modern",
+        "color_scheme": "Blue",
+        "primary_color": "#2563EB",
+        "secondary_color": "#FFFFFF",
+        "accent_color": "#60A5FA",
+        "button_style": "Filled",
         })
         theme.insert(ignore_permissions=True)
         # Persist to database (self.default_theme on an already-inserted doc
@@ -113,7 +108,7 @@ after_insert(self):
         """Normalize field values."""
         # Normalize slug to lowercase
         if self.slug:
-            self.slug = self.slug.lower().strip()
+        self.slug = self.slug.lower().strip()
 
     def normalize_urls(self):
         """Normalize URL fields to add https:// if missing."""
@@ -122,80 +117,80 @@ after_insert(self):
 
         # Normalize email
         if self.email:
-            self.email = self.email.lower().strip()
+        self.email = self.email.lower().strip()
 
     def validate_slug(self):
         """Validate slug format and uniqueness."""
         if not self.slug:
-            frappe.throw("Public Slug is required")
+        frappe.throw("Public Slug is required")
 
         # Check slug format: only lowercase letters, numbers, and hyphens
         if not re.match(r'^[a-z0-9-]+$', self.slug):
-            frappe.throw("Slug can only contain lowercase letters, numbers, and hyphens")
+        frappe.throw("Slug can only contain lowercase letters, numbers, and hyphens")
 
         # Check for leading/trailing hyphen
         if self.slug.startswith('-') or self.slug.endswith('-'):
-            frappe.throw("Slug cannot start or end with a hyphen")
+        frappe.throw("Slug cannot start or end with a hyphen")
 
         # Check reserved slugs
         reserved_slugs = [
-            'admin', 'api', 'www', 'mail', 'ftp', 'localhost',
-            'webmail', 'smtp', 'pop', 'ns1', 'ns2', 'ns3', 'ns4',
-            'cdn', 'assets', 'static', 'media', 'files', 'images',
-            'css', 'js', 'img', 'fonts', 'icons', 'favicon',
-            'robots', 'sitemap', 'search', 'login', 'logout',
-            'register', 'signup', 'signin', 'account', 'profile',
-            'settings', 'dashboard', 'help', 'support', 'contact',
-            'about', 'blog', 'news', 'careers', 'jobs', 'legal',
-            'privacy', 'terms', 'security', 'status', 'demo',
+        'admin', 'api', 'www', 'mail', 'ftp', 'localhost',
+        'webmail', 'smtp', 'pop', 'ns1', 'ns2', 'ns3', 'ns4',
+        'cdn', 'assets', 'static', 'media', 'files', 'images',
+        'css', 'js', 'img', 'fonts', 'icons', 'favicon',
+        'robots', 'sitemap', 'search', 'login', 'logout',
+        'register', 'signup', 'signin', 'account', 'profile',
+        'settings', 'dashboard', 'help', 'support', 'contact',
+        'about', 'blog', 'news', 'careers', 'jobs', 'legal',
+        'privacy', 'terms', 'security', 'status', 'demo',
         ]
         if self.slug in reserved_slugs:
-            frappe.throw(f"Slug '{self.slug}' is reserved and cannot be used")
+        frappe.throw(f"Slug '{self.slug}' is reserved and cannot be used")
 
         # Check uniqueness
         if self.is_new():
-            exists = frappe.db.exists("Business", {"slug": self.slug})
-            if exists:
-                frappe.throw(f"Slug '{self.slug}' is already taken")
+        exists = frappe.db.exists("Business", {"slug": self.slug})
+        if exists:
+        frappe.throw(f"Slug '{self.slug}' is already taken")
         else:
-            exists = frappe.db.exists(
-                "Business", {"slug": self.slug, "name": ["!=", self.name]}
-            )
-            if exists:
-                frappe.throw(f"Slug '{self.slug}' is already taken")
+        exists = frappe.db.exists(
+        "Business", {"slug": self.slug, "name": ["!=", self.name]}
+        )
+        if exists:
+        frappe.throw(f"Slug '{self.slug}' is already taken")
 
     def validate_owner_user(self):
         """Validate that owner_user is enabled and authorized."""
         if not self.owner_user:
-            frappe.throw("Business Owner is required")
+        frappe.throw("Business Owner is required")
 
         enabled = frappe.db.get_value("User", self.owner_user, "enabled")
         if enabled != 1:
-            frappe.throw("Business Owner must be an enabled user")
+        frappe.throw("Business Owner must be an enabled user")
 
         # Owner authorization: owner_user must be the current user,
         # unless the current user is a System Manager.
         user = frappe.session.user
         if "System Manager" not in frappe.get_roles(user):
-            if self.owner_user != user:
-                frappe.throw("You can only create a business for yourself. Contact a System Manager to create a business for another user.")
+        if self.owner_user != user:
+        frappe.throw("You can only create a business for yourself. Contact a System Manager to create a business for another user.")
 
     def validate_contact_methods(self):
         """
         Validate contact methods based on status.
-        
+
         Draft: Contact info is optional
         Published: At least one contact method required
         """
         if self.status == "Published":
-            has_contact = any([
-                self.email,
-                self.phone,
-                self.whatsapp,
-                self.website,
-            ])
-            if not has_contact:
-                frappe.throw("At least one contact method (email, phone, WhatsApp, or website) is required for published businesses")
+        has_contact = any([
+        self.email,
+        self.phone,
+        self.whatsapp,
+        self.website,
+        ])
+        if not has_contact:
+        frappe.throw("At least one contact method (email, phone, WhatsApp, or website) is required for published businesses")
 
     def set_defaults(self):
         """Set default values."""
@@ -204,196 +199,196 @@ after_insert(self):
     def set_social_link_icons(self):
         """Auto-set icon_class for social links based on platform."""
         icons = {
-            "Facebook": "fa-brands fa-facebook",
-            "Instagram": "fa-brands fa-instagram",
-            "LinkedIn": "fa-brands fa-linkedin",
-            "X": "fa-brands fa-x-twitter",
-            "YouTube": "fa-brands fa-youtube",
-            "Telegram": "fa-brands fa-telegram",
-            "Website": "fa-solid fa-globe",
-            "Portfolio": "fa-solid fa-briefcase",
-            "Other": "fa-solid fa-link",
+        "Facebook": "fa-brands fa-facebook",
+        "Instagram": "fa-brands fa-instagram",
+        "LinkedIn": "fa-brands fa-linkedin",
+        "X": "fa-brands fa-x-twitter",
+        "YouTube": "fa-brands fa-youtube",
+        "Telegram": "fa-brands fa-telegram",
+        "Website": "fa-solid fa-globe",
+        "Portfolio": "fa-solid fa-briefcase",
+        "Other": "fa-solid fa-link",
         }
         for link in self.social_links or []:
-            if link.platform and not link.icon_class:
-                link.icon_class = icons.get(link.platform, "")
+        if link.platform and not link.icon_class:
+        link.icon_class = icons.get(link.platform, "")
 
 
-def get_permission_query_conditions(user):
-    """
-    Return SQL conditions for filtering Business records based on user permissions.
+    def get_permission_query_conditions(user):
+        """
+        Return SQL conditions for filtering Business records based on user permissions.
 
-    This ensures users can only see businesses they have access to.
-    """
-    if not user:
+        This ensures users can only see businesses they have access to.
+        """
+        if not user:
         user = frappe.session.user
 
-    # System Manager can see all businesses
-    if "System Manager" in frappe.get_roles(user):
+        # System Manager can see all businesses
+        if "System Manager" in frappe.get_roles(user):
         return ""
 
-    # Get businesses where user is a member
-    businesses = get_user_businesses(user)
-    if not businesses:
+        # Get businesses where user is a member
+        businesses = get_user_businesses(user)
+        if not businesses:
         return "1=0"  # No access
 
-    business_names = [frappe.db.escape(b["name"]) for b in businesses]
-    return f"`tabBusiness`.name IN ({', '.join(business_names)})"
+        business_names = [frappe.db.escape(b["name"]) for b in businesses]
+        return f"`tabBusiness`.name IN ({', '.join(business_names)})"
 
 
-def has_permission(doc, user=None, ptype=None):
-    """
-    Check if user has permission on Business document.
+    def has_permission(doc, user=None, ptype=None):
+        """
+        Check if user has permission on Business document.
 
-    This is called by Frappe's permission system.
-    True → do not deny | False → deny | None → fall back to normal permissions
-    """
-    if not user:
+        This is called by Frappe's permission system.
+        True → do not deny | False → deny | None → fall back to normal permissions
+        """
+        if not user:
         user = frappe.session.user
 
-    # Guest can only read published businesses with public profile enabled
-    if user == "Guest":
+        # Guest can only read published businesses with public profile enabled
+        if user == "Guest":
         if ptype == "read":
-            return doc.status == "Published" and doc.public_profile_enabled
+        return doc.status == "Published" and doc.public_profile_enabled
         return False
 
-    # System Manager has full access
-    if "System Manager" in frappe.get_roles(user):
+        # System Manager has full access
+        if "System Manager" in frappe.get_roles(user):
         return True
 
-    # Business creation: allow if user has BC Business Owner role
-    # (before_insert won't have membership yet)
-    if ptype == "create":
+        # Business creation: allow if user has BC Business Owner role
+        # (before_insert won't have membership yet)
+        if ptype == "create":
         if "BC Business Owner" in frappe.get_roles(user):
-            return True
-        return False
-
-    # Check if user is a member of this business
-    businesses = get_user_businesses(user)
-    business_names = [b["name"] for b in businesses]
-
-    if doc.name not in business_names:
-        return False
-
-    # Get user's role in this business
-    member_role = get_user_role_in_business(user, doc.name)
-
-    if not member_role:
-        return False
-
-    # Check permissions based on role
-    if ptype == "read":
         return True
-    elif ptype == "write":
+        return False
+
+        # Check if user is a member of this business
+        businesses = get_user_businesses(user)
+        business_names = [b["name"] for b in businesses]
+
+        if doc.name not in business_names:
+        return False
+
+        # Get user's role in this business
+        member_role = get_user_role_in_business(user, doc.name)
+
+        if not member_role:
+        return False
+
+        # Check permissions based on role
+        if ptype == "read":
+        return True
+        elif ptype == "write":
         return member_role in ["Owner", "Manager", "Marketing"]
-    elif ptype == "delete":
+        elif ptype == "delete":
         return member_role == "Owner"
 
-    return False
+        return False
 
 
-def get_user_businesses(user):
-    """
-    Get list of businesses where user is an active member.
+    def get_user_businesses(user):
+        """
+        Get list of businesses where user is an active member.
 
-    Returns:
+        Returns:
         list: List of dictionaries with business name and role
-    """
-    if not user:
+        """
+        if not user:
         user = frappe.session.user
 
-    # Query Business Member table
-    members = frappe.get_all(
+        # Query Business Member table
+        members = frappe.get_all(
         "Business Member",
         filters={
-            "user": user,
-            "status": "Active",
+        "user": user,
+        "status": "Active",
         },
         fields=["business", "role"],
-    )
+        )
 
-    return [
+        return [
         {"name": m.business, "role": m.role}
         for m in members
-    ]
+        ]
 
 
-def get_user_role_in_business(user, business):
-    """
-    Get user's role in a specific business.
+    def get_user_role_in_business(user, business):
+        """
+        Get user's role in a specific business.
 
-    Args:
+        Args:
         user: User email
         business: Business name
 
-    Returns:
+        Returns:
         str: Role name (Owner, Manager, Member, Marketing, CRM User) or None
-    """
-    member = frappe.get_all(
+        """
+        member = frappe.get_all(
         "Business Member",
         filters={
-            "user": user,
-            "business": business,
-            "status": "Active",
+        "user": user,
+        "business": business,
+        "status": "Active",
         },
         fields=["role"],
-    )
+        )
 
-    if member:
+        if member:
         return member[0].role
-    return None
-
-
-def get_business_by_slug(slug):
-    """
-    Get a published business by its public slug.
-
-    Args:
-        slug: Business public slug
-
-    Returns:
-        dict: Business document data or None
-    """
-    if not slug:
         return None
 
-    business = frappe.db.get_value(
+
+    def get_business_by_slug(slug):
+        """
+        Get a published business by its public slug.
+
+        Args:
+        slug: Business public slug
+
+        Returns:
+        dict: Business document data or None
+        """
+        if not slug:
+        return None
+
+        business = frappe.db.get_value(
         "Business",
         {"slug": slug, "status": "Published"},
         ["name", "slug", "business_name", "logo", "status"],
         as_dict=True,
-    )
+        )
 
-    return business or None
+        return business or None
 
 
-def get_public_business_by_slug(slug):
-    """
-    Get a public business by slug with full visibility check.
+    def get_public_business_by_slug(slug):
+        """
+        Get a public business by slug with full visibility check.
 
-    Used by all public-facing controllers to ensure consistent access rules:
-    Business must be Published AND public_profile_enabled.
+        Used by all public-facing controllers to ensure consistent access rules:
+        Business must be Published AND public_profile_enabled.
 
-    Uses frappe.db.get_value to bypass permission_query_conditions
-    (this is a public function with its own visibility check).
+        Uses frappe.db.get_value to bypass permission_query_conditions
+        (this is a public function with its own visibility check).
 
-    Args:
+        Args:
         slug: Business public slug
 
-    Returns:
+        Returns:
         dict: Business data or None
-    """
-    if not slug:
+        """
+        if not slug:
         return None
 
-    business = frappe.db.get_value(
+        business = frappe.db.get_value(
         "Business",
         {"slug": slug, "status": "Published", "public_profile_enabled": 1},
         ["name", "slug", "business_name", "logo", "status",
-         "description", "website", "email", "phone", "whatsapp",
-         "address", "city", "state",
-         "show_about_in_product_page", "show_about_in_service_page"],
+        "description", "website", "email", "phone", "whatsapp",
+        "address", "city", "state",
+        "show_about_in_product_page", "show_about_in_service_page"],
         as_dict=True,
-    )
+        )
 
-    return business or None
+        return business or None
