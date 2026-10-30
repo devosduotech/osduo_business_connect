@@ -17,7 +17,7 @@
     </div>
 
     {% if doc.show_business and doc.business_name %}
-    <p class="bc-hero-minimal-business">{{ doc.business_name }}</p>
+    <p class="bc-hero-minimal-business"><a href="/b/{{ doc.business_slug }}" style="color: inherit; text-decoration: none;">{{ doc.business_name }}</a></p>
     {% endif %}
 
     {% if doc.phone or doc.email %}
