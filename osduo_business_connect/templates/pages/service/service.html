@@ -4,11 +4,12 @@
 <div class="bc-page bc-template-{{ theme.template|lower }}" data-layout="{{ theme.layout_mode }}" data-dark="{{ 'true' if theme.dark_mode else 'false' }}" style="{{ theme_vars }}">
 
     {# Back link (the Professional hero already carries a breadcrumb) #}
-    {% if template_type != "Professional" %}
-    <div class="bc-detail" style="padding-top:0.75rem;">
-        <a href="/b/{{ business_slug }}" class="bc-back-link">&larr; {{ business_name }}</a>
+
+<div class="bc-prof-pagebar">
+    <div class="bc-detail bc-prof-pagebar-inner">
+        <a href="/b/{{ business_slug }}" class="bc-prof-breadcrumb">{{ business_name }} / Services</a>
     </div>
-    {% endif %}
+</div>
 
     {# ===== SERVICE HERO (varies by template) ===== #}
     {% if template_type == "Professional" %}
