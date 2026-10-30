@@ -1,11 +1,11 @@
 {# Product/Service Hero — Minimal template #}
-<div class="bc-prof-pagebar">
+<div class="bc-prof-pagebar bc-pagebar-fixed">
     <div class="bc-detail bc-prof-pagebar-inner">
         <div class="bc-prof-pagebar-logo-wrap">
             <a href="/b/{{ business_slug }}" class="bc-prof-pagebar-logo">
-                {% if business.logo %}<img src="{{ business.logo }}" alt="{{ business_name }}">{% else %}<span class="bc-logo-fallback">{{ (business_name or "B")[0] }}</span>{% endif %}
+                {% if business.logo %}<img src="{{ business.logo }}" alt="{{ business.business_name or business_name }}">{% else %}<span class="bc-logo-fallback">{{ (business_name or "B")[0] }}</span>{% endif %}
             </a>
-            <a href="/b/{{ business_slug }}" class="bc-prof-pagebar-name">{{ business_name }}</a>
+            <a href="/b/{{ business_slug }}" class="bc-prof-pagebar-name">{{ business.business_name or business_name }}</a>
         </div>
         <div class="bc-prof-pagebar-right">
             <a href="/b/{{ business_slug }}" class="bc-prof-breadcrumb">{% if doc.product_name %}Products{% else %}Services{% endif %}</a>
