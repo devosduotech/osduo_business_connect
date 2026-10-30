@@ -28,7 +28,7 @@
     <div class="bc-section">
         <div class="bc-reading bc-bg">
             <h2 class="bc-section-title">About</h2>
-            <div style="line-height:1.8;color:#475569;">{{ doc.description }}</div>
+            <div style="line-height:1.8;color: var(--bc-text-muted);">{{ doc.description }}</div>
         </div>
     </div>
     {% endif %}
@@ -105,12 +105,12 @@
         <div class="bc-reading bc-bg">
             <h2 class="bc-section-title">About {{ business_name }}</h2>
             {% if business.description %}
-            <p style="line-height:1.8;color:#475569;margin-bottom:1rem;">{{ business.description }}</p>
+            <p style="line-height:1.8;color: var(--bc-text-muted);margin-bottom:1rem;">{{ business.description }}</p>
             {% endif %}
             <div class="bc-card" style="text-align:center;">
                 <h3 style="margin:0 0 0.5rem;">{{ business_name }}</h3>
                 {% if business.address or business.city %}
-                <p style="color:#64748b;font-size:0.85rem;margin:0.3rem 0;">&#128205; {{ business.address }}{% if business.city %}, {{ business.city }}{% endif %}{% if business.state %}, {{ business.state }}{% endif %}</p>
+                <p style="color: var(--bc-text-faint);font-size:0.85rem;margin:0.3rem 0;">&#128205; {{ business.address }}{% if business.city %}, {{ business.city }}{% endif %}{% if business.state %}, {{ business.state }}{% endif %}</p>
                 {% endif %}
                 {% if business.website %}
                 <a href="{{ business.website }}" target="_blank" style="color:var(--bc-primary);font-size:0.85rem;text-decoration:none;">{{ business.website }}</a>
@@ -134,7 +134,7 @@
     <div class="bc-section" id="bc-enquiry">
         <div class="bc-reading bc-bg">
             <h2 class="bc-section-title">Send a Message</h2>
-            <p style="color:#64748b;font-size:0.9rem;margin-bottom:1rem;">Interested in this service? Send us an enquiry and we will get back to you.</p>
+            <p style="color: var(--bc-text-faint);font-size:0.9rem;margin-bottom:1rem;">Interested in this service? Send us an enquiry and we will get back to you.</p>
             <form id="service-enquiry-form" class="bc-enquiry-form" style="max-width:480px;">
                 <input type="hidden" name="business_slug" value="{{ business_slug }}">
                 <input type="hidden" name="service" value="{{ doc.name }}">
@@ -212,7 +212,7 @@
             .then(function(r) { return r.json(); })
             .then(function(result) {
                 if (result.message && result.message.name) {
-                    form.innerHTML = '<div style="text-align:center;padding:1.25rem;"><h3 style="margin:0 0 0.4rem;">Message Sent!</h3><p style="color:#666;font-size:0.9rem;">Thank you. We will get back to you soon.</p></div>';
+                    form.innerHTML = '<div style="text-align:center;padding:1.25rem;"><h3 style="margin:0 0 0.4rem;">Message Sent!</h3><p style="color: var(--bc-text-faint);font-size:0.9rem;">Thank you. We will get back to you soon.</p></div>';
                 } else {
                     var msg = 'Error sending message';
                     if (result._server_messages) {
