@@ -5,7 +5,7 @@ from frappe.model.document import Document
 
 class ShowcaseProduct(Document):
     def validate(self):
-        if self.db_exists():
+        if self.exists():
             old_doc = self.get_doc_before_save()
             if old_doc and old_doc.slug != self.slug:
                 frappe.throw("The Public Slug cannot be changed once the record is saved to ensure NFC cards remain functional.")
