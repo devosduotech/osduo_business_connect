@@ -8,7 +8,7 @@
   "autoname": "naming_series:",
   "title_field": "display_name",
   "search_fields": "display_name,slug,business",
-  "is_submittable": 0,
+  "is_submittable": 1,
   "issingle": 0,
   "istable": 0,
   "is_tree": 0,

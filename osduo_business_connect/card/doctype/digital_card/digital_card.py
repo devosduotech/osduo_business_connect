@@ -54,6 +54,11 @@ class DigitalCard(Document):
             if link.link_type and not link.icon_class:
                 link.icon_class = icons.get(link.link_type, "")
 
+    def on_submit(self):
+        # Finalize public URL on submission
+        self.set_public_url()
+        self.save()
+
     def on_update(self):
         """Post-save operations."""
         self.handle_publish_status()
