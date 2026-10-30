@@ -32,24 +32,7 @@ class DigitalCard(Document):
         self.validate_member()
         self.validate_contact_methods()
 
-set_social_link_icons(self):
-        """Auto-set icon_class for card links based on link_type."""
-        icons = {
-            "Facebook": "fa-brands fa-facebook",
-            "Instagram": "fa-brands fa-instagram",
-            "LinkedIn": "fa-brands fa-linkedin",
-            "X": "fa-brands fa-x-twitter",
-            "YouTube": "fa-brands fa-youtube",
-            "Telegram": "fa-brands fa-telegram",
-            "Website": "fa-solid fa-globe",
-            "Portfolio": "fa-solid fa-briefcase",
-            "Other": "fa-solid fa-link",
-        }
-        for link in self.links or []:
-            if link.link_type and not link.icon_class:
-                link.icon_class = icons.get(link.link_type, "")
-
-    def on_submit(self):
+on_submit(self):
         # Finalize public URL on submission
         self.set_public_url()
         self.save()

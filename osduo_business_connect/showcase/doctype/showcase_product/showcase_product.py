@@ -29,12 +29,7 @@ class ShowcaseProduct(Document):
         self.validate_price_display()
         self.validate_brochure()
 
-on_submit(self):
-        # Finalize public URL on submission
-        self.set_public_url()
-        self.save()
-
-    def on_update(self):
+on_update(self):
         """Post-save operations."""
         pass
 
