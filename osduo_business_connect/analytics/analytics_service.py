@@ -187,3 +187,96 @@ def get_recent_events(business_name, days=30, limit=15):
     )
 
     return events
+
+
+# Event types the public card page may send via navigator.sendBeacon().
+CLIENT_EVENT_TYPES = {
+    "card_view",
+    "product_view",
+    "service_view",
+    "phone_click",
+    "email_click",
+    "whatsapp_click",
+    "website_click",
+    "brochure_download",
+    "qr_landing",
+    "enquiry_submitted",
+}
+
+# Light abuse guard: at most 60 client events per IP per minute.
+CLIENT_EVENT_RATE_LIMIT = 60
+CLIENT_EVENT_RATE_WINDOW = 60
+
+
+def _clean_str(value, max_length=255):
+    if value is None:
+        return None
+    value = str(value).strip()
+    return value[:max_length] if value else None
+
+
+def _client_rate_allowed():
+    try:
+        ip = frappe.local.request_ip or "127.0.0.1"
+    except Exception:
+        ip = "127.0.0.1"
+    cache_key = f"bc_evt_rl:{ip}"
+    try:
+        count = frappe.cache.get_value(cache_key) or 0
+        if count >= CLIENT_EVENT_RATE_LIMIT:
+            return False
+        frappe.cache.set_value(cache_key, count + 1, expires_in_sec=CLIENT_EVENT_RATE_WINDOW)
+    except Exception:
+        pass
+    return True
+
+
+@frappe.whitelist(allow_guest=True)
+def log_event(business=None, event_type=None, card=None, product=None, service=None,
+              campaign=None, landing_url=None, referrer=None, session_id=None):
+    """Record a lightweight client-side engagement event.
+
+    Called from public pages with navigator.sendBeacon(). Guest-safe and
+    rate limited; never raises to the browser.
+    """
+    try:
+        business = _clean_str(business)
+        event_type = _clean_str(event_type, 40)
+
+        if not business or not event_type:
+            return {"ok": False, "error": "missing_fields"}
+        if event_type not in CLIENT_EVENT_TYPES:
+            return {"ok": False, "error": "invalid_event_type"}
+        if not _client_rate_allowed():
+            return {"ok": False, "error": "rate_limited"}
+        if not frappe.db.exists("Business", business):
+            return {"ok": False, "error": "invalid_business"}
+
+        request = frappe.request
+        ctx = {}
+        try:
+            from osduo_business_connect.analytics.tracking import capture_analytics_context
+            ctx = capture_analytics_context()
+        except Exception:
+            ctx = {}
+
+        result = record_engagement(
+            business,
+            event_type,
+            card=_clean_str(card, 140),
+            product=_clean_str(product, 140),
+            service=_clean_str(service, 140),
+            campaign=_clean_str(campaign, 140),
+            landing_url=_clean_str(landing_url or ctx.get("landing_url"), 500),
+            referrer=_clean_str(referrer or ctx.get("referrer"), 500),
+            device_type=ctx.get("device_type") or detect_device_type(request),
+            browser=ctx.get("browser") or detect_browser(request),
+            session_id=_clean_str(session_id) or _get_session_id(request),
+        )
+        return {"ok": bool(result)}
+    except Exception as e:
+        frappe.log_error(
+            message=f"Client analytics event failed: {str(e)}",
+            title="Analytics Client Event Error",
+        )
+        return {"ok": False, "error": "server_error"}

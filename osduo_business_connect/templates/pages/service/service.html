@@ -3,10 +3,12 @@
 {%- block page_content -%}
 <div class="bc-page bc-template-{{ theme.template|lower }}" data-layout="{{ theme.layout_mode }}" data-dark="{{ 'true' if theme.dark_mode else 'false' }}" style="{{ theme_vars }}">
 
-    {# Back link #}
+    {# Back link (the Professional hero already carries a breadcrumb) #}
+    {% if template_type != "Professional" %}
     <div class="bc-detail" style="padding-top:0.75rem;">
         <a href="/b/{{ business_slug }}" class="bc-back-link">&larr; {{ business_name }}</a>
     </div>
+    {% endif %}
 
     {# ===== SERVICE HERO (varies by template) ===== #}
     {% if template_type == "Professional" %}
@@ -38,20 +40,33 @@
     <div class="bc-section">
         <div class="bc-reading">
             <h2 class="bc-section-title">Features</h2>
-            <div style="display:flex;flex-direction:column;gap:0.75rem;">
+            <div class="bc-feature-list">
                 {% for feature in doc.features %}
-                <div style="display:flex;align-items:flex-start;gap:0.75rem;">
+                <div class="bc-feature-item">
                     {% if feature.image %}
-                    <img src="{{ feature.image }}" alt="{{ feature.title }}" style="width:48px;height:48px;border-radius:8px;object-fit:cover;flex-shrink:0;">
+                    <img src="{{ feature.image }}" alt="{{ feature.title }}" class="bc-feature-img" loading="lazy">
                     {% endif %}
                     <div>
-                        <strong style="color:#1e293b;">{{ feature.title }}</strong>
+                        <strong class="bc-feature-title">{{ feature.title }}</strong>
                         {% if feature.description %}
-                        <p style="margin:0.15rem 0 0;color:#64748b;font-size:0.9rem;">{{ feature.description }}</p>
+                        <p class="bc-feature-desc">{{ feature.description }}</p>
                         {% endif %}
                     </div>
                 </div>
                 {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {# ===== PROFESSIONAL QUOTE BLOCK ===== #}
+    {% if template_type == "Professional" %}
+    <div class="bc-section">
+        <div class="bc-prof-reading">
+            <div class="bc-prof-pricing">
+                <h3>Get a Quote</h3>
+                <p class="bc-prof-tagline">Tell us about your requirement and we will get back with a tailored quote.</p>
+                <a href="#bc-enquiry" class="bc-btn bc-btn-primary">Get Quote</a>
             </div>
         </div>
     </div>
@@ -80,9 +95,11 @@
     {% endif %}
 
     {# ===== GALLERY ===== #}
+    {% if template_type != "Professional" %}
     {% set gallery_images = doc.gallery %}
     {% set title = "Gallery" %}
     {% include "osduo_business_connect/templates/pages/product/parts/gallery.html" ignore missing %}
+    {% endif %}
 
     {# ===== BUSINESS INFO ===== #}
     {% if business.show_about_in_service_page %}

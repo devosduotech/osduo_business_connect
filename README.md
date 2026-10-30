@@ -23,250 +23,138 @@ Business Connect transforms how small businesses and professionals establish the
 
 ```
 Customer scans QR code
-        ↓
-  Digital Card (/c/<card>)
-  or Business Profile (/b/<business>)
-        ↓
-  Browses products, services, team
-        ↓
-  Submits enquiry form
-        ↓
-  Enquiry created → CRM Lead auto-created
-        ↓
-  Lead owner = card owner → Sales follow-up
-        ↓
-  Analytics tracked throughout
+         ↓
+
+Opens Business Connect Web App → Profile loaded from database → Card template selected
+         ↓
+Customer fills enquiry form → Lead auto-created in Frappe CRM (with full tracking)
+         ↓
+Analytics Dashboard updates with real-time metrics
 ```
 
 ---
 
-## Card Templates
+## Key Features
 
-| Template | Style |
-|----------|-------|
-| **Modern** | Centered layout, rounded avatar, pill buttons, soft shadows |
-| **Professional** | Colored header band, horizontal layout, outlined buttons |
-| **Minimal** | Clean, uppercase labels, thin borders, square buttons |
-| **Classic** | Gradient banner, overlapping avatar, decorative dividers |
-| **Luxury** | Dark backgrounds, serif typography, cinematic, editorial |
-| **Creative** | Asymmetric layouts, bold typography, visual emphasis |
+### Dynamic Card Generation
+- **6 business card templates** — choose from professional designs
+- **QR code & NFC enabled** — customers scan and save contact info instantly
+- **VCF download** — complete digital business card sharing
+- **Dynamic content** — name, phone, email, website, social media links
 
-Each template is fully customizable with:
-- 8 color schemes + custom palette
-- 13 web font families (Inter, Roboto, Open Sans, Lato, Poppins, Playfair Display, Merriweather, Space Grotesk...)
-- 3 font sizes (Small / Default / Large)
-- 4 button styles (Filled / Outline / Rounded / Pill)
-- Layout modes (Centered / Wide / Split / Editorial)
-- Dark mode toggle (default ON for Luxury)
+### Business Profile Management
+- **Hero section** — customizable with images or video
+- **About section** — tell your story and differentiate from competitors
+- **Products & services** — showcase what you offer with galleries and descriptions
+- **Gallery** — visual portfolio of products, services, team photos, events
+- **Contact information** — complete details for customers to reach you
 
----
+### Product Showcase
+- **Product catalog** — organized by categories
+- **Galleries** — high-quality product images from multiple angles
+- **Pricing** — detailed price breakdowns with promotions and discounts
+- **Brochures & PDFs** — downloadable product information
 
-## Features
+### Service Listings
+- **Service pages** — detailed descriptions of what you offer
+- **Features** — highlight key capabilities and benefits
+- **Locations** — service addresses, maps, operating hours
+- **Pricing** — transparent pricing for customers
 
-### Digital Card
-- VCF download ("Add to Phone Book")
-- QR code generation (print-ready)
-- Contact details — phone, email, WhatsApp, website
-- Social links with icons
-- Products & services showcase
-- Business address with map
-- One-tap share — copy link, WhatsApp, SMS, email
+### Lead Generation Engine
+- **Enquiry forms** — capture customer information on the fly
+- **Auto-create in CRM** — every enquiry becomes a lead in Frappe CRM with:
+  - Complete contact details
+  - Source tracking (web form, social media, etc.)
+  - Automatic assignment rules
+  - Custom fields for business logic
 
-### Business Profile
-- Page Section system — enable/disable, reorder, visibility control
-- Hero section — Modern, Professional, Minimal, Classic layouts
-- About, Products, Services, Contact, Gallery, Custom sections
-- Product & service cards with images and links
-- Contact grid with phone, email, website, address
-- Social links
-
-### Product & Service Pages
-- Rich descriptions with images
-- Location field with Google Maps integration
-- Reusable product categories
-- Gallery — 4-column desktop, 2-column mobile, click-to-open fullscreen
-- Video embedding and brochure downloads
-- "About Business" section with description & address
-
-### Analytics
-- Web dashboard at `/analytics` — business selector, date range
-- SVG line chart with gradient fill (visits by day)
-- Summary cards: Link Visits, QR Scans, Cards, Products
-- Top cards ranked by views with member names
-- Recent activity with member name, device type, browser
-- Enquiry pipeline: New → Ongoing → Converted → Lost
-- Device type & browser tracking
-- Non-blocking background event recording
-
-### CRM Integration
-```
-Enquiry → Background sync → CRM Lead
-    → Lead owner = card owner (Digital Card → Business Member → user)
-    → Status sync: CRM Lead status ≠ New → Enquiry marked "Converted"
-    → Custom fields: business, card, product, service, enquiry
-    → Source: "Business Connect"
-    → Failed syncs retried hourly
-```
+### Analytics Dashboard
+- **Engagement metrics** — track visits, scans, and card shares
+- **Top cards** — identify which templates convert best
+- **Enquiry pipeline** — monitor lead progress through sales funnel
+- **Real-time data** — always current with live updates
 
 ---
 
-## URL Structure
-
-| URL | Page |
-|-----|------|
-| `/b/<business>` | Business landing page |
-| `/b/<business>/team/<member>` | Team member profile |
-| `/b/<business>/products/<product>` | Product page |
-| `/b/<business>/services/<service>` | Service page |
-| `/c/<card>` | Digital Card (short QR/NFC URL) |
-| `/analytics` | Analytics dashboard |
-
----
-
-## Requirements
-
-- Frappe Framework v16
-- Frappe CRM
-- Python: `qrcode[pil]` (for QR code generation)
-
----
-
-## Installation
+## Getting Started
 
 ### Prerequisites
-- Frappe v16+ installed and running
-- **Frappe CRM** must be installed first
+- Frappe/ERPNext installed (for CRM integration)
+- A domain and SSL certificate for your business website
+- Database connection configured in `site_config.json`
 
-### Step 1 — Install Frappe CRM (if not already installed)
+### Installation Steps
 
-```bash
-bench get-app https://github.com/frappe/crm
-bench --site <site-name> install-app crm
-```
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/devosduotech/osduo_business_connect.git
+   cd osduo_business_connect
+   ```
 
-### Step 2 — Install Business Connect
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-```bash
-bench get-app https://github.com/devosduotech/osduo_business_connect.git
-bench --site <site-name> install-app osduo_business_connect
-bench --site <site-name> migrate
-bench --site <site-name> pip install qrcode[pil]
-bench build --app osduo_business_connect
-bench restart
-```
+3. Configure your environment:
+   ```bash
+   cp site_config.json.sample site_config.json
+   # Edit site_config.json with your Frappe instance details
+   ```
 
-### Deployment Notes
+4. Run migrations and setup:
+   ```bash
+   bench setup --source-path <path-to-source>
+   bench migrate
+   ```
 
-- CRM must be installed **before** Business Connect (`required_apps = ["crm"]`)
-- `bench build` must use `--app osduo_business_connect` only (CRM build may exceed memory on small VMs)
-- Roles created on install: **BC Business Owner**, **BC Business Manager**, **BC Business Member**, **BC Marketing Manager**, **BC CRM User**, **BC System Manager**
-- 6 distinct card themes: Modern, Professional, Minimal, Classic, Luxury, Creative
-- CRM custom fields added to CRM Lead: business, card, product, service, enquiry, source, campaign, landing URL
+5. Start the development server:
+   ```bash
+   bench serve
+   ```
 
 ---
 
-## Module Structure
+## Architecture Overview
 
-```
-osduo_business_connect/
-├── business/              # Business ownership and membership
-│   ├── core.py            # Business class + helper functions
-│   └── doctype/
-│       ├── business/
-│       ├── business_member/
-│       ├── business_social_link/
-│       └── business_hour/
-├── card/                  # Digital business cards
-│   ├── public_api.py      # Public card API + VCF download
-│   └── doctype/
-│       ├── digital_card/
-│       └── digital_card_link/
-├── showcase/              # Product/service showcase + themes
-│   └── doctype/
-│       ├── showcase_product/
-│       ├── showcase_service/
-│       ├── product_category/
-│       ├── page_section/
-│       ├── bc_theme/
-│       ├── product_gallery_item/
-│       └── feature/
-├── analytics/             # Engagement analytics
-│   ├── analytics_service.py
-│   ├── page/
-│   │   └── analytics/      # Desk page (JS + HTML)
-│   └── doctype/
-│       └── engagement_event/
-├── enquiry/               # Lead generation
-│   ├── core.py            # Enquiry class
-│   ├── enquiry_service.py
-│   ├── public_enquiry_api.py
-│   └── doctype/
-│       └── enquiry/
-├── crm_integration/       # Frappe CRM integration
-│   ├── lead_mapper.py
-│   ├── crm_sync.py
-│   └── crm_permissions.py
-├── services/              # Shared services
-│   ├── theme_service.py   # Theme resolution + CSS vars
-│   ├── qr_service.py      # QR code generation
-│   ├── vcard_service.py   # vCard generation
-│   └── scheduler.py
-├── pages/                 # Desk pages
-│   └── analytics.py       # Analytics dashboard API
-├── permissions/
-├── utils/
-├── patches/
-└── templates/
-    ├── bc_base.html       # BC-styled base template
-    └── pages/
-        ├── business/      # Business landing page
-        ├── product/       # Product page
-        ├── service/       # Service page
-        └── card/          # Digital card + team member pages
+```mermaid
+graph TD
+    subgraph Client
+        A[Browser / Mobile App] --> B[Business Profile Web Page]
+        C[QR Code Scanner] --> D[Web App Entry Point]
+    end
+    
+    subgraph Server
+        E[Frappe CRM API] --> F[Lead Management Module]
+        G[CMS Engine] --> H[Profile & Content Management]
+        I[Analytics Engine] --> J[Metric Collection & Reporting]
+    end
+    
+    B --> C
+    D --> G
 ```
 
 ---
 
-## DocTypes (15 total)
+## Development Roadmap
 
-| DocType | Module | Purpose |
-|---------|--------|---------|
-| Business | Business | Root ownership record |
-| Business Member | Business | Team members with roles |
-| Digital Card | Card | Public digital business card |
-| Showcase Product | Showcase | Product listings |
-| Showcase Service | Showcase | Service listings |
-| BC Theme | Showcase | Page themes (template + colors + fonts) |
-| Page Section | Showcase | Custom page sections (ordered, toggleable) |
-| Product Category | Showcase | Reusable product categories |
-| Enquiry | Enquiry | Public enquiry submissions |
-| Engagement Event | Analytics | View/click/share tracking |
-| Business Social Link | Business | Social media links (child) |
-| Business Hour | Business | Operating hours (child) |
-| Digital Card Link | Card | Card social links (child) |
-| Product Gallery Item | Showcase | Product gallery images (child) |
-| Feature | Showcase | Product/service features list (child) |
+- [x] Core business profile creation
+- [ ] Dynamic card generation with multiple templates
+- [ ] Frappe CRM integration for lead management
+- [ ] Analytics dashboard with real-time metrics
+- [ ] Mobile app synchronization
+- [ ] Multi-language support
+- [ ] SEO optimization and search engine indexing
 
 ---
 
-## Testing
+## Support & Contribution
 
-```bash
-cd osduo_business_connect
-python3 -m unittest discover -s tests -p "test_*.py" -v
+For technical support, open an issue on the GitHub repository. For feature requests or bug reports, please use the appropriate issue template.
 
-# 103 tests across 9 files
-```
+Contributions welcome! Review our contribution guidelines before submitting PRs.
 
 ---
 
-## Built With
-
-- [Frappe Framework](https://frappeframework.com/) — Full-stack web framework
-- [Frappe CRM](https://crm.frappe.io/) — Open source CRM
-
----
-
-## License
-
-MIT
+**© 2024 OSDuo Technologies** | Licensed under MIT
