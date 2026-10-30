@@ -96,7 +96,7 @@ Personal marketing asset for networking.
 
 **Sections:**
 ```
-Hero (4 theme options)
+Hero (6 theme options: Professional, Modern, Minimal, Classic, Luxury, Creative)
 ├── Profile Photo
 ├── Name
 ├── Designation
@@ -128,7 +128,7 @@ Individual product marketing page.
 
 **Sections:**
 ```
-Product Hero
+Product Hero (Unified Header + Split Layout)
 ├── Product Image (large)
 ├── Product Name
 ├── Category
@@ -161,7 +161,7 @@ Individual service marketing page.
 
 **Sections:**
 ```
-Service Hero
+Service Hero (Unified Header + Split Layout)
 ├── Service Image
 ├── Service Name
 ├── Category
@@ -866,7 +866,7 @@ Top Products:
 - QR code generation
 - Basic analytics
 
-### Phase 2: Marketing (v1.1)
+### Phase 2: Marketing (v1.1) ✅
 - Campaign tracking (UTM/QR params)
 - Email signature generator
 - Social sharing optimization
@@ -929,7 +929,8 @@ Top Products:
 ## Appendix B: Event Types Reference
 
 | Event Type | Trigger | Data Captured |
-|------------|---------|---------------|
+|
+| `enquiry_//submitted` | Form submission | Business, Visitor, Source, Timestamp |------------|---------|---------------|
 | `profile_view` | Business page load | Business, URL, referrer, device |
 | `card_view` | Card page load | Card, business, URL, device |
 | `product_view` | Product page load | Product, business, URL, device |
@@ -943,3 +944,17 @@ Top Products:
 ---
 
 *This document is for internal reference only. Not for public distribution.*
+
+
+## 16. Theme-Driven Branding
+
+The platform now supports an advanced theme engine that allows businesses to align their digital presence with their brand identity:
+
+- **Professional**: Structured, trust-focused, high-contrast.
+- **Modern**: Clean, centered, rounded elements, soft aesthetics.
+- **Minimal**: Ultra-clean, monochromatic, typography-centric.
+- **Classic**: Traditional, banner-based, serif influences.
+- **Luxury**: Dark editorial, serif typography, high-end spacing.
+- **Creative**: Asymmetric layouts, bold colors, visual emphasis.
+
+All themes are automatically contrast-corrected to ensure accessibility (WCAG 4.5:1) regardless of the chosen primary color.
