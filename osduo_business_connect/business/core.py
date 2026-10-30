@@ -45,3 +45,87 @@ class Business(Document):
 
     def normalize_urls(self):
         if hasattr(self, 'email') and self.email: self.email = self.email.lower().strip()
+
+
+def get_permission_query_conditions(user):
+    if not user:
+        user = frappe.session.user
+
+    if "System Manager" in frappe.get_roles(user):
+        return ""
+
+    businesses = get_user_businesses(user)
+    if not businesses:
+        return "1=0"
+
+    business_names = [frappe.db.escape(b["name"]) for b in businesses]
+    return f"`tabBusiness`.name IN ({', '.join(business_names)})"
+
+def has_permission(doc, user=None, ptype=None):
+    if not user:
+        user = frappe.session.user
+
+    if user == "Guest":
+        if ptype == "read":
+            return doc.status == "Published" and doc.public_profile_enabled
+        return False
+
+    if "System Manager" in frappe.get_roles(user):
+        return True
+
+    if ptype == "create":
+        if "BC Business Owner" in frappe.get_roles(user):
+            return True
+        return False
+
+    businesses = get_user_businesses(user)
+    business_names = [b["name"] for b in businesses]
+
+    if doc.name not in business_names:
+        return False
+
+    member_role = get_user_role_in_business(user, doc.name)
+    if not member_role:
+        return False
+
+    if ptype == "read":
+        return True
+    elif ptype == "write":
+        return member_role in ["Owner", "Manager", "Marketing"]
+    elif ptype == "delete":
+        return member_role == "Owner"
+
+    return False
+
+def get_user_businesses(user):
+    if not user:
+        user = frappe.session.user
+    members = frappe.get_all(
+        "Business Member",
+        filters={"user": user, "status": "Active"},
+        fields=["business", "role"],
+    )
+    return [{"name": m.business, "role": m.role} for m in members]
+
+def get_user_role_in_business(user, business):
+    member = frappe.get_all(
+        "Business Member",
+        filters={"user": user, "business": business, "status": "Active"},
+        fields=["role"],
+    )
+    return member[0].role if member else None
+
+def get_business_by_slug(slug):
+    if not slug: return None
+    return frappe.db.get_value(
+        "Business", {"slug": slug, "status": "Published"},
+        ["name", "slug", "business_name", "logo", "status"], as_dict=True
+    )
+
+def get_public_business_by_slug(slug):
+    if not slug: return None
+    return frappe.db.get_value(
+        "Business", {"slug": slug, "status": "Published", "public_profile_enabled": 1},
+        ["name", "slug", "business_name", "logo", "status", "description", "website", "email", "phone", "whatsapp", "address", "city", "state", "show_about_in_product_page", "show_about_in_service_page"],
+        as_dict=True
+    )
