@@ -5,7 +5,7 @@ from frappe.model.document import Document
 
 class DigitalCard(Document):
     def validate(self):
-        if self.exists():
+        if self.name and frappe.db.exists(self.doctype, self.name):
             old_doc = self.get_doc_before_save()
             if old_doc and old_doc.slug != self.slug:
                 frappe.throw("The Public Slug cannot be changed once the record is saved to ensure NFC cards remain functional.")
