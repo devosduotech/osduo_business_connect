@@ -6,7 +6,6 @@
     {# Back link (the Professional hero already carries a breadcrumb) #}
 
 
-</div>
 
     {# ===== PRODUCT HERO (varies by template) ===== #}
     {% if template_type == "Professional" %}
@@ -30,7 +29,6 @@
             <h2 class="bc-section-title">Description</h2>
             <div style="line-height:1.8;color: var(--bc-text-muted);">
                 {% if doc.description %}{{ doc.description }}{% else %}{{ doc.short_description }}{% endif %}
-            </div>
         </div>
     </div>
     {% endif %}
