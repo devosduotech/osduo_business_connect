@@ -1,37 +1,45 @@
 {# Creative Hero — asymmetric layout, bold typography, visual emphasis #}
-<div class="bc-header">
-    <div class="bc-container">
-        <div class="bc-hero-creative-header-layout">
-            {% if doc.cover_image %}
-            <div class="bc-hero-creative-header-image">
-                <img src="{{ doc.cover_image }}" alt="{{ doc.business_name }}">
+<header class="bc-prof-band bc-hero-creative">
+    <div class="bc-container bc-prof-band-inner">
+        {% if doc.cover_image %}
+        <div class="bc-prof-cover-wrap">
+            <img src="{{ doc.cover_image }}" alt="" class="bc-prof-cover-img">
+        </div>
+        {% endif %}
+        <div class="bc-prof-logo">
+            {% if doc.logo %}
+            <img src="{{ doc.logo }}" alt="{{ doc.business_name }}">
+            {% else %}
+            <span aria-hidden="true">{{ (doc.business_name or 'B')[0] }}</span>
+            {% endif %}
+        </div>
+        <div class="bc-prof-band-info">
+            <h1 class="bc-prof-band-name">{{ doc.business_name }}</h1>
+            {% if doc.industry %}
+            <p class="bc-prof-band-tagline">{{ doc.industry }}</p>
+            {% endif %}
+            {% if stats %}
+            <div class="bc-prof-stats">
+                {% if stats.team_members is defined and stats.team_members %}
+                <span class="bc-prof-stat"><strong class="bc-stat-val">{{ stats.team_members }}</strong> Team Members</span>
+                {% endif %}
+                {% if stats.products is defined and stats.products %}
+                <span class="bc-prof-stat"><strong class="bc-stat-val">{{ stats.products }}</strong> Products</span>
+                {% endif %}
+                {% if stats.services is defined and stats.services %}
+                <span class="bc-prof-stat"><strong class="bc-stat-val">{{ stats.services }}</strong> Services</span>
+                {% endif %}
             </div>
             {% endif %}
-
-            <div class="bc-hero-creative-header-info">
-                {% if doc.logo %}
-                <img src="{{ doc.logo }}" alt="{{ doc.business_name }}" class="bc-logo-img">
-                {% endif %}
-
-                <h1>{{ doc.business_name }}</h1>
-
-                {% if doc.industry %}
-                <p class="bc-hero-creative-designation">{{ doc.industry }}</p>
-                {% endif %}
-
-                <div class="bc-hero-actions">
-                    {% if doc.phone %}<a href="tel:{{ doc.phone }}" class="bc-btn bc-btn-primary">Call</a>{% endif %}
-                    {% if doc.whatsapp %}<a href="https://wa.me/{{ doc.whatsapp }}" class="bc-btn bc-btn-accent">WhatsApp</a>{% endif %}
-                    <a href="#bc-contact" class="bc-btn bc-btn-secondary">Enquiry</a>
-                </div>
-            </div>
         </div>
-
-        <nav class="bc-nav">
-            <a href="#bc-about" class="bc-nav-link active">About</a>
-            {% if products %}<a href="#bc-products" class="bc-nav-link">Products</a>{% endif %}
-            {% if services %}<a href="#bc-services" class="bc-nav-link">Services</a>{% endif %}
-            <a href="#bc-contact" class="bc-nav-link">Contact</a>
-        </nav>
     </div>
-</div>
+</header>
+<nav class="bc-prof-nav bc-hero-creative-nav" aria-label="Business sections">
+    <div class="bc-container bc-prof-nav-inner">
+        {% if doc.description %}<a href="#bc-about" class="bc-prof-nav-link">About</a>{% endif %}
+        {% if products %}<a href="#bc-products" class="bc-prof-nav-link">Products</a>{% endif %}
+        {% if services %}<a href="#bc-services" class="bc-prof-nav-link">Services</a>{% endif %}
+        <a href="#bc-contact" class="bc-prof-nav-link">Contact</a>
+        <a href="#bc-enquiry" class="bc-prof-nav-link">Enquiry</a>
+    </div>
+</nav>

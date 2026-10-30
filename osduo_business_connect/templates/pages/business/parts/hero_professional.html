@@ -1,6 +1,11 @@
 {# Professional Hero — dark header band, logo tile, tagline, stats, underline nav #}
 <header class="bc-prof-band">
     <div class="bc-container bc-prof-band-inner">
+        {% if doc.cover_image %}
+        <div class="bc-prof-cover-wrap">
+            <img src="{{ doc.cover_image }}" alt="" class="bc-prof-cover-img">
+        </div>
+        {% endif %}
         <div class="bc-prof-logo">
             {% if doc.logo %}
             <img src="{{ doc.logo }}" alt="{{ doc.business_name }}">
