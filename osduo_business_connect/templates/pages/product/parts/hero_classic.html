@@ -1,40 +1,74 @@
 {# Product/Service Hero — Classic template #}
-<div class="bc-header">
-    <div class="bc-detail">
-        {% if doc.image %}
-        <img src="{{ doc.image }}" alt="{{ doc.product_name or doc.service_name }}" class="bc-cover-img">
-        {% endif %}
-
-        <h1 style="font-style:italic;">{{ doc.product_name or doc.service_name }}</h1>
-
+<div class="bc-prof-pagebar">
+    <div class="bc-detail bc-prof-pagebar-inner">
+        <a href="/b/{{ business_slug }}" class="bc-prof-breadcrumb">{{ business_name }} / {% if doc.product_name %}Products{% else %}Services{% endif %}</a>
         {% if doc.category %}
-        <span style="display:inline-block;padding:0.3rem 0.75rem;background:rgba(255,255,255,0.2);border-radius:20px;font-size:0.8rem;margin-bottom:0.5rem;">{{ doc.category }}</span>
+        <span class="bc-prof-chip">{{ doc.category }}</span>
         {% endif %}
-
-        {% if doc.short_description %}
-        <p class="bc-tagline">{{ doc.short_description }}</p>
-        {% endif %}
-
-        {% if doc.price_display_mode != "Hidden" and doc.price %}
-        <div style="font-size:1.4rem;font-weight:700;margin:0.75rem 0;">
-            {% if doc.price_display_mode == "Contact" %}
-                Contact for pricing
-            {% else %}
-                {% if doc.currency %}{{ doc.currency }} {% endif %}{{ doc.price }}
-            {% endif %}
-        </div>
-        {% endif %}
-
-        <div class="bc-hero-actions">
-            {% if doc.enquiry_enabled %}
-            <a href="#bc-enquiry" class="bc-btn bc-btn-secondary">&#9993; Send Enquiry</a>
-            {% endif %}
-            {% if business_phone %}
-            <a href="tel:{{ business_phone }}" class="bc-btn bc-btn-secondary">&#9742; Call</a>
-            {% endif %}
-            {% if business_whatsapp %}
-            <a href="https://wa.me/{{ business_whatsapp }}?text={{ 'Hi, I am interested in ' ~ (doc.product_name or doc.service_name) | urlencode }}" class="bc-btn bc-btn-accent">&#128172; WhatsApp</a>
-            {% endif %}
-        </div>
     </div>
 </div>
+
+<section class="bc-prof-hero-split">
+    <div class="bc-detail bc-prof-hero-grid">
+        {% if doc.product_name %}
+        <div class="bc-prof-gallery">
+            {% set gallery_rows = doc.gallery | sort(attribute='sort_order') if doc.gallery else [] %}
+            {% if doc.image %}
+            <div class="bc-prof-gallery-item">
+                <img src="{{ doc.image }}" alt="{{ doc.product_name }}" class="bc-prof-gallery-img">
+            </div>
+            {% endif %}
+            {% for image in gallery_rows[:3] %}
+            <div class="bc-prof-gallery-item">
+                <img src="{{ image.image }}" alt="{{ image.alt_text or image.caption or doc.product_name }}" class="bc-prof-gallery-img" loading="lazy">
+            </div>
+            {% endfor %}
+            {% if not doc.image and not gallery_rows %}
+            <div class="bc-prof-gallery-item">
+                <span class="bc-prof-gallery-placeholder" aria-hidden="true">&#128230;</span>
+            </div>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="bc-prof-gallery">
+            {% if doc.image %}
+            <div class="bc-prof-gallery-item">
+                <img src="{{ doc.image }}" alt="{{ doc.service_name }}" class="bc-prof-gallery-img">
+            </div>
+            {% else %}
+            <div class="bc-prof-gallery-item">
+                <span class="bc-prof-gallery-placeholder" aria-hidden="true">&#128295;</span>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="bc-prof-info">
+            <h1 class="bc-prof-name" style="font-style: italic;">{{ doc.product_name or doc.service_name }}</h1>
+            {% if doc.short_description %}
+            <p class="bc-prof-tagline">{{ doc.short_description }}</p>
+            {% endif %}
+
+            {% if doc.product_name %}
+                {% if doc.price_display_mode == "Contact" %}
+                <p class="bc-prof-price">Enquire for pricing</p>
+                {% elif doc.price_display_mode != "Hidden" and doc.price %}
+                <p class="bc-prof-price">{% if doc.currency %}{{ doc.currency }} {% endif %}{{ doc.price }}</p>
+                {% endif %}
+            {% endif %}
+
+            <div class="bc-prof-cta">
+                {% if doc.enquiry_enabled %}
+                <a href="#bc-enquiry" class="bc-btn bc-btn-primary" data-bc-event="enquiry_click">&#9993; Enquire Now</a>
+                {% endif %}
+                {% if business_phone %}
+                <a href="tel:{{ business_phone }}" class="bc-btn bc-btn-secondary" data-bc-event="phone_click">&#9742; Call</a>
+                {% endif %}
+                {% if business_whatsapp %}
+                <a href="https://wa.me/{{ business_whatsapp }}?text={{ ('Hi, I am interested in ' ~ (doc.product_name or doc.service_name)) | urlencode }}"
+                   class="bc-btn bc-btn-secondary" target="_blank" rel="noopener" data-bc-event="whatsapp_click">&#128172; WhatsApp</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
