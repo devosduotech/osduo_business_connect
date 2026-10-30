@@ -221,6 +221,14 @@
       "fieldtype": "Table",
       "label": "Business Hours",
       "options": "Business Hour"
+    },
+    {
+      "fieldname": "public_url",
+      "fieldtype": "Data",
+      "label": "Public URL",
+      "read_only": 1,
+      "in_list_view": 0,
+      "description": "The public-facing URL for this entry"
     }
   ],
   "permissions": [
