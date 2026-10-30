@@ -17,14 +17,35 @@
     {% else %}
         {% include "osduo_business_connect/templates/pages/business/parts/hero_modern.html" %}
     {% endif %}
-
     
-    <div class="bc-nav-menu" style="position:sticky; top:0; z-index:100; background:var(--bc-surface); border-bottom:1px solid var(--bc-border-color); padding:0.75rem 0;">
+    <div class="bc-nav-menu" style="position:sticky; top:0; z-index:100; background:var(--bc-surface); border-bottom:1px solid var(--bc-border-color); padding:0.75rem 0; display:none;">
         <div class="bc-container" style="display:flex; justify-content:center; gap:2rem; font-weight:500; font-size:0.9rem;">
             <a href="#bc-about" style="text-decoration:none; color:var(--bc-text-strong);">About</a>
             <a href="#bc-products" style="text-decoration:none; color:var(--bc-text-strong);">Products</a>
             <a href="#bc-services" style="text-decoration:none; color:var(--bc-text-strong);">Services</a>
             <a href="#bc-contact" style="text-decoration:none; color:var(--bc-text-strong);">Contact</a>
+        </div>
+    </div>
+    <script>
+        // Show nav menu only if the page is long enough to scroll
+        window.addEventListener('load', function() {
+            var nav = document.querySelector('.bc-nav-menu');
+            if (document.body.scrollHeight > window.innerHeight) {
+                nav.style.display = 'block';
+            }
+        });
+    </script>
+    
+
+    
+    
+    </div>
+    
+    
+    <div class="bc-section" style="padding: 1rem 0; background: var(--bc-surface-alt);">
+        <div class="bc-container" style="display:flex; justify-content:center; align-items:center; gap:1rem;">
+            <span style="font-weight:600; color:var(--bc-text-muted);">Digital Business Card:</span>
+            <a href="/c/{{ doc.slug }}" class="bc-btn bc-btn-secondary" style="padding:0.4rem 1rem; font-size:0.8rem;">View My Card &rarr;</a>
         </div>
     </div>
     
