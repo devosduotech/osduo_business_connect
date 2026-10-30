@@ -1429,6 +1429,10 @@
 
 /* Luxury Card Hero */
 .bc-hero-luxury {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     position: relative;
     display: flex;
     align-items: center;
@@ -1441,6 +1445,8 @@
 }
 
 .bc-hero-luxury-avatar {
+    box-sizing: border-box;
+    object-fit: cover;
     width: 96px;
     height: 96px;
     border-radius: 50%;
@@ -1451,6 +1457,8 @@
 }
 
 .bc-hero-luxury-avatar-fallback {
+    box-sizing: border-box;
+    object-fit: cover;
     width: 96px;
     height: 96px;
     border-radius: 50%;
@@ -1717,6 +1725,32 @@
 }
 
 /* Creative Card Hero */
+
+.bc-hero-creative-avatar-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+.bc-hero-creative-avatar {
+    width: 90px;
+    height: 90px;
+    border-radius: 12px;
+    object-fit: cover;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.bc-hero-creative-avatar-fallback {
+    width: 90px;
+    height: 90px;
+    border-radius: 12px;
+    background: var(--bc-primary-fill);
+    color: var(--bc-on-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+
 .bc-hero-creative {
     background: var(--bc-surface);
     color: var(--bc-text);
@@ -2335,9 +2369,15 @@
     .bc-template-luxury .bc-header { min-height: 50vh; }
     .bc-template-luxury .bc-header h1 { font-size: 2rem; }
     .bc-template-luxury .bc-header-content { padding: 2rem 1.25rem 1.5rem; }
-    .bc-hero-luxury { min-height: auto; padding: 1.25rem 0; }
+    .bc-hero-luxury {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; min-height: auto; padding: 1.25rem 0; }
     .bc-hero-luxury-name { font-size: 1.75rem; }
-    .bc-hero-luxury-avatar, .bc-hero-luxury-avatar-fallback { width: 72px; height: 72px; }
+    .bc-hero-luxury-avatar, .bc-hero-luxury-avatar-fallback {
+    box-sizing: border-box;
+    object-fit: cover; width: 72px; height: 72px; }
 
     /* Card heroes mobile */
     .bc-card-hero { padding: 1.25rem 1rem 0.75rem; }
@@ -2360,7 +2400,9 @@
     .bc-hero-classic-avatar, .bc-hero-classic-avatar-fallback { width: 80px; height: 80px; }
     .bc-hero-luxury-content { padding: 1.25rem 1rem 0.75rem; }
     .bc-hero-luxury-name { font-size: 1.7rem; }
-    .bc-hero-luxury-avatar, .bc-hero-luxury-avatar-fallback { width: 80px; height: 80px; }
+    .bc-hero-luxury-avatar, .bc-hero-luxury-avatar-fallback {
+    box-sizing: border-box;
+    object-fit: cover; width: 80px; height: 80px; }
     .bc-hero-creative-info { padding: 1.25rem; }
     .bc-hero-creative-name { font-size: 1.4rem; }
     .bc-hero-creative-layout { min-height: 240px; }
@@ -2408,7 +2450,9 @@
     background: var(--bc-background);
     color: var(--bc-text-muted); width: 56px; height: 56px; }
     .bc-hero-luxury-name { font-size: 1.5rem; }
-    .bc-hero-luxury-avatar, .bc-hero-luxury-avatar-fallback { width: 72px; height: 72px; }
+    .bc-hero-luxury-avatar, .bc-hero-luxury-avatar-fallback {
+    box-sizing: border-box;
+    object-fit: cover; width: 72px; height: 72px; }
     .bc-hero-creative-name { font-size: 1.2rem; }
     .bc-hero-creative-info { padding: 1rem; }
     .bc-hero-creative-layout { min-height: 200px; }
