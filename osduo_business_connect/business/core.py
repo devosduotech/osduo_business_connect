@@ -35,18 +35,17 @@ class Business(Document):
         self.normalize_fields()
         self.normalize_urls()
 
-    def validate(self):
-    def validate(self):
+                def validate(self):
         if self.db_exists():
             old_doc = self.get_doc_before_save()
             if old_doc and old_doc.slug != self.slug:
                 frappe.throw("The Public Slug cannot be changed once the record is saved to ensure NFC cards remain functional.")
-        
-        self.validate_slug()
+
+                self.validate_slug()
         self.validate_owner_user()
         self.validate_contact_methods()
 
-    def before_save(self):
+before_save(self):
         """Pre-save operations."""
         self.set_defaults()
         self.set_social_link_icons()
