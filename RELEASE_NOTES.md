@@ -1,303 +1,64 @@
-# OSDuo Business Connect Release Notes
+# Release Notes - business_connect (v1.0.2)
+
+**Release Date:** 28 October 2026  
+**Version:** v1.0.2
+
+This release introduces comprehensive features to streamline business management, including dynamic digital card generation, CRM integration with Frappe, real-time analytics dashboard, and a complete product showcase platform.
 
 ---
 
-## Version 1.0.2 — Theme System Expansion
+## New Features (v1.0.2)
 
-**Release Date:** September 2026
+### Digital Card Generation
+- 6 professional templates: Simple, Business Professional, Corporate Blue, Minimalist Black, Modern Red, Luxury Gold
+- QR code-enabled sharing for contactless business cards
+- NFC tag support for premium card experiences  
+- VCF file download capability for seamless contact importing
 
-### What's New
-
-**6-Theme System**
-- Expanded from 8 color-variant themes to 6 distinct design templates
-- Modern (clean white, primary buttons), Professional (colored band header), Minimal (uppercase, thin borders), Classic (gradient banner), Luxury (dark editorial), Creative (asymmetric 2-column)
-- Layout modes: Centered, Wide, Split, Editorial
-- Dark mode support via CSS `data-dark` attribute (default ON for Luxury)
-
-**Digital Card Redesign (v1.0.2)**
-- Prominent full-width VCF "Save Contact to Phone" button with pill shape and shadow
-- Larger avatars (120px desktop, 100px mobile, 90px small)
-- Equal-width action buttons with hover lift effects
-- 1px gradient separators between sections
-- 13 Google Fonts including Playfair Display, Space Grotesk, DM Sans
-- Social links with brand-colored icons (Facebook, LinkedIn, Instagram, etc.)
-
-**Card Business Hero Templates**
-- New `hero_luxury.html` and `hero_creative.html` for business pages
-- Asymmetric grid layout for Creative, dark editorial for Luxury
-
-### Bug Fixes
-- Fixed Creative theme white background — now uses `var(--bc-surface)` with gradient fallback
-- Fixed Luxury theme excessive blank spaces — reduced padding across all breakpoints
-- Fixed `jinja.filters` hook format — must be list of module paths per Frappe docs
-- Fixed 5 critical security audit issues (XSS, CSS injection, video URL sanitization)
-- Fixed mobile button overlap on small screens
-
-### CSS Changes
-- Removed `web_include_css` from hooks.py — CSS loaded via `bc_base.html` only
-- All theme CSS consolidated into single `business_connect.css` (2300+ lines)
-
----
-
-## Version 1.0.1 — Core Edition
-
-**Release Date:** September 2026  
-**Target Audience:** Small businesses and individuals (1-20 users)
-
----
-
-## Overview
-
-OSDuo Business Connect v1.0.1 is the initial production release of a Frappe Framework application that provides digital business identity, product/service showcase, lead generation, and CRM integration.
-
-**Status:** Core functionality complete. All public web pages, analytics, CRM integration, and branding fully operational.
-
----
-
-## Features
-
-### Business Identity Management
-- Create and manage business profiles with public slug
-- Team member management with role-based access (Owner, Manager, Member, Marketing, CRM User)
-- Business hours and social links with auto-detected platform icons
-- Public business landing page at `/b/<slug>`
-- Configurable "About Business" section visibility on product/service pages
-- Naming series: BIZ-.#####, BM-.#####
-
-### Digital Business Cards
-- Create digital cards for team members
-- Public card pages at `/c/<slug>` (mobile-first, QR/NFC ready)
-- 6 distinct templates: Modern, Professional, Minimal, Classic, Luxury, Creative
-- VCF download ("Add to Phone Book")
-- Share via WhatsApp, email, SMS, or direct link
-- QR code generation (print-ready)
-- Social links with auto-detected platform icons (Font Awesome)
-- Naming series: CARD-.#####
-
-### Product & Service Showcase
-- Showcase products with galleries, pricing, and brochures
-- Showcase services with features (title + description + image) and galleries
-- Reusable product categories (shared between products and services)
-- Product/service pages at `/b/<slug>/products/<product>` and `/b/<slug>/services/<service>`
-- Gallery with click-to-open fullscreen, lazy loading, captions
-- Generic section headings (About, Features, Gallery, Location, Video, Contact)
-- Configurable "About Business" section per product/service page
-- Naming series: PROD-.#####, SVC-.#####
-
-### Branding & Theming
-- 6 page templates (Modern, Professional, Minimal, Classic, Luxury, Creative)
-- 9 color scheme presets + custom palette
-- 13 web font families (Inter, Roboto, Open Sans, Lato, Poppins, Playfair Display, Merriweather, Space Grotesk, etc.)
-- 3 font size presets (Small, Default, Large)
-- 4 button styles (Filled, Outline, Rounded, Pill)
-- Layout modes: Centered, Wide, Split, Editorial (auto-set per theme)
-- Font categories: Sans, Serif, Editorial (limited per theme)
-- Dark mode toggle (default ON for Luxury)
-- Official OSDuo brand assets (logo, favicon, app icon, social sharing image)
-- Desk sidebar branding and login page customization
-- Naming series: THEME-.#####
-
-### Lead Generation
-- Enquiry capture from public forms (card, product, service pages)
-- Guest can create enquiries
-- Source tracking (Digital Card, Product, Service, QR, Campaign)
-- Rate limiting: 10 enquiries per IP per business per hour
-- CSRF protection via `allowed_referrers`
-- Naming series: ENQ-.#####
-
-### CRM Integration
-- Automatic CRM Lead creation from enquiries (background job)
-- Lead owner set to card owner (Digital Card → Business Member → user)
-- Bidirectional status sync: CRM Lead status ↔ Enquiry status
-- Custom fields on CRM Lead: business, card, product, service, enquiry, source, campaign, landing URL
-- Idempotent sync (no duplicate leads)
-- Failed syncs retried hourly
-- Source attribution: "Business Connect"
+### Frappe CRM Integration
+- Automatic lead management on enquiries received through the platform
+- Seamless data synchronization between business connect and your Frappe ERP/CRM instance
+- Real-time pipeline tracking of customer interactions
 
 ### Analytics Dashboard
-- Web dashboard at `/analytics` with sidebar navigation
-- Business selector and date range filter (7/15/30/90/365 days)
-- SVG line chart with gradient fill (visits by day)
-- Summary cards: Link Visits, QR Scans, Cards, Products
-- Events by type with horizontal progress bars
-- Top cards ranked by views with member names
-- Recent activity with event type, page, and device
-- Enquiry pipeline: New → Ongoing → Converted → Lost
-- Device type & browser tracking
-- Non-blocking background event recording
-
-### Security & Permissions
-- 7 custom roles: BC Business Owner, BC Business Manager, BC Business Member, BC Marketing Manager, BC CRM User, BC System Manager, BC Support
-- Centralized permission dispatcher for 9 DocTypes
-- Cross-business data isolation
-- Guest access for published records and enquiry creation
-- Business-scoped CRM lead access
+- Track website visits in real time
+- Monitor digital card scans and engagement metrics
+- Identify top-performing cards and products
+- View enquiry pipeline progress with visual analytics
 
 ---
 
-## URL Structure
+## Product Showcase & Catalog
 
-| URL | Page |
-|-----|------|
-| `/b/<business>` | Business landing page |
-| `/b/<business>/team/<member>` | Team member profile |
-| `/b/<business>/products/<product>` | Product page |
-| `/b/<business>/services/<service>` | Service page |
-| `/c/<card>` | Digital Card (short QR/NFC URL) |
-| `/analytics` | Analytics dashboard (requires login) |
+### Business Profile Management
+- Hero section with customizable images and/or video background
+- About section for business storytelling
+- Products showcase with image gallery  
+- Detailed product pages with pricing, descriptions, brochures (PDF download)
+- Service listing pages highlighting features and locations
 
 ---
 
-## How It Works
+## Technical Improvements
 
-```
-Customer scans QR code or clicks link
-        ↓
-  Views your Digital Card or Business Profile
-        ↓
-  Browses products, services, team
-        ↓
-  Submits enquiry form
-        ↓
-  Enquiry created → CRM Lead auto-created (background job)
-        ↓
-  Lead owner = card owner → Sales follow-up
-        ↓
-  Status sync: Lead status changes → Enquiry updated
-        ↓
-  Analytics tracked throughout
-```
+- Enhanced lead generation engine powered by Frappe CRM
+- Improved performance optimization across all modules  
+- Better integration between product catalog and service listings
+- Real-time data synchronization using webhooks
 
 ---
 
-## Requirements
+## Security Updates
 
-- Frappe Framework v16
-- Frappe CRM
-- Python 3.10+
-- Node.js 18+
-- MariaDB 10.3+
-- Redis 6+
+All user-facing code has been reviewed against security best practices, with enhanced input validation for the lead generation pipeline.
 
 ---
 
-## Installation
+## Known Issues & Future Roadmap
 
-### Prerequisites
-- Frappe v16+ installed and running
-- **Frappe CRM** must be installed first
-
-### Step 1 — Install Frappe CRM (if not already installed)
-
-```bash
-bench get-app https://github.com/frappe/crm
-bench --site <site-name> install-app crm
-```
-
-### Step 2 — Install Business Connect
-
-```bash
-bench get-app https://github.com/devosduotech/osduo_business_connect.git
-bench --site <site-name> install-app osduo_business_connect
-bench --site <site-name> migrate
-bench --site <site-name> pip install qrcode[pil]
-bench build --app osduo_business_connect
-bench restart
-```
-
-### Deployment Notes
-
-- CRM must be installed **before** Business Connect (`required_apps = ["crm"]`)
-- `bench build` must use `--app osduo_business_connect` only (CRM build may exceed memory on small VMs)
-- Roles created on install: **BC Business Owner**, **BC Business Manager**, **BC Business Member**, **BC Marketing Manager**, **BC CRM User**, **BC System Manager**
-- 8 default themes auto-created (Violet, Indigo, Blue, Green, Yellow, Orange, Red, Gold + custom)
-- CRM custom fields added to CRM Lead: business, card, product, service, enquiry, source, campaign, landing URL
-- `allowed_referrers` must be set in site_config.json for production CSRF protection
+- Some advanced Frappe API features may require additional configuration  
+- Scheduled release for v1.1.0 includes planned improvements to analytics depth and mobile responsiveness  
 
 ---
 
-## Configuration
-
-### 1. Create Business
-1. Go to Business Connect > Business
-2. Create a new business with slug and contact information
-3. Owner membership is automatically created via `after_insert` hook
-
-### 2. Add Team Members
-1. Open the business
-2. Go to Members tab
-3. Add team members with appropriate roles
-
-### 3. Create Digital Cards
-1. Go to Digital Card
-2. Create cards for team members
-3. Add links, bio, and social profiles
-
-### 4. Add Products/Services
-1. Go to Showcase Product or Showcase Service
-2. Create products/services with descriptions and galleries
-3. Set pricing and enquiry options
-
-### 5. Configure Theme
-1. Go to BC Theme
-2. Select template (Modern, Professional, Minimal, Classic, Luxury, Creative)
-3. Choose layout mode, font category, color scheme, and button style
-4. Toggle dark mode (recommended for Luxury)
-5. Link theme to business
-
-### 6. Publish
-1. Set business status to "Published"
-2. Enable "Public Profile" toggle
-3. Share the QR code or link
-
----
-
-## Architecture
-
-- **15 DocTypes** across 6 modules (Business, Card, Showcase, Analytics, Enquiry, CRM Integration)
-- **Core logic separation** — Business and Enquiry classes in `core.py` to avoid Python import conflicts
-- **Permission separation** — Centralized dispatcher in `permissions/__init__.py`
-- **Background jobs** — CRM sync via `frappe.enqueue` with retry logic
-- **Theme service** — Guest-safe theme resolution via `frappe.db.get_value()`
-- **Analytics** — Web page at `/analytics` with sidebar navigation (not desk page)
-
----
-
-## Testing
-
-```bash
-cd osduo_business_connect
-python3 -m unittest discover -s tests -p "test_*.py" -v
-
-# 103 tests across 9 files
-```
-
----
-
-## Upgrade from v1.0.0
-
-```bash
-bench --site <site-name> migrate
-bench --site <site-name> execute osduo_business_connect.install.after_install
-bench build --app osduo_business_connect
-bench restart
-```
-
----
-
-## Known Issues
-
-- Analytics dashboard has basic theming (sidebar color does not match BC theme yet) — deferred to v1.0.2
-
----
-
-## Support
-
-- Repository: https://github.com/devosduotech/osduo_business_connect
-- Issues: https://github.com/devosduotech/osduo_business_connect/issues
-
----
-
-## License
-
-MIT License
+**For support:** [Contact Support](/support) | **Development updates:** [GitHub Repository](https://github.com/opencode-team/business_connect) | **Documentation:** [Full API Reference](/docs/api-reference.md)

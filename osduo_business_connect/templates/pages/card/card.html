@@ -1,8 +1,9 @@
 {%- extends "osduo_business_connect/templates/bc_base.html" -%}
 
 {%- block page_content -%}
-<div class="bc-page bc-template-{{ theme.template|lower }}" data-layout="{{ theme.layout_mode }}" data-dark="{{ 'true' if theme.dark_mode else 'false' }}" style="{{ theme_vars }}">
-    <div class="bc-card-page" style="padding-bottom:3.5rem;">
+<div class="bc-page bc-template-{{ theme.template|lower }} bc-card-view" data-layout="{{ theme.layout_mode }}" data-dark="{{ 'true' if theme.dark_mode else 'false' }}" style="{{ theme_vars }}">
+
+    <div class="bc-card-shell">
 
         {# ===== CARD HERO (varies by template) ===== #}
         {% if template_type == "Professional" %}
@@ -26,228 +27,332 @@
             </a>
         </div>
 
-        {# ===== STRIPE SEPARATOR ===== #}
-        <div class="bc-card-stripe"></div>
-
         {# ===== BUSINESS LINK ===== #}
         {% if doc.show_business and doc.business_slug %}
-        <div class="bc-card-page" style="padding:0.75rem 1.25rem 0.35rem;text-align:center;">
-            <a href="/b/{{ doc.business_slug }}" style="color:var(--bc-primary);text-decoration:none;font-size:0.82rem;font-weight:500;">{{ doc.business_name }} &rarr;</a>
+        <div class="bc-card-section bc-card-business-link">
+            <a href="/b/{{ doc.business_slug }}" class="bc-prof-business-link">
+                <span class="bc-prof-business-link-mark">{{ (doc.business_name or 'B')[0] }}</span>
+                <span class="bc-prof-business-link-text">
+                    <span class="bc-prof-business-link-label">Business Profile</span>
+                    <span class="bc-prof-business-link-name">{{ doc.business_name }}</span>
+                </span>
+                <span class="bc-prof-business-link-arrow" aria-hidden="true">&rarr;</span>
+            </a>
         </div>
-        <div class="bc-card-stripe"></div>
         {% endif %}
 
         {# ===== PRODUCTS ===== #}
         {% if doc.show_products and products %}
-        <div class="bc-card-page" style="padding:1rem 1.25rem;">
-            <h2 style="font-size:0.95rem;color:var(--bc-primary);margin-bottom:0.6rem;font-weight:600;">Products</h2>
-            <div style="display:flex;flex-direction:column;gap:0.5rem;">
+        <div class="bc-card-section" id="bc-products">
+            <h2 class="bc-card-section-title">Products</h2>
+            <div class="bc-card-item-list">
                 {% for product in products %}
-                <a href="/b/{{ doc.business_slug }}/products/{{ product.slug }}" style="text-decoration:none;">
-                <div class="bc-card" style="padding:0.6rem;display:flex;gap:0.6rem;align-items:center;border:1px solid var(--bc-border-color);border-radius:var(--bc-card-radius);transition:box-shadow 0.2s;">
+                <a href="/b/{{ doc.business_slug }}/products/{{ product.slug }}" class="bc-card-item" data-bc-event="product_view" data-bc-product="{{ product.name }}">
                     {% if product.image %}
-                    <img src="{{ product.image }}" alt="{{ product.product_name }}" style="width:44px;height:44px;border-radius:8px;object-fit:cover;">
+                    <img src="{{ product.image }}" alt="{{ product.product_name }}" class="bc-card-item-img" loading="lazy">
+                    {% else %}
+                    <span class="bc-card-item-img bc-card-item-img-fallback">&#128230;</span>
                     {% endif %}
-                    <div style="flex:1;min-width:0;">
-                        <p style="margin:0;font-size:0.82rem;font-weight:600;color:var(--bc-text);">{{ product.product_name }}</p>
+                    <span class="bc-card-item-body">
+                        <span class="bc-card-item-name">{{ product.product_name }}</span>
                         {% if product.short_description %}
-                        <p style="margin:0.1rem 0 0;font-size:0.72rem;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ product.short_description }}</p>
+                        <span class="bc-card-item-desc">{{ product.short_description }}</span>
                         {% endif %}
-                    </div>
-                    {% if product.price %}
-                    <span style="font-size:0.78rem;font-weight:600;color:var(--bc-primary);white-space:nowrap;">{{ product.currency }} {{ product.price }}</span>
+                    </span>
+                    {% if product.price_display_mode == "Contact" %}
+                    <span class="bc-card-item-price">On request</span>
+                    {% elif product.price_display_mode != "Hidden" and product.price %}
+                    <span class="bc-card-item-price">{{ product.currency }} {{ product.price }}</span>
                     {% endif %}
-                </div>
                 </a>
                 {% endfor %}
             </div>
         </div>
-        <div class="bc-card-stripe"></div>
         {% endif %}
 
         {# ===== SERVICES ===== #}
         {% if doc.show_services and services %}
-        <div class="bc-card-page" style="padding:1rem 1.25rem;">
-            <h2 style="font-size:0.95rem;color:var(--bc-primary);margin-bottom:0.6rem;font-weight:600;">Services</h2>
-            <div style="display:flex;flex-direction:column;gap:0.5rem;">
+        <div class="bc-card-section" id="bc-services">
+            <h2 class="bc-card-section-title">Services</h2>
+            <div class="bc-card-item-list">
                 {% for service in services %}
-                <a href="/b/{{ doc.business_slug }}/services/{{ service.slug }}" style="text-decoration:none;">
-                <div class="bc-card" style="padding:0.6rem;display:flex;gap:0.6rem;align-items:center;border:1px solid var(--bc-border-color);border-radius:var(--bc-card-radius);transition:box-shadow 0.2s;">
+                <a href="/b/{{ doc.business_slug }}/services/{{ service.slug }}" class="bc-card-item" data-bc-event="service_view" data-bc-service="{{ service.name }}">
                     {% if service.image %}
-                    <img src="{{ service.image }}" alt="{{ service.service_name }}" style="width:44px;height:44px;border-radius:8px;object-fit:cover;">
+                    <img src="{{ service.image }}" alt="{{ service.service_name }}" class="bc-card-item-img" loading="lazy">
+                    {% else %}
+                    <span class="bc-card-item-img bc-card-item-img-fallback">&#128295;</span>
                     {% endif %}
-                    <div style="flex:1;min-width:0;">
-                        <p style="margin:0;font-size:0.82rem;font-weight:600;color:var(--bc-text);">{{ service.service_name }}</p>
+                    <span class="bc-card-item-body">
+                        <span class="bc-card-item-name">{{ service.service_name }}</span>
                         {% if service.short_description %}
-                        <p style="margin:0.1rem 0 0;font-size:0.72rem;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ service.short_description }}</p>
+                        <span class="bc-card-item-desc">{{ service.short_description }}</span>
                         {% endif %}
-                    </div>
-                    {% if service.price %}
-                    <span style="font-size:0.78rem;font-weight:600;color:var(--bc-primary);white-space:nowrap;">{{ service.currency }} {{ service.price }}</span>
-                    {% endif %}
-                </div>
+                    </span>
                 </a>
                 {% endfor %}
             </div>
         </div>
-        <div class="bc-card-stripe"></div>
         {% endif %}
 
         {# ===== ENQUIRY FORM ===== #}
-        <div class="bc-card-page" style="padding:1rem 1.25rem;" id="bc-enquiry">
-            <h2 style="font-size:0.95rem;text-align:center;color:var(--bc-primary);margin-bottom:0.6rem;font-weight:600;">Send a Message</h2>
-            <form id="card-enquiry-form" class="bc-card bc-enquiry-form" style="padding:0.75rem;border:1px solid var(--bc-border-color);border-radius:var(--bc-card-radius);">
-                <input type="hidden" name="business" value="{{ doc.business }}">
-                <input type="hidden" name="business_slug" value="{{ doc.business_slug }}">
+        <div class="bc-card-section" id="bc-enquiry">
+            <h2 class="bc-card-section-title">Send a Message</h2>
+            <form id="card-enquiry-form" class="bc-enquiry-form bc-card-form">
+                <input type="hidden" name="business" value="{{ doc.business or '' }}">
+                <input type="hidden" name="business_slug" value="{{ doc.business_slug or '' }}">
                 <input type="hidden" name="card" value="{{ doc.name }}">
-                <div style="margin-bottom:0.5rem;">
-                    <input type="text" name="visitor_name" placeholder="Your Name" required>
+                <div class="bc-form-row">
+                    <input type="text" name="visitor_name" placeholder="Your Name" autocomplete="name" required>
                 </div>
-                <div style="margin-bottom:0.5rem;">
-                    <input type="tel" name="visitor_phone" placeholder="Contact Number" required pattern="[0-9+\-\s\(\)]{7,15}" title="Enter a valid phone number (7-15 digits)">
+                <div class="bc-form-row">
+                    <input type="tel" name="visitor_phone" placeholder="Contact Number" autocomplete="tel" required pattern="[0-9+\-\s\(\)]{7,15}" title="Enter a valid phone number (7-15 digits)">
                 </div>
-                <div style="margin-bottom:0.5rem;">
-                    <input type="email" name="visitor_email" placeholder="Email Address" required>
+                <div class="bc-form-row">
+                    <input type="email" name="visitor_email" placeholder="Email Address" autocomplete="email" required>
                 </div>
-                <div style="margin-bottom:0.5rem;">
+                <div class="bc-form-row">
                     <textarea name="message" placeholder="Your Message" rows="3" required></textarea>
                 </div>
-                <button type="submit" class="bc-btn bc-btn-primary" style="width:100%;padding:0.65rem;">Send Message</button>
+                <button type="submit" class="bc-btn bc-btn-primary bc-form-submit">Send Message</button>
             </form>
         </div>
 
-        <div class="bc-card-stripe"></div>
-
         {# ===== SHARE SECTION ===== #}
-        <div class="bc-card-page bc-card-share" style="padding:1rem 1.25rem;">
-            <h2 style="font-size:0.95rem;color:var(--bc-primary);font-weight:600;">Share Card</h2>
+        <div class="bc-card-section bc-card-share">
+            <h2 class="bc-card-section-title">Share Card</h2>
 
-            <div class="bc-card-share-link" data-copy-url="{{ card_url }}">
+            <div class="bc-card-share-link" data-copy-url="{{ card_url }}" role="button" tabindex="0" aria-label="Copy card link">
                 <span class="bc-card-share-url">{{ card_url }}</span>
                 <span class="bc-card-share-copy">Copy</span>
             </div>
-            <div id="bc-copy-toast" style="display:none;text-align:center;color:var(--bc-primary);font-size:0.78rem;margin-top:0.3rem;">Copied!</div>
+            <div id="bc-copy-toast" class="bc-copy-toast" style="display:none;">Copied!</div>
 
             {% if doc.qr_enabled and doc.qr_image %}
             <div class="bc-card-share-qr">
-                <img src="{{ doc.qr_image }}" alt="QR Code">
+                <img src="{{ doc.qr_image }}" alt="QR code for {{ doc.display_name or doc.name }}">
                 <p>Scan to view card</p>
             </div>
             {% endif %}
 
             <div class="bc-card-share-buttons">
-                {% if doc.phone %}
-                <a href="https://wa.me/?text={{ card_url|urlencode }}" target="_blank" class="bc-btn bc-btn-secondary" style="font-size:0.78rem;">&#128172; WhatsApp</a>
-                {% endif %}
-                <a href="sms:?body={{ card_url|urlencode }}" class="bc-btn bc-btn-secondary" style="font-size:0.78rem;">&#128172; SMS</a>
-                <a href="mailto:?subject=Digital Card&body=Check out this card: {{ card_url }}" class="bc-btn bc-btn-secondary" style="font-size:0.78rem;">&#9993; Email</a>
+                <a href="https://wa.me/?text={{ card_url|urlencode }}" target="_blank" rel="noopener" class="bc-btn bc-btn-secondary">&#128172; WhatsApp</a>
+                <a href="sms:?body={{ card_url|urlencode }}" class="bc-btn bc-btn-secondary">&#128172; SMS</a>
+                <a href="mailto:?subject=Digital Card&body=Check out this card: {{ card_url }}" class="bc-btn bc-btn-secondary">&#9993; Email</a>
             </div>
         </div>
 
-        <div class="bc-card-share" style="padding:0.5rem 0 1rem;text-align:center;">
-            <p style="color:#94a3b8;font-size:0.65rem;">Powered by <a href="https://connect.osduotech.com" target="_blank" rel="noopener" style="color:#94a3b8;text-decoration:underline;">OSDuo Business Connect</a></p>
+        {# ===== FOOTER ===== #}
+        <div class="bc-card-footer">
+            <p>Powered by <a href="https://connect.osduotech.com" target="_blank" rel="noopener">OSDuo Business Connect</a></p>
         </div>
     </div>
 </div>
 
 {# ===== BOTTOM NAV ===== #}
-<nav class="bc-card-bottom-nav">
+<nav class="bc-card-bottom-nav" aria-label="Card navigation">
     {% if doc.show_business and doc.business_slug %}
     <a href="/b/{{ doc.business_slug }}">
-        <span class="bc-nav-icon">&#127968;</span>
+        <span class="bc-nav-icon" aria-hidden="true">&#127968;</span>
         <span>Home</span>
     </a>
-    {% endif %}
-    {% if doc.show_business and doc.business_slug %}
     <a href="/b/{{ doc.business_slug }}#bc-products">
-        <span class="bc-nav-icon">&#128230;</span>
+        <span class="bc-nav-icon" aria-hidden="true">&#128230;</span>
         <span>Products</span>
     </a>
     {% endif %}
     <a href="#bc-enquiry">
-        <span class="bc-nav-icon">&#128172;</span>
+        <span class="bc-nav-icon" aria-hidden="true">&#128172;</span>
         <span>Enquiry</span>
     </a>
 </nav>
+
+{# ===== CRM / CAMPAIGN CONTEXT (hidden, consumed by JS) ===== #}
+<form id="bc-crm-context" class="bc-hidden-context" style="display:none;" aria-hidden="true">
+    <input type="hidden" name="business" value="{{ doc.business or '' }}">
+    <input type="hidden" name="card" value="{{ doc.name }}">
+    <input type="hidden" name="landing_url" value="{{ landing_url or card_url }}">
+    <input type="hidden" name="campaign" value="">
+    <input type="hidden" name="referrer" value="">
+</form>
 
 <div id="bc-csrf-token" data-token="{{ frappe.session.csrf_token or frappe.session.data.csrf_token or '' }}" style="display:none;"></div>
 
 {% raw %}
 <script>
-document.getElementById('card-enquiry-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    var form = e.target;
-    var btn = form.querySelector('button[type="submit"]');
-    btn.disabled = true;
-    btn.textContent = 'Sending...';
-    var fd = new FormData(form);
-    var csrfToken = document.getElementById('bc-csrf-token').getAttribute('data-token') || '';
+(function () {
+    'use strict';
 
-    fetch('/api/method/osduo_business_connect.enquiry.public_enquiry_api.submit_enquiry', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-Frappe-CSRF-Token': csrfToken,
-        },
-        body: JSON.stringify({
-            business_slug: fd.get('business_slug'),
-            visitor_data: JSON.stringify({
-                name: fd.get('visitor_name'),
-                email: fd.get('visitor_email'),
-                phone: fd.get('visitor_phone'),
-                message: fd.get('message'),
-            }),
-            source: 'Digital Card',
-            references: JSON.stringify({
-                card: fd.get('card'),
-            }),
-        }),
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(result) {
-        if (result.message && result.message.name) {
-            form.innerHTML = '<div style="text-align:center;padding:1.25rem;"><h3 style="margin:0 0 0.4rem;">Message Sent!</h3><p style="color:#666;font-size:0.9rem;">Thank you. We will get back to you soon.</p></div>';
-        } else {
-            var msg = 'Error sending message';
-            if (result._server_messages) {
-                try { msg = JSON.parse(result._server_messages)[0].message; } catch(ex) {}
+    var EVENT_ENDPOINT = '/api/method/osduo_business_connect.analytics.analytics_service.log_event';
+
+    function getContext() {
+        var form = document.getElementById('bc-crm-context');
+        var params = new URLSearchParams(window.location.search);
+        var campaign = params.get('utm_campaign') || params.get('campaign') || '';
+        var csrfEl = document.getElementById('bc-csrf-token');
+        var ctx = {
+            business: '',
+            card: '',
+            csrf_token: csrfEl ? (csrfEl.getAttribute('data-token') || '') : '',
+            landing_url: window.location.href,
+            campaign: campaign,
+            referrer: document.referrer || ''
+        };
+        if (form) {
+            ['business', 'card'].forEach(function (key) {
+                var field = form.elements[key];
+                if (field) { ctx[key] = field.value || ''; }
+            });
+            var campaignField = form.elements['campaign'];
+            if (campaignField) { campaignField.value = campaign; }
+            var landingField = form.elements['landing_url'];
+            if (landingField) { landingField.value = ctx.landing_url; }
+            var referrerField = form.elements['referrer'];
+            if (referrerField) { referrerField.value = ctx.referrer; }
+        }
+        return ctx;
+    }
+
+    var context = getContext();
+
+    function sendEvent(eventType, extra) {
+        var payload = {
+            business: context.business,
+            event_type: eventType,
+            card: context.card,
+            csrf_token: context.csrf_token,
+            campaign: context.campaign,
+            landing_url: context.landing_url,
+            referrer: context.referrer
+        };
+        if (extra) {
+            Object.keys(extra).forEach(function (key) { payload[key] = extra[key]; });
+        }
+        var params = new URLSearchParams();
+        Object.keys(payload).forEach(function (key) {
+            if (payload[key] !== undefined && payload[key] !== null) {
+                params.append(key, payload[key]);
             }
-            alert(msg);
-            btn.disabled = false;
-            btn.textContent = 'Send Message';
+        });
+        if (navigator.sendBeacon) {
+            navigator.sendBeacon(EVENT_ENDPOINT, params);
+        } else {
+            fetch(EVENT_ENDPOINT, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+                body: params.toString(),
+                keepalive: true
+            }).catch(function () {});
         }
-    })
-    .catch(function() {
-        alert('Error sending message');
-        btn.disabled = false;
-        btn.textContent = 'Send Message';
-    });
-});
+    }
 
-document.querySelectorAll('.bc-card-bottom-nav a').forEach(function(link) {
-    link.addEventListener('click', function(e) {
-        var href = this.getAttribute('href');
-        if (href && href.startsWith('#')) {
+    // Track a card view once per page load.
+    sendEvent('card_view');
+
+    // Track contact-button clicks (delegated, so it also covers hero buttons).
+    document.addEventListener('click', function (e) {
+        var trigger = e.target.closest('[data-bc-event]');
+        if (!trigger) { return; }
+        var eventType = trigger.getAttribute('data-bc-event');
+        if (!eventType) { return; }
+        var extra = {};
+        var product = trigger.getAttribute('data-bc-product');
+        var service = trigger.getAttribute('data-bc-service');
+        if (product) { extra.product = product; }
+        if (service) { extra.service = service; }
+        sendEvent(eventType, extra);
+    });
+
+    var enquiryForm = document.getElementById('card-enquiry-form');
+    if (enquiryForm) {
+        enquiryForm.addEventListener('submit', function (e) {
             e.preventDefault();
-            var target = document.getElementById(href.substring(1));
-            if (target) target.scrollIntoView({ behavior: 'smooth' });
-        }
-    });
-});
+            var form = e.target;
+            var btn = form.querySelector('button[type="submit"]');
+            var original = btn ? btn.textContent : '';
+            if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; }
+            var fd = new FormData(form);
+            var csrfToken = document.getElementById('bc-csrf-token');
+            csrfToken = csrfToken ? (csrfToken.getAttribute('data-token') || '') : '';
 
-document.querySelectorAll('.bc-card-share-link[data-copy-url]').forEach(function(el) {
-    el.addEventListener('click', function() {
-        var url = this.getAttribute('data-copy-url');
-        var toast = document.getElementById('bc-copy-toast');
-        navigator.clipboard.writeText(url).then(function() {
-            if (toast) {
-                toast.textContent = 'Copied!';
-                toast.style.display = 'block';
-                setTimeout(function() { toast.style.display = 'none'; }, 1500);
+            fetch('/api/method/osduo_business_connect.enquiry.public_enquiry_api.submit_enquiry', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Frappe-CSRF-Token': csrfToken
+                },
+                body: JSON.stringify({
+                    business_slug: fd.get('business_slug'),
+                    visitor_data: JSON.stringify({
+                        name: fd.get('visitor_name'),
+                        email: fd.get('visitor_email'),
+                        phone: fd.get('visitor_phone'),
+                        message: fd.get('message')
+                    }),
+                    source: 'Digital Card',
+                    references: JSON.stringify({ card: fd.get('card') })
+                })
+            })
+            .then(function (r) { return r.json(); })
+            .then(function (result) {
+                if (result.message && result.message.name) {
+                    sendEvent('enquiry_submitted');
+                    form.innerHTML = '<div class="bc-form-success"><h3>Message Sent!</h3><p>Thank you. We will get back to you soon.</p></div>';
+                } else {
+                    var msg = 'Error sending message';
+                    if (result._server_messages) {
+                        try { msg = JSON.parse(result._server_messages)[0].message; } catch (ex) {}
+                    }
+                    window.alert(msg);
+                    if (btn) { btn.disabled = false; btn.textContent = original; }
+                }
+            })
+            .catch(function () {
+                window.alert('Error sending message');
+                if (btn) { btn.disabled = false; btn.textContent = original; }
+            });
+        });
+    }
+
+    // Smooth-scroll for in-page nav links.
+    document.querySelectorAll('.bc-card-bottom-nav a').forEach(function (link) {
+        link.addEventListener('click', function (e) {
+            var href = this.getAttribute('href');
+            if (href && href.charAt(0) === '#') {
+                e.preventDefault();
+                var target = document.getElementById(href.substring(1));
+                if (target) { target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
             }
         });
     });
-});
+
+    // Copy card link.
+    document.querySelectorAll('.bc-card-share-link[data-copy-url]').forEach(function (el) {
+        function copy() {
+            var url = el.getAttribute('data-copy-url');
+            var toast = document.getElementById('bc-copy-toast');
+            var done = function () {
+                if (!toast) { return; }
+                toast.textContent = 'Copied!';
+                toast.style.display = 'block';
+                window.setTimeout(function () { toast.style.display = 'none'; }, 1500);
+            };
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(url).then(done).catch(function () {});
+            } else {
+                var input = document.createElement('input');
+                input.value = url;
+                document.body.appendChild(input);
+                input.select();
+                try { document.execCommand('copy'); done(); } catch (ex) {}
+                document.body.removeChild(input);
+            }
+        }
+        el.addEventListener('click', copy);
+        el.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); copy(); }
+        });
+    });
+})();
 </script>
 {% endraw %}
 {%- endblock -%}

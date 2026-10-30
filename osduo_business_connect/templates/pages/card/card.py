@@ -39,6 +39,7 @@ def get_context(context):
     host = frappe.request.host if frappe.request else "business.local"
     protocol = "https" if frappe.request and frappe.request.scheme == "https" else "http"
     context.card_url = f"{protocol}://{host}/c/{slug}"
+    context.landing_url = frappe.request.url if frappe.request else context.card_url
 
     # Theme — card's own, or fall back to business default
     if doc.get("theme"):
@@ -78,7 +79,7 @@ def get_context(context):
         context.products = frappe.get_all(
             "Showcase Product",
             filters={"business": doc["business"], "status": "Published"},
-            fields=["name", "product_name", "slug", "short_description", "price", "currency", "image"],
+            fields=["name", "product_name", "slug", "short_description", "price", "price_display_mode", "currency", "image"],
             order_by="sort_order asc",
             limit=10,
         )

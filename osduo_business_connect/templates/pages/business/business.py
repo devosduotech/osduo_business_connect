@@ -65,6 +65,16 @@ def get_context(context):
         order_by="sort_order asc",
     )
 
+    # Header stats (Professional design)
+    context.stats = {
+        "team_members": frappe.db.count(
+            "Business Member",
+            filters={"business": doc.name, "status": "Active"},
+        ),
+        "products": len(context.products),
+        "services": len(context.services),
+    }
+
     # SEO
     if doc.get("seo_title"):
         context.title = doc["seo_title"]
