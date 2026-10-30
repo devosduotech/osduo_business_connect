@@ -1,231 +1,26 @@
 # Copyright (c) 2026, OSDuo and contributors
-# For license information, please see license.txt
-
+import re
 import frappe
 from frappe.model.document import Document
 
-
 class DigitalCard(Document):
-    """
-    Digital Card DocType - Represents an individual public digital business card.
-
-    This is the public-facing representation of a team member within a business.
-    It provides:
-    - Public profile with contact information
-    - Social links
-    - QR code generation
-    - vCard download
-    """
-
-    def before_validate(self):
-        """Pre-process data before validation."""
-        self.normalize_fields()
-        self.normalize_urls()
-
-        def validate(self):
+    def validate(self):
         if self.db_exists():
             old_doc = self.get_doc_before_save()
             if old_doc and old_doc.slug != self.slug:
                 frappe.throw("The Public Slug cannot be changed once the record is saved to ensure NFC cards remain functional.")
-        
         self.validate_slug()
-        self.validate_member()
-        self.validate_contact_methods()
-
-on_submit(self):
-        # Finalize public URL on submission
-        self.set_public_url()
-        self.save()
-
-    def on_update(self):
-        """Post-save operations."""
-        self.handle_publish_status()
-
-    def normalize_fields(self):
-        """Normalize field values."""
-        # Normalize slug to lowercase
-        if self.slug:
-            self.slug = self.slug.lower().strip()
-
-        # Normalize email
-        if self.email:
-            self.email = self.email.lower().strip()
-
-    def normalize_urls(self):
-        """Normalize URL fields to add https:// if missing."""
-        from osduo_business_connect.utils.sanitize import normalize_url_fields
-        normalize_url_fields(self)
-
-    def validate_member(self):
-        """Validate that member belongs to business and is active."""
-        if not self.member:
-            frappe.throw("Member is required")
-
-        if not self.business:
-            frappe.throw("Business is required")
-
-        # Check if member belongs to this business
-        member = frappe.get_doc("Business Member", self.member)
-        if member.business != self.business:
-            frappe.throw("Member does not belong to this business")
-
-        # Check if member is active
-        if member.status != "Active":
-            frappe.throw("Member must be active to create a digital card")
 
     def validate_slug(self):
-        """Validate slug format and uniqueness."""
         if not self.slug:
-            frappe.throw("Public Slug is required")
-
-        # Check slug format: only lowercase letters, numbers, and hyphens
-        import re
+            frappe.throw("Slug is required")
         if not re.match(r'^[a-z0-9-]+$', self.slug):
             frappe.throw("Slug can only contain lowercase letters, numbers, and hyphens")
+        if frappe.db.exists("Digital Card", {"slug": self.slug, "name": ["!=", self.name]}):
+            frappe.throw(f"Slug '{self.slug}' is already taken")
 
-        # Check for leading/trailing hyphen
-        if self.slug.startswith('-') or self.slug.endswith('-'):
-            frappe.throw("Slug cannot start or end with a hyphen")
+    def normalize_fields(self):
+        if self.slug: self.slug = self.slug.lower().strip()
 
-        # Check uniqueness
-        if self.is_new():
-            exists = frappe.db.exists("Digital Card", {"slug": self.slug})
-            if exists:
-                frappe.throw(f"Slug '{self.slug}' is already taken")
-        else:
-            exists = frappe.db.exists(
-                "Digital Card", {"slug": self.slug, "name": ["!=", self.name]}
-            )
-            if exists:
-                frappe.throw(f"Slug '{self.slug}' is already taken")
-
-    def validate_contact_methods(self):
-        """Validate that at least one contact method exists."""
-        has_contact = any([
-            self.email,
-            self.phone,
-            self.whatsapp,
-            self.website,
-        ])
-        if not has_contact:
-            frappe.throw("At least one contact method (email, phone, WhatsApp, or website) is required")
-
-    def generate_public_url(self):
-        """Generate public URL for this card."""
-        if self.slug:
-            # Use the configured route pattern
-            site_url = frappe.utils.get_url()
-            self.public_url = f"{site_url}/c/{self.slug}"
-
-    def handle_publish_status(self):
-        """Handle publish/unpublish events."""
-        if self.status == "Published":
-            # Invalidate public cache
-            self.invalidate_public_cache()
-            # Generate QR if enabled but not yet generated
-            if self.qr_enabled and not self.qr_image:
-                self.generate_qr_code()
-        elif self.status == "Unpublished":
-            # Invalidate public cache
-            self.invalidate_public_cache()
-
-    def invalidate_public_cache(self):
-        """Invalidate public cache for this card."""
-        # Clear cache for public card route
-        cache_key = f"public_card:{self.slug}"
-        frappe.cache().delete_value(cache_key)
-
-    def generate_qr_code(self):
-        """Generate QR code for this card."""
-        from osduo_business_connect.services.qr_service import generate_qr_code
-        generate_qr_code(self)
-
-
-def get_permission_query_conditions(user):
-    """
-    Return SQL conditions for filtering Digital Card records.
-
-    Users can only see cards of businesses they belong to.
-    Guest can see published cards with public profile enabled.
-    """
-    if not user:
-        user = frappe.session.user
-
-    # Guest can see published cards
-    if user == "Guest":
-        return "`tabDigital Card`.status = 'Published' AND `tabDigital Card`.public_profile_enabled = 1"
-
-    # System Manager can see all cards
-    if "System Manager" in frappe.get_roles(user):
-        return ""
-
-    # Get businesses where user is a member
-    from osduo_business_connect.business.core import get_user_businesses
-    businesses = get_user_businesses(user)
-
-    if not businesses:
-        return "1=0"  # No access
-
-    business_names = [frappe.db.escape(b["name"]) for b in businesses]
-    return f"`tabDigital Card`.business IN ({', '.join(business_names)})"
-
-
-def has_permission(doc, user=None, ptype=None):
-    """
-    Check if user has permission on Digital Card document.
-
-    Business Owner/Manager can manage all cards.
-    Business Members can manage their own cards.
-    Guest can read published cards.
-    True → do not deny | False → deny | None → fall back to normal permissions
-    """
-    if not user:
-        user = frappe.session.user
-
-    # Guest can only read published cards with public profile enabled
-    if user == "Guest":
-        if ptype == "read":
-            return doc.status == "Published" and doc.public_profile_enabled
-        return False
-
-    # System Manager has full access
-    if "System Manager" in frappe.get_roles(user):
-        return True
-
-    # Check if user is a member of this business
-    from osduo_business_connect.business.core import get_user_businesses
-    businesses = get_user_businesses(user)
-    business_names = [b["name"] for b in businesses]
-
-    if doc.business not in business_names:
-        return False
-
-    # Get user's role in this business
-    from osduo_business_connect.business.core import get_user_role_in_business
-    member_role = get_user_role_in_business(user, doc.business)
-
-    if not member_role:
-        return False
-
-    # Check permissions based on role
-    if ptype == "read":
-        return True
-    elif ptype == "write":
-        # Owner/Manager can edit all cards
-        if member_role in ["Owner", "Manager"]:
-            return True
-        # Members can edit their own cards
-        if member_role == "Member":
-            # Get member's card
-            member_doc = frappe.get_doc("Business Member", doc.member)
-            if member_doc.user == user:
-                return True
-        # Marketing can edit cards
-        if member_role == "Marketing":
-            return True
-    elif ptype == "create":
-        return member_role in ["Owner", "Manager"]
-    elif ptype == "delete":
-        return member_role == "Owner"
-
-    return False
+    def normalize_urls(self):
+        if hasattr(self, 'email') and self.email: self.email = self.email.lower().strip()
