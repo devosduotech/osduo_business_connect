@@ -16,7 +16,7 @@
             <p class="bc-hero-professional-designation">{{ doc.designation }}</p>
             {% endif %}
             {% if doc.show_business and doc.business_name %}
-            <p class="bc-hero-professional-business">{{ doc.business_name }}</p>
+            <p class="bc-hero-professional-business"><a href="/b/{{ doc.business_slug }}" style="color: inherit; text-decoration: none;">{{ doc.business_name }}</a></p>
             {% endif %}
         </div>
     </div>

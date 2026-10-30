@@ -27,19 +27,7 @@
             </a>
         </div>
 
-        {# ===== BUSINESS LINK ===== #}
-        {% if doc.show_business and doc.business_slug %}
-        <div class="bc-card-section bc-card-business-link">
-            <a href="/b/{{ doc.business_slug }}" class="bc-prof-business-link">
-                <span class="bc-prof-business-link-mark">{{ (doc.business_name or 'B')[0] }}</span>
-                <span class="bc-prof-business-link-text">
-                    <span class="bc-prof-business-link-label">Business Profile</span>
-                    <span class="bc-prof-business-link-name">{{ doc.business_name }}</span>
-                </span>
-                <span class="bc-prof-business-link-arrow" aria-hidden="true">&rarr;</span>
-            </a>
-        </div>
-        {% endif %}
+        
 
         {# ===== PRODUCTS ===== #}
         {% if doc.show_products and products %}
