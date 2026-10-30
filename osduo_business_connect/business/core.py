@@ -45,12 +45,7 @@ class Business(Document):
         self.validate_owner_user()
         self.validate_contact_methods()
 
-on_submit(self):
-        # Finalize public URL on submission
-        self.set_public_url()
-        self.save()
-
-    def on_update(self):
+on_update(self):
         """Post-save operations."""
         pass
 
