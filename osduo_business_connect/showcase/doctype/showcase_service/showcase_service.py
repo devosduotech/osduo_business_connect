@@ -18,15 +18,24 @@ class ShowcaseService(Document):
         self.normalize_urls()
         self.sanitize_description()
 
-    def validate(self):
-        """Authoritative location for service validation."""
-        self.validate_business()
+        def validate(self):
+        if self.db_exists():
+            old_doc = self.get_doc_before_save()
+            if old_doc and old_doc.slug != self.slug:
+                frappe.throw("The Public Slug cannot be changed once the record is saved to ensure NFC cards remain functional.")
+
+                self.validate_business()
         self.validate_slug()
         self.validate_brochure()
 
-    def before_save(self):
+before_save(self):
         """Pre-save operations."""
         pass
+
+    def on_submit(self):
+        # Finalize public URL on submission
+        self.set_public_url()
+        self.save()
 
     def on_update(self):
         """Post-save operations."""
