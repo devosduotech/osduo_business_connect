@@ -36,7 +36,11 @@ class Business(Document):
         self.normalize_urls()
 
     def validate(self):
-        """Authoritative location for business validation."""
+        if self.db_exists():
+        old_doc = self.get_doc_before_save()
+        if old_doc and old_doc.slug != self.slug:
+            frappe.throw("The Public Slug cannot be changed once the record is saved to ensure NFC cards remain functional.")
+    """Authoritative location for business validation."""
         self.validate_slug()
         self.validate_owner_user()
         self.validate_contact_methods()
