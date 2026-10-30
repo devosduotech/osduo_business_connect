@@ -115,6 +115,9 @@
 
 .bc-card-links {
     display: flex;
+    justify-content: center;
+    align-items: center;
+    display: flex;
     gap: 0.4rem;
     justify-content: center;
     flex-wrap: wrap;
@@ -3611,4 +3614,8 @@
 
 .bc-page[data-dark="true"] .bc-card-share-link {
     background: rgba(255, 255, 255, 0.04);
+}
+
+.bc-card-links .bc-btn i {
+    margin-right: 0.4rem;
 }
