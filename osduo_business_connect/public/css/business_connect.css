@@ -3663,3 +3663,41 @@
 .bc-card-links .bc-btn i {
     margin-right: 0.4rem;
 }
+
+.bc-prof-pagebar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.bc-prof-pagebar-logo-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+.bc-prof-pagebar-logo img, .bc-prof-pagebar-logo .bc-logo-fallback {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    object-fit: cover;
+    display: block;
+}
+.bc-logo-fallback {
+    background: var(--bc-primary-fill);
+    color: var(--bc-on-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+.bc-prof-pagebar-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--bc-text-strong);
+    text-decoration: none;
+}
+.bc-prof-pagebar-right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
