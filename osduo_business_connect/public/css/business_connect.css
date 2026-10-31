@@ -2841,6 +2841,11 @@
 .bc-prof-band-info {
     min-width: 0;
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /* Match the logo tile so the header height is driven by the logo */
+    min-height: 80px;
 }
 
 .bc-prof-band-info h1 {
@@ -3304,6 +3309,10 @@
         width: 64px;
         height: 64px;
         font-size: 1.5rem;
+    }
+
+    .bc-prof-band-info {
+        min-height: 64px;
     }
 
     .bc-prof-page-section {
@@ -3872,4 +3881,50 @@
     .bc-biz-action {
         padding: 0.35rem 0.55rem;
     }
+}
+
+/* ==========================================================================
+   Business hours (business profile page)
+   ========================================================================== */
+.bc-hours-list {
+    display: flex;
+    flex-direction: column;
+    max-width: 420px;
+    background: var(--bc-surface);
+    border: 1px solid var(--bc-border-color);
+    border-radius: var(--bc-card-radius);
+    overflow: hidden;
+}
+
+.bc-hours-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+    color: var(--bc-text-muted);
+    border-bottom: 1px solid var(--bc-border-color);
+}
+
+.bc-hours-row:last-child {
+    border-bottom: 0;
+}
+
+.bc-hours-day {
+    font-weight: 600;
+    color: var(--bc-text-strong);
+}
+
+.bc-hours-time {
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}
+
+.bc-hours-row-today {
+    background: var(--bc-primary-soft);
+}
+
+.bc-hours-row-today .bc-hours-day {
+    color: var(--bc-primary-text, var(--bc-primary));
 }

@@ -1,7 +1,19 @@
 import frappe
 from frappe import _
+from datetime import datetime, timedelta
 from ....services.theme_service import get_business_theme, get_theme_variables
 from ....analytics.tracking import capture_analytics_context, track_event
+
+
+def _format_hour_time(value):
+    """Time fields come back as timedelta; render them as e.g. '9:00 AM'."""
+    if not value:
+        return ""
+    if isinstance(value, timedelta):
+        value = (datetime.min + value).time()
+    if hasattr(value, "strftime"):
+        return value.strftime("%I:%M %p").lstrip("0")
+    return str(value)
 
 
 def get_context(context):
@@ -42,12 +54,17 @@ def get_context(context):
     )
 
     # Business hours
-    context.business_hours = frappe.get_all(
+    business_hours = frappe.get_all(
         "Business Hour",
-        filters={"parent": doc.name},
-        fields=["day", "open_time", "close_time", "enabled", "is_24_hours"],
+        filters={"parent": doc.name, "parenttype": "Business", "enabled": 1},
+        fields=["day", "open_time", "close_time", "is_24_hours"],
         order_by="idx asc",
     )
+    for row in business_hours:
+        row["open_time"] = _format_hour_time(row.get("open_time"))
+        row["close_time"] = _format_hour_time(row.get("close_time"))
+    context.business_hours = business_hours
+    context.today = datetime.now().strftime("%A")
 
     # Products — public listing, so bypass per-document permissions (the page
     # itself only exposes records marked Published and not cancelled).
@@ -66,16 +83,6 @@ def get_context(context):
         fields=["name", "service_name", "slug", "image", "short_description"],
         order_by="sort_order asc",
     )
-
-    # Header stats (Professional design)
-    context.stats = {
-        "team_members": frappe.db.count(
-            "Business Member",
-            filters={"business": doc.name, "status": "Active"},
-        ),
-        "products": len(context.products),
-        "services": len(context.services),
-    }
 
     # SEO
     if doc.get("seo_title"):
