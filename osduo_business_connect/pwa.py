@@ -79,9 +79,10 @@ def get_app_icon(size=512, maskable=0):
     buffer = BytesIO()
     canvas.save(buffer, format="PNG", optimize=True)
 
-    # Served through frappe's as_raw(): mimetype guessed from the filename,
-    # inline disposition so it works as an <img>/manifest icon source.
-    frappe.local.response["type"] = "raw"
+    # Frappe v16: response type "download" (as_raw) honours content_type and
+    # display_content_as — served inline as image/png so <img> and the
+    # manifest can consume it. ("binary" would force an attachment.)
+    frappe.local.response["type"] = "download"
     frappe.local.response["display_content_as"] = "inline"
     frappe.local.response["content_type"] = "image/png"
     frappe.local.response["filename"] = f"bc-icon-{size}{'-m' if maskable else ''}.png"
