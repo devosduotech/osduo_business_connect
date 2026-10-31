@@ -11,7 +11,7 @@ def get_context(context):
 
     doc = frappe.db.get_value(
         "Digital Card",
-        {"slug": slug, "status": "Published", "public_profile_enabled": 1},
+        {"slug": slug, "status": "Published", "public_profile_enabled": 1, "docstatus": ["<", 2]},
         ["name", "business", "member", "display_name", "slug",
          "designation", "profile_image", "bio", "phone", "email",
          "whatsapp", "website", "qr_enabled", "qr_image",
@@ -23,10 +23,9 @@ def get_context(context):
 
     # Verify associated Business is also Published + public_profile_enabled
     if doc.get("business"):
-        from ....business.core import get_public_business_by_slug
         biz = frappe.db.get_value(
             "Business",
-            {"name": doc["business"], "status": "Published", "public_profile_enabled": 1},
+            {"name": doc["business"], "status": "Published", "public_profile_enabled": 1, "docstatus": ["<", 2]},
             ["name"],
         )
         if not biz:

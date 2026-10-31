@@ -11,8 +11,6 @@ Verifies both Card AND Business are Published + public_profile_enabled.
 import frappe
 from frappe import _
 
-from osduo_business_connect.business.core import get_public_business_by_slug
-
 
 def get_public_card_by_slug(slug):
     """
@@ -35,7 +33,7 @@ def get_public_card_by_slug(slug):
 
     card = frappe.db.get_value(
         "Digital Card",
-        {"slug": slug, "status": "Published", "public_profile_enabled": 1},
+        {"slug": slug, "status": "Published", "public_profile_enabled": 1, "docstatus": ["<", 2]},
         ["name", "business", "display_name", "slug", "designation",
          "profile_image", "bio", "phone", "email", "whatsapp", "website",
          "qr_enabled", "qr_image", "vcard_enabled", "show_business",
@@ -51,7 +49,7 @@ def get_public_card_by_slug(slug):
 
     business = frappe.db.get_value(
         "Business",
-        {"name": card["business"], "status": "Published", "public_profile_enabled": 1},
+        {"name": card["business"], "status": "Published", "public_profile_enabled": 1, "docstatus": ["<", 2]},
         ["name", "business_name", "slug", "logo", "website"],
         as_dict=True,
     )

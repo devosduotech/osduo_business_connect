@@ -7,7 +7,6 @@ Sanitization utilities for OSDuo Business Connect.
 Uses Frappe's built-in sanitization facilities for secure HTML handling.
 """
 
-import frappe
 from frappe.utils.html_utils import sanitize_html
 
 

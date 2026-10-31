@@ -1,11 +1,11 @@
 {# Professional Hero — dark header band, logo tile, tagline, underline nav #}
-<header class="bc-prof-band">
+<header class="bc-prof-band bc-hero-professional">
+    {% if doc.cover_image %}
+    <div class="bc-prof-cover-wrap">
+        <img src="{{ doc.cover_image }}" alt="" class="bc-prof-cover-img">
+    </div>
+    {% endif %}
     <div class="bc-container bc-prof-band-inner">
-        {% if doc.cover_image %}
-        <div class="bc-prof-cover-wrap">
-            <img src="{{ doc.cover_image }}" alt="" class="bc-prof-cover-img">
-        </div>
-        {% endif %}
         <div class="bc-prof-logo">
             {% if doc.logo %}
             <img src="{{ doc.logo }}" alt="{{ doc.business_name }}">
@@ -21,7 +21,7 @@
         </div>
     </div>
 </header>
-<nav class="bc-prof-nav" aria-label="Business sections">
+<nav class="bc-prof-nav bc-hero-professional-nav" aria-label="Business sections">
     <div class="bc-container bc-prof-nav-inner">
         {% if doc.description %}<a href="#bc-about" class="bc-prof-nav-link">About</a>{% endif %}
         {% if products %}<a href="#bc-products" class="bc-prof-nav-link">Products</a>{% endif %}

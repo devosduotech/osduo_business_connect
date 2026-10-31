@@ -73,7 +73,7 @@
     <div class="bc-section">
         <div class="bc-reading">
             <h2 class="bc-section-title">Location</h2>
-            <a href="{{ doc.location }}" target="_blank" class="bc-btn bc-btn-secondary" style="font-size:0.85rem;">&#128205; View on Map &rarr;</a>
+            <a href="{{ doc.location | safe_url }}" target="_blank" class="bc-btn bc-btn-secondary" style="font-size:0.85rem;">&#128205; View on Map &rarr;</a>
         </div>
     </div>
     {% endif %}
@@ -111,7 +111,7 @@
                 <p style="color: var(--bc-text-faint);font-size:0.85rem;margin:0.3rem 0;">&#128205; {{ business.address }}{% if business.city %}, {{ business.city }}{% endif %}{% if business.state %}, {{ business.state }}{% endif %}</p>
                 {% endif %}
                 {% if business.website %}
-                <a href="{{ business.website }}" target="_blank" style="color:var(--bc-primary);font-size:0.85rem;text-decoration:none;">{{ business.website }}</a>
+                <a href="{{ business.website | safe_url }}" target="_blank" style="color:var(--bc-primary);font-size:0.85rem;text-decoration:none;">{{ business.website }}</a>
                 {% endif %}
                 <div style="display:flex;gap:0.6rem;justify-content:center;flex-wrap:wrap;margin-top:0.75rem;">
                     {% if business_phone %}

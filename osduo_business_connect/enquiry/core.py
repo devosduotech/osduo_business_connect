@@ -14,6 +14,8 @@ import re
 import frappe
 from frappe.model.document import Document
 
+from osduo_business_connect.utils.roles import is_system_manager
+
 
 class Enquiry(Document):
     """
@@ -108,6 +110,8 @@ class Enquiry(Document):
                 filters={
                     "name": self.card,
                     "business": self.business,
+                    "status": "Published",
+                    "docstatus": ["<", 2],
                 },
                 fields=["name"],
                 limit=1,
@@ -123,6 +127,7 @@ class Enquiry(Document):
                     "name": self.product,
                     "business": self.business,
                     "status": "Published",
+                    "docstatus": ["<", 2],
                 },
                 fields=["name"],
                 limit=1,
@@ -138,6 +143,7 @@ class Enquiry(Document):
                     "name": self.service,
                     "business": self.business,
                     "status": "Published",
+                    "docstatus": ["<", 2],
                 },
                 fields=["name"],
                 limit=1,
@@ -193,7 +199,7 @@ def get_permission_query_conditions(user):
         return "1=0"
 
     # System Manager can see all enquiries
-    if "System Manager" in frappe.get_roles(user):
+    if is_system_manager(user):
         return ""
 
     # Get businesses where user is a member
@@ -224,7 +230,7 @@ def has_permission(doc, user=None, ptype=None):
         return False
 
     # System Manager has full access
-    if "System Manager" in frappe.get_roles(user):
+    if is_system_manager(user):
         return True
 
     # Check if user is a member of this business

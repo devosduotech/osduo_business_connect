@@ -1,11 +1,11 @@
 {# Modern Hero — gradient, rounded bottom, nav inside hero #}
 <header class="bc-prof-band bc-hero-modern">
+    {% if doc.cover_image %}
+    <div class="bc-prof-cover-wrap">
+        <img src="{{ doc.cover_image }}" alt="" class="bc-prof-cover-img">
+    </div>
+    {% endif %}
     <div class="bc-container bc-prof-band-inner">
-        {% if doc.cover_image %}
-        <div class="bc-prof-cover-wrap">
-            <img src="{{ doc.cover_image }}" alt="" class="bc-prof-cover-img">
-        </div>
-        {% endif %}
         <div class="bc-prof-logo">
             {% if doc.logo %}
             <img src="{{ doc.logo }}" alt="{{ doc.business_name }}">

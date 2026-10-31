@@ -4,6 +4,8 @@
 import frappe
 from frappe.model.document import Document
 
+from osduo_business_connect.utils.roles import is_system_manager
+
 
 class BCTheme(Document):
     """
@@ -55,7 +57,7 @@ def get_permission_query_conditions(user):
     if user == "Administrator":
         return ""
 
-    if "System Manager" in frappe.get_roles(user):
+    if is_system_manager(user):
         return ""
 
     from osduo_business_connect.business.core import get_user_businesses
@@ -85,7 +87,7 @@ def has_permission(doc, user=None, ptype=None):
             return True
         return False
 
-    if "System Manager" in frappe.get_roles(user):
+    if is_system_manager(user):
         return True
 
     # System themes (no business) are read-only for non-System Managers

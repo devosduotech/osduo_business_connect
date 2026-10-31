@@ -8,8 +8,6 @@ Injects branding variables into all web templates so they can
 use {{ bc_app_name }}, {{ bc_logo }}, etc. without hardcoding.
 """
 
-import frappe
-
 from osduo_business_connect.hooks import OSDUO_BRANDING
 
 
