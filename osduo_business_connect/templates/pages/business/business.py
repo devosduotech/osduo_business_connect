@@ -49,18 +49,20 @@ def get_context(context):
         order_by="idx asc",
     )
 
-    # Products
-    context.products = frappe.db.get_list(
+    # Products — public listing, so bypass per-document permissions (the page
+    # itself only exposes records marked Published and not cancelled).
+    context.products = frappe.get_all(
         "Showcase Product",
-        filters={"business": doc.name, "status": "Published"},
-        fields=["name", "product_name", "slug", "image", "short_description", "price", "currency"],
+        filters={"business": doc.name, "status": "Published", "docstatus": ["<", 2]},
+        fields=["name", "product_name", "slug", "image", "short_description",
+                "price", "price_display_mode", "currency"],
         order_by="sort_order asc",
     )
 
     # Services
-    context.services = frappe.db.get_list(
+    context.services = frappe.get_all(
         "Showcase Service",
-        filters={"business": doc.name, "status": "Published"},
+        filters={"business": doc.name, "status": "Published", "docstatus": ["<", 2]},
         fields=["name", "service_name", "slug", "image", "short_description"],
         order_by="sort_order asc",
     )

@@ -51,6 +51,13 @@ def get_permission_query_conditions(user):
     if not user:
         user = frappe.session.user
 
+    if user == "Guest":
+        return (
+            "`tabBusiness`.`status` = 'Published' "
+            "and `tabBusiness`.`public_profile_enabled` = 1 "
+            "and `tabBusiness`.docstatus < 2"
+        )
+
     if "System Manager" in frappe.get_roles(user):
         return ""
 
