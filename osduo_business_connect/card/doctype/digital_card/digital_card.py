@@ -10,6 +10,7 @@ from osduo_business_connect.utils.sanitize import (
     sanitize_text,
     sanitize_url,
 )
+from osduo_business_connect.utils.urls import get_card_public_url
 
 
 class DigitalCard(Document):
@@ -25,6 +26,37 @@ class DigitalCard(Document):
     def validate(self):
         self.validate_slug_immutable()
         self.validate_slug()
+        self.set_public_url()
+
+    def on_update(self):
+        self.ensure_qr_image()
+
+    def set_public_url(self):
+        """Derive the canonical public URL from the slug (field is read-only)."""
+        if self.slug:
+            self.public_url = get_card_public_url(self.slug)
+
+    def ensure_qr_image(self):
+        """Generate (or regenerate) the QR image when QR is enabled and the
+        encoded URL changed. Failures are logged, never block saving."""
+        if not (self.qr_enabled and self.slug):
+            return
+
+        old_doc = self.get_doc_before_save()
+        url_changed = old_doc is None or (old_doc.public_url or "") != (self.public_url or "")
+
+        if not (url_changed or not self.qr_image):
+            return
+
+        try:
+            from osduo_business_connect.services.qr_service import generate_qr_code
+
+            generate_qr_code(self)
+        except Exception:
+            frappe.log_error(
+                title=f"QR generation failed for card {self.name}",
+                message=frappe.get_traceback(),
+            )
 
     def validate_slug_immutable(self):
         """The card URL stays stable after submission; amendments may reuse it."""
