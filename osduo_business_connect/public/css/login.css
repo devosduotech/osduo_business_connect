@@ -302,6 +302,85 @@ body[data-path="login"] .login-content a {
 }
 
 /* =========================================================
+   9b. Login field icons (email / lock / show-password eye)
+   The icon SVGs must be sized here because a custom website
+   theme replaces Frappe's website.bundle.css (where the
+   .icon/.icon-sm sizes live). Without a size, an unsized
+   <svg> falls back to ~300x150 and overlaps the inputs.
+   ========================================================= */
+
+body[data-path="login"] .login-content .page-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+body[data-path="login"] .login-content .email-field,
+body[data-path="login"] .login-content .password-field {
+    position: relative;
+    width: 100%;
+}
+
+/* v14/v15 leading email/lock icons */
+body[data-path="login"] .login-content .field-icon {
+    position: absolute;
+    left: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    width: 16px;
+    height: 16px;
+    display: block;
+    flex: none;
+    pointer-events: none;
+    stroke: #94a3b8;
+}
+
+/* v14/v15 password field + v16 eye toggle: cap every SVG inside a field */
+body[data-path="login"] .login-content .email-field svg,
+body[data-path="login"] .login-content .password-field svg {
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+    min-height: 16px;
+    max-width: 16px;
+    max-height: 16px;
+    display: block;
+    flex: none;
+}
+
+/* v16: toggle-password is the eye SVG itself; v15: it is a "Show" span */
+body[data-path="login"] .login-content .toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    cursor: pointer;
+    stroke: #94a3b8;
+}
+
+body[data-path="login"] .login-content span.toggle-password {
+    font-size: 12px;
+    color: #64748b;
+    stroke: none;
+}
+
+/* keep typed text clear of the icons */
+body[data-path="login"] .login-content .email-field:has(.field-icon) .form-control,
+body[data-path="login"] .login-content .password-field:has(.field-icon) .form-control {
+    padding-left: 36px;
+}
+
+body[data-path="login"] .login-content .password-field .form-control {
+    padding-right: 40px;
+}
+
+body[data-path="login"] .login-content .form-control {
+    box-sizing: border-box;
+}
+
+/* =========================================================
    10. Desktop — full viewport
    ========================================================= */
 
