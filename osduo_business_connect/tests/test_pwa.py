@@ -61,8 +61,8 @@ class TestPWAWiring(unittest.TestCase):
         pwa = read("pwa.py")
         self.assertIn("@frappe.whitelist(allow_guest=True)", pwa)
         self.assertIn("def get_app_icon", pwa)
-        # raw inline response so <img>/manifest can consume it
-        self.assertIn('"type"] = "raw"', pwa)
+        # raw inline response (v16 "download" type) so <img>/manifest can use it
+        self.assertIn('"type"] = "download"', pwa)
         self.assertIn('"display_content_as"] = "inline"', pwa)
 
     def test_canonical_urls_ignore_request_host(self):
