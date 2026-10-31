@@ -70,6 +70,27 @@ editing those values in a fork or by extending `pwa.get_manifest_context`.
    unvisited page → `/offline` fallback
 7. DevTools → Application → Manifest: no errors, icons 192/512/maskable green
 
+## Per-customer domain provisioning
+
+See **[INSTALLATION_GUIDE.md](INSTALLATION_GUIDE.md)** for the full SaaS runbook:
+wildcard DNS/TLS for hosted subdomains (`customer.connect.yourdomain.com`) and the
+Domain-doc + lets-encrypt flow for BYOD domains. Each customer = one bench site;
+set its `host_name` **before** the first `bench migrate` so `public_url`/QR codes are
+stamped with the right canonical origin from day one.
+
+## Implementation gotchas (learned the hard way)
+
+- `sw.js`/`manifest.json` are served via Frappe's raw-template mechanism
+  (controller `.py` + extension template, like `website_script`/`sitemap`) —
+  content type comes from the URL extension
+- Binary API responses in Frappe v16 must set
+  `frappe.local.response["type"] = "download"` (the `as_raw` handler); `"raw"` is not a
+  registered key and returns HTTP 500
+- A **custom Website Theme** replaces `website.bundle.css` site-wide — if a site uses
+  one and it's stale after a Frappe upgrade, re-save the theme (migrate regenerates)
+- PWA install requires **HTTPS**; localhost is exempt. On the HTTP test VM use Chrome's
+  `unsafely-treat-insecure-origin-as-secure` flag
+
 ## Out of scope (roadmap)
 
 - Full offline read/write in the desk (IndexedDB mirroring + sync)

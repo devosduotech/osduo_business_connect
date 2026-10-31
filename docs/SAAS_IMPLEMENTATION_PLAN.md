@@ -1,5 +1,13 @@
 # SaaS Implementation Plan: OSDuo Business Connect
 
+> **Status (v1.2.0):** The SaaS *foundation* is live — one bench serving many customer
+> sites on hosted wildcard subdomains plus bring-your-own domains, per-customer branded
+> installable PWAs with offline support, canonical NFC/QR public URLs, and hard
+> per-business data isolation with a submit/cancel/amend lifecycle
+> ([Installation Guide](INSTALLATION_GUIDE.md) · [PWA](PWA.md) ·
+> [User Manual](USER_MANUAL.md)). The tier/quota enforcement (`BC Subscription`) and
+> SEO-engine items below remain **planned**.
+
 ## 1. Objective
 Transform OSDuo Business Connect from a feature-set application into a tiered SaaS product. This involves implementing strict resource quotas (users and businesses), gating advanced modules (CRM), and introducing an SEO engine to provide marketing value to the end-user.
 

@@ -17,8 +17,9 @@
 8. [Analytics Dashboard](#8-analytics-dashboard)
 9. [CRM Integration](#9-crm-integration)
 10. [Roles & Permissions](#10-roles--permissions)
-11. [Troubleshooting](#11-troubleshooting)
-12. [FAQ](#12-faq)
+11. [Mobile App (PWA)](#11-mobile-app-pwa)
+12. [Troubleshooting](#12-troubleshooting)
+13. [FAQ](#13-faq)
 
 ---
 
@@ -94,8 +95,25 @@ Customer scans QR code or clicks link
 5. Click **Save**
 
 **What happens automatically:**
-- An Owner membership is created for the business owner
-- A default theme (Modern + Blue) is created and linked
+- An **Owner membership** is created for the business owner
+- The built-in **Default Blue** theme is linked to the business
+- A canonical **Public URL** (`/b/<slug>`) is generated and kept read-only
+
+**Draft → Submit workflow**
+
+Businesses, Digital Cards, Products and Services are *submittable* records:
+
+1. Create and edit freely while the record is a **draft**
+2. Click **Submit** — the record enters the approval lifecycle and its
+   **Public Slug locks** (read-only), protecting every QR/NFC link already printed
+3. Need changes later? **Cancel** the submitted record, then **Amend** it. The
+   amendment keeps the **same slug and public URL**, reopens as a draft for edits,
+   and goes live again at the same address once re-submitted
+4. Only the Owner (or BC System Manager) can cancel/amend; Owner/Manager/Marketing
+   can submit — see [Roles & Permissions](#10-roles--permissions)
+
+> A cancelled record disappears from public pages until its amendment is submitted.
+> Plan changes around peak times, or amend quickly — the URL never changes.
 
 ### 2.2 Adding Team Members
 
@@ -242,10 +260,16 @@ Click the **Template** dropdown and select:
 
 1. Set **Status** to **Published**
 2. Enable **Public Profile** toggle
-3. Click **Save**
-4. The QR code auto-generates
+3. Click **Save**, then **Submit**
+4. The **Public URL** field is filled automatically from the canonical domain,
+   and the **QR code auto-generates** encoding exactly that URL
 
 **Your card is now live at:** `https://your-domain.com/c/<card-slug>`
+
+The slug becomes read-only on submit. If card details need changes later,
+**Cancel → Amend** — the amendment keeps the same slug, so the QR/NFC and Public URL
+field update in place; the printed card is unaffected. If the canonical domain ever
+changes, the QR regenerates automatically on the next save or `bench migrate`.
 
 ### 3.7 QR Code & Sharing
 
@@ -478,7 +502,10 @@ Select **Custom** from Color Scheme dropdown, then set:
 1. Open your Business record
 2. Set **Status** to **Published**
 3. Enable **Public Profile** toggle
-4. Save
+4. **Save**, then **Submit**
+
+The business is public only when all three are true: submitted, Published, and
+Public Profile enabled.
 
 ### 6.2 Public URLs
 
@@ -489,6 +516,11 @@ Select **Custom** from Color Scheme dropdown, then set:
 | `/b/<business>/products/<product>` | Product detail page |
 | `/b/<business>/services/<service>` | Service detail page |
 | `/c/<card-slug>` | Digital Card (short URL) |
+
+All public URLs are generated automatically from the site's **canonical domain**
+(set by your administrator via `host_name`). You never type them, and they are the
+same URLs encoded in QR codes and NFC tags — so links you print keep working even
+after a custom domain is attached to the site.
 
 ### 6.3 Sharing Options
 
@@ -702,21 +734,28 @@ Status changes sync bidirectionally:
 
 ### 10.2 Permission Matrix
 
+Actions apply within a business the user is an active member of (plus the global
+`BC *` role for desk access). **BC System Manager** has full access to every business.
+
 **Business:**
 | Action | Owner | Manager | Member | Marketing |
 |--------|-------|---------|--------|-----------|
 | Read | Yes | Yes | Yes | Yes |
 | Write | Yes | Yes | No | Yes |
 | Create | Yes | No | No | No |
+| Submit | Yes | Yes | No | Yes |
+| Cancel / Amend | Yes | No | No | No |
 | Delete | Yes | No | No | No |
 
 **Digital Card:**
 | Action | Owner | Manager | Member | Marketing |
 |--------|-------|---------|--------|-----------|
-| Read | Yes | Yes | Yes | Yes |
-| Write | Yes | Yes | Own card only | Yes |
-| Create | Yes | Yes | No | No |
-| Delete | Yes | No | No | No |
+| Read | Yes | Yes | Yes | – |
+| Write | Yes | Yes | No | – |
+| Create | Yes | Yes | No | – |
+| Submit | Yes | Yes | No | – |
+| Cancel / Amend | Yes | No | No | – |
+| Delete | Yes | No | No | – |
 
 **Products & Services:**
 | Action | Owner | Manager | Marketing |
@@ -724,18 +763,61 @@ Status changes sync bidirectionally:
 | Read | Yes | Yes | Yes |
 | Write | Yes | Yes | Yes |
 | Create | Yes | Yes | Yes |
+| Submit | Yes | Yes | Yes |
+| Cancel / Amend | Yes | No | No |
 | Delete | Yes | No | No |
+
+**Slug lifecycle reminders**
+- Slugs are free to edit while a record is a **draft**
+- On **submit**, the slug becomes read-only — printed QR/NFC links can't break silently
+- **Cancel → Amend** reopens a copy of the record *with the same slug* for edits
+- A cancelled record no longer reserves its slug, so the amendment can reuse the URL
 
 ### 10.3 Data Isolation
 
 - Each business sees only their own data
-- System Managers see all businesses
-- Guest users can only see Published records with Public Profile enabled
+- BC System Managers (and System Manager) see all businesses
+- Guest users can only see Published, submitted records with Public Profile enabled —
+  drafts and cancelled documents are never public
 - CRM Leads are scoped to business members
 
 ---
 
-## 11. Troubleshooting
+## 11. Mobile App (PWA)
+
+Every Business Connect site is an **installable Progressive Web App** — no app-store
+download, no per-customer build. Each customer domain installs as its own app with its
+own name, icon, and data.
+
+### 11.1 Install on Android (Chrome)
+
+1. Open your site's **/login** page in Chrome
+2. Tap **Install** on the prompt chip — or Chrome menu (⋮) → **Install app**
+3. Launch from the home-screen icon; you stay signed in like a native app
+
+### 11.2 Install on iPhone / iPad (Safari)
+
+1. Open your site's **/login** page in Safari
+2. Tap the **Share** button → **Add to Home Screen** → **Add**
+3. The app guidance chip on the login page walks you through this in-app too
+
+### 11.3 What works offline
+
+- Business profiles, digital cards, product and service pages you've **opened at least
+  once** load instantly and still work with no connection (great for event Wi-Fi)
+- Images (logos, covers, QR codes) are cached too
+- Anything requiring data — logins, enquiries, desk edits — shows the branded
+  **offline page** until you reconnect
+- API/desk traffic is never cached, so you always see live data when online
+
+### 11.4 Updates
+
+App updates deploy server-side; installed apps pick them up automatically on the next
+visit — no reinstall. (Bump of the app version rotates the offline cache.)
+
+---
+
+## 12. Troubleshooting
 
 | Issue | Solution |
 |-------|----------|
@@ -747,7 +829,7 @@ Status changes sync bidirectionally:
 
 ---
 
-## 12. FAQ
+## 13. FAQ
 
 **Q: Can I use Business Connect without CRM?**  
 A: No, Frappe CRM is a required dependency.
@@ -759,7 +841,22 @@ A: Unlimited. Each business is independent with its own team, products, and card
 A: No. Enquiries are only visible to business members with appropriate roles.
 
 **Q: How do I change my card's URL?**  
-A: Update the Slug field on the Digital Card. Old URLs will break.
+A: Edit the **Slug** while the card is still a draft. Once submitted the slug locks —
+that's deliberate, because QR codes and NFC tags may already reference it. To change
+content on a submitted card use **Cancel → Amend**; the amendment keeps the same URL.
+
+**Q: I already printed cards with my QR codes — can I still add a custom domain?**  
+A: Yes. Printed QR/NFC links keep resolving through the original hosted subdomain,
+which stays permanently attached to your site. The custom domain is additional.
+
+**Q: Is there a mobile app?**  
+A: Yes — Business Connect is an installable PWA (see
+[Mobile App (PWA)](#11-mobile-app-pwa)). One tap installs your branded app on Android
+or iPhone, with offline viewing of previously opened pages.
+
+**Q: Who can submit, cancel, or amend a business/card/product?**  
+A: Owner, Manager, and Marketing can **submit**. Only the **Owner** (or BC System
+Manager) can **cancel** or **amend**.
 
 **Q: Can I have multiple themes?**  
 A: Yes. Create multiple BC Theme records and assign different ones to different businesses or cards.
