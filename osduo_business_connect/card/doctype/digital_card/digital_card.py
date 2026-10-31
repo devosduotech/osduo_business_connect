@@ -30,6 +30,9 @@ def get_permission_query_conditions(user):
     if not user:
         user = frappe.session.user
 
+    if user == "Guest":
+        return "`tabDigital Card`.`status` = 'Published' and `tabDigital Card`.docstatus < 2"
+
     if "System Manager" in frappe.get_roles(user):
         return ""
 
@@ -45,6 +48,9 @@ def get_permission_query_conditions(user):
 def has_permission(doc, user=None, ptype=None):
     if not user:
         user = frappe.session.user
+
+    if user == "Guest":
+        return ptype == "read" and doc.status == "Published" and doc.docstatus < 2
 
     if "System Manager" in frappe.get_roles(user):
         return True

@@ -78,7 +78,7 @@ def get_context(context):
     if doc.get("show_products") and doc.get("business"):
         context.products = frappe.get_all(
             "Showcase Product",
-            filters={"business": doc["business"], "status": "Published"},
+            filters={"business": doc["business"], "status": "Published", "docstatus": ["<", 2]},
             fields=["name", "product_name", "slug", "short_description", "price", "price_display_mode", "currency", "image"],
             order_by="sort_order asc",
             limit=10,
@@ -89,7 +89,7 @@ def get_context(context):
     if doc.get("show_services") and doc.get("business"):
         context.services = frappe.get_all(
             "Showcase Service",
-            filters={"business": doc["business"], "status": "Published"},
+            filters={"business": doc["business"], "status": "Published", "docstatus": ["<", 2]},
             fields=["name", "service_name", "slug", "short_description", "image"],
             order_by="sort_order asc",
             limit=10,
