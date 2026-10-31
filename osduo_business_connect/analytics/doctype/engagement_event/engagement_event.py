@@ -4,6 +4,8 @@
 import frappe
 from frappe.model.document import Document
 
+from osduo_business_connect.utils.roles import is_system_manager
+
 
 class EngagementEvent(Document):
     """
@@ -147,7 +149,7 @@ def get_permission_query_conditions(user):
         user = frappe.session.user
 
     # System Manager can see all events
-    if "System Manager" in frappe.get_roles(user):
+    if is_system_manager(user):
         return ""
 
     # Get businesses where user is a member
@@ -177,7 +179,7 @@ def has_permission(doc, user=None, ptype=None):
         return False
 
     # System Manager has full access
-    if "System Manager" in frappe.get_roles(user):
+    if is_system_manager(user):
         return True
 
     # Check if user is a member of this business

@@ -67,7 +67,7 @@
                 {% if doc.website %}
                 <div class="bc-contact-item">
                     <span>&#127760;</span>
-                    <a href="{{ doc.website }}" target="_blank" style="color:inherit;text-decoration:none;">{{ doc.website }}</a>
+                    <a href="{{ doc.website | safe_url }}" target="_blank" style="color:inherit;text-decoration:none;">{{ doc.website }}</a>
                 </div>
                 {% endif %}
             </div>
@@ -82,7 +82,7 @@
             <div class="bc-card" style="text-align:center;">
                 <p style="margin:0;color:#475569;">{{ business.address }}{% if business.city %}, {{ business.city }}{% endif %}{% if business.state %}, {{ business.state }}{% endif %}</p>
                 {% if business.website %}
-                <a href="{{ business.website }}" target="_blank" style="color:var(--bc-primary);font-size:0.85rem;text-decoration:none;display:block;margin-top:0.4rem;">{{ business.website }}</a>
+                <a href="{{ business.website | safe_url }}" target="_blank" style="color:var(--bc-primary);font-size:0.85rem;text-decoration:none;display:block;margin-top:0.4rem;">{{ business.website }}</a>
                 {% endif %}
                 <a href="/b/{{ business_slug }}" style="color:var(--bc-primary);font-size:0.85rem;text-decoration:none;display:block;margin-top:0.4rem;">{{ business_name }} &rarr;</a>
             </div>
@@ -97,7 +97,7 @@
             <h2 class="bc-section-title">Connect</h2>
             <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
                 {% for link in links %}
-                <a href="{{ link.url }}" target="_blank" class="bc-btn bc-btn-secondary" style="font-size:0.8rem;">{% if link.icon_class %}<i class="{{ link.icon_class }}" style="margin-right:0.3rem;"></i>{% endif %}{{ link.label or link.link_type }}</a>
+                <a href="{{ link.url | safe_url }}" target="_blank" class="bc-btn bc-btn-secondary" style="font-size:0.8rem;">{% if link.icon_class %}<i class="{{ link.icon_class }}" style="margin-right:0.3rem;"></i>{% endif %}{{ link.label or link.link_type }}</a>
                 {% endfor %}
             </div>
         </div>

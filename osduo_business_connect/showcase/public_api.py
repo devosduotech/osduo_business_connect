@@ -9,7 +9,6 @@ Uses get_public_business_by_slug() for consistent Business visibility checks.
 """
 
 import frappe
-from frappe import _
 
 from osduo_business_connect.business.core import get_public_business_by_slug
 
@@ -35,6 +34,7 @@ def get_public_product(business_slug, product_slug):
             "business": business.name,
             "slug": product_slug,
             "status": "Published",
+            "docstatus": ["<", 2],
         },
         ["name"],
         as_dict=True,
@@ -66,6 +66,7 @@ def get_public_products(business_slug, limit=20, offset=0):
         filters={
             "business": business.name,
             "status": "Published",
+            "docstatus": ["<", 2],
         },
         fields=["name"],
         order_by="sort_order ASC",
@@ -97,6 +98,7 @@ def get_public_service(business_slug, service_slug):
             "business": business.name,
             "slug": service_slug,
             "status": "Published",
+            "docstatus": ["<", 2],
         },
         ["name"],
         as_dict=True,
@@ -128,6 +130,7 @@ def get_public_services(business_slug, limit=20, offset=0):
         filters={
             "business": business.name,
             "status": "Published",
+            "docstatus": ["<", 2],
         },
         fields=["name"],
         order_by="sort_order ASC",

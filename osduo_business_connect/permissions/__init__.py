@@ -76,19 +76,3 @@ def has_permission(doc, user=None, ptype=None):
         return theme_has_permission(doc, user=user, ptype=ptype)
 
     return False
-
-
-def get_permission_query_conditions(user):
-    """
-    Central permission query conditions dispatcher.
-
-    Returns SQL WHERE conditions to filter list queries based on user permissions.
-    """
-    if not user:
-        user = frappe.session.user
-
-    # System Manager sees everything
-    if "System Manager" in frappe.get_roles(user):
-        return ""
-
-    return ""

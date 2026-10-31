@@ -8,7 +8,6 @@ This module handles enquiry-related operations for businesses.
 """
 
 import frappe
-from frappe import _
 
 
 def create_enquiry(business_name, visitor_data, source="Other", references=None):
@@ -40,7 +39,7 @@ def create_enquiry(business_name, visitor_data, source="Other", references=None)
         card = frappe.db.get_value(
             "Digital Card",
             {"name": card_name, "business": business_name,
-             "status": "Published", "public_profile_enabled": 1},
+             "status": "Published", "public_profile_enabled": 1, "docstatus": ["<", 2]},
             ["name"],
         )
         if not card:
@@ -49,7 +48,8 @@ def create_enquiry(business_name, visitor_data, source="Other", references=None)
     if product_name:
         product = frappe.db.get_value(
             "Showcase Product",
-            {"name": product_name, "business": business_name, "status": "Published"},
+            {"name": product_name, "business": business_name, "status": "Published",
+             "docstatus": ["<", 2]},
             ["name"],
         )
         if not product:
@@ -58,7 +58,8 @@ def create_enquiry(business_name, visitor_data, source="Other", references=None)
     if service_name:
         service = frappe.db.get_value(
             "Showcase Service",
-            {"name": service_name, "business": business_name, "status": "Published"},
+            {"name": service_name, "business": business_name, "status": "Published",
+             "docstatus": ["<", 2]},
             ["name"],
         )
         if not service:

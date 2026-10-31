@@ -10,6 +10,8 @@ Provides a whitelisted API for the analytics dashboard.
 import frappe
 from frappe import _
 
+from osduo_business_connect.utils.roles import is_system_manager
+
 
 @frappe.whitelist()
 def get_analytics(business, days=30):
@@ -84,7 +86,7 @@ def get_business_list():
     from osduo_business_connect.business.core import get_user_businesses
 
     user = frappe.session.user
-    if "System Manager" in frappe.get_roles(user):
+    if is_system_manager(user):
         return frappe.get_all(
             "Business",
             filters={"status": "Published"},

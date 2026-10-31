@@ -13,7 +13,7 @@ def get_context(context):
     # Find business
     business = frappe.db.get_value(
         "Business",
-        {"slug": business_slug, "status": "Published", "public_profile_enabled": 1},
+        {"slug": business_slug, "status": "Published", "public_profile_enabled": 1, "docstatus": ["<", 2]},
         ["name", "business_name", "slug", "description", "website",
          "email", "phone", "whatsapp", "address", "city", "state"],
         as_dict=True,
@@ -24,7 +24,7 @@ def get_context(context):
     # Find member
     doc = frappe.db.get_value(
         "Digital Card",
-        {"slug": member_slug, "business": business.name, "status": "Published", "public_profile_enabled": 1},
+        {"slug": member_slug, "business": business.name, "status": "Published", "public_profile_enabled": 1, "docstatus": ["<", 2]},
         ["name", "business", "member", "display_name", "slug",
          "designation", "profile_image", "bio", "phone", "email",
          "whatsapp", "website", "qr_enabled", "qr_image",

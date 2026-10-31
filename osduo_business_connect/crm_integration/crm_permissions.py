@@ -18,6 +18,8 @@ Rules:
 
 import frappe
 
+from osduo_business_connect.utils.roles import is_system_manager
+
 
 def has_permission(doc, user=None, ptype=None):
     """
@@ -34,7 +36,7 @@ def has_permission(doc, user=None, ptype=None):
         return False
 
     # System Manager: full access
-    if "System Manager" in frappe.get_roles(user):
+    if is_system_manager(user):
         return True
 
     # If the lead has no osduo_business, let CRM's native permissions decide.
@@ -69,7 +71,7 @@ def get_permission_query_conditions(user):
         return "`tabCRM Lead`.name IN (SELECT name FROM `tabCRM Lead` WHERE 1=0)"
 
     # System Manager: see all
-    if "System Manager" in frappe.get_roles(user):
+    if is_system_manager(user):
         return ""
 
     # CRM Manager/User: see all CRM Leads (CRM's native model)

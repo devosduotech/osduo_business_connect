@@ -4,6 +4,8 @@
 import frappe
 from frappe.model.document import Document
 
+from osduo_business_connect.utils.roles import is_system_manager
+
 
 class BusinessMember(Document):
     """
@@ -79,14 +81,20 @@ class BusinessMember(Document):
             if existing_owner:
                 frappe.throw("A business can only have one active Owner. Please deactivate the existing owner first.")
 
-        # Prevent Manager from creating/modifying Owner role
-        if self.role == "Owner":
+        # Prevent Manager from creating/modifying Owner role. The initial
+        # membership is created by Business.after_insert before any owner
+        # exists, so that bootstrap insert is explicitly allowed.
+        if self.role == "Owner" and not self.flags.get("bc_bootstrap_owner"):
             user = frappe.session.user
-            if "System Manager" not in frappe.get_roles(user):
+            if not is_system_manager(user):
                 from osduo_business_connect.business.core import get_user_role_in_business
+
                 current_role = get_user_role_in_business(user, self.business)
                 if current_role != "Owner":
-                    frappe.throw("Only the Business Owner or a System Manager can create or modify Owner role")
+                    frappe.throw(
+                        "Only the Business Owner or a System Manager can create "
+                        "or modify Owner role"
+                    )
 
     def validate_unique_membership(self):
         """Validate that user doesn't have duplicate active membership."""
@@ -125,8 +133,8 @@ def get_permission_query_conditions(user):
     if not user:
         user = frappe.session.user
 
-    # System Manager can see all members
-    if "System Manager" in frappe.get_roles(user):
+    # System Manager (and OSDuo's BC System Manager) can see all members
+    if is_system_manager(user):
         return ""
 
     # Get businesses where user is a member
@@ -151,7 +159,7 @@ def has_permission(doc, user=None, ptype=None):
         user = frappe.session.user
 
     # System Manager has full access
-    if "System Manager" in frappe.get_roles(user):
+    if is_system_manager(user):
         return True
 
     # Check if user is a member of this business
