@@ -20,7 +20,7 @@ def get_context(context):
     # Find service
     service_name = frappe.db.get_value(
         "Showcase Service",
-        {"slug": service_slug, "business": business.name, "status": "Published"},
+        {"slug": service_slug, "business": business.name, "status": "Published", "docstatus": ["<", 2]},
         "name",
     )
     if not service_name:
