@@ -11,6 +11,7 @@ from osduo_business_connect.utils.sanitize import (
     sanitize_text,
     sanitize_url,
 )
+from osduo_business_connect.utils.urls import get_business_public_url
 
 
 class Business(Document):
@@ -30,10 +31,16 @@ class Business(Document):
         self.validate_slug()
         self.validate_owner_user()
         self.validate_contact_methods()
+        self.set_public_url()
 
     def after_insert(self):
         self.ensure_owner_membership()
         self.apply_default_theme()
+
+    def set_public_url(self):
+        """Derive the canonical public URL from the slug (field is read-only)."""
+        if self.slug:
+            self.public_url = get_business_public_url(self.slug)
 
     def validate_slug_immutable(self):
         """Keep the public URL stable once the record is submitted.

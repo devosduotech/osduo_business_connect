@@ -47,7 +47,8 @@ web_include_css = [
 ]
 
 web_include_js = [
-    "/assets/osduo_business_connect/js/login-layout.js"
+    "/assets/osduo_business_connect/js/login-layout.js",
+    "/assets/osduo_business_connect/js/pwa.js",
 ]
 
 # Desk branding CSS (sidebar logo, app title, browser title)

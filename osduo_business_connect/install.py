@@ -189,6 +189,42 @@ def after_migrate():
     create_default_roles()
     create_builtin_themes()
     create_crm_lead_source()
+    backfill_public_urls()
+
+
+def backfill_public_urls():
+    """Populate the canonical public URLs on existing Business / Digital Card
+    records whose slug is set but public_url is missing or stale.
+
+    Runs after migrate so domain changes can be rolled out by re-saving
+    (or re-running migrate) instead of editing hundreds of documents.
+    """
+    from osduo_business_connect.utils.urls import (
+        get_business_public_url,
+        get_card_public_url,
+    )
+
+    try:
+        builders = {
+            "Business": get_business_public_url,
+            "Digital Card": get_card_public_url,
+        }
+        updated = 0
+        for doctype, build_url in builders.items():
+            rows = frappe.get_all(
+                doctype,
+                filters={"slug": ["is", "set"]},
+                fields=["name", "slug", "public_url"],
+            )
+            for row in rows:
+                expected = build_url(row.slug)
+                if expected and row.public_url != expected:
+                    frappe.db.set_value(doctype, row.name, "public_url", expected, update_modified=False)
+                    updated += 1
+        if updated:
+            frappe.db.commit()
+    except Exception:
+        frappe.log_error(title="BC public_url backfill failed")
 
 
 def migrate_crm_custom_fields():
