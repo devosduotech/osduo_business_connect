@@ -20,7 +20,7 @@ def get_context(context):
     # Find product
     product_name = frappe.db.get_value(
         "Showcase Product",
-        {"slug": product_slug, "business": business.name, "status": "Published"},
+        {"slug": product_slug, "business": business.name, "status": "Published", "docstatus": ["<", 2]},
         "name",
     )
     if not product_name:

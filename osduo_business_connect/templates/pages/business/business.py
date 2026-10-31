@@ -12,7 +12,7 @@ def get_context(context):
 
     doc = frappe.db.get_value(
         "Business",
-        {"slug": slug, "status": "Published", "public_profile_enabled": 1},
+        {"slug": slug, "status": "Published", "public_profile_enabled": 1, "docstatus": ["<", 2]},
         ["name", "business_name", "legal_name", "slug", "status",
          "industry", "description", "logo", "cover_image",
          "website", "email", "phone", "whatsapp", "address",

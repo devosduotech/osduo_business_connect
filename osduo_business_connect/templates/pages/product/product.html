@@ -3,9 +3,8 @@
 {%- block page_content -%}
 <div class="bc-page bc-template-{{ theme.template|lower }}" data-layout="{{ theme.layout_mode }}" data-dark="{{ 'true' if theme.dark_mode else 'false' }}" style="{{ theme_vars }}">
 
-    {# Back link (the Professional hero already carries a breadcrumb) #}
-
-
+    {# Business profile header — same look/theme as the parent business profile #}
+    {% include "osduo_business_connect/templates/pages/parts/business_header.html" %}
 
     {# ===== PRODUCT HERO (varies by template) ===== #}
     {% if template_type == "Professional" %}

@@ -125,14 +125,14 @@ def get_user_role_in_business(user, business):
 def get_business_by_slug(slug):
     if not slug: return None
     return frappe.db.get_value(
-        "Business", {"slug": slug, "status": "Published"},
+        "Business", {"slug": slug, "status": "Published", "docstatus": ["<", 2]},
         ["name", "slug", "business_name", "logo", "status"], as_dict=True
     )
 
 def get_public_business_by_slug(slug):
     if not slug: return None
     return frappe.db.get_value(
-        "Business", {"slug": slug, "status": "Published", "public_profile_enabled": 1},
-        ["name", "slug", "business_name", "logo", "status", "description", "website", "email", "phone", "whatsapp", "address", "city", "state", "show_about_in_product_page", "show_about_in_service_page"],
+        "Business", {"slug": slug, "status": "Published", "public_profile_enabled": 1, "docstatus": ["<", 2]},
+        ["name", "slug", "business_name", "logo", "industry", "status", "description", "website", "email", "phone", "whatsapp", "address", "city", "state", "show_about_in_product_page", "show_about_in_service_page"],
         as_dict=True
     )

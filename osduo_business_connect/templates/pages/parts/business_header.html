@@ -1,0 +1,35 @@
+{# Shared business profile header for product/service pages.
+   Inherits the theme (template + colours) selected on the Business record,
+   so detail pages always look like the business profile they belong to. #}
+<header class="bc-biz-header">
+    <div class="bc-container bc-biz-header-inner">
+        <a href="/b/{{ business_slug }}" class="bc-biz-brand" title="{{ business.business_name or business_name }}">
+            {% if business.logo %}
+            <img src="{{ business.logo }}" alt="{{ business.business_name or business_name }}" class="bc-biz-logo-img">
+            {% else %}
+            <span class="bc-biz-logo-fallback" aria-hidden="true">{{ (business.business_name or business_name or 'B')[0] }}</span>
+            {% endif %}
+            <span class="bc-biz-brand-text">
+                <span class="bc-biz-name">{{ business.business_name or business_name }}</span>
+                {% if business.industry %}<span class="bc-biz-industry">{{ business.industry }}</span>{% endif %}
+            </span>
+        </a>
+
+        <nav class="bc-biz-nav" aria-label="Business profile">
+            <a href="/b/{{ business_slug }}">Home</a>
+            <a href="/b/{{ business_slug }}#bc-about">About</a>
+            <a href="/b/{{ business_slug }}#bc-products">Products</a>
+            <a href="/b/{{ business_slug }}#bc-services">Services</a>
+            <a href="/b/{{ business_slug }}#bc-contact">Contact</a>
+        </nav>
+
+        <div class="bc-biz-actions">
+            {% if business_phone %}
+            <a href="tel:{{ business_phone }}" class="bc-biz-action" data-bc-event="phone_click">&#9742; Call</a>
+            {% endif %}
+            {% if business_whatsapp %}
+            <a href="https://wa.me/{{ business_whatsapp }}" class="bc-biz-action" target="_blank" rel="noopener" data-bc-event="whatsapp_click">&#128172; WhatsApp</a>
+            {% endif %}
+        </div>
+    </div>
+</header>

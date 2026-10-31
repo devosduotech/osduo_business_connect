@@ -168,7 +168,8 @@
       "fieldname": "default_theme",
       "fieldtype": "Link",
       "label": "Default Theme",
-      "options": "BC Theme"
+      "options": "BC Theme",
+      "allow_on_submit": 1
     },
     {
       "fieldname": "public_profile_enabled",

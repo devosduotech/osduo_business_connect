@@ -7,10 +7,6 @@
 
         <h1>{{ doc.product_name or doc.service_name }}</h1>
 
-        {% if doc.category %}
-        <span style="display:inline-block;padding:0.3rem 0.75rem;background:rgba(255,255,255,0.2);border-radius:20px;font-size:0.8rem;margin-bottom:0.5rem;">{{ doc.category }}</span>
-        {% endif %}
-
         {% if doc.short_description %}
         <p class="bc-tagline">{{ doc.short_description }}</p>
         {% endif %}
