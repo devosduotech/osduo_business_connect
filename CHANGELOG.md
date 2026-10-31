@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.2.0 - 31 October 2026
+
+### New Features (v1.2.0)
+
+#### Progressive Web App
+- Installable per-customer PWA: dynamic `/manifest.json`, root-scope `/sw.js`,
+  branded `/offline` fallback, auto-generated 192/512/maskable icons.
+- Offline support for previously visited public pages (cards, business
+  profiles); API and desk traffic are never cached.
+- Android install prompt and iOS "Add to Home Screen" guidance on login.
+
+#### Canonical Public URLs
+- Business / Digital Card `public_url` auto-derived from `host_name`
+  (site_config) — stable for printed QR/NFC across custom-domain changes.
+- QR images regenerate automatically when the encoded URL changes; existing
+  records backfilled on `bench migrate`.
+
+### Hardening (v1.2.0)
+- Submit/cancel/amend permission lifecycle for Business, Card, Product,
+  Service; BC System Manager parity with System Manager app-wide.
+- Slug read-only after submission; preserved through cancel → amend.
+- Rich-text sanitization on save; `safe_url` on all public hrefs; cancelled
+  docs excluded from every public lookup.
+- Fixed oversized login field icons; cover-image banner + distinct business
+  hero variants; removed dead code and unused CSS.
+
+---
+
 ## v1.0.2 - 28 October 2026
 
 ### New Features (v1.0.2)

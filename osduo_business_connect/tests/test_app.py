@@ -23,7 +23,9 @@ class TestAppStructure(unittest.TestCase):
     def test_app_version_in_init(self):
         content = self._read("__init__.py")
         self.assertIn("__version__", content)
-        self.assertIn("1.0.2", content)
+        # Match the current scheme without pinning the exact number, so
+        # release bumps don't require editing this test.
+        self.assertRegex(content, r'__version__\s*=\s*"\d+\.\d+\.\d+"')
 
     def test_app_name_in_init(self):
         content = self._read("__init__.py")
