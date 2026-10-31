@@ -1,3 +1,60 @@
+# Release Notes - business_connect (v1.2.0)
+
+**Release Date:** 31 October 2026  
+**Version:** v1.2.0
+
+This release adds an installable **Progressive Web App** layer (per-customer
+branding, offline support for card/business pages) and hardens the platform
+for SaaS go-live: permission lifecycle, slug/amend safety, input
+sanitization, and canonical NFC/QR URLs.
+
+---
+
+## New Features (v1.2.0)
+
+### Progressive Web App (PWA)
+- Every customer site becomes an installable mobile app — hosted subdomains
+  (karthic.connect.osduotech.com) and bring-your-own domains work identically
+  with zero per-customer setup.
+- Dynamic per-site web app manifest (`/manifest.json`) — name, icon and theme
+  follow the site's branding (Website Settings → System Settings → defaults).
+- Root-scope service worker (`/sw.js`): instant repeat loads of card/business
+  pages, offline viewing of previously visited public pages, branded
+  `/offline` fallback. API and desk traffic are never cached.
+- Auto-generated PWA icons (192/512/maskable) with PNG quality; iOS home
+  screen guidance and Android install prompt on the login app entry.
+- Deploys roll forward automatically: caches are stamped with the app version.
+
+### Canonical URLs for NFC/QR
+- `public_url` on Business and Digital Card is now auto-derived from the
+  canonical base (`host_name` in site_config) — never typed and never taken
+  from the request domain, so printed cards stay valid across domain changes.
+- QR images regenerate automatically when the encoded URL changes.
+- `bench migrate` backfills existing records.
+
+## Hardening & Fixes (v1.2.0)
+- **Permissions:** submit for Owner/Manager/Marketing, cancel/amend for Owner;
+  BC System Manager treated as System Manager across all app permission checks;
+  owner memberships and default theme auto-created on Business insert.
+- **Slug lifecycle:** slugs are read-only after submission but preserved
+  through cancel → amend; cancelled records no longer reserve slugs (NFC
+  continuity restored).
+- **Security:** stored rich text is sanitized on save; all public URL hrefs
+  go through `safe_url`; cancelled documents are excluded from every public
+  lookup and API.
+- **Login page:** fixed oversized field icons overlapping the email/password
+  inputs (custom Website Theme replacing Frappe's icon CSS).
+- **Business profiles:** cover image now renders as a full-bleed banner
+  behind all six hero variants, each visually distinct (Modern, Minimal,
+  Classic, Luxury, Creative, Professional).
+- Removed dead code and unused CSS blocks.
+
+**Upgrade notes:** run `bench migrate` (required — DocType JSON changed) and
+set `host_name` in each production site's `site_config.json` before printing
+NFC cards or QR codes.
+
+---
+
 # Release Notes - business_connect (v1.1.0)
 
 **Release Date:** 30 October 2026  
