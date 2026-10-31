@@ -118,6 +118,31 @@
         </div>
     </div>
 
+    {# ===== BUSINESS HOURS ===== #}
+    {% if business_hours %}
+    <div class="bc-section" id="bc-hours">
+        <div class="bc-container">
+            <h2 class="bc-section-title">Business Hours</h2>
+            <div class="bc-hours-list">
+                {% for row in business_hours %}
+                <div class="bc-hours-row{% if row.day == today %} bc-hours-row-today{% endif %}">
+                    <span class="bc-hours-day">{{ row.day }}</span>
+                    <span class="bc-hours-time">
+                        {% if row.is_24_hours %}
+                        Open 24 hours
+                        {% elif row.open_time and row.close_time %}
+                        {{ row.open_time }} &ndash; {{ row.close_time }}
+                        {% else %}
+                        Closed
+                        {% endif %}
+                    </span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     {# ===== ENQUIRY FORM ===== #}
     <div class="bc-section" id="bc-enquiry">
         <div class="bc-container">

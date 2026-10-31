@@ -1,4 +1,4 @@
-{# Professional Hero — dark header band, logo tile, tagline, stats, underline nav #}
+{# Professional Hero — dark header band, logo tile, tagline, underline nav #}
 <header class="bc-prof-band">
     <div class="bc-container bc-prof-band-inner">
         {% if doc.cover_image %}
@@ -17,19 +17,6 @@
             <h1>{{ doc.business_name }}</h1>
             {% if doc.industry %}
             <p class="bc-prof-band-tagline">{{ doc.industry }}</p>
-            {% endif %}
-            {% if stats %}
-            <div class="bc-prof-stats">
-                {% if stats.team_members is defined and stats.team_members %}
-                <span class="bc-prof-stat"><strong>{{ stats.team_members }}</strong> Team Members</span>
-                {% endif %}
-                {% if stats.products is defined and stats.products %}
-                <span class="bc-prof-stat"><strong>{{ stats.products }}</strong> Products</span>
-                {% endif %}
-                {% if stats.services is defined and stats.services %}
-                <span class="bc-prof-stat"><strong>{{ stats.services }}</strong> Services</span>
-                {% endif %}
-            </div>
             {% endif %}
         </div>
     </div>
