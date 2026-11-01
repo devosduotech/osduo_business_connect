@@ -4,6 +4,12 @@
 
     const path = window.location.pathname.replace(/\/+$/, "");
 
+    // Brand assets are bundled in the app (public/images) — never reference
+    // /files/... here, which would require copying them into every site.
+    // Keep these in sync with OSDUO_BRANDING in hooks.py.
+    const BRAND_LOGO = "/assets/osduo_business_connect/images/logo-mark-128.png";
+    const BRAND_LOGO_ALT = "OSDuo Business Connect logo";
+
 /*    // Redirect the root URL to the branded login page.
     if (path === "") {
         window.location.replace("/login");
@@ -41,10 +47,13 @@
                     <div class="bc-brand-identity">
                         <img
                             class="bc-brand-logo"
-                            src="/files/logo_mark_512x512.png"
-                            alt="OSDuo Business Connect logo"
+                            src="${BRAND_LOGO}"
+                            alt="${BRAND_LOGO_ALT}"
+                            width="58"
+                            height="58"
+                            decoding="async"
                         >
-                        <div>
+                        <div class="bc-brand-identity-text">
                             <div class="bc-brand-name">OSDuo</div>
                             <div class="bc-brand-product">BUSINESS CONNECT</div>
                         </div>

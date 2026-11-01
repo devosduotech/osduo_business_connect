@@ -26,18 +26,39 @@ def _hex_to_rgb(color):
     return tuple(int(color[i : i + 2], 16) for i in (0, 2, 4))
 
 
+APP_ASSET_PREFIX = "/assets/osduo_business_connect/"
+
+
 def _icon_source_path():
-    """Resolve the source artwork: site logo first, app branding fallback."""
+    """Resolve the source artwork: site logo first, bundled app branding fallback.
+
+    Supports both site uploads (``/files/...``) and assets bundled in this app
+    (``/assets/osduo_business_connect/...``). Anything else (absolute CDN URL,
+    missing file) falls back to the bundled mark so the endpoint never breaks.
+    """
+    import os
+    from urllib.parse import unquote, urlparse
+
     logo_url = frappe.get_website_settings("app_logo") or ""
-    if logo_url.startswith("/files/") and "?" not in logo_url:
-        path = frappe.get_site_path("public", logo_url.lstrip("/"))
-        import os
+    path = unquote(urlparse(logo_url).path)
 
-        if os.path.isfile(path):
-            return path
+    if path.startswith("/files/"):
+        candidate = frappe.get_site_path("public", path.lstrip("/"))
+        if os.path.isfile(candidate):
+            return candidate
 
+    if path.startswith(APP_ASSET_PREFIX):
+        candidate = frappe.get_app_path(
+            "osduo_business_connect", "public", path[len(APP_ASSET_PREFIX) :]
+        )
+        if os.path.isfile(candidate):
+            return candidate
+
+    # OSDUO_BRANDING["logo_mark"] is guaranteed to be a bundled asset path.
     return frappe.get_app_path(
-        "osduo_business_connect", "public", "images", "logo-mark.png"
+        "osduo_business_connect",
+        "public",
+        OSDUO_BRANDING["logo_mark"][len(APP_ASSET_PREFIX) :],
     )
 
 
