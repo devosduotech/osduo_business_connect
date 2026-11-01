@@ -1,3 +1,42 @@
+# Release Notes - business_connect (v1.2.2)
+
+**Release Date:** 1 November 2026
+**Version:** v1.2.2
+
+Every newly provisioned site now arrives **fully branded by default**: the
+bundled `OSDuo Business Connect` Website Theme is created and selected, and the
+favicon, app logo and app name are applied automatically during install and
+migrate. No manual Desk setup and no copying brand files into the site's
+`public/files` directory.
+
+---
+
+## Changes (v1.2.2)
+
+### Default Website Theme
+- New **Website Theme** `OSDuo Business Connect` ships with the app: brand
+  primary/secondary/accent colours, text and surface colours, rounded buttons,
+  branded footer and card shadows.
+- Applied automatically by `bench migrate` / install. New sites get the theme,
+  favicon, app logo and app name with zero manual steps.
+- **Non-destructive:** an existing theme with the same name is reused untouched,
+  so per-site SCSS customisations survive. A site that has chosen a different
+  theme keeps it; only an empty or `Standard` Website Settings → Theme is
+  replaced.
+- Theme colours reuse stable `Color` records, created once and shared across
+  re-installs.
+- No external font import — the theme stays fast and works offline. Desk and
+  login styling continue to come from the app's own CSS.
+
+**Upgrade notes:** run `bench --site <site> migrate && bench --site <site> clear-cache`.
+The break-glass command is
+`bench --site <site> execute osduo_business_connect.branding.apply_branding_settings`.
+`node` must be available on the bench (Frappe compiles Website Theme SCSS with
+it); if compilation fails, the theme is logged and the site keeps its current
+theme instead of failing the migration.
+
+---
+
 # Release Notes - business_connect (v1.2.1)
 
 **Release Date:** 1 November 2026  

@@ -3,7 +3,7 @@
 Step-by-step instructions to install, operate, and update **OSDuo Business Connect**
 — from a single-site demo to a multi-tenant SaaS bench serving many customer domains.
 
-Current release: **v1.2.1** (see [RELEASE_NOTES.md](../RELEASE_NOTES.md)).
+Current release: **v1.2.2** (see [RELEASE_NOTES.md](../RELEASE_NOTES.md)).
 
 ---
 
@@ -49,6 +49,8 @@ On install the app automatically creates:
   `BC Marketing Manager`, `BC CRM User`, `BC System Manager`
 - Built-in themes: `Default Blue`, `Default Violet`, … (template Modern + color scheme)
 - CRM custom fields (`osduo_business`, `osduo_enquiry`, …) on the Lead doctype
+- Website theme **`OSDuo Business Connect`** (set as the site default) plus
+  favicon, app logo and app name — no manual Desk setup required
 
 ### Set the canonical domain (do this early!)
 
@@ -148,6 +150,8 @@ bench restart
 ```
 
 Notes:
+- v1.2.2 creates and selects the bundled **Website Theme** `OSDuo Business
+  Connect` on install/migrate, alongside the favicon/app logo/app name.
 - v1.2.1 bundles the logo/favicon/login panel in the app and applies them on
   `migrate` (see **Branding & logo** below). Never copy brand images into
   `sites/<site>/public/files`.
@@ -166,7 +170,8 @@ Notes:
 |---|---|
 | PWA app name / logo per customer | Website Settings → App Name / App Logo (falls back to System Settings → app defaults) |
 | Canonical URL origin | `site_config.json → host_name` per site |
-| Theme | Business → Default Theme (BC Theme: template + colors + layout) |
+| Website Theme (site-wide web pages) | Website Settings → Theme (defaults to `OSDuo Business Connect`) |
+| Theme (public card/profile pages) | Business → Default Theme (BC Theme: template + colors + layout) |
 | Public visibility | Business/Card/Product/Service: Status = Published + Public Profile + submitted (not cancelled) |
 | Team access | Business Member rows (Owner created automatically with the Business) |
 
@@ -188,12 +193,21 @@ All brand assets ship inside the app package and are served from
 
 `bench migrate` / install automatically fills **Website Settings → App Logo + Favicon +
 App Name** and **System Settings → App Name** from these bundled assets
-(`osduo_business_connect.branding.apply_branding_settings`). Rules:
+(`osduo_business_connect.branding.apply_branding_settings`). It also creates the
+**Website Theme `OSDuo Business Connect`** from the same brand palette and makes
+it the default. Rules:
 
 - Empty, generic (`Frappe`) or legacy hand-copied brand files (`/files/logo*.png`,
   `/files/logo_mark_512x512.png`, …) are replaced with the bundled assets.
 - A genuine per-site custom logo/name is left untouched, so white-labelling still
   works by simply uploading a replacement in Website Settings.
+- The theme is only **created when missing** and only **selected when Website
+  Settings → Theme is empty or `Standard`**. An existing `OSDuo Business Connect`
+  theme is never rewritten, so per-site SCSS edits survive migrations. A site
+  that deliberately chose another theme keeps it.
+- Website Theme SCSS is compiled by Frappe with Node; keep `node` available on
+  the bench. If compilation fails the error is logged and the site keeps its
+  current theme — the migration still succeeds.
 - To re-apply the defaults after changing an asset:
   `bench --site <site> execute osduo_business_connect.branding.apply_branding_settings`
   then `bench --site <site> clear-cache`.
