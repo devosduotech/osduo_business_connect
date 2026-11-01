@@ -78,6 +78,37 @@ class TestBundledBranding(unittest.TestCase):
         self.assertIn("def _is_legacy_brand_copy", branding)
         self.assertIn("logo_mark_512x512", branding)
 
+    def test_default_website_theme_is_created_on_install(self):
+        branding = read("branding.py")
+        self.assertIn('WEBSITE_THEME_NAME = "OSDuo Business Connect"', branding)
+        self.assertIn("def ensure_default_website_theme", branding)
+        self.assertIn('"doctype": "Website Theme"', branding)
+        self.assertIn('"theme": WEBSITE_THEME_NAME', branding)
+        # Must be editable per site and compiled by Frappe.
+        self.assertIn('"custom": 1', branding)
+
+    def test_default_website_theme_only_fills_empty_slot(self):
+        branding = read("branding.py")
+        # A deliberate per-site theme choice (anything other than empty or
+        # Standard) must win over the bundled default.
+        self.assertIn("def _is_default_theme_slot", branding)
+        self.assertIn('("", "Standard")', branding)
+        self.assertIn("website_settings, \"website_theme\", WEBSITE_THEME_NAME", branding)
+
+    def test_default_website_theme_uses_bundled_brand_colors(self):
+        branding = read("branding.py")
+        self.assertIn("--osduo-primary: #0B3D91", branding)
+        self.assertIn("--osduo-secondary: #1677FF", branding)
+        self.assertIn("--osduo-accent: #00C49A", branding)
+        # No runtime font/network imports in the bundled theme.
+        self.assertNotIn("@import url(", branding)
+
+    def test_default_website_theme_reuses_color_records(self):
+        branding = read("branding.py")
+        self.assertIn("def _get_or_create_color", branding)
+        self.assertIn('"doctype": "Color"', branding)
+        self.assertIn('"__newname": name', branding)
+
     def test_pwa_icon_accepts_bundled_assets(self):
         pwa = read("pwa.py")
         self.assertIn("APP_ASSET_PREFIX", pwa)

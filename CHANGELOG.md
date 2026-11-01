@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.2.2 - 1 November 2026
+
+### Fixes & Improvements (v1.2.2)
+
+#### Default Website Theme on every new site
+- Added the bundled **Website Theme** `OSDuo Business Connect` (brand colours,
+  typography-friendly buttons, footer and card styling) and made it the default
+  during install/migrate.
+- A new site now gets the theme, favicon, app logo and app name with **zero
+  manual setup**.
+- Idempotent and non-destructive: an existing `OSDuo Business Connect` theme is
+  reused as-is (per-site SCSS customisations survive), and a site that has
+  deliberately chosen another theme keeps it. Only an empty or `Standard`
+  Website Settings → Theme is replaced.
+- Theme colour fields reuse stable `Color` records (`OSDuo Primary Blue`,
+  `OSDuo Text`, `OSDuo Dark Blue`, `OSDuo Light`, `OSDuo Background`).
+- No external font import: the theme stays fast and works offline.
+
+Upgrade: `bench --site <site> migrate && bench --site <site> clear-cache`.
+
+---
+
 ## v1.2.1 - 1 November 2026
 
 ### Fixes & Improvements (v1.2.1)
