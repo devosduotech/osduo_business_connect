@@ -84,6 +84,10 @@ docs/REAL_ESTATE_VERTICAL.md
 Images/
 images/
 
+# Brand assets shipped with the app are source, not screenshots
+!osduo_business_connect/public/images/
+!osduo_business_connect/public/images/**
+
 # Design references (local only)
 Theme Designs Ideas/
 

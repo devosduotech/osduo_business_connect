@@ -30,6 +30,9 @@ def after_install():
     # Create CRM Lead Source
     create_crm_lead_source()
 
+    # Apply bundled logo/favicon/name defaults (no manual file copies)
+    apply_branding_settings()
+
 
 def create_crm_custom_fields():
     """
@@ -189,6 +192,7 @@ def after_migrate():
     create_default_roles()
     create_builtin_themes()
     create_crm_lead_source()
+    apply_branding_settings()
     backfill_public_urls()
 
 
@@ -350,40 +354,12 @@ def _get_scheme_accent(scheme):
 
 
 def apply_branding_settings():
+    """Apply bundled OSDuo branding to Website/System Settings.
+
+    Kept as a stable import path; the implementation lives in
+    ``osduo_business_connect.branding`` and is shared with ``after_install``
+    and ``after_migrate``. No logo file needs to be copied into the site.
     """
-    Apply OSDuo branding to Frappe's Website Settings and System Settings.
-    
-    NOTE: This function is available but NOT called automatically.
-    Branding is configured manually per deployment via:
-    
-    1. Website Settings → Set favicon to:
-       /assets/osduo_business_connect/images/favicon.png
-    2. Website Settings → Set app name to: "Business Connect"
-    3. System Settings → Set app name to: "OSDuo Business Connect"
-    
-    The desk sidebar logo is controlled by add_to_apps_screen in hooks.py.
-    The branding.css and branding.js files handle visual overrides once
-    the base settings are configured.
-    
-    Called from after_install and after_migrate.
-    """
-    from osduo_business_connect.hooks import OSDUO_BRANDING
-    
-    # Website Settings — favicon and app name
-    try:
-        website_settings = frappe.get_single("Website Settings")
-        website_settings.favicon = OSDUO_BRANDING["favicon"]
-        website_settings.app_name = OSDUO_BRANDING["app_short_name"]
-        website_settings.save(ignore_permissions=True)
-        frappe.db.commit()
-    except Exception:
-        frappe.log_error("Failed to update Website Settings branding")
-    
-    # System Settings — app name and logo
-    try:
-        system_settings = frappe.get_single("System Settings")
-        system_settings.app_name = OSDUO_BRANDING["app_name"]
-        system_settings.save(ignore_permissions=True)
-        frappe.db.commit()
-    except Exception:
-        frappe.log_error("Failed to update System Settings branding")
+    from osduo_business_connect.branding import apply_branding_settings as _apply
+
+    return _apply()

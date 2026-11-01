@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.2.1 - 1 November 2026
+
+### Fixes & Improvements (v1.2.1)
+
+#### Branding bundled in the app
+- Login, desk/app-screen and PWA icons now use brand assets shipped inside the
+  app (`/assets/osduo_business_connect/images/`). No more copying
+  `logo_mark_512x512.png` or the login panel image into each site's
+  `public/files` directory.
+- `bench migrate` / install automatically applies bundled defaults to
+  Website Settings (App Logo, Favicon, App Name) and System Settings (App Name).
+  Empty, generic (`Frappe`) and legacy hand-copied brand files are replaced;
+  genuine per-site custom logos and names are preserved.
+- The login split-screen background is now bundled (`login-panel.jpg`, 134 KB
+  instead of a 2.1 MB per-site upload).
+- Login/desk assets use optimised derivatives (`logo-mark-128/512.png`,
+  `logo-512.png`, `favicon-256.png`) for faster first loads.
+- PWA icon endpoint resolves both `/assets/...` and `/files/...` sources.
+
+Upgrade: `bench --site <site> migrate && bench --site <site> clear-cache`
+(applies branding and rolls the PWA cache to v1.2.1).
+
+---
+
 ## v1.2.0 - 31 October 2026
 
 ### New Features (v1.2.0)

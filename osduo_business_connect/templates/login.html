@@ -6,7 +6,7 @@
 
 {% block head_include %}
 {{ super() }}
-<link rel="icon" href="/assets/osduo_business_connect/images/favicon.png" type="image/png">
+<link rel="icon" href="{{ bc_favicon or '/assets/osduo_business_connect/images/favicon-256.png' }}" type="image/png">
 <style>
   /* Brand colors on login */
   :root {
@@ -82,8 +82,9 @@
 {% block page_card %}
 <div class="page-card">
   <div class="page-card-head text-center">
-    <img src="/assets/osduo_business_connect/images/logo.png"
+    <img src="{{ bc_logo or '/assets/osduo_business_connect/images/logo-512.png' }}"
          alt="OSDuo Business Connect"
+         width="220"
          style="max-width: 220px; margin-bottom: 0.5rem;">
     <div class="page-head-title" style="color: #0B3D91; font-weight: 700;">
       OSDuo Business Connect

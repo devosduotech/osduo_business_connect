@@ -1,3 +1,39 @@
+# Release Notes - business_connect (v1.2.1)
+
+**Release Date:** 1 November 2026  
+**Version:** v1.2.1
+
+This patch makes branding **fully self-contained in the app**. Login, the desk
+app screen and PWA icons now read brand assets from
+`/assets/osduo_business_connect/images/` instead of requiring a manual copy of
+`logo_mark_512x512.png` (and the login panel image) into every site's
+`public/files` directory.
+
+---
+
+## Changes (v1.2.1)
+
+### Bundled branding
+- Login, desk/app-screen and PWA icons use brand assets shipped in the app.
+- `bench migrate` / install applies bundled defaults to **Website Settings**
+  (App Logo, Favicon, App Name) and **System Settings** (App Name).
+- Only empty/generic (`Frappe`) or unmistakably hand-copied brand files
+  (`/files/logo*.png`, `/files/logo_mark_512x512.png`, …) are replaced;
+  genuine per-site custom logos and names are left untouched.
+- Login panel background is bundled and optimised (`login-panel.jpg`, 134 KB
+  vs the previous 2.1 MB per-site upload).
+- Optimised login/desk derivatives: `logo-mark-128.png`, `logo-mark-512.png`,
+  `logo-512.png`, `logo-dark-512.png`, `favicon-256.png`.
+- PWA icon endpoint now resolves both `/assets/...` and `/files/...` sources.
+
+**Upgrade notes:** run `bench --site <site> migrate && bench --site <site> clear-cache`.
+The service worker cache is stamped with `__version__`, so installed PWAs roll
+to the new assets automatically on the next visit. No logo files need to be
+uploaded or copied — the break-glass command is
+`bench --site <site> execute osduo_business_connect.branding.apply_branding_settings`.
+
+---
+
 # Release Notes - business_connect (v1.2.0)
 
 **Release Date:** 31 October 2026  

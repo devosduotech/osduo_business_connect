@@ -8,14 +8,20 @@ app_license = "MIT"
 # Branding Configuration — single source of truth
 # ------------------------------------------------
 # Change these values to white-label the application.
+# All paths are bundled inside the app package (public/images) and served from
+# /assets/... — never copy logo files into a site's public/files directory.
+# The -512/-256 derivatives keep login/desk payloads small; the full-resolution
+# originals remain in the repo for print/social use.
 OSDUO_BRANDING = {
     "app_name": "OSDuo Business Connect",
     "app_short_name": "Business Connect",
     "tagline": "Business \u00b7 People \u00b7 Opportunities",
-    "logo": "/assets/osduo_business_connect/images/logo.png",
-    "logo_dark": "/assets/osduo_business_connect/images/logo-dark.png",
-    "favicon": "/assets/osduo_business_connect/images/favicon.png",
-    "logo_mark": "/assets/osduo_business_connect/images/logo-mark.png",
+    "logo": "/assets/osduo_business_connect/images/logo-512.png",
+    "logo_dark": "/assets/osduo_business_connect/images/logo-dark-512.png",
+    "favicon": "/assets/osduo_business_connect/images/favicon-256.png",
+    "logo_mark": "/assets/osduo_business_connect/images/logo-mark-512.png",
+    "logo_mark_small": "/assets/osduo_business_connect/images/logo-mark-128.png",
+    "login_panel": "/assets/osduo_business_connect/images/login-panel.jpg",
     "og_image": "/assets/osduo_business_connect/images/og-image.png",
     "primary_color": "#0B3D91",
     "secondary_color": "#1677FF",

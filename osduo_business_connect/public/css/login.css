@@ -64,7 +64,7 @@ body[data-path="login"] section.for-login.bc-login-layout
             rgba(3, 34, 75, 0.70) 52%,
             rgba(3, 34, 75, 0.18) 100%
         ),
-        url("/files/OSDuo%20Digital%20Business%20Card%20Login%20Left%20Panel.png");
+        url("/assets/osduo_business_connect/images/login-panel.jpg");
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;

@@ -3,7 +3,7 @@
 Step-by-step instructions to install, operate, and update **OSDuo Business Connect**
 — from a single-site demo to a multi-tenant SaaS bench serving many customer domains.
 
-Current release: **v1.2.0** (see [RELEASE_NOTES.md](../RELEASE_NOTES.md)).
+Current release: **v1.2.1** (see [RELEASE_NOTES.md](../RELEASE_NOTES.md)).
 
 ---
 
@@ -148,7 +148,10 @@ bench restart
 ```
 
 Notes:
-- v1.2.0's service worker cache names are stamped with the app `__version__`, so
+- v1.2.1 bundles the logo/favicon/login panel in the app and applies them on
+  `migrate` (see **Branding & logo** below). Never copy brand images into
+  `sites/<site>/public/files`.
+- v1.2.0+'s service worker cache names are stamped with the app `__version__`, so
   installed PWAs roll themselves forward on the next visit after a version bump.
 - `bench migrate` also re-runs `backfill_public_urls()` — after a `host_name` change,
   one migrate is all that's needed to re-stamp `public_url` everywhere.
@@ -170,6 +173,31 @@ Notes:
 Users typically need one of the `BC *` roles **plus** a Business Member row for the
 specific business — role grants desk access to the doctypes, membership scopes the data.
 
+### Branding & logo (bundled in the app)
+
+All brand assets ship inside the app package and are served from
+`/assets/osduo_business_connect/images/` — **never copy them into
+`sites/<site>/public/files/`**:
+
+| Asset | Bundled path | Used by |
+|---|---|---|
+| Horizontal logo | `logo-512.png` (full-res: `logo.png`) | Login card / branding context |
+| App mark | `logo-mark-512.png` (+ `logo-mark-128.png`) | Login panel, app screen, PWA icons |
+| Favicon | `favicon-256.png` | Browser tab, Website Settings |
+| Login left panel | `login-panel.jpg` | Login split-screen background |
+
+`bench migrate` / install automatically fills **Website Settings → App Logo + Favicon +
+App Name** and **System Settings → App Name** from these bundled assets
+(`osduo_business_connect.branding.apply_branding_settings`). Rules:
+
+- Empty, generic (`Frappe`) or legacy hand-copied brand files (`/files/logo*.png`,
+  `/files/logo_mark_512x512.png`, …) are replaced with the bundled assets.
+- A genuine per-site custom logo/name is left untouched, so white-labelling still
+  works by simply uploading a replacement in Website Settings.
+- To re-apply the defaults after changing an asset:
+  `bench --site <site> execute osduo_business_connect.branding.apply_branding_settings`
+  then `bench --site <site> clear-cache`.
+
 ---
 
 ## 🔧 Troubleshooting
@@ -180,6 +208,7 @@ specific business — role grants desk access to the doctypes, membership scopes
 | Public page 404 | Record must be Published **and submitted** (`docstatus < 2`) with Public Profile on; `bench clear-website-cache` |
 | Card URL wrong domain | Set `host_name`, then `bench migrate` (re-backfills `public_url`) |
 | Login page unstyled / giant icons after Frappe upgrade | Stale Website Theme CSS — re-save the theme in Desk, `bench build`, hard-refresh |
+| Logo/favicon missing after upgrade | `bench migrate` (applies bundled branding), then `bench clear-cache`; do **not** upload logo files to `public/files` |
 | PWA not installable | Needs HTTPS (or `localhost`); check `/manifest.json` & `/sw.js` return 200; DevTools → Application → Manifest errors |
 | `migrate` fails on CRM custom fields | Ensure the `crm` app is installed on the same site before Business Connect |
 | Permission oddities (submit/cancel greyed out) | User needs the role bit **and** an active Business Member row (Owner/Manager/Marketing for submit; Owner for cancel/amend) |

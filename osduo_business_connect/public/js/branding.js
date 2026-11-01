@@ -14,13 +14,13 @@
   // Set favicon
   var favicon = document.querySelector('link[rel="icon"]');
   if (favicon) {
-    favicon.href = "/assets/osduo_business_connect/images/favicon.png";
+    favicon.href = "/assets/osduo_business_connect/images/favicon-256.png";
     favicon.type = "image/png";
   } else {
     var link = document.createElement("link");
     link.rel = "icon";
     link.type = "image/png";
-    link.href = "/assets/osduo_business_connect/images/favicon.png";
+    link.href = "/assets/osduo_business_connect/images/favicon-256.png";
     document.head.appendChild(link);
   }
 

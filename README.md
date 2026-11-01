@@ -1,6 +1,6 @@
 # OSDuo Business Connect
 
-**v1.2.0** | **Your digital identity. Your customers. Your growth.**
+**v1.2.1** | **Your digital identity. Your customers. Your growth.**
 
 Business Connect transforms how small businesses and professionals establish their digital presence. Create a stunning business profile, showcase products and services, capture customer enquiries, and install it all as a mobile app — all seamlessly integrated with Frappe CRM.
 
@@ -60,6 +60,9 @@ Analytics Dashboard updates with real-time metrics
 - **BC Theme**: template + layout + color scheme (Violet, Indigo, Blue, Green, Yellow, Orange,
   Red, Gold + custom) with automatic contrast correction and dark mode
 - New businesses auto-link the built-in **Default Blue** theme
+- **Bundled logos**: login, desk/app screen and PWA icons all use brand assets that ship
+  in the app (`public/images/`) — no copying logo files into each site's `public/files`;
+  `bench migrate` applies the defaults and per-site uploads still override them
 
 ### Lead Generation Engine
 - Enquiry forms capture visitor details and auto-create Frappe CRM leads with source,

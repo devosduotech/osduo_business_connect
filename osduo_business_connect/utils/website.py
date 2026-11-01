@@ -26,6 +26,8 @@ def get_branding_context(context):
         "bc_logo_dark": OSDUO_BRANDING["logo_dark"],
         "bc_favicon": OSDUO_BRANDING["favicon"],
         "bc_logo_mark": OSDUO_BRANDING["logo_mark"],
+        "bc_logo_mark_small": OSDUO_BRANDING["logo_mark_small"],
+        "bc_login_panel": OSDUO_BRANDING["login_panel"],
         "bc_og_image": OSDUO_BRANDING["og_image"],
         "bc_primary_color": OSDUO_BRANDING["primary_color"],
         "bc_secondary_color": OSDUO_BRANDING["secondary_color"],
