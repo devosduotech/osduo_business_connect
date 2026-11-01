@@ -1,3 +1,38 @@
+# Release Notes - business_connect (v1.2.4)
+
+**Release Date:** 1 November 2026
+**Version:** v1.2.4
+
+Keeps generated URLs **and** QR images consistent after a canonical domain
+change (for example switching to `https://` behind a TLS-terminating proxy).
+
+---
+
+## Changes (v1.2.4)
+
+### QR images follow the canonical domain
+- `bench migrate` re-backfills `public_url` when `host_name` changes. It now
+  also regenerates the QR image for every card whose URL actually changed, so
+  the printed code matches the new origin without re-saving each card.
+- QR regeneration reuses the existing `/files/qr_<slug>.png` File row, so
+  repeated regeneration no longer creates duplicate attachments.
+
+### Documentation
+- Explained why a site behind Nginx Proxy Manager / Caddy / Cloudflare still
+  generates `http://` URLs: Frappe only infers `https` from `ssl_certificate` /
+  `wildcard` in `site_config.json`, so a TLS-terminating proxy must set
+  `"host_name": "https://your.domain"`.
+- Merged the duplicate “Public page 404” troubleshooting rows.
+
+## Upgrade
+
+```bash
+bench --site <site> migrate
+bench --site <site> clear-cache
+```
+
+---
+
 # Release Notes - business_connect (v1.2.3)
 
 **Release Date:** 1 November 2026

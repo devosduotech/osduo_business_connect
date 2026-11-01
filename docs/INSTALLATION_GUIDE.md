@@ -3,7 +3,7 @@
 Step-by-step instructions to install, operate, and update **OSDuo Business Connect**
 — from a single-site demo to a multi-tenant SaaS bench serving many customer domains.
 
-Current release: **v1.2.3** (see [RELEASE_NOTES.md](../RELEASE_NOTES.md)).
+Current release: **v1.2.4** (see [RELEASE_NOTES.md](../RELEASE_NOTES.md)).
 
 ---
 
@@ -68,6 +68,11 @@ Set it in `sites/<sitename>/site_config.json` **before** creating cards:
 Rules: include the scheme, no trailing slash, no port. After changing it, run
 `bench --site <site> migrate` — the `public_url` backfill re-syncs all Business and
 Digital Card records to the new canonical origin.
+
+Behind a proxy that terminates TLS (Nginx Proxy Manager, Caddy, Cloudflare, …) the
+bench itself sees plain HTTP, so Frappe cannot guess `https` — without `host_name`
+every generated URL and QR code will say `http://`. The scheme in `host_name` is
+the only thing that decides this.
 
 ### Post-install verification
 
@@ -218,10 +223,10 @@ it the default. Rules:
 
 | Symptom | Cause / Fix |
 |---|---|
-| Public page 404 — “Business not found” | Check **Status = Published**, **Public Profile Enabled**, and that the URL slug exactly matches **Public Slug**. A submitted record can change Status directly (no amendment needed). |
+| Public page 404 — “Business not found” | Record must be submitted (`docstatus < 2`), **Status = Published**, **Public Profile Enabled**, and the URL slug must exactly match **Public Slug**. A submitted record can change Status directly (no amendment needed). Then `bench clear-website-cache` |
 | QR missing on card | `pip install "qrcode[pil]"` in the bench env; open+save card (or migrate) to trigger generation |
-| Public page 404 | Record must be Published **and submitted** (`docstatus < 2`) with Public Profile on; `bench clear-website-cache` |
 | Card URL wrong domain | Set `host_name`, then `bench migrate` (re-backfills `public_url`) |
+| Public URL says `http://` but the site is on HTTPS (TLS terminated by Nginx Proxy Manager, Caddy, Cloudflare…) | `host_name` is missing or lacks the scheme. Frappe only infers `https` from `ssl_certificate`/`wildcard` in `site_config.json`, so a proxy that terminates TLS must set `"host_name": "https://your.domain"`. Then `bench --site <site> migrate` to re-backfill `public_url` and regenerate QR codes |
 | Login page unstyled / giant icons after Frappe upgrade | Stale Website Theme CSS — re-save the theme in Desk, `bench build`, hard-refresh |
 | Logo/favicon missing after upgrade | `bench migrate` (applies bundled branding), then `bench clear-cache`; do **not** upload logo files to `public/files` |
 | PWA not installable | Needs HTTPS (or `localhost`); check `/manifest.json` & `/sw.js` return 200; DevTools → Application → Manifest errors |

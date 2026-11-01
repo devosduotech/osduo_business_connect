@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.2.4 - 1 November 2026
+
+### Fixes (v1.2.4)
+
+- **`bench migrate` now regenerates QR images when the canonical domain
+  changes.** `public_url` is rewritten with `db.set_value`, which skips
+  controllers, so the QR image kept encoding the old origin until the card was
+  re-saved by hand. Migration now refreshes QR images for exactly the cards whose
+  `public_url` changed.
+- **QR regeneration no longer duplicates `File` attachments.** Regenerating a
+  QR reuses the existing `/files/qr_<slug>.png` File row instead of inserting a
+  new one on every save.
+- Documented why a TLS-terminating proxy (Nginx Proxy Manager, Caddy,
+  Cloudflare) still produces `http://` URLs without an explicit
+  `"host_name": "https://…"`, and merged the duplicate “Public page 404”
+  troubleshooting rows.
+
+Upgrade: `bench --site <site> migrate && bench --site <site> clear-cache`.
+
+---
+
 ## v1.2.3 - 1 November 2026
 
 ### Fixes (v1.2.3)
