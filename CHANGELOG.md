@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.2.3 - 1 November 2026
+
+### Fixes (v1.2.3)
+
+- **Submitted-but-Draft records were invisible on public pages.** Business,
+  Digital Card, Showcase Product and Showcase Service default `Status` to
+  `Draft`, and submitting did not change it. A submitted record could therefore
+  return `404 Business not found` even though it existed.
+- Submitting now automatically promotes `Status` from `Draft` to `Published`
+  for all four doctypes. An explicit `Suspended` / `Archived` / `Unpublished`
+  choice is preserved, so it is still possible to submit without publishing.
+- Existing submitted records can be fixed by setting **Status = Published** and
+  saving — `status` is editable after submit, so no amendment is required.
+- Documented the publish behaviour and added a troubleshooting entry for
+  “Business not found”.
+
+Upgrade: `bench --site <site> migrate && bench --site <site> clear-cache`.
+
+---
+
 ## v1.2.2 - 1 November 2026
 
 ### Fixes & Improvements (v1.2.2)

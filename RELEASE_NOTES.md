@@ -1,3 +1,39 @@
+# Release Notes - business_connect (v1.2.3)
+
+**Release Date:** 1 November 2026
+**Version:** v1.2.3
+
+Fixes an inconsistency where a **submitted** record could still have
+`Status = Draft` and therefore be invisible on every public page
+(`404 Business not found`).
+
+---
+
+## Changes (v1.2.3)
+
+### Submitting now publishes
+- **Business**, **Digital Card**, **Showcase Product** and **Showcase Service**
+  all default `Status` to `Draft`. Submitting previously left that value
+  untouched, creating a submitted-but-hidden record.
+- Submit now promotes `Status` from `Draft` to `Published` automatically.
+- An explicit `Suspended` / `Archived` / `Unpublished` status is preserved, so
+  submitting a hidden record remains possible.
+
+### Fixing existing records
+- Already-submitted records can change **Status** directly — the field is
+  editable after submit, so no cancel/amend is required:
+  ```python
+  doc = frappe.get_doc("Business", "<record>")
+  doc.status = "Published"
+  doc.save()
+  frappe.db.commit()
+  ```
+- Run `bench --site <site> clear-cache` afterwards.
+
+**Upgrade notes:** run `bench --site <site> migrate && bench --site <site> clear-cache`.
+
+---
+
 # Release Notes - business_connect (v1.2.2)
 
 **Release Date:** 1 November 2026
