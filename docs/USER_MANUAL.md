@@ -1,7 +1,7 @@
 # OSDuo Business Connect — User Manual
 
-**Version:** 1.0.1  
-**Last Updated:** September 2026
+**Version:** 1.2.3  
+**Last Updated:** November 2026
 
 ---
 
@@ -258,9 +258,10 @@ Click the **Template** dropdown and select:
 
 ### 3.6 Publishing Your Card
 
-1. Set **Status** to **Published**
-2. Enable **Public Profile** toggle
-3. Click **Save**, then **Submit**
+1. Enable **Public Profile** toggle
+2. Click **Save**, then **Submit**
+3. Submitting automatically changes a **Draft** status to **Published**. Choose
+   **Suspended** before submitting if you want to keep it hidden.
 4. The **Public URL** field is filled automatically from the canonical domain,
    and the **QR code auto-generates** encoding exactly that URL
 
@@ -500,12 +501,14 @@ Select **Custom** from Color Scheme dropdown, then set:
 ### 6.1 Publishing Your Business
 
 1. Open your Business record
-2. Set **Status** to **Published**
-3. Enable **Public Profile** toggle
-4. **Save**, then **Submit**
+2. Enable **Public Profile** toggle
+3. Click **Save**, then **Submit**
+4. Submitting automatically promotes **Status** from **Draft** to **Published**.
+   If you explicitly chose **Suspended**, it stays suspended.
 
-The business is public only when all three are true: submitted, Published, and
-Public Profile enabled.
+The business is public when it is submitted, has **Status = Published**, has
+**Public Profile** enabled and is not cancelled. An already-submitted record can
+still change **Status** directly — no amendment is needed.
 
 ### 6.2 Public URLs
 

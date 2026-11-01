@@ -4,6 +4,7 @@ import re
 import frappe
 from frappe.model.document import Document
 
+from osduo_business_connect.utils.publish import publish_on_submit
 from osduo_business_connect.utils.roles import is_system_manager
 from osduo_business_connect.utils.sanitize import (
     normalize_url_fields,
@@ -28,6 +29,7 @@ class ShowcaseService(Document):
                 self.set(fieldname, sanitize_url(value))
 
     def validate(self):
+        publish_on_submit(self)
         self.validate_slug_immutable()
         self.validate_slug()
 

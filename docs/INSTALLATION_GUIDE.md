@@ -3,7 +3,7 @@
 Step-by-step instructions to install, operate, and update **OSDuo Business Connect**
 — from a single-site demo to a multi-tenant SaaS bench serving many customer domains.
 
-Current release: **v1.2.2** (see [RELEASE_NOTES.md](../RELEASE_NOTES.md)).
+Current release: **v1.2.3** (see [RELEASE_NOTES.md](../RELEASE_NOTES.md)).
 
 ---
 
@@ -218,6 +218,7 @@ it the default. Rules:
 
 | Symptom | Cause / Fix |
 |---|---|
+| Public page 404 — “Business not found” | Check **Status = Published**, **Public Profile Enabled**, and that the URL slug exactly matches **Public Slug**. A submitted record can change Status directly (no amendment needed). |
 | QR missing on card | `pip install "qrcode[pil]"` in the bench env; open+save card (or migrate) to trigger generation |
 | Public page 404 | Record must be Published **and submitted** (`docstatus < 2`) with Public Profile on; `bench clear-website-cache` |
 | Card URL wrong domain | Set `host_name`, then `bench migrate` (re-backfills `public_url`) |
