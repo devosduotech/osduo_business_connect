@@ -214,6 +214,7 @@ def backfill_public_urls():
             "Digital Card": get_card_public_url,
         }
         updated = 0
+        stale_cards = []
         for doctype, build_url in builders.items():
             rows = frappe.get_all(
                 doctype,
@@ -225,10 +226,40 @@ def backfill_public_urls():
                 if expected and row.public_url != expected:
                     frappe.db.set_value(doctype, row.name, "public_url", expected, update_modified=False)
                     updated += 1
+                    if doctype == "Digital Card":
+                        stale_cards.append(row.name)
         if updated:
             frappe.db.commit()
+        refresh_card_qr_codes(stale_cards)
     except Exception:
         frappe.log_error(title="BC public_url backfill failed")
+
+
+def refresh_card_qr_codes(card_names):
+    """Regenerate QR images whose encoded URL just changed.
+
+    ``public_url`` is rewritten with ``db.set_value``, which skips controllers,
+    so the QR image would otherwise keep encoding the old origin until someone
+    re-saves the card. Failures are logged and never block migration.
+    """
+    if not card_names:
+        return
+    try:
+        from osduo_business_connect.services.qr_service import generate_qr_code
+    except Exception:
+        frappe.log_error(title="BC QR refresh skipped (qr_service import failed)")
+        return
+
+    for name in card_names:
+        try:
+            card = frappe.get_doc("Digital Card", name)
+            if card.qr_enabled and card.public_url:
+                generate_qr_code(card)
+        except Exception:
+            frappe.log_error(
+                title=f"BC QR refresh failed for card {name}",
+                message=frappe.get_traceback(),
+            )
 
 
 def migrate_crm_custom_fields():

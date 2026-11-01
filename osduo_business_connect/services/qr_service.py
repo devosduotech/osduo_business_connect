@@ -59,25 +59,37 @@ def generate_qr_code(card_doc):
         with open(file_path, "wb") as f:
             f.write(img_bytes)
 
-        # Create File doc pointing to existing file
-        file_doc = frappe.get_doc({
-            "doctype": "File",
-            "file_name": file_name,
-            "file_url": f"/files/{file_name}",
-            "is_private": 0,
-            "attached_to_doctype": "Digital Card",
-            "attached_to_name": card_doc.name,
-        })
-        file_doc.insert(ignore_permissions=True)
+        # Reuse the existing File row when only the encoded URL changed, so
+        # repeated regeneration does not pile up duplicate attachments.
+        file_url = f"/files/{file_name}"
+        existing_file = frappe.db.get_value(
+            "File",
+            {
+                "file_url": file_url,
+                "attached_to_doctype": "Digital Card",
+                "attached_to_name": card_doc.name,
+            },
+            "name",
+        )
+        if not existing_file:
+            file_doc = frappe.get_doc({
+                "doctype": "File",
+                "file_name": file_name,
+                "file_url": file_url,
+                "is_private": 0,
+                "attached_to_doctype": "Digital Card",
+                "attached_to_name": card_doc.name,
+            })
+            file_doc.insert(ignore_permissions=True)
 
         # Update card document
-        frappe.db.set_value("Digital Card", card_doc.name, "qr_image", f"/files/{file_name}")
+        frappe.db.set_value("Digital Card", card_doc.name, "qr_image", file_url)
         frappe.db.commit()
 
         # Update in-memory doc so on_update check sees it
-        card_doc.qr_image = f"/files/{file_name}"
+        card_doc.qr_image = file_url
 
-        return f"/files/{file_name}"
+        return file_url
 
     except ImportError:
         frappe.throw(_("QR code generation requires 'qrcode' library. Please install it: pip install qrcode[pil]"))
