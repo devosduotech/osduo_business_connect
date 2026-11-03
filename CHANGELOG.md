@@ -44,7 +44,19 @@ All notable changes to this project will be documented in this file.
 - Recipient details are deliberately owner-entered. No browser or OS exposes the
   recipient of a WhatsApp/SMS/email message, so the owner records it at the
   exhibition, show or meeting instead.
+- **Every exchange is also created as an Enquiry** through the same service the
+  public "Send an Enquiry" form uses, so card contacts captured at an event land
+  in the Enquiries list and reach CRM through the standard sync (the direct
+  CRM-Lead path was removed; the Enquiry owns the Lead link).
 - Owner/Manager/Member create, Owner delete, company-scoped query conditions.
+
+#### CRM Lead context
+- The Enquiry's message reaches the CRM Lead as a new read-only **OSDuo
+  Message** field (`osduo_notes`, Small Text, after `OSDuo Landing URL`); a
+  patch backfills it on Leads already synced.
+- The osduo_* fields are placed on the **CRM Lead side panel automatically**
+  (an "OSDuo Attribution" section in `CRM Lead-Side Panel`), so no per-site
+  manual layout customization is needed after install.
 
 #### Visitor classification
 - Every engagement event now stores `visitor_type` (Guest / Owner / Member /

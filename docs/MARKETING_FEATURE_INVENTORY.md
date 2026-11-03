@@ -40,7 +40,7 @@
 | 12 | **Consent capture** | Stores the consent flag **and the exact consent text shown** — audit-friendly for DPDP/GDPR conversations |
 | 13 | **Pipeline statuses** | New → Contacted → Nurture → Qualified → Converted, plus Unqualified / Junk / Spam / Closed |
 | 14 | **Enquiry Response log** | Timestamped responder/type/message trail per enquiry |
-| 15 | **CRM Lead sync** | Auto-creates a Frappe CRM Lead; writes `osduo_campaign`, `osduo_business` and other attribution fields; retries failures daily; isolates leads per business |
+| 15 | **CRM Lead sync** | Auto-creates a Frappe CRM Lead; writes `osduo_campaign`, `osduo_business` and other attribution fields plus the enquiry message (`osduo_notes`); retries failures daily; isolates leads per business; places the fields on the CRM Lead side panel automatically |
 | 16 | **Business-scoped permissions** | `BC System Manager` role + `has_permission` / permission query conditions — one tenant can never read another's leads |
 
 ### 1.4 Shipped — Sharing & offline-to-online
