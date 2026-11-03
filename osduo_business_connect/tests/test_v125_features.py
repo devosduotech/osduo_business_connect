@@ -268,5 +268,29 @@ class TestVisitorClassification(unittest.TestCase):
         self.assertNotIn("contact_exchanged", client_types)
 
 
+class TestCrmNotesFlow(unittest.TestCase):
+    """The Enquiry's free text must reach the CRM Lead (osduo_notes)."""
+
+    def setUp(self):
+        self.install = read("install.py")
+        self.mapper = read("crm_integration", "lead_mapper.py")
+        self.patch = read("patches", "v1_2", "crm_lead_notes_backfill.py")
+        self.patches_txt = read("patches.txt")
+
+    def test_osduo_notes_custom_field_is_declared(self):
+        self.assertIn('"fieldname": "osduo_notes"', self.install)
+        self.assertIn('"fieldtype": "Small Text"', self.install)
+        self.assertIn('"insert_after": "osduo_landing_url"', self.install)
+
+    def test_lead_mapper_carries_the_message(self):
+        self.assertIn('"osduo_notes": enquiry_doc.message or ""', self.mapper)
+
+    def test_backfill_patch_is_registered_and_safe(self):
+        self.assertIn("osduo_business_connect.patches.v1_2.crm_lead_notes_backfill", self.patches_txt)
+        self.assertIn("create_crm_custom_fields", self.patch)
+        self.assertIn("osduo_enquiry is not null", self.patch)
+        self.assertIn("def execute():", self.patch)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -756,8 +756,9 @@ Status changes sync bidirectionally:
 | OSDuo Service | Which service page (if applicable) |
 | OSDuo Enquiry | Link to the enquiry record |
 | OSDuo Source | Where the lead came from |
-| OSDuo Campaign | Campaign tracking code |
+| OSDuo Campaign | Campaign tracking code (or the event/meeting name for shared contacts) |
 | OSDuo Landing URL | The page where enquiry was submitted |
+| OSDuo Message | Message copied from the enquiry — website-form message or the channel/event notes of a Share & Save Contact exchange |
 
 ---
 

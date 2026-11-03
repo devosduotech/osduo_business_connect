@@ -112,6 +112,15 @@ def create_crm_custom_fields():
             "read_only": 1,
             "description": "URL where the lead was captured (managed by Business Connect)",
         },
+        {
+            "fieldname": "osduo_notes",
+            "fieldtype": "Small Text",
+            "label": "OSDuo Message",
+            "insert_after": "osduo_landing_url",
+            "read_only": 1,
+            "description": "Message captured on the Enquiry (website form message or the "
+            "event/channel context of a shared card)",
+        },
     ]
     
     for field in custom_fields:
