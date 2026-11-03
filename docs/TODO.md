@@ -108,13 +108,16 @@ Single release, all ten items planned in
 - [ ] **MARKETING_FEATURES.md** still markets features that are *not* built
   (email signature generator, lead scoring, auto-responses, WhatsApp Business
   API) — rewrite or add a "roadmap" banner linking
-  [MARKETING_FEATURE_INVENTORY.md](MARKETING_FEATURE_INVENTORY.md) §1.10
-- [ ] Fold any remaining "Portable apps" phrasing into the PWA naming used by
+  [MARKETING_FEATURE_INVENTORY.md](MARKETING_FEATURE_INVENTORY.md) §1.10- [ ] Fold any remaining "Portable apps" phrasing into the PWA naming used by
   PWA.md before v1.3.0
 - [ ] Add a short "Contact Exchange" walkthrough (screenshots) to USER_MANUAL
   §6.6 once production screenshots exist
 - [ ] Keep MARKETING_FEATURE_INVENTORY in sync with each release (already
   done for v1.2.5/v1.2.6 evidence rows)
+- [ ] Re-verify marketplace plan prices and the plan/add-on matrix in the
+  USER_MANUAL FAQ (§13) before each marketing push or
+  [osduotech.com/solutions/business-connect](https://www.osduotech.com/solutions/business-connect)
+  page change
 - [ ] Generate/refresh `docs/images/mockup/*` screens for the new Open button
   and exchange form (referenced placeholders)
 
