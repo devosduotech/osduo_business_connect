@@ -1,3 +1,45 @@
+# Release Notes - business_connect (v1.2.6)
+
+**Release Date:** 3 November 2026
+**Version:** v1.2.6
+
+Polish release for v1.2.5: open public pages from the desk without copy-paste,
+a mobile-friendly Share & Save Contact that matches Send a Message, and a
+reliable My Card icon.
+
+## Changes (v1.2.6)
+
+### Open public pages straight from the desk
+- Business, Digital Card, Showcase Product and Showcase Service forms have an
+  **Open** button next to the read-only **Public URL** field. It opens the
+  generated page in a new tab — no copying the link and pasting it into the
+  browser.
+
+### Share & Save Contact matches Send a Message
+- The form now uses the same layout, fonts and sizes as the public "Send a
+  Message" form, with the full-width **Save & Share** button styled
+  identically. The old boxed look is gone.
+- On phones the rows stack into one column, inputs render at 16px so iOS no
+  longer auto-zooms on focus, and every control has a comfortable tap target.
+
+### My Card icon fixed on mobile
+- The inconsistent emoji icon on the My Card chip is replaced with a crisp
+  inline SVG id-card graphic — the same icon in the desk navbar and on the
+  analytics header — so it renders correctly on every mobile browser.
+- The navbar insertion now covers asynchronously built mobile menus too.
+
+## Upgrade
+
+```bash
+bench --site <site> migrate
+bench --site <site> clear-cache
+bench --site <site> build
+```
+
+(`bench build` refreshes the bundled CSS/JS used by the changes above.)
+
+---
+
 # Release Notes - business_connect (v1.2.5)
 
 **Release Date:** 3 November 2026

@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## v1.2.6 - Unreleased
+## v1.2.6 - 3 November 2026
 
 ### Polish (v1.2.6)
 
