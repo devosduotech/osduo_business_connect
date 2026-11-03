@@ -1,6 +1,6 @@
 # OSDuo Business Connect — User Manual
 
-**Version:** 1.2.5  
+**Version:** 1.2.6  
 **Last Updated:** November 2026
 
 ---
@@ -280,6 +280,11 @@ Once published:
 - **WhatsApp** — share via WhatsApp message
 - **VCF Download** — "Add to Phone Book" saves contact to phone
 
+The full card also carries the same share bar and **Send a Message** form used on
+business, product and service pages, plus — for logged-in team members — the
+**Share & Save Contact** strip described in §6.5. In the desk, the card record's
+**Open** button beside **Public URL** opens the published card in one click (§6.2).
+
 ---
 
 ## 4. Products & Services
@@ -525,6 +530,11 @@ All public URLs are generated automatically from the site's **canonical domain**
 same URLs encoded in QR codes and NFC tags — so links you print keep working even
 after a custom domain is attached to the site.
 
+**Opening a public page from the desk:** every Business, Digital Card, Showcase
+Product and Showcase Service form has an **Open** button right beside the
+**Public URL** field — one click opens the live page in a new tab. No copying
+the URL into the browser.
+
 ### 6.3 Sharing Options
 
 **For Digital Cards:**
@@ -540,9 +550,11 @@ after a custom domain is attached to the site.
 
 Every public page (business, card, product and service) has the same share bar:
 **Copy**, **WhatsApp**, **SMS**, **Email** and the device's native share sheet.
-Share links carry a small `ref=share_*` token so analytics can show which
-channel brought the visit. The copied link always uses the canonical domain,
-never the host you happen to be browsing from.
+Share links carry a small `ref=share_*` token (and `by=<your card slug>`) so
+analytics can show which channel brought the visit — and who shared it. The
+copied link always uses the canonical domain, never the host you happen to be
+browsing from. The Share & Save Contact form below the bar is styled to match
+the public "Send a Message" form, with large tap targets on phones.
 
 ### 6.4 My Card
 
@@ -863,6 +875,33 @@ own name, icon, and data.
 App updates deploy server-side; installed apps pick them up automatically on the next
 visit — no reinstall. (Bump of the app version rotates the offline cache.)
 
+### 11.5 Requirements (administrator)
+
+| Requirement | Why |
+|---|---|
+| **HTTPS** on the site domain | Install is only offered for secure origins (or `localhost` in a dev bench) |
+| **`host_name` set in `site_config.json`** | Feeds every generated URL and the manifest's canonical origin — see the Installing section of the [Installation Guide](INSTALLATION_GUIDE.md). A scheme-less value on a public domain is read as `https://` |
+| **App name / icon / theme color** | Created automatically from the bundled branding on `bench migrate`; per-site values (Website Settings) still win |
+
+### 11.6 How it is built (reference)
+
+- `GET /manifest.json` — a dynamic manifest generated **per site** (name, icons, theme
+  color, canonical base URL)
+- `GET /sw.js` — the service worker: caches visited public pages and assets, serves
+  the branded `/offline` page when there is no connection, and never caches
+  `/api`, `/desk`, `/app` or any authenticated response
+- Both routes are provided by the app — there is nothing to upload per site
+- Operator-level details, cache strategy and test steps:
+  **[docs/PWA.md](PWA.md)**
+
+### 11.7 PWA troubleshooting
+
+| Symptom | Fix |
+|---|---|
+| Chrome shows no Install prompt | Site must be HTTPS + `host_name` correct; open `/manifest.json` and check it returns the manifest (not a 404) |
+| Service worker not registering | `bench --site <site> build`, then hard-refresh; check `/sw.js` returns the app's worker |
+| App still shows old content after an upgrade | Hard-refresh once — the offline cache rotates on the next visit |
+
 ---
 
 ## 12. Troubleshooting
@@ -874,6 +913,10 @@ visit — no reinstall. (Bump of the app version rotates the offline cache.)
 | CRM Lead not created | Check background worker is running |
 | Build fails | Use `bench build --app osduo_business_connect` only |
 | Theme not applying | Check Business record has default_theme linked |
+| Public URL says `http://` while the site is HTTPS | Set `"host_name": "https://your.domain"` in `site_config.json`, then `bench migrate` + `bench clear-cache` (details in the [Installation Guide](INSTALLATION_GUIDE.md) troubleshooting table) |
+| Desk "Open" button missing beside Public URL | `bench --site <site> build` — the button ships in the bundled JS — then hard-refresh |
+| PWA does not install | Needs HTTPS and a correct `host_name`; see §11.7 |
+| CRM Lead page shows no OSDuo fields | `bench --site <site> migrate` — the "OSDuo Attribution" section is appended to the CRM Lead side panel automatically |
 
 ---
 
@@ -916,7 +959,13 @@ A: Upload a Profile Photo on the Digital Card, or a Logo on the Business record.
 A: Yes. The VCF download button saves your contact to their phone.
 
 **Q: How do I track where enquiries come from?**  
-A: Each enquiry records its source (Digital Card, Product, Service, QR, Campaign) automatically.
+A: Each enquiry records its source (Digital Card, Product, Service, QR, Campaign) automatically. Share links additionally stamp the channel — `ref=share_whatsapp|share_sms|share_email|share_copy` plus `by=<sharer's card slug>` — and Contact Exchanges flow in as Enquiries with the channel, event and notes attached.
+
+**Q: How do I open my profile page without typing its URL?**  
+A: In the desk, open any Business / Digital Card / Product / Service record and click the **Open** button next to **Public URL** — it launches the live page in a new tab.
+
+**Q: Why do my own visits show up as "Owner"/"Member"?**  
+A: Events are classified from the live session for people who are logged in. You can hide those from the dashboard with the **Exclude owner/member views** checkbox (see the Analytics Dashboard section).
 
 ---
 
