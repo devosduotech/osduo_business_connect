@@ -14,6 +14,49 @@ import frappe
 from osduo_business_connect.utils.urls import get_card_public_url
 
 
+def get_user_card_slug(business, user=None):
+    """Return the slug of this user's own published card inside ``business``.
+
+    ``?by=`` is meant to name the person who shared a link, so business,
+    product and service pages use the sharer's card slug when they have one.
+    Returns None for guests and for people without a card of their own.
+    """
+    if not business:
+        return None
+    if not user:
+        user = frappe.session.user if frappe.session else None
+    if not user or user == "Guest":
+        return None
+
+    filters = {
+        "business": business,
+        "status": "Published",
+        "public_profile_enabled": 1,
+        "docstatus": ["<", 2],
+    }
+
+    member_names = frappe.get_all(
+        "Business Member",
+        filters={"business": business, "user": user, "status": "Active"},
+        pluck="name",
+    )
+    if member_names:
+        filters["member"] = ["in", member_names]
+    else:
+        # Owners and managers often have no membership row. Only attribute a
+        # card to them when that card is clearly theirs.
+        filters["owner"] = user
+
+    rows = frappe.get_all(
+        "Digital Card",
+        filters=filters,
+        fields=["slug"],
+        order_by="sort_order asc",
+        limit=1,
+    )
+    return rows[0].slug if rows else None
+
+
 def get_my_cards_for_user(user=None):
     """Return the logged-in user's published cards as plain dicts.
 

@@ -29,7 +29,7 @@
         </div>
         <textarea name="notes" rows="2" placeholder="Notes (optional)"></textarea>
         <label class="bc-ce-lead">
-            <input type="checkbox" name="create_lead" value="1"> Create a CRM Lead
+            <input type="checkbox" name="create_enquiry" value="1" checked> Save as an Enquiry (goes to CRM)
         </label>
         <button type="submit" class="bc-btn bc-btn-primary">Save &amp; Share</button>
         <div class="bc-ce-status" role="status" aria-live="polite"></div>
@@ -100,7 +100,7 @@
                 channel: channel,
                 event_name: data.get("event_name") || "",
                 notes: data.get("notes") || "",
-                create_lead: data.get("create_lead") ? 1 : 0
+                create_enquiry: data.get("create_enquiry") ? 1 : 0
             };
 
             if (button) { button.disabled = true; }
@@ -125,11 +125,15 @@
                 form.reset();
                 if (button) { button.disabled = false; }
 
+                var saved = result.message.enquiry
+                    ? "Saved as enquiry " + result.message.enquiry + "."
+                    : "Contact saved.";
+
                 if (result.message.share_url) {
-                    status.textContent = "Contact saved. Opening " + channel + "…";
+                    status.textContent = saved + " Opening " + channel + "\u2026";
                     window.location.href = result.message.share_url;
                 } else {
-                    status.textContent = "Contact saved.";
+                    status.textContent = saved;
                 }
             })
             .catch(function () {

@@ -88,7 +88,7 @@
 |---|---|---|
 | 36 | **Universal share bar** | Copy / WhatsApp / SMS / Email / native share on business, card, product and service pages. Every link is the canonical public URL |
 | 37 | **Share attribution** | Share links carry `?ref=share_whatsapp\|share_sms\|share_email\|share_copy\|mycard&by=<slug>`; only whitelisted refs are logged as `shared_link_open` |
-| 38 | **Contact Exchange** | Login-only record of *who* a card/business/product/service was shared with (name, phone, email, company, channel, event). Optional one-click CRM Lead. Deliberately owner-entered — no app can read a recipient out of WhatsApp/SMS/email |
+| 38 | **Contact Exchange** | Login-only record of *who* a card/business/product/service was shared with (name, phone, email, company, channel, event). Every exchange is also created as an Enquiry via the public enquiry pipeline, so Enquiries + the CRM Lead follow automatically. Deliberately owner-entered — no app can read a recipient out of WhatsApp/SMS/email |
 | 39 | **Visitor classification** | Every event is stamped Guest / Owner / Member / Other User / Unknown from the live session, never from client input. Dashboard shows the mix and can exclude internal views |
 | 40 | **My Card** | `/my-card` lists the logged-in user's published cards and opens them with `?ref=mycard`; entry points in the desk navbar, analytics header and own public pages |
 

@@ -1,6 +1,7 @@
 import frappe
 from ....services.theme_service import get_business_theme, get_theme_variables
 from ....analytics.tracking import capture_analytics_context, track_event
+from ....card.my_card import get_user_card_slug
 from ....utils.urls import get_business_public_url
 from ....utils.share import get_share_by, get_share_ref
 
@@ -51,9 +52,9 @@ def get_context(context):
     if getattr(doc, "seo_description", None):
         context.meta_description = doc.seo_description
 
-    # Share
+    # Share — attributed to the card of whoever is sharing, when they have one.
     context.share_url = f"{get_business_public_url(business.slug)}/products/{doc.slug}"
-    context.share_by = business.slug
+    context.share_by = get_user_card_slug(business.name) or business.slug
     context.share_title = doc.product_name or doc.name
     context.share_text = f"Check out {context.share_title} from {business.business_name or business.name}"
     context.share_ref = True

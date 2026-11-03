@@ -227,6 +227,7 @@ it the default. Rules:
 | QR missing on card | `pip install "qrcode[pil]"` in the bench env; open+save card (or migrate) to trigger generation |
 | Card URL wrong domain | Set `host_name`, then `bench migrate` (re-backfills `public_url`) |
 | Public URL says `http://` but the site is on HTTPS (TLS terminated by Nginx Proxy Manager, Caddy, Cloudflare…) | `host_name` is missing or lacks the scheme. Frappe only infers `https` from `ssl_certificate`/`wildcard` in `site_config.json`, so a proxy that terminates TLS must set `"host_name": "https://your.domain"`. Then `bench --site <site> migrate` to re-backfill `public_url` and regenerate QR codes |
+| Want to know which origin the app will print into links and QR codes | `bench --site <site> execute osduo_business_connect.utils.urls.describe_canonical_url` — shows the resolved base, the config key it came from, and whether developer mode is on. A scheme-less `host_name` on a public domain is now read as `https://`; loopback/private hosts stay `http://` |
 | Login page unstyled / giant icons after Frappe upgrade | Stale Website Theme CSS — re-save the theme in Desk, `bench build`, hard-refresh |
 | Logo/favicon missing after upgrade | `bench migrate` (applies bundled branding), then `bench clear-cache`; do **not** upload logo files to `public/files` |
 | PWA not installable | Needs HTTPS (or `localhost`); check `/manifest.json` & `/sw.js` return 200; DevTools → Application → Manifest errors |

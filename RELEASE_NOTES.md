@@ -26,7 +26,9 @@ your own team in analytics.
 - Logged-in owners/members can record **who** they shared a card, business,
   product or service with: name, company, phone, email, channel (WhatsApp / SMS /
   Email / In-person), event/meeting and notes.
-- Optionally create a CRM Lead in the same step.
+- Every exchange is saved **as an Enquiry** — the same record and pipeline as the
+  public "Send an Enquiry" form — so it appears under **Enquiries** and the CRM
+  Lead is created automatically through the standard sync.
 - Why owner-entered? No browser or operating system exposes the recipient of a
   WhatsApp, SMS or email message. Rather than pretend, the app captures what the
   owner actually knows at the exhibition or meeting.
