@@ -48,8 +48,18 @@ your own team in analytics.
 - Reachable from the desk navbar, the analytics header and a chip on your own
   public pages.
 
+### CRM keeps the context
+- The Enquiry's message arrives on the CRM Lead as a read-only **OSDuo Message**
+  field — a website-form message or, for shared contacts, "Contact exchanged via
+  WhatsApp · Event · Notes…".
+- The OSDuo attribution fields appear as an **OSDuo Attribution** section on the
+  CRM Lead side panel automatically — no per-site manual layout work.
+- Leads already synced before this release get the message backfilled by
+  `bench migrate`.
+
 ### Notes for operators
-- New DocType **Contact Exchange** is created by migration.
+- New DocType **Contact Exchange** is created by migration; exchange rows now
+  link to the Enquiry they produce (the redundant `crm_lead` field was removed).
 - `shared_link_open` and `contact_exchanged` are internal event types; the
   public `/log_event` endpoint rejects them.
 - No data migration is required. `visitor_type` starts as Unknown for historical

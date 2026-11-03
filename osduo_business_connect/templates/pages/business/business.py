@@ -1,5 +1,4 @@
 import frappe
-from frappe import _
 from datetime import datetime, timedelta
 from ....services.theme_service import get_business_theme, get_theme_variables
 from ....analytics.tracking import capture_analytics_context, track_event

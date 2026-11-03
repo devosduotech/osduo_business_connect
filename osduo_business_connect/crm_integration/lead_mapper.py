@@ -9,7 +9,6 @@ Single source of truth for CRM Lead creation.
 """
 
 import frappe
-from frappe import _
 
 
 def create_lead_from_enquiry(enquiry_doc):

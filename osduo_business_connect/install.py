@@ -10,7 +10,6 @@ Handles creation of CRM Custom Fields and initial setup.
 import json
 
 import frappe
-from frappe import _
 
 # Fieldnames of the attribution fields this app adds to CRM Lead. Keep in sync
 # with the custom_fields list in create_crm_custom_fields(); used by
