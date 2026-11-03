@@ -178,14 +178,8 @@
    "fieldtype": "Link",
    "label": "Linked Enquiry",
    "options": "Enquiry",
-   "read_only": 1
-  },
-  {
-   "fieldname": "crm_lead",
-   "fieldtype": "Link",
-   "label": "CRM Lead",
-   "options": "CRM Lead",
-   "read_only": 1
+   "read_only": 1,
+   "description": "Created automatically from this exchange; the CRM Lead is linked on the Enquiry."
   }
  ],
  "permissions": [

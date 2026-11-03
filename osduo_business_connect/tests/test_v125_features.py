@@ -106,8 +106,11 @@ class TestContactExchange(unittest.TestCase):
         fieldnames = [f["fieldname"] for f in self.doctype["fields"]]
         for req in ("business", "card", "product", "service", "recipient_name",
                     "recipient_phone", "recipient_email", "channel",
-                    "event_name", "exchanged_at", "user", "member", "status"):
+                    "event_name", "exchanged_at", "user", "member", "status",
+                    "linked_enquiry"):
             self.assertIn(req, fieldnames, req)
+        # The CRM Lead lives on the Enquiry, not duplicated on the exchange.
+        self.assertNotIn("crm_lead", fieldnames)
 
     def test_channel_options(self):
         channel = next(f for f in self.doctype["fields"] if f["fieldname"] == "channel")
@@ -137,6 +140,36 @@ class TestContactExchange(unittest.TestCase):
         self.assertIn("get_contact_exchanges", self.api)
         self.assertIn("get_user_role_in_business", self.api)
 
+    def test_exchange_creates_enquiry_with_valid_sources(self):
+        """A shared contact is an Enquiry, created through the public service."""
+        self.assertIn(
+            "from osduo_business_connect.enquiry.enquiry_service import create_enquiry",
+            self.api,
+        )
+        self.assertIn("def create_enquiry_from_exchange", self.api)
+        self.assertIn("create_enquiry=1", self.api)
+        self.assertIn('exchange.db_set("linked_enquiry"', self.api)
+
+        enquiry_fields = {f["fieldname"]: f for f in
+                          load_json("enquiry", "doctype", "enquiry", "enquiry.json")["fields"]}
+        sources = set(enquiry_fields["source"]["options"].split("\n"))
+        mapping = self.api.split("ENQUIRY_SOURCES = {", 1)[1].split("}", 1)[0]
+        mapping += self.api.split("DEFAULT_ENQUIRY_SOURCE = ", 1)[1].split("\n", 1)[0]
+        for value in ("Digital Card", "Product", "Service", "Business Profile"):
+            self.assertIn(value, mapping, value)
+            self.assertIn(value, sources, f"{value} is not an Enquiry.source option")
+
+    def test_enquiry_failures_never_lose_the_exchange(self):
+        source = self.api.split("def create_enquiry_from_exchange", 1)[1]
+        self.assertIn("except Exception", source)
+        self.assertIn("frappe.log_error", source)
+        self.assertIn("del frappe.local.message_log[message_count:]", source)
+
+    def test_by_prefers_the_sharers_own_card(self):
+        self.assertIn("get_user_card_slug", self.api)
+        self.assertIn("sharer or business_row.slug", self.api)
+        self.assertIn("def get_user_card_slug", read("card", "my_card.py"))
+
     def test_api_uses_canonical_urls_and_refs(self):
         self.assertIn("get_card_public_url", self.api)
         self.assertIn("get_business_public_url", self.api)
@@ -158,6 +191,13 @@ class TestContactExchange(unittest.TestCase):
         form = read("templates", "pages", "parts", "contact_exchange_form.html")
         self.assertIn("{% if show_my_card %}", form)
         self.assertIn("record_contact_exchange", form)
+
+    def test_form_offers_the_enquiry_option(self):
+        form = read("templates", "pages", "parts", "contact_exchange_form.html")
+        self.assertIn('name="create_enquiry" value="1" checked', form)
+        self.assertIn("create_enquiry: data.get(\"create_enquiry\") ? 1 : 0", form)
+        self.assertNotIn("create_lead", form)
+        self.assertIn("result.message.enquiry", form)
 
 
 class TestShareAttribution(unittest.TestCase):

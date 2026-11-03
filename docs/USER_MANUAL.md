@@ -558,7 +558,10 @@ it to:
 1. Open your card, business, product or service page while logged in.
 2. Fill in **Share & Save Contact**: recipient name, company, mobile, email,
    channel (WhatsApp / SMS / Email / In person), event/meeting and notes.
-3. Tick **Create a CRM Lead** if you also want a lead in CRM.
+3. The contact is saved **as an Enquiry** — the same record and pipeline as the
+   public "Send an Enquiry" form — so it appears under **Enquiries** and a CRM
+   Lead is created automatically through the standard sync. Untick
+   **Save as an Enquiry** if you only want the exchange record.
 4. Choose **Save & Share** — the app saves the exchange and opens the chosen
    channel pre-addressed to the recipient.
 

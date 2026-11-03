@@ -16,6 +16,7 @@ from urllib.parse import quote
 import frappe
 from frappe import _
 
+from osduo_business_connect.card.my_card import get_user_card_slug
 from osduo_business_connect.utils.roles import is_system_manager
 from osduo_business_connect.utils.urls import get_business_public_url, get_card_public_url
 
@@ -26,6 +27,15 @@ CHANNEL_REFS = {
     "SMS": "share_sms",
     "Email": "share_email",
 }
+
+# Enquiry.source is a Select, so the exchanged contact has to map onto one of
+# the sources the public enquiry form already uses.
+ENQUIRY_SOURCES = {
+    "card": "Digital Card",
+    "product": "Product",
+    "service": "Service",
+}
+DEFAULT_ENQUIRY_SOURCE = "Business Profile"
 
 
 def _require_login():
@@ -54,8 +64,12 @@ def _require_shareable(row, label):
         frappe.throw(_("{0} is not publicly visible").format(label), frappe.ValidationError)
 
 
-def _share_target(business, card=None, product=None, service=None):
-    """Return (title, canonical_url, by_slug, member) for the shared item."""
+def _share_target(business, card=None, product=None, service=None, user=None):
+    """Return (title, canonical_url, by_slug, member) for the shared item.
+
+    ``by_slug`` names who shared it, so it prefers the acting user's own card
+    and only falls back to the page's slug when they have no card.
+    """
     business_row = frappe.db.get_value(
         "Business",
         business,
@@ -65,6 +79,10 @@ def _share_target(business, card=None, product=None, service=None):
     if not business_row:
         frappe.throw(_("Business not found"), frappe.DoesNotExistError)
     _require_shareable(business_row, _("Business"))
+
+    # ?by= is meant to name the person who shared the link, so their own card
+    # wins; the page slug below is only the fallback for people without a card.
+    sharer = get_user_card_slug(business, user)
 
     if card:
         row = frappe.db.get_value(
@@ -79,7 +97,7 @@ def _share_target(business, card=None, product=None, service=None):
         return (
             row.display_name or row.name,
             get_card_public_url(row.slug),
-            row.slug,
+            sharer or row.slug,
             row.member,
         )
 
@@ -96,7 +114,7 @@ def _share_target(business, card=None, product=None, service=None):
         return (
             row.product_name or row.name,
             f"{get_business_public_url(business_row.slug)}/products/{row.slug}",
-            business_row.slug,
+            sharer or business_row.slug,
             None,
         )
 
@@ -113,14 +131,14 @@ def _share_target(business, card=None, product=None, service=None):
         return (
             row.service_name or row.name,
             f"{get_business_public_url(business_row.slug)}/services/{row.slug}",
-            business_row.slug,
+            sharer or business_row.slug,
             None,
         )
 
     return (
         business_row.business_name or business_row.name,
         get_business_public_url(business_row.slug),
-        business_row.slug,
+        sharer or business_row.slug,
         None,
     )
 
@@ -159,47 +177,76 @@ def _build_share_link(channel, phone, email, subject, text, url, by_slug):
     return None
 
 
-def _maybe_create_lead(exchange):
-    """Create a CRM Lead for the exchanged contact. Never blocks the exchange."""
+def _target_kind(card=None, product=None, service=None):
+    """Which public page this exchange came from — also picks Enquiry.source."""
+    if card:
+        return "card"
+    if product:
+        return "product"
+    if service:
+        return "service"
+    return "business"
+
+
+def _enquiry_message(exchange):
+    """Human-readable note for the Enquiry timeline."""
+    lines = [f"Contact exchanged via {exchange.channel}."]
+    if exchange.event_name:
+        lines.append(f"Event / meeting: {exchange.event_name}")
+    if exchange.notes:
+        lines.append(f"Notes: {exchange.notes}")
+    return "\n".join(lines)
+
+
+def create_enquiry_from_exchange(exchange, kind, landing_url=None):
+    """Record the exchanged contact as an **Enquiry**.
+
+    This goes through the same service the public "Send an Enquiry" form uses
+    (``enquiry.enquiry_service.create_enquiry``), so an exhibition card
+    exchange gets identical validation, the same ``enquiry_submitted``
+    analytics event and the same automatic CRM Lead sync as a web form
+    submission. Never blocks the exchange itself.
+    """
     try:
-        meta = frappe.get_meta("CRM Lead")
-        full_name = exchange.recipient_name or "Unknown"
-        name_parts = full_name.strip().split(" ", 1)
+        from osduo_business_connect.enquiry.enquiry_service import create_enquiry
 
-        lead_data = {
-            "doctype": "CRM Lead",
-            "first_name": name_parts[0],
-            "last_name": name_parts[1] if len(name_parts) > 1 else "",
-            "lead_name": full_name,
-            "email": exchange.recipient_email,
-            "mobile_no": exchange.recipient_phone,
-            "organization": exchange.recipient_company or "",
-            "source": "Business Connect",
-            "status": "New",
-        }
+        # A web request always has this list; keep it safe outside one.
+        frappe.local.message_log = getattr(frappe.local, "message_log", None) or []
+        message_count = len(frappe.local.message_log)
+        result = create_enquiry(
+            business_name=exchange.business,
+            visitor_data={
+                "name": exchange.recipient_name,
+                "email": exchange.recipient_email,
+                "phone": exchange.recipient_phone,
+                "company": exchange.recipient_company,
+                "message": _enquiry_message(exchange),
+                "consent": 0,
+                "consent_text": "Contact given to the business directly; not a web form submission.",
+            },
+            source=ENQUIRY_SOURCES.get(kind, DEFAULT_ENQUIRY_SOURCE),
+            references={
+                "card": exchange.card,
+                "product": exchange.product,
+                "service": exchange.service,
+                "campaign": exchange.event_name,
+                "landing_url": landing_url,
+            },
+        )
 
-        custom_fields = {
-            "osduo_business": exchange.business,
-            "osduo_card": exchange.card,
-            "osduo_product": exchange.product,
-            "osduo_service": exchange.service,
-            "osduo_source": "Contact Exchange",
-            "osduo_campaign": exchange.event_name or "",
-        }
-        for fieldname, value in custom_fields.items():
-            if meta.has_field(fieldname):
-                lead_data[fieldname] = value
+        # Enquiry adds desk-oriented advisories (visitor consent, no email or
+        # phone) when it validates. They are guidance for the person filling the
+        # web form, not for an owner-entered exchange, so drop what this call
+        # appended instead of letting it pop as a toast on the public page.
+        del frappe.local.message_log[message_count:]
 
-        if exchange.user:
-            lead_data["lead_owner"] = exchange.user
-
-        lead = frappe.get_doc(lead_data)
-        lead.insert(ignore_permissions=True)
-        exchange.db_set("crm_lead", lead.name, update_modified=False)
-        return lead.name
+        enquiry_name = result.get("name") if isinstance(result, dict) else result
+        if enquiry_name:
+            exchange.db_set("linked_enquiry", enquiry_name, update_modified=False)
+        return enquiry_name
     except Exception as exc:
         frappe.log_error(
-            title="Contact Exchange CRM Lead Failed",
+            title="Contact Exchange Enquiry Failed",
             message=f"Exchange {exchange.name}: {exc}",
         )
         return None
@@ -218,12 +265,14 @@ def record_contact_exchange(
     channel="WhatsApp",
     event_name=None,
     notes=None,
-    create_lead=0,
+    create_enquiry=1,
 ):
     """Save a contact exchange and return the pre-addressed share link.
 
-    The caller must be an active member of the business. ``create_lead`` is
-    optional and defaults to off.
+    The caller must be an active member of the business. Every exchange is also
+    recorded as an **Enquiry** (``create_enquiry=0`` opts out), so card contacts
+    captured at an event follow the same pipeline as the public enquiry form and
+    reach CRM through it.
     """
     _require_login()
 
@@ -287,6 +336,12 @@ def record_contact_exchange(
         }
     )
     exchange.insert(ignore_permissions=True)
+
+    kind = _target_kind(card, product, service)
+    enquiry_name = None
+    if str(create_enquiry).lower() not in ("0", "false", "no", "off", ""):
+        enquiry_name = create_enquiry_from_exchange(exchange, kind, landing_url=public_url)
+
     frappe.db.commit()
 
     # Funnel signal: this business recorded a contact exchange.
@@ -308,10 +363,6 @@ def record_contact_exchange(
     except Exception:
         frappe.log_error(title="Contact Exchange analytics failed")
 
-    lead = None
-    if str(create_lead).lower() in ("1", "true", "yes", "on"):
-        lead = _maybe_create_lead(exchange)
-
     share_link = _build_share_link(
         channel,
         exchange.recipient_phone,
@@ -327,7 +378,7 @@ def record_contact_exchange(
         "channel": channel,
         "share_url": share_link,
         "public_url": public_url,
-        "crm_lead": lead,
+        "enquiry": enquiry_name,
     }
 
 
@@ -353,7 +404,8 @@ def get_contact_exchanges(business=None, limit=20):
             "event_name",
             "status",
             "exchanged_at",
-            "crm_lead",
+            "user",
+            "linked_enquiry",
         ],
         order_by="exchanged_at desc",
         limit=int(limit or 20),

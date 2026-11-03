@@ -18,15 +18,27 @@ All notable changes to this project will be documented in this file.
 #### Share attribution
 - Share links carry `?ref=share_whatsapp|share_sms|share_email|share_copy|mycard`
   plus `&by=<slug>`. Only whitelisted refs are accepted server-side.
+- `by=` now names the **person who shared** — the sharer's own card slug on
+  business, product and service pages — instead of repeating the page slug.
 - Opening an attributed link logs a server-side `shared_link_open` event, so the
   dashboard can answer "which channel brought this visit?".
 - `shared_link_open` and `contact_exchanged` are **not** accepted from the public
   event endpoint — they can only be produced by the app.
 
+#### Canonical URL scheme
+- `utils/urls.py` now reads `host_name` directly: an explicit scheme is
+  honoured, a scheme-less public host defaults to `https://`, and Frappe's
+  developer-mode port (`:8000`) is no longer appended to a real domain.
+- Diagnostics: `bench --site <site> execute
+  osduo_business_connect.utils.urls.describe_canonical_url` shows the base the
+  app will print into links and QR codes, and where it came from.
+
 #### Contact Exchange (login only)
 - New **Contact Exchange** DocType under Card: records the recipient of a shared
   card/business/product/service (name, company, phone, email, channel, event,
-  notes) with optional one-click CRM Lead creation.
+  notes). **Every exchange is also created as an Enquiry** through the same
+  service the public "Send an Enquiry" form uses, so it lands in the Enquiries
+  list and reaches CRM through the standard sync.
 - New **Share & Save Contact** form on card/business/product/service pages,
   shown only to the business owner/member who is logged in.
 - Recipient details are deliberately owner-entered. No browser or OS exposes the
