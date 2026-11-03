@@ -282,8 +282,9 @@ Once published:
 
 The full card also carries the same share bar and **Send a Message** form used on
 business, product and service pages, plus — for logged-in team members — the
-**Share & Save Contact** strip described in §6.5. In the desk, the card record's
-**Open** button beside **Public URL** opens the published card in one click (§6.2).
+**Share & Save Contact** strip described in §6.6. In the desk, the card record's
+**Open** button beside **Public URL** opens the published card in one click (§6.2),
+and §6.4 documents writing an NFC card or tag with that same URL.
 
 ---
 
@@ -556,13 +557,48 @@ copied link always uses the canonical domain, never the host you happen to be
 browsing from. The Share & Save Contact form below the bar is styled to match
 the public "Send a Message" form, with large tap targets on phones.
 
-### 6.4 My Card
+### 6.4 NFC Cards & Tags
+
+Anything a QR code can do, an NFC card or tag can do too — and a tap feels more
+premium than a scan. No special hardware is needed beyond a tag writer.
+
+**What fits where:**
+
+| Medium | Typical choice | Capacity notes |
+|---|---|---|
+| **NFC business card / collector card** (NTAG213, 144 B) | Card short URL `/c/<card-slug>` | Fits comfortably; keep it to the bare URL, no tracking params |
+| **NTAG215 / sticker on a podium, reception desk, vehicle** | Business profile `/b/<business-slug>` | round stickers are the most economical; remember direct URLs need ~30 B, with `?ref=` tokens 60–80 B |
+| **NTAG216 or NFC key chain / wristband** (504 B+) | Product or service page for a specific line | plenty of room for long URLs + attribution (`?ref=` / `?campaign=`) |
+
+**How to write a tag:**
+
+1. Get the exact public URL from the desk — open the record and use the **Open**
+   button beside **Public URL** (or copy it from the page's share bar; both show
+   the canonical URL).
+2. Optional: append `?ref=share_copy&by=<your-card-slug>` if you want taps
+   attributed to a channel in analytics (any tag ≥ NTAG213 supports this).
+3. Write the tag with any standards-compliant NFC tool — **NFC Tools** (iOS /
+   Android) or **NXP TagWriter** — as an **URI record**. Choose the card type the
+   tool asks for (Web URL), paste the URL, lock the tag afterwards.
+4. **Lock it.** Once written and encrypted-lock the tag so nobody overwrites your
+   printed material with a different link.
+5. Test by tapping with Android (reads the URI record directly) and an iPhone XR+
+   (iOS shows a notification when a background NFC scan picks up the tag).
+
+**Ordering blank cards:** any NTAG21x printed PVC card from your regular printer
+works — no special request needed; just ask for "NFC NTAG21x card".
+
+Everything above inherits the URL-safety model: slugs lock on submit and the
+canonical URL never changes when you add a custom domain later, so locked tags
+keep working forever.
+
+### 6.5 My Card
 
 Open **/my-card** (also linked from the desk navbar and the analytics header) to
 see every published card that belongs to you. **Open Card** launches it with
 `?ref=mycard`, so your own visits are labelled correctly in analytics.
 
-### 6.5 Contact Exchange (login only)
+### 6.6 Contact Exchange (login only)
 
 When you share your card at an exhibition, show or meeting, record who you gave
 it to:

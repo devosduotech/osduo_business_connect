@@ -112,7 +112,7 @@ Single release, all ten items planned in
 - [ ] Fold any remaining "Portable apps" phrasing into the PWA naming used by
   PWA.md before v1.3.0
 - [ ] Add a short "Contact Exchange" walkthrough (screenshots) to USER_MANUAL
-  §6.5 once production screenshots exist
+  §6.6 once production screenshots exist
 - [ ] Keep MARKETING_FEATURE_INVENTORY in sync with each release (already
   done for v1.2.5/v1.2.6 evidence rows)
 - [ ] Generate/refresh `docs/images/mockup/*` screens for the new Open button
