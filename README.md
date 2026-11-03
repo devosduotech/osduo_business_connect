@@ -1,8 +1,8 @@
 # OSDuo Business Connect
 
-**v1.2.4** | **Your digital identity. Your customers. Your growth.**
+**v1.2.6** | **Your digital identity. Your customers. Your growth.**
 
-Business Connect transforms how small businesses and professionals establish their digital presence. Create a stunning business profile, showcase products and services, capture customer enquiries, and install it all as a mobile app — all seamlessly integrated with Frappe CRM.
+Business Connect transforms how small businesses and professionals establish their digital presence. Create a stunning business profile, showcase products and services, capture customer enquiries and card exchanges, and install it all as a mobile app — all seamlessly integrated with Frappe CRM.
 
 ---
 
@@ -14,8 +14,11 @@ Business Connect transforms how small businesses and professionals establish the
 | **Business Profile** | Public landing page with hero, about, products, services, hours, and contact |
 | **Product Showcase** | Product catalog with categories, galleries, pricing, and brochures |
 | **Service Listings** | Service pages with features, locations, and descriptions |
-| **Lead Generation** | Enquiry forms that auto-create CRM leads with full tracking |
-| **Analytics Dashboard** | Real-time engagement metrics — visits, scans, top cards, enquiry pipeline |
+| **Lead Generation** | Enquiry forms and card exchanges that auto-create Enquiries, then CRM leads with full tracking |
+| **Contact Exchange** | Owner records who a card/business/product was shared with at events — saved as an Enquiry, appears in CRM with the message context |
+| **Universal Share Bar** | Copy / WhatsApp / SMS / Email / native share on every public page, all attributed with `?ref=` + sharer |
+| **My Card** | `/my-card` lists your published cards with one-tap Open, plus desk navbar / analytics entry points and an Open button beside Public URL in the desk forms |
+| **Analytics Dashboard** | Real-time engagement metrics — visits, scans, top cards, visitor mix, enquiry pipeline |
 | **Mobile App (PWA)** | Every customer site installs as a branded app — offline card pages, home-screen icon |
 | **Multi-Tenant SaaS** | One bench serves many customers on `customer.connect.domain.com` + bring-your-own domains |
 
@@ -68,13 +71,21 @@ Analytics Dashboard updates with real-time metrics
   theme customisations and deliberate per-site theme choices are preserved
 
 ### Lead Generation Engine
-- Enquiry forms capture visitor details and auto-create Frappe CRM leads with source,
-  UTM campaign, and landing-URL tracking
+- Enquiry forms capture visitor details and auto-create **Enquiries** that sync to
+  Frappe CRM leads with source, UTM campaign, landing-URL tracking and the message
+  carried onto the lead (`OSDuo Message`)
+- **Contact Exchange (v1.2.5)** — a card handed over at an exhibition is recorded with
+  the channel (WhatsApp/SMS/Email/In-person), event and notes; the CRM Lead keeps the
+  context, and the "OSDuo Attribution" fields show on the CRM Lead side panel
+  automatically
 - Enquiry pipeline with statuses and responses
 
 ### Analytics Dashboard
-- Visits, card scans, engagement events (call/WhatsApp/email/brochure clicks), top cards,
-  enquiry pipeline — real-time, guest-safe client-side tracking
+- Visits, card scans, engagement events (call/WhatsApp/email/share-open/brochure
+  clicks), top cards, enquiry pipeline — real-time, guest-safe client-side tracking
+- **Visitor classification (v1.2.5)** — every event is stamped Guest / Owner / Member /
+  Other User / Unknown from the live session; the dashboard shows the visitor mix and
+  can exclude owner/member views so team testing doesn't inflate numbers
 
 ### Progressive Web App (v1.2.0)
 - `/manifest.json` — dynamic per-site app name, icons, and theme colors
@@ -83,6 +94,14 @@ Analytics Dashboard updates with real-time metrics
 - `/offline` — branded fallback page
 - Android install prompt + iOS "Add to Home Screen" guidance on the login app entry
 - See **[docs/PWA.md](docs/PWA.md)**
+
+### Sharing, Attribution & My Card (v1.2.5)
+- Canonical public URLs for QR/NFC safety — `host_name` honoured with its explicit
+  scheme; scheme-less public hosts read as `https://` (no dev port on real domains)
+- Share links carry `?ref=share_*&by=<sharer's card slug>`; opening one logs a
+  server-side `shared_link_open` event per channel
+- `/my-card` page with one-tap card opening attributed by `?ref=mycard`; desk "Open"
+  button directly beside the Public URL on all profile forms (v1.2.6)
 
 ---
 
@@ -126,7 +145,10 @@ TLS, per-customer sites, bring-your-own domains) and the update procedure:
 | [SaaS Implementation Plan](docs/SAAS_IMPLEMENTATION_PLAN.md) | Product | Tiers, quotas, SEO engine — planned capabilities |
 | [Theme Redesign Plan](docs/THEME_REDESIGN_PLAN.md) | Designers | Design system behind the public pages |
 | [Marketing Features](docs/MARKETING_FEATURES.md) | Sales | Feature & benefit catalogue |
+| [Marketing Feature Inventory](docs/MARKETING_FEATURE_INVENTORY.md) | Sales & product | Every shipped capability with evidence, plus the prioritized v1.3.0 scope |
+| [Pending To-Do List](docs/TODO.md) | Team | Single working list: next release, backlog, tech debt, doc cleanups |
 | [Release Notes](RELEASE_NOTES.md) / [Changelog](CHANGELOG.md) | Everyone | What shipped in each version |
+| [SEO Plan](docs/SEO_PLAN_v1.3.0.md) | Team | Committed v1.3.0 SEO scope with recommended work order |
 
 ---
 
@@ -141,9 +163,9 @@ graph TD
 
     subgraph "Frappe Bench (multi-tenant)"
         B --> C[Website Route Rules]
-        C --> D[DocTypes: Business · Digital Card · Showcase · Enquiry]
+        C --> D[DocTypes: Business · Digital Card · Showcase · Enquiry · Contact Exchange]
         D --> E[Permission Hooks: per-business membership roles]
-        E --> F[CRM Integration: auto lead creation + sync]
+        E --> F[CRM Integration: Enquiries + Contact Exchanges → CRM Leads]
         D --> G[Analytics: Engagement Events]
         A --> H["/manifest.json · /sw.js · /offline"]
     end
@@ -167,8 +189,14 @@ documentation cleanups), see **[docs/TODO.md](docs/TODO.md)**.
 - [x] Analytics dashboard with real-time metrics
 - [x] Mobile delivery via installable PWA (v1.2.0)
 - [x] Multi-tenant SaaS domain model (hosted subdomains + BYOD)
+- [x] Universal share bar + channel/sharer attribution (v1.2.5)
+- [x] Contact Exchange — event lead capture → Enquiry → CRM (v1.2.5)
+- [x] Visitor classification & visitor-mix analytics (v1.2.5)
+- [x] My Card: `/my-card`, desk navbar, Open buttons beside Public URL (v1.2.5/1.2.6)
+- [ ] SEO engine — v1.3.0 scope committed and prioritized (canonical/OG, JSON-LD,
+      sitemap, catalogue SEO fields, web vitals, brand attribution) — see
+      [docs/TODO.md](docs/TODO.md) §1
 - [ ] SaaS tiers & quotas (`BC Subscription`)
-- [ ] SEO engine extensions (OG images, sitemap filters, keyword tracking)
 - [ ] Web push notifications for installed PWAs
 - [ ] Play Store listing via TWA wrappers
 - [ ] Multi-language support
