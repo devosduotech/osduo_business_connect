@@ -7,8 +7,25 @@ Installation hooks for OSDuo Business Connect.
 Handles creation of CRM Custom Fields and initial setup.
 """
 
+import json
+
 import frappe
 from frappe import _
+
+# Fieldnames of the attribution fields this app adds to CRM Lead. Keep in sync
+# with the custom_fields list in create_crm_custom_fields(); used by
+# ensure_crm_fields_layout() to place them on the CRM Lead side panel.
+OSDUO_CRM_FIELDNAMES = (
+    "osduo_business",
+    "osduo_card",
+    "osduo_product",
+    "osduo_service",
+    "osduo_enquiry",
+    "osduo_campaign",
+    "osduo_source",
+    "osduo_landing_url",
+    "osduo_notes",
+)
 
 
 def before_install():
@@ -20,6 +37,7 @@ def after_install():
     """After install tasks."""
     # Create CRM Custom Fields
     create_crm_custom_fields()
+    ensure_crm_fields_layout()
     
     # Create default roles
     create_default_roles()
@@ -171,6 +189,128 @@ def create_custom_field_if_not_exists(dt, field):
     frappe.db.commit()
 
 
+def ensure_crm_fields_layout():
+    """Show the osduo_* attribution fields on the CRM Lead side panel.
+
+    Frappe CRM renders the Lead page from its own ``CRM Fields Layout`` record
+    (``CRM Lead-Side Panel``). A new custom field stays invisible there until a
+    user drags it in with the layout builder, so left alone every customer site
+    would need manual customization after every install. This appends the
+    fields to an existing layout — or, when none exists, plants a minimal
+    default layout that includes them — idempotently, on install/migrate.
+    """
+    if not (
+        frappe.db.exists("DocType", "CRM Fields Layout")
+        and frappe.db.exists("DocType", "CRM Lead")
+    ):
+        return
+
+    layout_name = frappe.db.get_value(
+        "CRM Fields Layout", {"dt": "CRM Lead", "type": "Side Panel"}, "name"
+    )
+    if layout_name:
+        doc = frappe.get_doc("CRM Fields Layout", layout_name)
+        sections = json.loads(doc.layout or "[]")
+        sections, changed = _integrate_osduo_section(sections)
+        if not changed:
+            return
+        doc.layout = json.dumps(sections)
+        doc.save(ignore_permissions=True)
+    else:
+        sections, changed = _integrate_osduo_section(_default_side_panel_sections("CRM Lead"))
+        if not changed:
+            return
+        frappe.get_doc(
+            {
+                "doctype": "CRM Fields Layout",
+                "dt": "CRM Lead",
+                "type": "Side Panel",
+                "layout": json.dumps(sections),
+            }
+        ).insert(ignore_permissions=True)
+    frappe.db.commit()
+
+
+def _entry_fieldname(entry):
+    """Layout entries are fieldname strings (saved by the CRM builder) but
+    tolerate dicts, which some CRM versions keep in the stored JSON."""
+    if isinstance(entry, dict):
+        return entry.get("fieldname")
+    return str(entry)
+
+
+def _fields_in_use(sections):
+    """Every fieldname already placed anywhere in the layout."""
+    found = set()
+    for section in sections:
+        for column in section.get("columns") or []:
+            for entry in column.get("fields") or []:
+                found.add(_entry_fieldname(entry))
+        for entry in section.get("fields") or []:
+            found.add(_entry_fieldname(entry))
+    return found
+
+
+def _integrate_osduo_section(sections):
+    """Append one dedicated section with the missing osduo_* fields.
+
+    Returns ``(sections, changed)``. The appended section reuses the shape of
+    the last editable section — ``columns`` entries for the current CRM layout
+    builder, the legacy top-level ``fields`` list for older versions — so the
+    layout stays readable for the CRM version that created it.
+    """
+    sections = sections or []
+    missing = [fn for fn in OSDUO_CRM_FIELDNAMES if fn not in _fields_in_use(sections)]
+    if not missing:
+        return sections, False
+
+    last = next((s for s in reversed(sections) if s.get("name") != "contacts_section"), None)
+    legacy_shape = bool(last and "columns" not in last and last.get("fields"))
+
+    new_section = {
+        "label": "OSDuo Attribution",
+        "name": "osduo_attribution",
+        "opened": True,
+    }
+    if legacy_shape:
+        new_section["fields"] = list(missing)
+    else:
+        new_section["columns"] = [{"name": "osduo_attribution_column", "fields": list(missing)}]
+    sections.append(new_section)
+    return sections, True
+
+
+def _default_side_panel_sections(doctype):
+    """Minimal side-panel fallback for sites without a saved layout.
+
+    Mirrors what the CRM layout builder would generate from the doctype meta:
+    one section holding every renderable field, in field order. The dedicated
+    OSDuo section is appended on top by _integrate_osduo_section().
+    """
+    excluded = (
+        "Section Break",
+        "Column Break",
+        "Tab Break",
+        "Table",
+        "Table MultiSelect",
+        "Signature",
+        "Image",
+    )
+    fieldnames = [
+        field.fieldname
+        for field in frappe.get_meta(doctype).fields
+        if field.fieldtype not in excluded and field.fieldname
+    ]
+    return [
+        {
+            "label": "Details",
+            "name": "details",
+            "opened": True,
+            "columns": [{"name": "details_column", "fields": fieldnames}],
+        }
+    ]
+
+
 def create_default_roles():
     """Create default OSDuo roles if they don't exist."""
     roles = [
@@ -197,6 +337,7 @@ def create_default_roles():
 def after_migrate():
     """Run after bench migrate to ensure CRM custom fields are created."""
     create_crm_custom_fields()
+    ensure_crm_fields_layout()
     migrate_crm_custom_fields()
     create_default_roles()
     create_builtin_themes()

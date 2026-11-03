@@ -760,6 +760,11 @@ Status changes sync bidirectionally:
 | OSDuo Landing URL | The page where enquiry was submitted |
 | OSDuo Message | Message copied from the enquiry — website-form message or the channel/event notes of a Share & Save Contact exchange |
 
+All of these are added to the **CRM Lead side panel automatically** as an
+"OSDuo Attribution" section — no per-site manual layout work. If you edited the
+CRM layout builder yourself, the fields are only appended when they are still
+missing.
+
 ---
 
 ## 10. Roles & Permissions
