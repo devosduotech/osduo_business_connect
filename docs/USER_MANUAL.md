@@ -997,6 +997,36 @@ A: Yes. The VCF download button saves your contact to their phone.
 **Q: How do I track where enquiries come from?**  
 A: Each enquiry records its source (Digital Card, Product, Service, QR, Campaign) automatically. Share links additionally stamp the channel — `ref=share_whatsapp|share_sms|share_email|share_copy` plus `by=<sharer's card slug>` — and Contact Exchanges flow in as Enquiries with the channel, event and notes attached.
 
+**Q: Does it support NFC business cards?**  
+A: Yes. Write your public URL to any standard NTAG21x NFC card or tag — a tap opens your digital profile exactly like a QR scan, and the tap lands with the same analytics attribution (see [NFC Cards & Tags](#64-nfc-cards--tags) for choosing, writing and locking tags).
+
+**Q: How can I share my digital business card?**  
+A: Through the personalized public URL, the QR code generated from it, an NFC card or tag, or the share bar on every public page (Copy / WhatsApp / SMS / Email / native share). Every route uses the same canonical URL, so all links stay valid.
+
+**Q: Can customers contact my business directly?**  
+A: Yes. Every public page offers one-tap channels matching what you filled in: WhatsApp, phone, email and website links, plus the enquiry form.
+
+**Q: Is it suitable for individual professionals?**  
+A: Yes. It supports individual professionals, consultants, entrepreneurs, small businesses and enterprises — the Professional plan covers a single user and the same card/profile features.
+
+**Q: Can I customize my business profile?**  
+A: Yes. Choose from the professional theme templates (BC Theme: layout, color schemes, dark mode, custom colors) to match your brand. New businesses start on the bundled default theme, and per-site branding (logo, favicon) comes built-in.
+
+**Q: Is the platform mobile-friendly?**  
+A: Yes. Every public page is designed for smartphones, tablets and desktops — and the whole site installs as your branded PWA (see [Mobile App (PWA)](#11-mobile-app-pwa)).
+
+**Q: How much does OSDuo Business Connect cost?**  
+A: Annual subscription plans, per user / year: **Professional ₹595** (min 1 user), **Business ₹895** (min 5 users), **Enterprise ₹1,295** (min 10 users); 18% GST extra, billed annually. Select plans also offer add-ons — Custom NFC Business Card (₹399/user/card), Custom Domain Service (₹5,999/year; one included with Enterprise), and domain registration/renewal at actual cost. Prices can change — the marketplace is authoritative.
+
+**Q: How is the subscription billed?**  
+A: Annually, based on the plan's minimum user commitment (Professional ₹595, Business ₹4,475, Enterprise ₹12,950 minimum annual amounts).
+
+**Q: Where do I order, or change my plan?**  
+A: Online at the OSDuo marketplace (**https://www.aasriva.in**) or by contacting OSDuo Tech LLP (https://www.osduotech.com/contact).
+
+**Q: Which plan is right for me?**  
+A: All plans include the digital card, business profile, QR/NFC sharing, product & service showcase, lead capture, contact management and the mobile PWA. Higher plans add **Multiple Business Profiles** and **Team Management** (Business), and **Advanced Administration** (Enterprise). As always, feature availability is subject to the final plan configuration — confirm the entitlements for your site when you order.
+
 **Q: How do I open my profile page without typing its URL?**  
 A: In the desk, open any Business / Digital Card / Product / Service record and click the **Open** button next to **Public URL** — it launches the live page in a new tab.
 
