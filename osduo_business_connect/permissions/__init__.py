@@ -45,6 +45,12 @@ def has_permission(doc, user=None, ptype=None):
         )
         return card_has_permission(doc, user=user, ptype=ptype)
 
+    elif doctype == "Contact Exchange":
+        from osduo_business_connect.card.doctype.contact_exchange.contact_exchange import (
+            has_permission as contact_exchange_has_permission,
+        )
+        return contact_exchange_has_permission(doc, user=user, ptype=ptype)
+
     elif doctype == "Showcase Product":
         from osduo_business_connect.showcase.doctype.showcase_product.showcase_product import (
             has_permission as product_has_permission,

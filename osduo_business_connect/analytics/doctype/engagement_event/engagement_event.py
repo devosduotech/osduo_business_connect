@@ -89,6 +89,8 @@ class EngagementEvent(Document):
             "website_click",
             "brochure_download",
             "enquiry_submitted",
+            "shared_link_open",
+            "contact_exchanged",
         ]
         
         if self.event_type not in allowed_types:

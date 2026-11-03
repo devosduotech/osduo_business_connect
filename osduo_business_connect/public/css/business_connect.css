@@ -1018,6 +1018,113 @@
     margin-top: 0.75rem;
 }
 
+/* Reusable share bar (business / product / service / card pages) */
+.bc-share-widget {
+    max-width: 560px;
+    margin: 0 auto;
+}
+
+.bc-share-native {
+    cursor: pointer;
+}
+
+/* My Card chip on the user's own public pages */
+.bc-my-card-chip-wrap {
+    text-align: center;
+    margin-bottom: 0.75rem;
+}
+
+.bc-my-card-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    background: var(--bc-primary);
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.bc-my-card-chip:hover {
+    opacity: 0.9;
+}
+
+/* Share & Save Contact form */
+.bc-ce {
+    max-width: 560px;
+    margin: 1.25rem auto 0;
+    padding: 1.1rem 1.15rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #fff;
+    text-align: left;
+}
+
+.bc-ce-title {
+    margin: 0 0 0.25rem;
+    font-size: 1rem;
+    color: #1e293b;
+}
+
+.bc-ce-hint {
+    margin: 0 0 0.8rem;
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+.bc-ce-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.bc-ce-form input,
+.bc-ce-form select,
+.bc-ce-form textarea {
+    width: 100%;
+    padding: 0.55rem 0.65rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    box-sizing: border-box;
+    background: #fff;
+    color: #1e293b;
+}
+
+.bc-ce-form textarea {
+    margin-bottom: 0.5rem;
+    resize: vertical;
+}
+
+.bc-ce-lead {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    color: #475569;
+    margin-bottom: 0.6rem;
+}
+
+.bc-ce-lead input {
+    width: auto;
+}
+
+.bc-ce-status {
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--bc-primary-text, #0b3d91);
+    min-height: 1rem;
+}
+
+@media (max-width: 520px) {
+    .bc-ce-row {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* ======================== */
 /* SECTION ALT (fix)        */
 /* ======================== */

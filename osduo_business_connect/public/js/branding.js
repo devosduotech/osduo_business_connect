@@ -72,4 +72,47 @@
       set_icon(frm, cdt, cdn, "link_type");
     },
   });
+
+  // ── My Card navbar link ───────────────────────────────────
+
+  function add_my_card_link() {
+    if (typeof frappe === "undefined" || !frappe.session) return;
+    if (!frappe.session.user || frappe.session.user === "Guest") return;
+    if (document.querySelector(".bc-my-card-nav")) return;
+
+    var navbar =
+      document.querySelector(".navbar .navbar-right") ||
+      document.querySelector(".navbar .navbar-nav") ||
+      document.querySelector(".navbar-nav");
+    if (!navbar) return;
+
+    var link = document.createElement("a");
+    link.href = "/my-card";
+    link.textContent = "My Card";
+    link.style.cssText =
+      "display:inline-flex;align-items:center;padding:6px 10px;font-size:13px;color:inherit;text-decoration:none;white-space:nowrap;";
+    link.addEventListener("click", function (event) {
+      event.preventDefault();
+      window.location.href = "/my-card";
+    });
+
+    if (navbar.tagName === "UL") {
+      var item = document.createElement("li");
+      item.className = "nav-item bc-my-card-nav";
+      item.appendChild(link);
+      navbar.appendChild(item);
+    } else {
+      link.className = "bc-my-card-nav";
+      navbar.appendChild(link);
+    }
+  }
+
+  if (typeof frappe !== "undefined") {
+    if (window.jQuery) {
+      $(document).on("page-change", function () {
+        setTimeout(add_my_card_link, 300);
+      });
+    }
+    setTimeout(add_my_card_link, 1200);
+  }
 })();

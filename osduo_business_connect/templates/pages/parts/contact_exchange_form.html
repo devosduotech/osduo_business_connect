@@ -1,0 +1,143 @@
+{# ===== SHARE & SAVE CONTACT (login-only, owner/member) ===== #}
+{% if show_my_card %}
+<div class="bc-ce"
+     data-bc-contact-exchange
+     data-business="{{ ce_business or '' }}"
+     data-card="{{ ce_card or '' }}"
+     data-product="{{ ce_product or '' }}"
+     data-service="{{ ce_service or '' }}">
+    <h3 class="bc-ce-title">Share &amp; Save Contact</h3>
+    <p class="bc-ce-hint">Record who you shared this with — useful at exhibitions, shows and meetings.</p>
+
+    <form class="bc-ce-form" novalidate>
+        <div class="bc-ce-row">
+            <input type="text" name="recipient_name" placeholder="Recipient name" autocomplete="name" required>
+            <input type="text" name="recipient_company" placeholder="Company (optional)" autocomplete="organization">
+        </div>
+        <div class="bc-ce-row">
+            <input type="tel" name="recipient_phone" placeholder="Mobile number" autocomplete="tel">
+            <input type="email" name="recipient_email" placeholder="Email address" autocomplete="email">
+        </div>
+        <div class="bc-ce-row">
+            <select name="channel">
+                <option value="WhatsApp">WhatsApp</option>
+                <option value="SMS">SMS</option>
+                <option value="Email">Email</option>
+                <option value="In-person">In person</option>
+            </select>
+            <input type="text" name="event_name" placeholder="Event / meeting (optional)">
+        </div>
+        <textarea name="notes" rows="2" placeholder="Notes (optional)"></textarea>
+        <label class="bc-ce-lead">
+            <input type="checkbox" name="create_lead" value="1"> Create a CRM Lead
+        </label>
+        <button type="submit" class="bc-btn bc-btn-primary">Save &amp; Share</button>
+        <div class="bc-ce-status" role="status" aria-live="polite"></div>
+    </form>
+</div>
+
+<script>
+(function () {
+    "use strict";
+
+    var ENDPOINT = "/api/method/osduo_business_connect.card.contact_exchange_api.record_contact_exchange";
+
+    function csrfToken() {
+        var meta = document.querySelector('meta[name="csrf-token"]');
+        if (meta && meta.getAttribute("content")) { return meta.getAttribute("content"); }
+        var el = document.getElementById("bc-csrf-token");
+        return el ? (el.getAttribute("data-token") || "") : "";
+    }
+
+    function parseError(result) {
+        if (result && result._server_messages) {
+            try {
+                var messages = JSON.parse(result._server_messages);
+                if (messages.length) {
+                    var message = typeof messages[0] === "string" ? JSON.parse(messages[0]).message : messages[0].message;
+                    if (message) { return message; }
+                }
+            } catch (ex) {}
+        }
+        return "Could not save the contact. Please try again.";
+    }
+
+    document.querySelectorAll("[data-bc-contact-exchange]").forEach(function (root) {
+        if (root.getAttribute("data-bc-ce-init")) { return; }
+        root.setAttribute("data-bc-ce-init", "1");
+
+        var form = root.querySelector(".bc-ce-form");
+        var status = root.querySelector(".bc-ce-status");
+        if (!form) { return; }
+
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();
+            var button = form.querySelector('button[type="submit"]');
+            var data = new FormData(form);
+            var channel = data.get("channel") || "In-person";
+            var phone = (data.get("recipient_phone") || "").trim();
+            var email = (data.get("recipient_email") || "").trim();
+
+            var phoneDigits = phone.replace(/[^0-9]/g, "");
+            if ((channel === "WhatsApp" || channel === "SMS") && phoneDigits.length < 7) {
+                status.textContent = "Enter a valid mobile number for " + channel + ".";
+                return;
+            }
+            if (channel === "Email" && !email) {
+                status.textContent = "Enter an email address for Email.";
+                return;
+            }
+
+            var payload = {
+                business: root.getAttribute("data-business") || "",
+                card: root.getAttribute("data-card") || "",
+                product: root.getAttribute("data-product") || "",
+                service: root.getAttribute("data-service") || "",
+                recipient_name: data.get("recipient_name") || "",
+                recipient_company: data.get("recipient_company") || "",
+                recipient_phone: phone,
+                recipient_email: email,
+                channel: channel,
+                event_name: data.get("event_name") || "",
+                notes: data.get("notes") || "",
+                create_lead: data.get("create_lead") ? 1 : 0
+            };
+
+            if (button) { button.disabled = true; }
+            status.textContent = "Saving…";
+
+            fetch(ENDPOINT, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-Frappe-CSRF-Token": csrfToken()
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(function (response) { return response.json(); })
+            .then(function (result) {
+                if (!result.message || !result.message.name) {
+                    status.textContent = parseError(result);
+                    if (button) { button.disabled = false; }
+                    return;
+                }
+
+                form.reset();
+                if (button) { button.disabled = false; }
+
+                if (result.message.share_url) {
+                    status.textContent = "Contact saved. Opening " + channel + "…";
+                    window.location.href = result.message.share_url;
+                } else {
+                    status.textContent = "Contact saved.";
+                }
+            })
+            .catch(function () {
+                status.textContent = "Could not save the contact. Please try again.";
+                if (button) { button.disabled = false; }
+            });
+        });
+    });
+})();
+</script>
+{% endif %}

@@ -11,11 +11,52 @@ Used by business, card, product, and service page controllers.
 import frappe
 
 
-def capture_analytics_context():
-    """Extract request metadata for analytics before background job.
+def classify_visitor(business=None, user=None):
+    """Classify the current visitor from the live session (never from client input).
 
     Returns:
-        dict: Context with landing_url, referrer, device_type, browser
+        tuple: (visitor_type, visitor_user)
+        visitor_type is one of Guest / Owner / Member / Other User / Unknown.
+    """
+    if not user:
+        user = frappe.session.user if frappe.session else None
+
+    if not user or user == "Guest":
+        return "Guest", None
+    if not business:
+        return "Unknown", user
+
+    try:
+        owner = frappe.db.get_value("Business", business, "owner_user")
+    except Exception:
+        owner = None
+
+    if owner and owner == user:
+        return "Owner", user
+
+    try:
+        is_member = frappe.db.exists(
+            "Business Member",
+            {"business": business, "user": user, "status": "Active"},
+        )
+    except Exception:
+        is_member = False
+
+    if is_member:
+        return "Member", user
+
+    return "Other User", user
+
+
+def capture_analytics_context(business=None):
+    """Extract request metadata for analytics before background job.
+
+    Args:
+        business: Optional business name, used to classify the visitor type.
+
+    Returns:
+        dict: Context with landing_url, referrer, device_type, browser,
+              visitor_type and visitor_user
     """
     ctx = {}
     request = frappe.request if frappe.request else None
@@ -41,6 +82,10 @@ def capture_analytics_context():
             ctx["browser"] = "Edge"
         else:
             ctx["browser"] = "Unknown"
+
+    # Classification must happen in the web request — never in the background
+    # job, where frappe.session.user is Administrator.
+    ctx["visitor_type"], ctx["visitor_user"] = classify_visitor(business)
     return ctx
 
 

@@ -49,6 +49,7 @@
         <div class="analytics-topbar">
             <h1>Analytics Dashboard</h1>
             <div class="filters">
+                <a href="/my-card" style="padding:0.5rem 0.85rem;border-radius:8px;background:#0b3d91;color:#fff;font-size:0.85rem;text-decoration:none;white-space:nowrap;">My Card</a>
                 <select id="analytics-business">
                     <option value="">Loading businesses...</option>
                 </select>
@@ -59,6 +60,9 @@
                     <option value="90">Last 90 days</option>
                     <option value="365">Last year</option>
                 </select>
+                <label style="display:flex;align-items:center;gap:0.35rem;font-size:0.8rem;color:#475569;white-space:nowrap;cursor:pointer;">
+                    <input type="checkbox" id="analytics-exclude-internal"> Exclude owner/member views
+                </label>
             </div>
         </div>
 
@@ -95,9 +99,11 @@ function apiCall(method, args) {
 document.addEventListener("DOMContentLoaded", function() {
     var bSelect = document.getElementById("analytics-business");
     var dSelect = document.getElementById("analytics-days");
+    var xSelect = document.getElementById("analytics-exclude-internal");
 
     bSelect.addEventListener("change", loadAnalytics);
     dSelect.addEventListener("change", loadAnalytics);
+    if (xSelect) { xSelect.addEventListener("change", loadAnalytics); }
 
     apiCall("osduo_business_connect.pages.analytics.get_business_list")
         .then(function(r) {
@@ -125,7 +131,11 @@ document.addEventListener("DOMContentLoaded", function() {
         document.getElementById("analytics-loading").style.display = "block";
         document.getElementById("analytics-content").style.display = "none";
 
-        apiCall("osduo_business_connect.pages.analytics.get_analytics", { business: business, days: days })
+        apiCall("osduo_business_connect.pages.analytics.get_analytics", {
+            business: business,
+            days: days,
+            exclude_internal: (xSelect && xSelect.checked) ? 1 : 0
+        })
             .then(function(r) {
                 document.getElementById("analytics-loading").style.display = "none";
                 document.getElementById("analytics-content").style.display = "block";
@@ -152,7 +162,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
             '<div class="row" style="margin-bottom:1.5rem;">' +
             '<div class="col-sm-8"><div class="chart-card"><h5>Visits by Day</h5><div id="chart-visits" style="height:240px;"></div></div></div>' +
-            '<div class="col-sm-4"><div class="chart-card"><h5>Events by Type</h5><div id="events-type"></div></div></div>' +
+            '<div class="col-sm-4"><div class="chart-card"><h5>Events by Type</h5><div id="events-type"></div><div id="visitor-types" style="margin-top:1rem;"></div></div></div>' +
             '</div>' +
 
             '<div class="row" style="margin-bottom:1.5rem;">' +
@@ -166,6 +176,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         renderBarChart("chart-visits", eng.events_by_day || []);
         renderEventsByType("events-type", eng.events_by_type || {});
+        renderVisitorTypes("visitor-types", eng.events_by_visitor || {});
         renderTopCards("top-cards", data.top_cards || []);
         renderEnquiryPipeline("enquiry-pipe", enq);
         renderRecentActivity("recent-act", eng.recent_events || []);
@@ -218,6 +229,41 @@ document.addEventListener("DOMContentLoaded", function() {
         el.innerHTML = html;
     }
 
+    var VISITOR_COLORS = {
+        "Guest": "#0ea5e9",
+        "Owner": "#8b5cf6",
+        "Member": "#f59e0b",
+        "Other User": "#10b981",
+        "Unknown": "#94a3b8"
+    };
+
+    function visitorChip(type) {
+        var label = type || "Unknown";
+        var color = VISITOR_COLORS[label] || "#94a3b8";
+        return '<span style="display:inline-block;padding:0.1rem 0.5rem;border-radius:999px;' +
+            'font-size:0.72rem;font-weight:500;color:#fff;background:' + color + ';white-space:nowrap;">' +
+            escapeHtml(label) + '</span>';
+    }
+
+    function renderVisitorTypes(id, data) {
+        var el = document.getElementById(id);
+        if (!el) { return; }
+        var keys = Object.keys(data);
+        if (!keys.length) {
+            el.innerHTML = '<p style="color:#94a3b8;margin:0;font-size:0.8rem;">No visitor data</p>';
+            return;
+        }
+        var total = keys.reduce(function(s,k){return s+Number(data[k]||0);},0);
+        var html = '<h6 style="margin:0 0 0.5rem;font-size:0.8rem;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Visitors</h6>';
+        keys.sort(function(a,b){return data[b]-data[a];}).forEach(function(k){
+            var pct = total > 0 ? ((data[k]/total)*100).toFixed(1) : 0;
+            html += '<div style="display:flex;align-items:center;justify-content:space-between;gap:0.5rem;margin-bottom:0.4rem;">' +
+                '<span>' + visitorChip(k) + '</span>' +
+                '<span style="font-size:0.8rem;color:#64748b;">' + data[k] + ' (' + pct + '%)</span></div>';
+        });
+        el.innerHTML = html;
+    }
+
     function renderTopCards(id, data) {
         var el = document.getElementById(id);
         if (!data.length) { el.innerHTML = '<p style="color:#94a3b8;">No card views yet</p>'; return; }
@@ -257,6 +303,7 @@ document.addEventListener("DOMContentLoaded", function() {
             '<thead><tr style="border-bottom:1px solid #e2e8f0;">' +
             '<th style="text-align:left;padding:0.5rem 0;color:#64748b;font-weight:500;">Time</th>' +
             '<th style="text-align:left;padding:0.5rem 0;color:#64748b;font-weight:500;">Event</th>' +
+            '<th style="text-align:left;padding:0.5rem 0;color:#64748b;font-weight:500;">Visitor</th>' +
             '<th style="text-align:left;padding:0.5rem 0;color:#64748b;font-weight:500;">Page</th>' +
             '<th style="text-align:left;padding:0.5rem 0;color:#64748b;font-weight:500;">Device</th></tr></thead><tbody>';
         data.forEach(function(d){
@@ -264,6 +311,7 @@ document.addEventListener("DOMContentLoaded", function() {
             html += '<tr style="border-bottom:1px solid #f1f5f9;">' +
                 '<td style="padding:0.5rem 0;color:#64748b;white-space:nowrap;">' + escapeHtml(d.event_time||"") + '</td>' +
                 '<td style="padding:0.5rem 0;color:#334155;">' + escapeHtml((d.event_type||"").replace(/_/g," ").replace(/\b\w/g,function(c){return c.toUpperCase();})) + '</td>' +
+                '<td style="padding:0.5rem 0;">' + visitorChip(d.visitor_type) + '</td>' +
                 '<td style="padding:0.5rem 0;color:#334155;">' + escapeHtml(pg) + '</td>' +
                 '<td style="padding:0.5rem 0;color:#64748b;">' + escapeHtml(d.device_type||"Unknown") + '</td></tr>';
         });

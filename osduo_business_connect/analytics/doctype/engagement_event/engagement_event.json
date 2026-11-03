@@ -40,7 +40,7 @@
       "fieldtype": "Select",
       "label": "Event Type",
       "reqd": 1,
-      "options": "profile_view\ncard_view\nqr_landing\nproduct_view\nservice_view\nphone_click\nemail_click\nwhatsapp_click\nwebsite_click\nbrochure_download\nenquiry_submitted",
+      "options": "profile_view\ncard_view\nqr_landing\nproduct_view\nservice_view\nphone_click\nemail_click\nwhatsapp_click\nwebsite_click\nbrochure_download\nenquiry_submitted\nshared_link_open\ncontact_exchanged",
       "in_list_view": 1,
       "in_standard_filter": 1
     },
@@ -51,6 +51,32 @@
       "reqd": 1,
       "default": "Now",
       "in_list_view": 1
+    },
+    {
+      "fieldname": "section_visitor",
+      "fieldtype": "Section Break",
+      "label": "Visitor"
+    },
+    {
+      "fieldname": "visitor_type",
+      "fieldtype": "Select",
+      "label": "Visitor Type",
+      "options": "Guest\nOwner\nMember\nOther User\nUnknown",
+      "default": "Unknown",
+      "in_list_view": 1,
+      "in_standard_filter": 1
+    },
+    {
+      "fieldname": "column_break_visitor",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "visitor_user",
+      "fieldtype": "Data",
+      "label": "Visitor User",
+      "hidden": 1,
+      "read_only": 1,
+      "no_copy": 1
     },
     {
       "fieldname": "section_reference",
@@ -93,6 +119,14 @@
       "fieldname": "campaign",
       "fieldtype": "Data",
       "label": "Campaign"
+    },
+    {
+      "fieldname": "shared_by",
+      "fieldtype": "Data",
+      "label": "Shared By",
+      "hidden": 1,
+      "read_only": 1,
+      "no_copy": 1
     },
     {
       "fieldname": "landing_url",

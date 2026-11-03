@@ -108,25 +108,9 @@
         {# ===== SHARE SECTION ===== #}
         <div class="bc-card-section bc-card-share">
             <h2 class="bc-card-section-title">Share Card</h2>
-
-            <div class="bc-card-share-link" data-copy-url="{{ card_url }}" role="button" tabindex="0" aria-label="Copy card link">
-                <span class="bc-card-share-url">{{ card_url }}</span>
-                <span class="bc-card-share-copy">Copy</span>
-            </div>
-            <div id="bc-copy-toast" class="bc-copy-toast" style="display:none;">Copied!</div>
-
-            {% if doc.qr_enabled and doc.qr_image %}
-            <div class="bc-card-share-qr">
-                <img src="{{ doc.qr_image }}" alt="QR code for {{ doc.display_name or doc.name }}">
-                <p>Scan to view card</p>
-            </div>
-            {% endif %}
-
-            <div class="bc-card-share-buttons">
-                <a href="https://wa.me/?text={{ card_url|urlencode }}" target="_blank" rel="noopener" class="bc-btn bc-btn-secondary">&#128172; WhatsApp</a>
-                <a href="sms:?body={{ card_url|urlencode }}" class="bc-btn bc-btn-secondary">&#128172; SMS</a>
-                <a href="mailto:?subject=Digital Card&body=Check out this card: {{ card_url }}" class="bc-btn bc-btn-secondary">&#9993; Email</a>
-            </div>
+            {% include "osduo_business_connect/templates/pages/parts/my_card_chip.html" %}
+            {% include "osduo_business_connect/templates/pages/parts/share_bar.html" %}
+            {% include "osduo_business_connect/templates/pages/parts/contact_exchange_form.html" %}
         </div>
 
         {# ===== FOOTER ===== #}
@@ -310,34 +294,6 @@
                 var target = document.getElementById(href.substring(1));
                 if (target) { target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
             }
-        });
-    });
-
-    // Copy card link.
-    document.querySelectorAll('.bc-card-share-link[data-copy-url]').forEach(function (el) {
-        function copy() {
-            var url = el.getAttribute('data-copy-url');
-            var toast = document.getElementById('bc-copy-toast');
-            var done = function () {
-                if (!toast) { return; }
-                toast.textContent = 'Copied!';
-                toast.style.display = 'block';
-                window.setTimeout(function () { toast.style.display = 'none'; }, 1500);
-            };
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(url).then(done).catch(function () {});
-            } else {
-                var input = document.createElement('input');
-                input.value = url;
-                document.body.appendChild(input);
-                input.select();
-                try { document.execCommand('copy'); done(); } catch (ex) {}
-                document.body.removeChild(input);
-            }
-        }
-        el.addEventListener('click', copy);
-        el.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); copy(); }
         });
     });
 })();

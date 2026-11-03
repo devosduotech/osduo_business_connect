@@ -129,6 +129,17 @@
    "type": "Link"
   },
   {
+   "description": "People you shared your card with at events and meetings",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Contact Exchanges",
+   "link_count": 0,
+   "link_to": "Contact Exchange",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
    "description": "Track page engagement analytics",
    "hidden": 0,
    "is_query_report": 0,
