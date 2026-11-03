@@ -63,6 +63,9 @@ def create_lead_from_enquiry(enquiry_doc):
             "osduo_campaign": enquiry_doc.campaign or "",
             "osduo_source": enquiry_doc.source or "Business Profile",
             "osduo_landing_url": enquiry_doc.landing_url or "",
+            # Free-text context: website form message, or the channel/event
+            # notes of a contact exchange (Share & Save Contact).
+            "osduo_notes": enquiry_doc.message or "",
         }
 
         if lead_owner:
