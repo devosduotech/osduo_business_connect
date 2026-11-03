@@ -94,17 +94,23 @@
 
 ### 1.9 Committed next — v1.3.0 (SEO & brand attribution)
 
-| # | Feature | What it will do |
-|---|---|---|
-| 41 | **Full on-page SEO layer** | Canonical, OG (title/description/url/image/type/site_name/locale), Twitter `summary_large_image`, robots meta, theme-color |
-| 42 | **SEO fields on Product & Service** | `seo_title` + `seo_description`, editable after submit, with 50–60 / 150–160 char guidance and soft warnings |
-| 43 | **Smart fallbacks** | Every page gets a unique title + description even if SEO fields are blank |
-| 44 | **Structured data (JSON-LD)** | `Organization` + `WebSite` + `Brand`, `LocalBusiness` (address, hours, socials), `Product` + `Offer`, `Service`, `Person`, `BreadcrumbList` |
-| 45 | **`/sitemap-profiles.xml`** | Every published business/product/service/card, `lastmod`, chunked at scale (45k URLs, 10k/chunk index) |
-| 46 | **`robots.txt` defaults** | Non-destructive: sets sensible disallows + `Sitemap:` line only if the field is empty |
-| 47 | **Cache invalidation** | Editing SEO text clears the affected page cache instantly (no 30-minute stale `<meta>`) |
-| 48 | **Core Web Vitals** | Self-hosted woff2 theme fonts (1–3 files instead of 12 families), inline SVG icons instead of Font Awesome CDN, image dimensions + lazy loading + LCP priority, re-cut 1200×630 OG image |
-| 49 | **OSDuo attribution** | Footer on every page and every tenant domain: "Powered by OSDuo Business Connect — A Product of OSDuo Tech LLP" → `https://www.osduotech.com` |
+> **Prioritization (recommended, Nov 2026):** implementation order is Canonical
+> & OG metadata → JSON-LD → Sitemap → Product/Service SEO fields → Core Web
+> Vitals → footer attribution. Rationale: Business Connect creates multiple
+> public URLs per business — a company with several products and services can
+> build a meaningful search presence through the individual pages, so sharing
+> metadata (owners of that visibility) comes first, then machine-readable
+> understanding, then discovery, then catalogue control and performance.
+
+| Priority | # | Feature | What it will do | Business impact |
+|---|---|---|---|---|
+| 1 | 41 | **Full on-page SEO layer** | Canonical, OG (title/description/url/image/type/site_name/locale), Twitter `summary_large_image`, robots meta, theme-color | Better sharing and indexing |
+| 2 | 44 | **Structured data (JSON-LD)** | `Organization` + `WebSite` + `Brand`, `LocalBusiness` (address, hours, socials), `Product` + `Offer`, `Service`, `Person`, `BreadcrumbList` | Search engine understanding |
+| 3 | 45 | **`/sitemap-profiles.xml`** | Every published business/product/service/card, `lastmod`, chunked at scale (45k URLs, 10k/chunk index) | Public page discovery |
+| 4 | 42/43 | **SEO fields + smart fallbacks on Product & Service** | `seo_title` + `seo_description` (editable after submit, 50–60 / 150–160 char guidance) with unique fallbacks when blank | Better catalogue visibility |
+| 5 | 48 | **Core Web Vitals** | Self-hosted woff2 theme fonts (1–3 files instead of 12 families), inline SVG icons instead of Font Awesome CDN, image dimensions + lazy loading + LCP priority, re-cut 1200×630 OG image | Performance |
+| 6 | 49 | **OSDuo attribution** | Footer on every page and every tenant domain: "Powered by OSDuo Business Connect — A Product of OSDuo Tech LLP" → `https://www.osduotech.com` | Brand visibility |
+| — | 46/47 | **robots.txt defaults + cache invalidation** | Non-destructive robots defaults; instant page-cache clearing when SEO text changes | Supporting items — ship with priorities 1–3 |
 
 ### 1.10 Roadmap — not built yet
 

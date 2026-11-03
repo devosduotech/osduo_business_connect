@@ -15,29 +15,36 @@ authoritative. Tick items off and re-date this header as they move.
 Single release, all ten items planned in
 [SEO_PLAN_v1.3.0.md](SEO_PLAN_v1.3.0.md). **Depends on v1.2.6 (`main`).**
 
-- [ ] On-page SEO layer on all public pages — canonical, OG
+> **Recommended priority order** (Nov 2026): the work below is listed in that
+> order. Rationale — Business Connect creates multiple public URLs per business
+> (a company with several products/services can build a meaningful search
+> presence through the individual pages), so whoever owns the sharing metadata
+> ships first, then machine readability, then discoverability, then catalogue
+> control and performance.
+
+- [ ] **P1 — Canonical & OG metadata on all public pages**: canonical, OG
   (title/description/url/image/type/site_name/locale), Twitter
-  `summary_large_image`, robots meta, theme-color (item 41)
-- [ ] `seo_title` + `seo_description` fields on Showcase Product and Showcase
-  Service with 50–60 / 150–160 char guidance and soft warnings (item 42)
-- [ ] Smart fallbacks — unique title + description on every page even when SEO
-  fields are blank (item 43)
-- [ ] Structured data (JSON-LD): `Organization`, `WebSite`, `Brand`,
+  `summary_large_image`, robots meta, theme-color (*better sharing and
+  indexing*)
+- [ ] **P2 — Structured data (JSON-LD)**: `Organization`, `WebSite`, `Brand`,
   `LocalBusiness` (address, hours, socials), `Product` + `Offer`, `Service`,
-  `Person`, `BreadcrumbList` (item 44)
-- [ ] `/sitemap-profiles.xml` — every published business/product/service/card
-  with `lastmod`, chunked at scale (45k URLs, 10k/chunk index) (item 45)
-- [ ] Non-destructive `robots.txt` defaults (sensible disallows + `Sitemap:`
-  line only when the field is empty) (item 46)
-- [ ] Instant cache invalidation when SEO text changes (no 30-minute stale
-  `<meta>`) (item 47)
-- [ ] Core Web Vitals — self-hosted woff2 theme fonts (1–3 files),
+  `Person`, `BreadcrumbList` (*search engine understanding*)
+- [ ] **P3 — `/sitemap-profiles.xml`**: every published business/product/
+  service/card, `lastmod`, chunked at scale (45k URLs, 10k/chunk index)
+  (*public page discovery*); incl. non-destructive `robots.txt` defaults wired
+  to the sitemap line
+- [ ] **P4 — Product & Service SEO fields**: `seo_title` + `seo_description`
+  (editable after submit, 50–60 / 150–160 char guidance), plus unique
+  title/description fallbacks when blank (*better catalogue visibility*)
+- [ ] **P5 — Core Web Vitals**: self-hosted woff2 theme fonts (1–3 files),
   inline SVG icons replacing the Font Awesome CDN call, image dimensions +
-  lazy loading + LCP priority, re-cut 1200×630 OG image (item 48)
-- [ ] OSDuo attribution footer on **every page and tenant domain**:
+  lazy loading + LCP priority, re-cut 1200×630 OG image (*performance*)
+- [ ] **P6 — OSDuo attribution footer** on every page and tenant domain:
   "Powered by OSDuo Business Connect — A Product of OSDuo Tech LLP" →
-  `https://www.osduotech.com` (item 49; current footers still link
+  `https://www.osduotech.com` (*brand visibility*; current footers still link
   `https://connect.osduotech.com` — deliberately unchanged until v1.3.0)
+- [ ] Support item: instant cache invalidation when SEO text changes (no
+  30-minute stale `<meta>`) — ships alongside P1–P3
 - [ ] Post-shipping checklist for v1.3.0: Lighthouse before/after, Search
   Console validation, `bench build` note in docs
 

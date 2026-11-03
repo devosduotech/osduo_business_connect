@@ -5,6 +5,12 @@
 **Date:** November 2026
 **Depends on:** v1.2.6 (`main`, this release)
 **Mirrored in:** [TODO](TODO.md) §1 — the single working pending list
+**Recommended order of work:** canonical/OG metadata → JSON-LD → sitemap →
+product/service SEO fields → Core Web Vitals → footer attribution (supporting
+robots + cache invalidation ship with the first three). Rationale: Business
+Connect creates multiple public URLs per business, and a company with several
+products and services can build a meaningful search presence through the
+individual pages. Full table: [Marketing Feature Inventory](MARKETING_FEATURE_INVENTORY.md) §1.9
 **Related:** [Marketing Feature Inventory](MARKETING_FEATURE_INVENTORY.md) · [SaaS Plan](SAAS_IMPLEMENTATION_PLAN.md) · [PWA](PWA.md)
 
 ---
