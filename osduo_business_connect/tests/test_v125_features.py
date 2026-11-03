@@ -8,9 +8,12 @@ These are intentionally offline checks: the suite runs without a Frappe bench,
 so it verifies wiring, schema and source-level contracts rather than DB writes.
 """
 
+import contextlib
+import importlib.util
 import json
 import os
 import sys
+import types
 import unittest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -290,6 +293,77 @@ class TestCrmNotesFlow(unittest.TestCase):
         self.assertIn("create_crm_custom_fields", self.patch)
         self.assertIn("osduo_enquiry is not null", self.patch)
         self.assertIn("def execute():", self.patch)
+
+
+@contextlib.contextmanager
+def install_helpers():
+    """Load install.py against a stubbed frappe for pure-layout logic tests."""
+    frappe_stub = types.ModuleType("frappe")
+    frappe_stub._ = lambda s: s
+    saved = sys.modules.get("frappe")
+    sys.modules["frappe"] = frappe_stub
+    try:
+        path = os.path.join(APP_DIR, "install.py")
+        spec = importlib.util.spec_from_file_location("bc_install_under_test", path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        yield module
+    finally:
+        if saved is None:
+            sys.modules.pop("frappe", None)
+        else:
+            sys.modules["frappe"] = saved
+
+
+class TestCrmSidePanelLayout(unittest.TestCase):
+    def test_install_wires_the_layout_step(self):
+        install = read("install.py")
+        self.assertIn("def ensure_crm_fields_layout", install)
+        self.assertIn("ensure_crm_fields_layout()", install)
+        self.assertIn('"CRM Fields Layout"', install)
+        self.assertIn('"Side Panel"', install)
+        self.assertIn("OSDUO_CRM_FIELDNAMES", install)
+        self.assertIn('"osduo_notes"', install)
+
+    def test_appends_a_dedicated_section_once(self):
+        with install_helpers() as install:
+            fields = list(install.OSDUO_CRM_FIELDNAMES)
+            sections, changed = install._integrate_osduo_section(
+                [{"label": "Details", "name": "details", "columns": [{"name": "c", "fields": ["first_name"]}]}]
+            )
+            self.assertTrue(changed)
+            added = sections[-1]
+            self.assertEqual(added["label"], "OSDuo Attribution")
+            self.assertEqual(added["columns"][0]["fields"], fields)
+
+            sections, changed = install._integrate_osduo_section(sections)
+            self.assertFalse(changed)
+            self.assertEqual(len(sections), 2)
+
+    def test_legacy_layout_shape_is_preserved(self):
+        with install_helpers() as install:
+            sections, changed = install._integrate_osduo_section(
+                [{"label": "Details", "name": "details", "opened": True, "fields": ["first_name"]}]
+            )
+            self.assertTrue(changed)
+            added = sections[-1]
+            self.assertIn("fields", added)
+            self.assertNotIn("columns", added)
+            self.assertEqual(added["fields"], list(install.OSDUO_CRM_FIELDNAMES))
+
+    def test_fields_already_placed_are_not_duplicated(self):
+        with install_helpers() as install:
+            existing = [{"columns": [{"fields": ["osduo_enquiry", {"fieldname": "osduo_notes"}]}]}]
+            sections, changed = install._integrate_osduo_section(existing)
+            self.assertTrue(changed)
+            added_fields = [f for f in sections[-1]["columns"][0]["fields"]]
+            self.assertNotIn("osduo_enquiry", added_fields)
+            self.assertNotIn("osduo_notes", added_fields)
+
+    def test_default_fallback_layout_builder_exists(self):
+        install = read("install.py")
+        self.assertIn("def _default_side_panel_sections", install)
+        self.assertIn("def _integrate_osduo_section", install)
 
 
 if __name__ == "__main__":
