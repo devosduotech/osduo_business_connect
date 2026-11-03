@@ -2,7 +2,7 @@
 
 **Status:** Internal Reference — source of truth for catalog, web page and social content
 **Date:** November 2026
-**Based on version:** 1.2.5 (shipped) + 1.3.0 (committed SEO scope, see [SEO Plan v1.3.0](SEO_PLAN_v1.3.0.md))
+**Based on version:** 1.2.6 (shipped) + 1.3.0 (committed SEO scope, see [SEO Plan v1.3.0](SEO_PLAN_v1.3.0.md) and the single working list in [TODO](TODO.md))
 
 > This document is deliberately conservative. Every "Shipped" row below exists in the
 > code today. Section 5 lists claims that appear in older marketing material but are
@@ -107,6 +107,9 @@
 | 49 | **OSDuo attribution** | Footer on every page and every tenant domain: "Powered by OSDuo Business Connect — A Product of OSDuo Tech LLP" → `https://www.osduotech.com` |
 
 ### 1.10 Roadmap — not built yet
+
+> The live, tickable list lives in [TODO.md](TODO.md). The summary below is the
+> marketing-facing view.
 
 | Item | Status |
 |---|---|

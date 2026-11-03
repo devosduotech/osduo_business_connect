@@ -158,6 +158,9 @@ by `has_permission` + permission query conditions.
 
 ## Development Roadmap
 
+For the full pending to-do list (next release scope, backlog, tech debt and
+documentation cleanups), see **[docs/TODO.md](docs/TODO.md)**.
+
 - [x] Core business profile creation
 - [x] Dynamic card generation with multiple templates
 - [x] Frappe CRM integration for lead management

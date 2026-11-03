@@ -3,7 +3,8 @@
 **Status:** Approved, ready for implementation
 **Target release:** v1.3.0 (single release, all phases)
 **Date:** November 2026
-**Depends on:** v1.2.5 (`develop`, this release)
+**Depends on:** v1.2.6 (`main`, this release)
+**Mirrored in:** [TODO](TODO.md) §1 — the single working pending list
 **Related:** [Marketing Feature Inventory](MARKETING_FEATURE_INVENTORY.md) · [SaaS Plan](SAAS_IMPLEMENTATION_PLAN.md) · [PWA](PWA.md)
 
 ---
