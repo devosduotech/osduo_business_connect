@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.2.6 - Unreleased
+
+### Polish (v1.2.6)
+
+- **Open button on desk forms beside Public URL** — Business, Digital Card,
+  Showcase Product and Showcase Service forms now render an **Open** button
+  next to the read-only `Public URL` field, letting staff open the public page
+  (new tab, `noopener`) without copying the link manually.
+- **Share & Save Contact now looks like Send a Message** — the form mirrors the
+  enquiry form's format/fonts/sizes (`bc-card-form`, full-width `Save & Share`
+  button), drops the old boxed card look, and uses 16px inputs on phones so
+  iOS stops auto-zooming on focus; rows collapse to a single column on small
+  screens.
+- **My Card icon fixed** — the inconsistent emoji (~document) Chip on public
+  pages and text-only links elsewhere are replaced with one inline SVG id-card
+  icon (chip, desk navbar, analytics header). The desk navbar insertion now
+  also covers asynchronously built mobile menus (extra retry) and keeps
+  `nav-link` styling.
+
+---
+
 ## v1.2.5 - 3 November 2026
 
 ### Features (v1.2.5)

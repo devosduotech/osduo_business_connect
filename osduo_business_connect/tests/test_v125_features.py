@@ -98,6 +98,64 @@ class TestMyCard(unittest.TestCase):
         self.assertIn("/my-card", read("templates", "pages", "analytics.html"))
 
 
+class TestOpenPublicUrlButton(unittest.TestCase):
+    """Desk forms get an Open button beside the generated public URL."""
+
+    def setUp(self):
+        self.sources = {
+            "Business": "business/doctype/business/business.js",
+            "Digital Card": "card/doctype/digital_card/digital_card.js",
+            "Showcase Product": "showcase/doctype/showcase_product/showcase_product.js",
+            "Showcase Service": "showcase/doctype/showcase_service/showcase_service.js",
+        }
+
+    def test_client_scripts_exist_for_every_profile_doctype(self):
+        for doctype, rel in self.sources.items():
+            source = read(*rel.split("/"))
+            self.assertIn("bc-open-public-url", source, doctype)
+            self.assertIn("public_url", source)
+            for attr in ("frm.doc.public_url", "$wrapper"):
+                self.assertIn(attr, source, doctype)
+
+    def test_button_opens_in_a_new_tab(self):
+        source = read("business", "doctype", "business", "business.js")
+        self.assertIn('target: "_blank"', source)
+        self.assertIn('rel: "noopener"', source)
+
+
+class TestMyCardIcon(unittest.TestCase):
+    """Emoji icons render inconsistently on mobile; we ship an inline SVG."""
+
+    ICON = '<svg class="bc-my-card-icon"'
+
+    def test_chip_uses_svg_not_emoji(self):
+        chip = read("templates", "pages", "parts", "my_card_chip.html")
+        self.assertIn(self.ICON, chip)
+        self.assertNotIn("&#128196;", chip)
+
+    def test_navbar_and_topbar_use_the_same_icon(self):
+        self.assertIn("BC_MY_CARD_SVG", read("public", "js", "branding.js"))
+        self.assertIn(self.ICON, read("templates", "pages", "analytics.html"))
+
+    def test_navbar_handles_mobile_menus(self):
+        branding = read("public", "js", "branding.js")
+        self.assertIn('"nav-link bc-my-card-nav"', branding)
+        self.assertIn("nav .nav", branding)
+        self.assertIn("3000", branding)
+
+    def test_exchange_form_matches_the_enquiry_form(self):
+        form = read("templates", "pages", "parts", "contact_exchange_form.html")
+        self.assertIn('class="bc-btn bc-btn-primary bc-form-submit"', form)
+        css = read("public", "css", "business_connect.css")
+        for token in (
+            ".bc-ce-form {",
+            "font-size: 16px; /* prevents iOS auto-zoom on focus */",
+            "@media (max-width: 520px) {",
+        ):
+            self.assertIn(token, css)
+        self.assertNotIn("bc-my-card-cta", css)
+
+
 class TestContactExchange(unittest.TestCase):
     def setUp(self):
         self.doctype = load_json("card", "doctype", "contact_exchange", "contact_exchange.json")

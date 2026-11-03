@@ -1051,77 +1051,100 @@
     opacity: 0.9;
 }
 
-/* Share & Save Contact form */
+.bc-my-card-icon {
+    flex-shrink: 0;
+}
+
+/* Share & Save Contact form — mirrors the "Send a Message" form so both
+   sections share one visual language (same format, fonts and sizes). */
 .bc-ce {
-    max-width: 560px;
+    max-width: 640px;
     margin: 1.25rem auto 0;
-    padding: 1.1rem 1.15rem;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    background: #fff;
     text-align: left;
 }
 
 .bc-ce-title {
-    margin: 0 0 0.25rem;
-    font-size: 1rem;
-    color: #1e293b;
+    margin: 0 0 0.85rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--bc-text-strong);
 }
 
 .bc-ce-hint {
-    margin: 0 0 0.8rem;
-    font-size: 0.8rem;
-    color: #64748b;
+    margin: 0 0 0.85rem;
+    font-size: 0.9rem;
+    color: var(--bc-text-muted);
+}
+
+.bc-ce-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
 .bc-ce-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
+    display: flex;
+    width: 100%;
 }
 
-.bc-ce-form input,
-.bc-ce-form select,
+.bc-ce-row input,
+.bc-ce-row select,
 .bc-ce-form textarea {
     width: 100%;
     padding: 0.55rem 0.65rem;
-    border: 1px solid #d1d5db;
+    border: 1px solid var(--bc-border, #d1d5db);
     border-radius: 8px;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     box-sizing: border-box;
     background: #fff;
-    color: #1e293b;
+    color: var(--bc-text-strong, #1e293b);
+    min-height: 40px;
+}
+
+.bc-ce-row select {
+    appearance: auto;
 }
 
 .bc-ce-form textarea {
-    margin-bottom: 0.5rem;
     resize: vertical;
+    min-height: 68px;
 }
 
 .bc-ce-lead {
     display: flex;
     align-items: center;
     gap: 0.4rem;
-    font-size: 0.8rem;
-    color: #475569;
-    margin-bottom: 0.6rem;
+    font-size: 0.9rem;
+    color: var(--bc-text-muted, #475569);
 }
 
 .bc-ce-lead input {
     width: auto;
+    min-height: 1rem;
 }
 
 .bc-ce-status {
-    margin-top: 0.5rem;
-    font-size: 0.8rem;
+    margin-top: 0.25rem;
+    font-size: 0.9rem;
     color: var(--bc-primary-text, #0b3d91);
-    min-height: 1rem;
+    min-height: 1.2rem;
+}
+
+.bc-ce .bc-form-submit {
+    width: 100%;
+    text-align: center;
 }
 
 @media (max-width: 520px) {
     .bc-ce-row {
-        grid-template-columns: 1fr;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .bc-ce-row input,
+    .bc-ce-row select,
+    .bc-ce-form textarea {
+        font-size: 16px; /* prevents iOS auto-zoom on focus */
     }
 }
 

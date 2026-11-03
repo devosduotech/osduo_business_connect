@@ -73,24 +73,31 @@
     },
   });
 
-  // ── My Card navbar link ───────────────────────────────────
+var BC_MY_CARD_SVG =
+    '<svg class="bc-my-card-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="11.5" r="2.2"/><path d="M13 10h5.5M13 13h4"/><path d="M5.4 16.5c.9-1.5 4.3-1.5 5.2 0"/></svg>';
 
-  function add_my_card_link() {
+// ── My Card navbar link ───────────────────────────────────
+
+function add_my_card_link() {
     if (typeof frappe === "undefined" || !frappe.session) return;
     if (!frappe.session.user || frappe.session.user === "Guest") return;
     if (document.querySelector(".bc-my-card-nav")) return;
 
+    // Desktop navbar first; second pass covers the collapsed mobile menu,
+    // which usually keeps its own list after the breakpoint.
     var navbar =
       document.querySelector(".navbar .navbar-right") ||
       document.querySelector(".navbar .navbar-nav") ||
-      document.querySelector(".navbar-nav");
+      document.querySelector(".navbar-nav") ||
+      document.querySelector("nav .nav");
     if (!navbar) return;
 
     var link = document.createElement("a");
     link.href = "/my-card";
-    link.textContent = "My Card";
+    link.className = "nav-link bc-my-card-nav";
+    link.innerHTML = BC_MY_CARD_SVG + '<span>My Card</span>';
     link.style.cssText =
-      "display:inline-flex;align-items:center;padding:6px 10px;font-size:13px;color:inherit;text-decoration:none;white-space:nowrap;";
+      "display:inline-flex;align-items:center;gap:6px;padding:6px 10px;font-size:13px;color:inherit;text-decoration:none;white-space:nowrap;";
     link.addEventListener("click", function (event) {
       event.preventDefault();
       window.location.href = "/my-card";
@@ -102,7 +109,7 @@
       item.appendChild(link);
       navbar.appendChild(item);
     } else {
-      link.className = "bc-my-card-nav";
+      link.classList.add("bc-my-card-nav");
       navbar.appendChild(link);
     }
   }
@@ -114,5 +121,12 @@
       });
     }
     setTimeout(add_my_card_link, 1200);
+    // Mobile site menus are often built asynchronously by the theme; retry
+    // once more when no target has been reached yet.
+    setTimeout(function () {
+      if (frappe.session.user && frappe.session.user !== "Guest" && !document.querySelector(".bc-my-card-nav")) {
+        add_my_card_link();
+      }
+    }, 3000);
   }
 })();
