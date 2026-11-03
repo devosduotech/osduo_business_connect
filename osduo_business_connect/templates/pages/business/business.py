@@ -3,6 +3,8 @@ from frappe import _
 from datetime import datetime, timedelta
 from ....services.theme_service import get_business_theme, get_theme_variables
 from ....analytics.tracking import capture_analytics_context, track_event
+from ....utils.urls import get_business_public_url
+from ....utils.share import get_share_by, get_share_ref
 
 
 def _format_hour_time(value):
@@ -90,6 +92,35 @@ def get_context(context):
     if doc.get("seo_description"):
         context.meta_description = doc["seo_description"]
 
+    # Share
+    context.share_url = get_business_public_url(doc.get("slug"))
+    context.share_by = doc.get("slug")
+    context.share_title = doc.get("business_name") or doc.get("name")
+    context.share_text = f"Check out {context.share_title} — Business Profile"
+    context.share_ref = True
+
+    # My Card chip — only for people who belong to this business.
+    from ....business.core import get_user_role_in_business
+    context.show_my_card = bool(
+        frappe.session.user != "Guest"
+        and get_user_role_in_business(frappe.session.user, doc.name)
+    )
+
+    # Contact Exchange context
+    context.ce_business = doc.name
+    context.ce_card = ""
+
     # Track profile view (non-blocking)
-    analytics_ctx = capture_analytics_context()
+    analytics_ctx = capture_analytics_context(doc.name)
     track_event(doc.name, "profile_view", **analytics_ctx)
+
+    share_ref = get_share_ref()
+    share_by = get_share_by()
+    if share_ref:
+        track_event(
+            doc.name,
+            "shared_link_open",
+            campaign=share_ref,
+            shared_by=share_by,
+            **analytics_ctx,
+        )

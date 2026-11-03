@@ -2,6 +2,57 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.2.5 - 3 November 2026
+
+### Features (v1.2.5)
+
+#### Universal share bar
+- One reusable share bar on **business, card, product and service** pages with
+  Copy, WhatsApp, SMS, Email and the native share sheet (where supported).
+- Every share link uses the **canonical public URL** from `utils/urls.py` — never
+  the host of the current request — so printed QR/NFC material keeps working
+  behind custom domains.
+- Card sharing previously built its URL from `request.host`; it now uses the
+  canonical card URL too.
+
+#### Share attribution
+- Share links carry `?ref=share_whatsapp|share_sms|share_email|share_copy|mycard`
+  plus `&by=<slug>`. Only whitelisted refs are accepted server-side.
+- Opening an attributed link logs a server-side `shared_link_open` event, so the
+  dashboard can answer "which channel brought this visit?".
+- `shared_link_open` and `contact_exchanged` are **not** accepted from the public
+  event endpoint — they can only be produced by the app.
+
+#### Contact Exchange (login only)
+- New **Contact Exchange** DocType under Card: records the recipient of a shared
+  card/business/product/service (name, company, phone, email, channel, event,
+  notes) with optional one-click CRM Lead creation.
+- New **Share & Save Contact** form on card/business/product/service pages,
+  shown only to the business owner/member who is logged in.
+- Recipient details are deliberately owner-entered. No browser or OS exposes the
+  recipient of a WhatsApp/SMS/email message, so the owner records it at the
+  exhibition, show or meeting instead.
+- Owner/Manager/Member create, Owner delete, company-scoped query conditions.
+
+#### Visitor classification
+- Every engagement event now stores `visitor_type` (Guest / Owner / Member /
+  Other User / Unknown) and a hidden `visitor_user`, classified from the live
+  session in the web request before the background job.
+- Analytics dashboard adds a visitor mix and a Visitor column in recent
+  activity, plus an **Exclude owner/member views** filter.
+- Legacy rows (`visitor_type` NULL) count as Unknown instead of disappearing.
+
+#### My Card
+- New `/my-card` page lists the logged-in user's published cards and opens them
+  with `?ref=mycard&by=<slug>` for attribution.
+- Entry points: desk navbar, analytics header and a chip on the user's own
+  public pages.
+
+### Upgrade
+`bench --site <site> migrate && bench --site <site> clear-cache`.
+
+---
+
 ## v1.2.4 - 1 November 2026
 
 ### Fixes (v1.2.4)

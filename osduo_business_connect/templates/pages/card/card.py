@@ -1,6 +1,8 @@
 import frappe
 from ....services.theme_service import get_business_theme, get_theme_data, get_default_theme, get_theme_variables
 from ....analytics.tracking import capture_analytics_context, track_event
+from ....utils.urls import get_card_public_url
+from ....utils.share import get_share_by, get_share_ref
 
 
 def get_context(context):
@@ -34,11 +36,29 @@ def get_context(context):
     context.doc = doc
     context.title = doc.get("display_name") or doc.get("name")
 
-    # Card URL for sharing
-    host = frappe.request.host if frappe.request else "business.local"
-    protocol = "https" if frappe.request and frappe.request.scheme == "https" else "http"
-    context.card_url = f"{protocol}://{host}/c/{slug}"
+    # Card URL for sharing — always the canonical URL (printed QR/NFC safety).
+    context.card_url = get_card_public_url(slug)
     context.landing_url = frappe.request.url if frappe.request else context.card_url
+    context.share_url = context.card_url
+    context.share_by = slug
+    context.share_title = doc.get("display_name") or doc.get("name") or "Digital Card"
+    context.share_text = f"{context.share_title} — Digital Business Card"
+    context.share_ref = True
+    if doc.get("qr_enabled") and doc.get("qr_image"):
+        context.share_qr = doc.qr_image
+        context.share_qr_alt = f"QR code for {context.share_title}"
+
+    # My Card chip — only for people who belong to this business.
+    from ....business.core import get_user_role_in_business
+    context.show_my_card = bool(
+        frappe.session.user != "Guest"
+        and doc.get("business")
+        and get_user_role_in_business(frappe.session.user, doc.business)
+    )
+
+    # Contact Exchange context
+    context.ce_business = doc.get("business")
+    context.ce_card = doc.name
 
     # Theme — card's own, or fall back to business default
     if doc.get("theme"):
@@ -101,5 +121,18 @@ def get_context(context):
     context.meta_description = f"Contact {doc.get('display_name', '')}"
 
     # Track card view (non-blocking)
-    analytics_ctx = capture_analytics_context()
+    analytics_ctx = capture_analytics_context(doc.business)
     track_event(doc.business, "card_view", card=doc.name, **analytics_ctx)
+
+    # Attribution: a share link was opened (?ref=share_* / mycard)
+    share_ref = get_share_ref()
+    share_by = get_share_by()
+    if share_ref:
+        track_event(
+            doc.business,
+            "shared_link_open",
+            card=doc.name,
+            campaign=share_ref,
+            shared_by=share_by,
+            **analytics_ctx,
+        )

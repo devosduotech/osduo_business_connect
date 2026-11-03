@@ -1,3 +1,67 @@
+# Release Notes - business_connect (v1.2.5)
+
+**Release Date:** 3 November 2026
+**Version:** v1.2.5
+
+Makes every public page easy to share, tells you **which channel** the visit came
+from, records **who** you shared your card with, and separates real visitors from
+your own team in analytics.
+
+---
+
+## Changes (v1.2.5)
+
+### Share everything, from one place
+- Business, card, product and service pages now use the same share bar: Copy,
+  WhatsApp, SMS, Email and the native share sheet.
+- Links always point at the canonical public URL, so sharing from a custom or
+  staging host never changes the URL printed on a QR code or NFC tag.
+
+### Know which channel worked
+- Share links carry a small `ref=share_*` token. When the recipient opens the
+  link, the app logs a `shared_link_open` event with that channel.
+- Tokens are whitelisted server-side; arbitrary query strings are ignored.
+
+### Contact Exchange — the consent-respecting way to capture a lead
+- Logged-in owners/members can record **who** they shared a card, business,
+  product or service with: name, company, phone, email, channel (WhatsApp / SMS /
+  Email / In-person), event/meeting and notes.
+- Optionally create a CRM Lead in the same step.
+- Why owner-entered? No browser or operating system exposes the recipient of a
+  WhatsApp, SMS or email message. Rather than pretend, the app captures what the
+  owner actually knows at the exhibition or meeting.
+- Desk access: **Contact Exchanges** under the Engagement section of the
+  Business Connect workspace.
+
+### Real visitors, not your own clicks
+- Each event is stamped **Guest / Owner / Member / Other User / Unknown** based
+  on the live session (never from client input).
+- The dashboard shows the visitor mix and has an **Exclude owner/member views**
+  toggle, so team testing no longer inflates the numbers.
+- Older events without a classification are counted as Unknown.
+
+### My Card
+- `/my-card` lists your published cards and opens them with `?ref=mycard`, so
+  your own visits are attributed too.
+- Reachable from the desk navbar, the analytics header and a chip on your own
+  public pages.
+
+### Notes for operators
+- New DocType **Contact Exchange** is created by migration.
+- `shared_link_open` and `contact_exchanged` are internal event types; the
+  public `/log_event` endpoint rejects them.
+- No data migration is required. `visitor_type` starts as Unknown for historical
+  rows.
+
+## Upgrade
+
+```bash
+bench --site <site> migrate
+bench --site <site> clear-cache
+```
+
+---
+
 # Release Notes - business_connect (v1.2.4)
 
 **Release Date:** 1 November 2026

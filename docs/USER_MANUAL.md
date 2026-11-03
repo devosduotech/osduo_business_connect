@@ -1,6 +1,6 @@
 # OSDuo Business Connect — User Manual
 
-**Version:** 1.2.3  
+**Version:** 1.2.5  
 **Last Updated:** November 2026
 
 ---
@@ -538,6 +538,37 @@ after a custom domain is attached to the site.
 - Link to specific products or services
 - Add QR code to business cards or brochures
 
+Every public page (business, card, product and service) has the same share bar:
+**Copy**, **WhatsApp**, **SMS**, **Email** and the device's native share sheet.
+Share links carry a small `ref=share_*` token so analytics can show which
+channel brought the visit. The copied link always uses the canonical domain,
+never the host you happen to be browsing from.
+
+### 6.4 My Card
+
+Open **/my-card** (also linked from the desk navbar and the analytics header) to
+see every published card that belongs to you. **Open Card** launches it with
+`?ref=mycard`, so your own visits are labelled correctly in analytics.
+
+### 6.5 Contact Exchange (login only)
+
+When you share your card at an exhibition, show or meeting, record who you gave
+it to:
+
+1. Open your card, business, product or service page while logged in.
+2. Fill in **Share & Save Contact**: recipient name, company, mobile, email,
+   channel (WhatsApp / SMS / Email / In person), event/meeting and notes.
+3. Tick **Create a CRM Lead** if you also want a lead in CRM.
+4. Choose **Save & Share** — the app saves the exchange and opens the chosen
+   channel pre-addressed to the recipient.
+
+Only the business owner and active members see this form. Recipient details are
+entered by you; the app never tries to read them out of WhatsApp, SMS or email,
+because those apps do not expose that information to a browser.
+
+Past exchanges are listed in the desk under **Contact Exchanges**
+(Engagement section of the Business Connect workspace).
+
 ---
 
 ## 7. Managing Enquiries
@@ -631,6 +662,10 @@ Track your sales funnel:
 1. Go to **/analytics** from the desk (requires login)
 2. Select your business from the dropdown
 3. Choose date range: 7, 15, 30, 90, or 365 days
+4. Optionally tick **Exclude owner/member views** to hide your own team's visits
+
+The dashboard also shows a **visitor mix** (Guest / Owner / Member / Other User /
+Unknown) so you can separate real customers from internal testing.
 
 ### 8.2 Visits & Scans
 
@@ -663,6 +698,7 @@ Visual overview of your sales funnel:
 
 See the latest events:
 - Event type (Card View, Product View, Enquiry, etc.)
+- Visitor type (Guest, Owner, Member, Other User, Unknown)
 - Team member
 - Device type (Desktop, Mobile, Tablet)
 - Browser

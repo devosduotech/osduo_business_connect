@@ -14,10 +14,13 @@ def record_engagement(business, event_type, **kwargs):
             "product": kwargs.get("product"),
             "service": kwargs.get("service"),
             "campaign": kwargs.get("campaign"),
+            "shared_by": kwargs.get("shared_by"),
             "landing_url": kwargs.get("landing_url"),
             "referrer": kwargs.get("referrer"),
             "device_type": kwargs.get("device_type"),
             "browser": kwargs.get("browser"),
+            "visitor_type": kwargs.get("visitor_type") or "Unknown",
+            "visitor_user": kwargs.get("visitor_user"),
         }
 
         event = frappe.get_doc(event_data)
@@ -86,27 +89,44 @@ def _get_referrer(request):
     return request.headers.get("Referer")
 
 
-def get_business_analytics(business_name, days=30):
-    from_date = frappe.utils.add_days(frappe.utils.nowdate(), -days)
+def _internal_filter(exclude_internal, alias=""):
+    """SQL fragment that drops owner/member views when requested.
 
-    total_events = frappe.db.count(
-        "Engagement Event",
-        filters={"business": business_name, "event_time": [">=", from_date]},
+    Older rows have ``visitor_type`` NULL, so COALESCE keeps them as Unknown
+    instead of silently dropping them from every count.
+    """
+    if not exclude_internal:
+        return ""
+    prefix = f"{alias}." if alias else ""
+    return (
+        f" AND COALESCE({prefix}visitor_type, 'Unknown') "
+        "NOT IN ('Owner', 'Member')"
     )
 
+
+def get_business_analytics(business_name, days=30, exclude_internal=False):
+    from_date = frappe.utils.add_days(frappe.utils.nowdate(), -days)
+    visitor_filter = _internal_filter(exclude_internal)
+
+    total_events = frappe.db.sql(
+        f"""SELECT COUNT(name) FROM `tabEngagement Event`
+        WHERE business = %s AND event_time >= %s{visitor_filter}""",
+        (business_name, from_date),
+    )[0][0]
+
     events_by_type = frappe.db.sql(
-        """SELECT event_type, COUNT(name) as cnt
+        f"""SELECT event_type, COUNT(name) as cnt
         FROM `tabEngagement Event`
-        WHERE business = %s AND event_time >= %s
+        WHERE business = %s AND event_time >= %s{visitor_filter}
         GROUP BY event_type""",
         (business_name, from_date),
         as_dict=True,
     )
 
     events_by_day = frappe.db.sql(
-        """SELECT DATE(event_time) as date, COUNT(name) as cnt
+        f"""SELECT DATE(event_time) as date, COUNT(name) as cnt
         FROM `tabEngagement Event`
-        WHERE business = %s AND event_time >= %s
+        WHERE business = %s AND event_time >= %s{visitor_filter}
         GROUP BY DATE(event_time)
         ORDER BY date ASC""",
         (business_name, from_date),
@@ -114,9 +134,9 @@ def get_business_analytics(business_name, days=30):
     )
 
     top_products = frappe.db.sql(
-        """SELECT product, COUNT(name) as views
+        f"""SELECT product, COUNT(name) as views
         FROM `tabEngagement Event`
-        WHERE business = %s AND event_type = 'product_view' AND event_time >= %s
+        WHERE business = %s AND event_type = 'product_view' AND event_time >= %s{visitor_filter}
         GROUP BY product
         ORDER BY views DESC
         LIMIT 5""",
@@ -125,12 +145,22 @@ def get_business_analytics(business_name, days=30):
     )
 
     top_services = frappe.db.sql(
-        """SELECT service, COUNT(name) as views
+        f"""SELECT service, COUNT(name) as views
         FROM `tabEngagement Event`
-        WHERE business = %s AND event_type = 'service_view' AND event_time >= %s
+        WHERE business = %s AND event_type = 'service_view' AND event_time >= %s{visitor_filter}
         GROUP BY service
         ORDER BY views DESC
         LIMIT 5""",
+        (business_name, from_date),
+        as_dict=True,
+    )
+
+    events_by_visitor = frappe.db.sql(
+        f"""SELECT COALESCE(visitor_type, 'Unknown') as visitor_type, COUNT(name) as cnt
+        FROM `tabEngagement Event`
+        WHERE business = %s AND event_time >= %s{visitor_filter}
+        GROUP BY COALESCE(visitor_type, 'Unknown')
+        ORDER BY cnt DESC""",
         (business_name, from_date),
         as_dict=True,
     )
@@ -139,20 +169,24 @@ def get_business_analytics(business_name, days=30):
         "total_events": total_events,
         "events_by_type": {row.event_type: row.cnt for row in events_by_type},
         "events_by_day": [{"date": str(row.date), "count": row.cnt} for row in events_by_day],
+        "events_by_visitor": {
+            row.visitor_type: row.cnt for row in events_by_visitor
+        },
         "top_products": [{"product": row.product, "views": row.views} for row in top_products],
         "top_services": [{"service": row.service, "views": row.views} for row in top_services],
     }
 
 
-def get_top_cards(business_name, days=30, limit=5):
+def get_top_cards(business_name, days=30, limit=5, exclude_internal=False):
     from_date = frappe.utils.add_days(frappe.utils.nowdate(), -days)
+    visitor_filter = _internal_filter(exclude_internal, alias="ee")
 
     top_cards = frappe.db.sql(
-        """SELECT ee.card, bm.person_name, COUNT(ee.name) as views
+        f"""SELECT ee.card, bm.person_name, COUNT(ee.name) as views
         FROM `tabEngagement Event` ee
         LEFT JOIN `tabDigital Card` dc ON ee.card = dc.name
         LEFT JOIN `tabBusiness Member` bm ON dc.member = bm.name
-        WHERE ee.business = %s AND ee.event_type = 'card_view' AND ee.event_time >= %s
+        WHERE ee.business = %s AND ee.event_type = 'card_view' AND ee.event_time >= %s{visitor_filter}
         GROUP BY ee.card
         ORDER BY views DESC
         LIMIT %s""",
@@ -166,11 +200,13 @@ def get_top_cards(business_name, days=30, limit=5):
     ]
 
 
-def get_recent_events(business_name, days=30, limit=15):
+def get_recent_events(business_name, days=30, limit=15, exclude_internal=False):
     from_date = frappe.utils.add_days(frappe.utils.nowdate(), -days)
+    visitor_filter = _internal_filter(exclude_internal, alias="ee")
 
     events = frappe.db.sql(
-        """SELECT ee.event_type, ee.event_time, ee.card, ee.device_type, ee.browser,
+        f"""SELECT ee.event_type, ee.event_time, ee.card, ee.device_type, ee.browser,
+        ee.visitor_type,
         bm.person_name,
         CASE WHEN sp.name IS NOT NULL THEN sp.product_name ELSE ee.product END as product_name,
         CASE WHEN ss.name IS NOT NULL THEN ss.service_name ELSE ee.service END as service_name
@@ -179,7 +215,7 @@ def get_recent_events(business_name, days=30, limit=15):
         LEFT JOIN `tabBusiness Member` bm ON dc.member = bm.name
         LEFT JOIN `tabShowcase Product` sp ON ee.product = sp.name
         LEFT JOIN `tabShowcase Service` ss ON ee.service = ss.name
-        WHERE ee.business = %s AND ee.event_time >= %s
+        WHERE ee.business = %s AND ee.event_time >= %s{visitor_filter}
         ORDER BY ee.event_time DESC
         LIMIT %s""",
         (business_name, from_date, limit),
@@ -256,9 +292,20 @@ def log_event(business=None, event_type=None, card=None, product=None, service=N
         ctx = {}
         try:
             from osduo_business_connect.analytics.tracking import capture_analytics_context
-            ctx = capture_analytics_context()
+
+            ctx = capture_analytics_context(business)
         except Exception:
             ctx = {}
+
+        visitor_type = ctx.get("visitor_type")
+        visitor_user = ctx.get("visitor_user")
+        if not visitor_type:
+            try:
+                from osduo_business_connect.analytics.tracking import classify_visitor
+
+                visitor_type, visitor_user = classify_visitor(business)
+            except Exception:
+                visitor_type, visitor_user = "Unknown", None
 
         result = record_engagement(
             business,
@@ -272,6 +319,8 @@ def log_event(business=None, event_type=None, card=None, product=None, service=N
             device_type=ctx.get("device_type") or detect_device_type(request),
             browser=ctx.get("browser") or detect_browser(request),
             session_id=_clean_str(session_id) or _get_session_id(request),
+            visitor_type=visitor_type,
+            visitor_user=visitor_user,
         )
         return {"ok": bool(result)}
     except Exception as e:

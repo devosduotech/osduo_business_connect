@@ -14,13 +14,14 @@ from osduo_business_connect.utils.roles import is_system_manager
 
 
 @frappe.whitelist()
-def get_analytics(business, days=30):
+def get_analytics(business, days=30, exclude_internal=0):
     """
     Get analytics data for a business.
 
     Args:
         business: Business name
         days: Number of days to look back (default 30)
+        exclude_internal: When true, drop Owner/Member views
 
     Returns:
         dict: Combined analytics and enquiry data
@@ -37,17 +38,22 @@ def get_analytics(business, days=30):
         frappe.throw(_("You do not have access to this business"))
 
     days = int(days)
+    exclude_internal = bool(int(exclude_internal or 0))
 
     # Engagement analytics
     from osduo_business_connect.analytics.analytics_service import (
         get_business_analytics,
-        get_top_cards,
         get_recent_events,
+        get_top_cards,
     )
-    engagement = get_business_analytics(business, days=days)
-    engagement["qr_scans"] = get_qr_scans(business, days=days)
-    engagement["recent_events"] = get_recent_events(business, days=days, limit=15)
-    top_cards = get_top_cards(business, days=days, limit=5)
+    engagement = get_business_analytics(business, days=days, exclude_internal=exclude_internal)
+    engagement["qr_scans"] = get_qr_scans(business, days=days, exclude_internal=exclude_internal)
+    engagement["recent_events"] = get_recent_events(
+        business, days=days, limit=15, exclude_internal=exclude_internal
+    )
+    top_cards = get_top_cards(
+        business, days=days, limit=5, exclude_internal=exclude_internal
+    )
 
     # Enquiry stats
     from osduo_business_connect.enquiry.enquiry_service import get_enquiry_stats
@@ -107,14 +113,19 @@ def get_business_list():
     )
 
 
-def get_qr_scans(business, days=30):
+def get_qr_scans(business, days=30, exclude_internal=False):
     """Count QR code scans (qr_landing events) for a business."""
     from_date = frappe.utils.add_days(frappe.utils.nowdate(), -days)
-    return frappe.db.count(
-        "Engagement Event",
-        filters={
-            "business": business,
-            "event_type": "qr_landing",
-            "event_time": [">=", from_date],
-        },
-    )
+    filters = {
+        "business": business,
+        "event_type": "qr_landing",
+        "event_time": [">=", from_date],
+    }
+    if exclude_internal:
+        return frappe.db.sql(
+            """SELECT COUNT(name) FROM `tabEngagement Event`
+            WHERE business = %s AND event_type = 'qr_landing' AND event_time >= %s
+            AND COALESCE(visitor_type, 'Unknown') NOT IN ('Owner', 'Member')""",
+            (business, from_date),
+        )[0][0]
+    return frappe.db.count("Engagement Event", filters=filters)

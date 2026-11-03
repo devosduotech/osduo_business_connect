@@ -1,0 +1,101 @@
+{# ===== REUSABLE SHARE BAR ===== #}
+{#
+  Expects (all optional except share_url):
+    share_url    — canonical public URL to share (required)
+    share_text   — message shown before the link
+    share_title  — email subject / native share title
+    share_by     — slug used for attribution when share_ref is enabled
+    share_ref    — enable ?ref=share_<channel>&by=<share_by> tokens
+    share_qr     — optional QR image URL
+    share_qr_alt — optional QR alt text
+#}
+{% set _share_text = share_text or '' %}
+{% set _share_title = share_title or 'Shared with you' %}
+{% set _wa_link = share_url %}
+{% set _sms_link = share_url %}
+{% set _mail_link = share_url %}
+{% set _copy_link = share_url %}
+{% if share_ref and share_url %}
+    {% set _q = '&' if '?' in share_url else '?' %}
+    {% set _by = ('&by=' ~ (share_by | urlencode)) if share_by else '' %}
+    {% set _wa_link = share_url ~ _q ~ 'ref=share_whatsapp' ~ _by %}
+    {% set _sms_link = share_url ~ _q ~ 'ref=share_sms' ~ _by %}
+    {% set _mail_link = share_url ~ _q ~ 'ref=share_email' ~ _by %}
+    {% set _copy_link = share_url ~ _q ~ 'ref=share_copy' ~ _by %}
+{% endif %}
+<div class="bc-share-widget">
+    <div class="bc-card-share-link" data-copy-url="{{ _copy_link }}" role="button" tabindex="0" aria-label="Copy link">
+        <span class="bc-card-share-url">{{ _copy_link }}</span>
+        <span class="bc-card-share-copy">Copy</span>
+    </div>
+    <div class="bc-copy-toast" style="display:none;">Copied!</div>
+
+    {% if share_qr %}
+    <div class="bc-card-share-qr">
+        <img src="{{ share_qr }}" alt="{{ share_qr_alt or 'QR code' }}">
+        <p>Scan to view</p>
+    </div>
+    {% endif %}
+
+    <div class="bc-card-share-buttons">
+        <a href="https://wa.me/?text={{ (_share_text ~ ' ' ~ _wa_link) | urlencode }}" target="_blank" rel="noopener" class="bc-btn bc-btn-secondary">&#128172; WhatsApp</a>
+        <a href="sms:?body={{ (_share_text ~ ' ' ~ _sms_link) | urlencode }}" class="bc-btn bc-btn-secondary">&#128172; SMS</a>
+        <a href="mailto:?subject={{ _share_title | urlencode }}&body={{ (_share_text ~ ' ' ~ _mail_link) | urlencode }}" class="bc-btn bc-btn-secondary">&#9993; Email</a>
+        <button type="button" class="bc-btn bc-btn-secondary bc-share-native" style="display:none;" data-bc-native-share data-title="{{ _share_title }}" data-text="{{ _share_text }}" data-url="{{ _wa_link }}">&#128257; More</button>
+    </div>
+</div>
+
+<script>
+(function () {
+    "use strict";
+
+    // Native share sheet (only where the browser supports it).
+    document.querySelectorAll("[data-bc-native-share]").forEach(function (button) {
+        if (!navigator.share) { return; }
+        button.style.display = "";
+        button.addEventListener("click", function () {
+            navigator.share({
+                title: button.getAttribute("data-title") || document.title,
+                text: button.getAttribute("data-text") || "",
+                url: button.getAttribute("data-url") || window.location.href
+            }).catch(function () {});
+        });
+    });
+
+    // Copy link — one handler per share widget.
+    document.querySelectorAll(".bc-share-widget").forEach(function (widget) {
+        if (widget.getAttribute("data-bc-share-init")) { return; }
+        widget.setAttribute("data-bc-share-init", "1");
+
+        var link = widget.querySelector(".bc-card-share-link[data-copy-url]");
+        var toast = widget.querySelector(".bc-copy-toast");
+        if (!link) { return; }
+
+        function done() {
+            if (!toast) { return; }
+            toast.textContent = "Copied!";
+            toast.style.display = "block";
+            window.setTimeout(function () { toast.style.display = "none"; }, 1500);
+        }
+
+        function copy() {
+            var url = link.getAttribute("data-copy-url");
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(url).then(done).catch(function () {});
+            } else {
+                var input = document.createElement("input");
+                input.value = url;
+                document.body.appendChild(input);
+                input.select();
+                try { document.execCommand("copy"); done(); } catch (ex) {}
+                document.body.removeChild(input);
+            }
+        }
+
+        link.addEventListener("click", copy);
+        link.addEventListener("keydown", function (e) {
+            if (e.key === "Enter" || e.key === " ") { e.preventDefault(); copy(); }
+        });
+    });
+})();
+</script>

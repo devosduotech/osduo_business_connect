@@ -1,6 +1,8 @@
 import frappe
 from ....services.theme_service import get_business_theme, get_theme_variables
 from ....analytics.tracking import capture_analytics_context, track_event
+from ....utils.urls import get_business_public_url
+from ....utils.share import get_share_by, get_share_ref
 
 
 def get_context(context):
@@ -49,6 +51,37 @@ def get_context(context):
     if getattr(doc, "seo_description", None):
         context.meta_description = doc.seo_description
 
+    # Share
+    context.share_url = f"{get_business_public_url(business.slug)}/services/{doc.slug}"
+    context.share_by = business.slug
+    context.share_title = doc.service_name or doc.name
+    context.share_text = f"Check out {context.share_title} from {business.business_name or business.name}"
+    context.share_ref = True
+
+    # My Card chip — only for people who belong to this business.
+    from ....business.core import get_user_role_in_business
+    context.show_my_card = bool(
+        frappe.session.user != "Guest"
+        and get_user_role_in_business(frappe.session.user, business.name)
+    )
+
+    # Contact Exchange context
+    context.ce_business = business.name
+    context.ce_card = ""
+    context.ce_service = doc.name
+
     # Capture analytics context BEFORE enqueueing
-    analytics_ctx = capture_analytics_context()
+    analytics_ctx = capture_analytics_context(business.name)
     track_event(business.name, "service_view", service=doc.name, **analytics_ctx)
+
+    share_ref = get_share_ref()
+    share_by = get_share_by()
+    if share_ref:
+        track_event(
+            business.name,
+            "shared_link_open",
+            service=doc.name,
+            campaign=share_ref,
+            shared_by=share_by,
+            **analytics_ctx,
+        )

@@ -1,0 +1,59 @@
+{%- extends "osduo_business_connect/templates/bc_base.html" -%}
+
+{%- block page_content -%}
+<style>
+    .my-card-page { min-height: 100vh; background: #f4f6f8; padding: 2.5rem 1rem; }
+    .my-card-inner { max-width: 760px; margin: 0 auto; }
+    .my-card-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .my-card-head h1 { margin: 0; font-size: 1.5rem; color: #1e293b; }
+    .my-card-head p { margin: 0.3rem 0 0; color: #64748b; font-size: 0.9rem; }
+    .my-card-head a { color: #1677ff; font-size: 0.85rem; text-decoration: none; }
+    .my-card-list { display: grid; gap: 0.85rem; }
+    .my-card-item { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+    .my-card-item h2 { margin: 0; font-size: 1rem; color: #1e293b; }
+    .my-card-item p { margin: 0.25rem 0 0; font-size: 0.82rem; color: #64748b; }
+    .my-card-actions { display: flex; gap: 0.5rem; }
+    .my-card-actions a { display: inline-block; padding: 0.5rem 0.9rem; border-radius: 8px; font-size: 0.82rem; text-decoration: none; }
+    .my-card-actions .primary { background: #0b3d91; color: #fff; }
+    .my-card-actions .secondary { background: #f1f5f9; color: #334155; }
+    .my-card-empty { background: #fff; border: 1px dashed #cbd5e1; border-radius: 12px; padding: 2.5rem 1.5rem; text-align: center; color: #64748b; }
+    .my-card-empty strong { display: block; color: #334155; margin-bottom: 0.4rem; }
+</style>
+
+<div class="my-card-page">
+    <div class="my-card-inner">
+        <div class="my-card-head">
+            <div>
+                <h1>My Card</h1>
+                <p>Open your card to share it, or share your business, products and services.</p>
+            </div>
+            <a href="/analytics">&larr; Analytics</a>
+        </div>
+
+        {% if my_cards %}
+        <div class="my-card-list">
+            {% for card in my_cards %}
+            <div class="my-card-item">
+                <div>
+                    <h2>{{ card.display_name }}</h2>
+                    <p>
+                        {% if card.business_name %}{{ card.business_name }}{% endif %}
+                        {% if card.designation %}{% if card.business_name %} &middot; {% endif %}{{ card.designation }}{% endif %}
+                    </p>
+                </div>
+                <div class="my-card-actions">
+                    <a class="secondary" href="/b/{{ card.business_slug }}" target="_blank" rel="noopener">Business</a>
+                    <a class="primary" href="/c/{{ card.slug }}?ref=mycard&by={{ card.slug }}">Open Card</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="my-card-empty">
+            <strong>No card found</strong>
+            You do not have a published digital card yet. Ask your business owner to create one for you.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{%- endblock -%}
