@@ -110,8 +110,12 @@ Single release, all ten items planned in
   API) — rewrite or add a "roadmap" banner linking
   [MARKETING_FEATURE_INVENTORY.md](MARKETING_FEATURE_INVENTORY.md) §1.10- [ ] Fold any remaining "Portable apps" phrasing into the PWA naming used by
   PWA.md before v1.3.0
-- [ ] Add a short "Contact Exchange" walkthrough (screenshots) to USER_MANUAL
-  §6.6 once production screenshots exist
+- [x] Add a short "Contact Exchange" walkthrough (screenshots) to USER_MANUAL
+  §6.6 once production screenshots exist — screen captures still pending; the
+  BUY HERE + FEATURED/SORT ORDER maths now documented in §4.5a/§4.8
+
+- [ ] Add a short "Contact Exchange" walkthrough (screenshots) for USER_MANUAL
+  §6.6 with production screenshots when available
 - [ ] Keep MARKETING_FEATURE_INVENTORY in sync with each release (already
   done for v1.2.5/v1.2.6 evidence rows)
 - [ ] Re-verify marketplace plan prices and the plan/add-on matrix in the
