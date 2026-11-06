@@ -155,10 +155,11 @@ Single release, all ten items planned in
 
 ---
 
-### Priorities considering the next release
+### Priorities
 
-1. **v1.3.0 SEO items (section 1)** — the only blocking scope; one pass as
-   decided. Everything else lands after.
-2. **Documentation cleanups (section 5, first item)** — do not market the
+1. **Wait for the user's UX review of the remaining doctypes, then implement
+   section 0 (doctype positioning pass) as v1.2.8** — the gate before SEO.
+2. **v1.3.0 SEO items (section 1)** — single pass as decided (P1–P6).
+3. **Documentation cleanups (section 5, first item)** — do not market the
    unshipped features; fix before the v1.3.0 marketing push.
-3. Sections 2–4 are backlog — pick up opportunistically.
+4. Sections 2–4 are backlog — opportunistic.
