@@ -20,6 +20,10 @@
     {% else %}
         {% include "osduo_business_connect/templates/pages/product/parts/hero_modern.html" %}
     {% endif %}
+    {% include "osduo_business_connect/templates/pages/parts/featured_chip.html" %}
+
+    {# ===== BUY HERE (purchase link) ===== #}
+    {% include "osduo_business_connect/templates/pages/parts/buy_cta.html" %}
 
     {# ===== ABOUT ===== #}
     {% if doc.description %}
@@ -73,7 +77,7 @@
     <div class="bc-section">
         <div class="bc-reading">
             <h2 class="bc-section-title">Location</h2>
-            <a href="{{ doc.location | safe_url }}" target="_blank" class="bc-btn bc-btn-secondary" style="font-size:0.85rem;">&#128205; View on Map &rarr;</a>
+            <a href="{{ doc.location | safe_url }}" target="_blank" rel="noopener" class="bc-btn bc-btn-secondary" style="font-size:0.85rem;">&#128205; View on Map &rarr;</a>
         </div>
     </div>
     {% endif %}
@@ -111,7 +115,7 @@
                 <p style="color: var(--bc-text-faint);font-size:0.85rem;margin:0.3rem 0;">&#128205; {{ business.address }}{% if business.city %}, {{ business.city }}{% endif %}{% if business.state %}, {{ business.state }}{% endif %}</p>
                 {% endif %}
                 {% if business.website %}
-                <a href="{{ business.website | safe_url }}" target="_blank" style="color:var(--bc-primary);font-size:0.85rem;text-decoration:none;">{{ business.website }}</a>
+                <a href="{{ business.website | safe_url }}" target="_blank" rel="noopener" style="color:var(--bc-primary);font-size:0.85rem;text-decoration:none;">{{ business.website }}</a>
                 {% endif %}
                 <div style="display:flex;gap:0.6rem;justify-content:center;flex-wrap:wrap;margin-top:0.75rem;">
                     {% if business_phone %}
@@ -167,8 +171,12 @@
 
     <div class="bc-footer"><p>Powered by <a href="https://connect.osduotech.com" target="_blank" rel="noopener">OSDuo Business Connect</a></p></div>
 </div>
+{% include "osduo_business_connect/templates/pages/parts/bc_events.html" %}
 
 <div class="bc-action-bar" style="display:none;">
+    {% if buy_url %}
+    <a href="{{ buy_url | e }}" target="_blank" rel="noopener" class="bc-btn bc-btn-primary" data-bc-event="buy_click">{{ buy_label | e }}</a>
+    {% endif %}
     {% if business_phone %}
     <a href="tel:{{ business_phone }}" class="bc-btn bc-btn-primary">&#9742; Call</a>
     {% endif %}

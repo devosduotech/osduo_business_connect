@@ -69,7 +69,7 @@ def get_public_products(business_slug, limit=20, offset=0):
             "docstatus": ["<", 2],
         },
         fields=["name"],
-        order_by="sort_order ASC",
+        order_by="featured desc, sort_order ASC",
         limit_page_length=limit,
         limit_start=offset,
     )
@@ -133,7 +133,7 @@ def get_public_services(business_slug, limit=20, offset=0):
             "docstatus": ["<", 2],
         },
         fields=["name"],
-        order_by="sort_order ASC",
+        order_by="featured desc, sort_order ASC",
         limit_page_length=limit,
         limit_start=offset,
     )

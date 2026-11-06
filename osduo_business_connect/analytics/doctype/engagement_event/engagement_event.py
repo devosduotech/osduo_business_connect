@@ -89,6 +89,7 @@ class EngagementEvent(Document):
             "website_click",
             "brochure_download",
             "enquiry_submitted",
+            "buy_click",
             "shared_link_open",
             "contact_exchanged",
         ]

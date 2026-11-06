@@ -121,6 +121,13 @@
       "label": "WhatsApp",
       "options": "Phone"
     },
+  {
+   "description": "Optional. Default Buy Here destination for products/services that enable Purchase but have no own link (your Flipkart / Amazon / hosted store).",
+   "fieldname": "shop_url",
+   "fieldtype": "Data",
+   "label": "Buying Portal Link",
+   "options": "URL"
+  },
     {
       "fieldname": "column_break_contact",
       "fieldtype": "Column Break"

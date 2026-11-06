@@ -1148,6 +1148,49 @@
     }
 }
 
+/* Featured chip — listing tiles + detail pages */
+.bc-featured-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    background: #fbbf24;
+    color: #1f2937;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    line-height: 1.4;
+    pointer-events: none;
+}
+
+/* Positional variants: grid tile (business page) and detail page heading */
+.bc-product-card,
+.bc-card-item {
+    position: relative;
+}
+
+.bc-product-card .bc-featured-chip {
+    position: absolute;
+    top: 0.65rem;
+    right: 0.65rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+}
+
+/* Buy Here — purchase link CTA */
+.bc-buy-section .bc-buy-btn {
+    display: inline-block;
+    padding: 0.75rem 1.4rem;
+    font-size: 0.95rem;
+}
+
+@media (max-width: 520px) {
+    .bc-buy-section .bc-buy-btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+
 /* ======================== */
 /* SECTION ALT (fix)        */
 /* ======================== */

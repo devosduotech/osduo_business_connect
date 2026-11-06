@@ -71,6 +71,18 @@ def get_context(context):
     context.ce_card = ""
     context.ce_service = doc.name
 
+    # Buy Here — link chain: item override -> business shopping portal.
+    from ....utils.sanitize import sanitize_url
+    context.buy_url = ""
+    if doc.get("purchase_enabled"):
+        buy_url = sanitize_url(
+            doc.get("purchase_url")
+            or frappe.db.get_value("Business", business.name, "shop_url")
+        )
+        context.buy_url = buy_url or ""
+    context.buy_label = doc.get("purchase_label") or "Buy Here"
+    context.tracking_business = business.name
+
     # Capture analytics context BEFORE enqueueing
     analytics_ctx = capture_analytics_context(business.name)
     track_event(business.name, "service_view", service=doc.name, **analytics_ctx)

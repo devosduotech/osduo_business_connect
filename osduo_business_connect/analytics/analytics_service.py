@@ -237,6 +237,7 @@ CLIENT_EVENT_TYPES = {
     "brochure_download",
     "qr_landing",
     "enquiry_submitted",
+    "buy_click",
 }
 
 # Light abuse guard: at most 60 client events per IP per minute.

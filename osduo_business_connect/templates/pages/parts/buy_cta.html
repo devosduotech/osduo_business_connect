@@ -1,0 +1,18 @@
+{# ===== BUY HERE (purchase link) =====
+   Context (resolved in the page controllers):
+     buy_url   — sanitized destination: item override -> Business.shop_url -> ""
+     buy_label — free text, defaults to "Buy Here" (rendered with | e)
+   Opens in a new tab; fires a buy_click engagement event via the beacon script. #}
+{% if buy_url %}
+<div class="bc-section bc-buy-section">
+    <div class="bc-reading">
+        <a href="{{ buy_url | e }}" target="_blank" rel="noopener"
+           class="bc-btn bc-btn-primary bc-buy-btn"
+           data-bc-event="buy_click"
+           data-bc-product="{% if ce_product %}{{ ce_product | e }}{% endif %}"
+           data-bc-service="{% if ce_service %}{{ ce_service | e }}{% endif %}">
+            {{ buy_label | e }} &rarr;
+        </a>
+    </div>
+</div>
+{% endif %}

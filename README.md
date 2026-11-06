@@ -193,6 +193,9 @@ documentation cleanups), see **[docs/TODO.md](docs/TODO.md)**.
 - [x] Contact Exchange — event lead capture → Enquiry → CRM (v1.2.5)
 - [x] Visitor classification & visitor-mix analytics (v1.2.5)
 - [x] My Card: `/my-card`, desk navbar, Open buttons beside Public URL (v1.2.5/1.2.6)
+- [x] Buy Here purchase links on products/services (v1.2.7) — per-item override +
+      business default + analytics
+- [x] Featured badges & featured-first ordering on all listings (v1.2.7)
 - [ ] SEO engine — v1.3.0 scope committed and prioritized (canonical/OG, JSON-LD,
       sitemap, catalogue SEO fields, web vitals, brand attribution) — see
       [docs/TODO.md](docs/TODO.md) §1
