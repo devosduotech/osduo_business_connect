@@ -379,7 +379,7 @@ Add multiple images to showcase your product:
 Sell a product from your own shopping portal:
 
 1. On the Product (or Service) record, tick **Show Buy Here Button** under
-   **Buy Here (Purchase Link)**.
+   **Purchase Link**.
 2. If your whole business sells in one place (Flipkart / Amazon / hosted
    store), set the **Buying Portal Link** once on the **Business** record —
    that is the default destination for every enabled item.

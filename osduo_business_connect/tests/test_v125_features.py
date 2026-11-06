@@ -499,20 +499,37 @@ class TestBuyHereAndFeatured(unittest.TestCase):
         for source in (business_py, card_py):
             self.assertIn('"featured"', source)
 
-    def test_featured_badges_are_rendered(self):
-        for tokens, page in (
-            ('include "osduo_business_connect/templates/pages/parts/featured_chip.html"', self.product_html),
-            ('include "osduo_business_connect/templates/pages/parts/featured_chip.html"', self.service_html),
-        ):
-            self.assertIn(tokens, page)
+    def test_featured_badges_are_list_page_only(self):
+        """The ★ chip shows on list tiles; detail pages stay clean."""
         for page in (read("templates", "pages", "business", "business.html"),
                      read("templates", "pages", "card", "card.html")):
             self.assertIn("bc-featured-chip", page)
+        for page in (self.product_html, self.service_html):
+            self.assertNotIn("featured_chip", page)
 
-    def test_chip_partial_renders_for_featured_only(self):
-        chip = read("templates", "pages", "parts", "featured_chip.html")
-        self.assertIn("{% if doc.featured %}", chip)
-        self.assertIn("bc-featured-chip", chip)
+    def test_card_tile_chip_is_pinned_top_right(self):
+        css = read("public", "css", "business_connect.css")
+        self.assertIn(".bc-card-item .bc-featured-chip {", css)
+        self.assertIn(".bc-product-card .bc-featured-chip {", css)
+
+    def test_backend_section_is_named_purchase_link(self):
+        for doc in (self.product, self.service):
+            label = next(f["label"] for f in doc["fields"] if f["fieldname"] == "section_purchase")
+            self.assertEqual(label, "Purchase Link")
+
+    def test_buy_cta_sits_after_the_description(self):
+        for source in (self.product_html, self.service_html):
+            hero_end = source.find('parts/hero_modern.html" %}')
+            buy_at = source.find('parts/buy_cta.html" %}')
+            desc_at = source.find("{# ===== DESCRIPTION ===== #}") if "{# ===== DESCRIPTION ===== #}" in source \
+                else source.find("{# ===== ABOUT ===== #}")
+            about_at = source.find("{# ===== ABOUT ===== #}")
+            self.assertGreater(buy_at, hero_end, source[:80])
+            self.assertGreater(buy_at, max(desc_at, about_at))
+
+    def test_buy_section_spacing_is_tightened(self):
+        css = read("public", "css", "business_connect.css")
+        self.assertIn(".bc-buy-section {\n    padding-top: 0;", css)
 
     def test_beacon_partial_is_self_contained(self):
         beacon = read("templates", "pages", "parts", "bc_events.html")

@@ -7,8 +7,8 @@ All notable changes to this project will be documented in this file.
 ### Features (v1.2.7)
 
 #### Buy Here (purchase link)
-- Showcase Product and Showcase Service gain a **Buy Here** checkbox
-  (`purchase_enabled`) with three supporting fields: an optional per-item
+- Showcase Product and Showcase Service gain a **Purchase Link** section
+  (`purchase_enabled` checkbox) with three supporting fields: an optional per-item
   **Shopping Portal Link** override and an optional **Button Label**
   (defaults to "Buy Here"; e.g. "Book Now", "Order Here").
 - Business gains an optional **Buying Portal Link** (`shop_url`) — "custom
@@ -29,8 +29,8 @@ All notable changes to this project will be documented in this file.
   listings ignored it entirely. All four listing queries (business page
   products/services, card page products/services, both public API endpoints)
   now order by `featured desc, sort_order asc`.
-- A **★ Featured** accent chip renders on Business page product/service tiles
-  and Card page tiles, plus a labeled chip on the detail pages.
+- A **★ Featured** accent chip renders on the Business page product/service
+  tiles and the Card page tiles (pinned top-right); detail pages stay clean.
 
 ### Upgrade
 `bench --site <site> migrate && bench --site <site> clear-cache && bench --site <site> build`.
@@ -330,3 +330,6 @@ Upgrade: `bench --site <site> migrate && bench --site <site> clear-cache`
 - **[Full API Reference]**(/docs/api-reference.md) - Complete RESTful API documentation  
 - **[Development Roadmap]**(DEVELOPMENT_PLAN.md) - Future feature plans and timelines
 - **[Architecture Decisions]**(ARCHITECTURE_DECISIONS.md) - Design choices for the project
+- Buy CTA now renders **below the Description/About section** with tightened
+  spacing (no double section spacing) for better reading flow, instead of
+  directly under the hero.
