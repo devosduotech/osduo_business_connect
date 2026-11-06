@@ -52,6 +52,9 @@
                     {% elif product.price_display_mode != "Hidden" and product.price %}
                     <span class="bc-card-item-price">{{ product.currency }} {{ product.price }}</span>
                     {% endif %}
+                    {% if product.featured %}
+                    <span class="bc-featured-chip" title="Marked as featured by the business">&#9733;</span>
+                    {% endif %}
                 </a>
                 {% endfor %}
             </div>
@@ -76,6 +79,9 @@
                         <span class="bc-card-item-desc">{{ service.short_description }}</span>
                         {% endif %}
                     </span>
+                    {% if service.featured %}
+                    <span class="bc-featured-chip" title="Marked as featured by the business">&#9733;</span>
+                    {% endif %}
                 </a>
                 {% endfor %}
             </div>

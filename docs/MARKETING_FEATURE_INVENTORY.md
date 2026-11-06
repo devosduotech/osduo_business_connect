@@ -91,6 +91,8 @@
 | 38 | **Contact Exchange** | Login-only record of *who* a card/business/product/service was shared with (name, phone, email, company, channel, event). Every exchange is also created as an Enquiry via the public enquiry pipeline, so Enquiries + the CRM Lead follow automatically. Deliberately owner-entered — no app can read a recipient out of WhatsApp/SMS/email |
 | 39 | **Visitor classification** | Every event is stamped Guest / Owner / Member / Other User / Unknown from the live session, never from client input. Dashboard shows the mix and can exclude internal views |
 | 40 | **My Card** | `/my-card` lists the logged-in user's published cards and opens them with `?ref=mycard`; entry points in the desk navbar, analytics header and own public pages |
+| 50 | **Buy Here (v1.2.7)** | Purchase checkbox on Product/Service with per-item shopping-portal override, business-level default link and editable button label; CTA opens in a new tab, is HTML-escaped, passes URL sanitization and logs a `buy_click` analytics event |
+| 51 | **Featured & ordering (v1.2.7)** | Featured items now genuinely sort first on all listings (business, card, public API) and show a ★ badge on tiles and detail pages; then sort order applies |
 
 ### 1.9 Committed next — v1.3.0 (SEO & brand attribution)
 

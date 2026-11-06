@@ -40,7 +40,7 @@
       "fieldtype": "Select",
       "label": "Event Type",
       "reqd": 1,
-      "options": "profile_view\ncard_view\nqr_landing\nproduct_view\nservice_view\nphone_click\nemail_click\nwhatsapp_click\nwebsite_click\nbrochure_download\nenquiry_submitted\nshared_link_open\ncontact_exchanged",
+      "options": "profile_view\ncard_view\nqr_landing\nproduct_view\nservice_view\nphone_click\nemail_click\nwhatsapp_click\nwebsite_click\nbrochure_download\nenquiry_submitted\nbuy_click\nshared_link_open\ncontact_exchanged",
       "in_list_view": 1,
       "in_standard_filter": 1
     },

@@ -163,6 +163,34 @@
       "default": 1,
       "in_list_view": 1
     },
+  {
+   "fieldname": "section_purchase",
+   "fieldtype": "Section Break",
+   "label": "Buy Here (Purchase Link)"
+  },
+  {
+   "default": 0,
+   "fieldname": "purchase_enabled",
+   "fieldtype": "Check",
+   "label": "Show Buy Here Button"
+  },
+  {
+   "fieldname": "column_break_purchase",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Optional. When blank, the business-level Buying Portal Link is used.",
+   "fieldname": "purchase_url",
+   "fieldtype": "Data",
+   "label": "Shopping Portal Link (override)",
+   "options": "URL"
+  },
+  {
+   "description": "Custom text for the button (e.g. Book Now / Order Here). Defaults to 'Buy Here'.",
+   "fieldname": "purchase_label",
+   "fieldtype": "Data",
+   "label": "Button Label (optional)"
+  },
     {
       "fieldname": "column_break_enquiry",
       "fieldtype": "Column Break"

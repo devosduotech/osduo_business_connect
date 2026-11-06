@@ -48,6 +48,9 @@
                         <p>{{ product.short_description[:80] }}{% if product.short_description|length > 80 %}...{% endif %}</p>
                         <span class="bc-card-link">View Product &rarr;</span>
                     </div>
+                    {% if product.featured %}
+                    <span class="bc-featured-chip" title="Marked as featured by the business">&#9733; Featured</span>
+                    {% endif %}
                 </a>
                 {% endfor %}
             </div>
@@ -73,6 +76,9 @@
                         <p>{{ service.short_description[:80] }}{% if service.short_description|length > 80 %}...{% endif %}</p>
                         <span class="bc-card-link">View Service &rarr;</span>
                     </div>
+                    {% if service.featured %}
+                    <span class="bc-featured-chip" title="Marked as featured by the business">&#9733; Featured</span>
+                    {% endif %}
                 </a>
                 {% endfor %}
             </div>
@@ -101,7 +107,7 @@
                 </a>
                 {% endif %}
                 {% if doc.website %}
-                <a href="{{ doc.website | safe_url }}" target="_blank" class="bc-contact-card">
+                <a href="{{ doc.website | safe_url }}" target="_blank" rel="noopener" class="bc-contact-card">
                     <span class="bc-contact-icon">&#127760;</span>
                     <span class="bc-contact-label">Website</span>
                     <span class="bc-contact-value">{{ doc.website }}</span>
@@ -175,7 +181,7 @@
             <h2 class="bc-section-title">Connect</h2>
             <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
                 {% for link in social_links %}
-                <a href="{{ link.url | safe_url }}" target="_blank" class="bc-btn bc-btn-secondary" style="font-size:0.8rem;">
+                <a href="{{ link.url | safe_url }}" target="_blank" rel="noopener" class="bc-btn bc-btn-secondary" style="font-size:0.8rem;">
                     {% if link.icon_class %}<i class="{{ link.icon_class }}" style="margin-right:0.3rem;"></i>{% endif %}{{ link.platform }}
                 </a>
                 {% endfor %}

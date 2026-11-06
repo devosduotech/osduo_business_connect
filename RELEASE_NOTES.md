@@ -1,3 +1,50 @@
+# Release Notes - business_connect (v1.2.7)
+
+**Release Date:** 6 November 2026
+**Version:** v1.2.7
+
+Adds a "Buy Here" purchase link on products and services and makes the
+Featured flag and sort order actually influence the catalog.
+
+## Changes (v1.2.7)
+
+### Buy Here on Product and Service pages
+- While creating a product or service, tick **Show Buy Here Button** under
+  "Buy Here (Purchase Link)".
+- If your whole business sells in one place, set the **Buying Portal Link**
+  once on the Business record (custom location per business requirement).
+- If an item sells somewhere else (its own Amazon listing, booking site…),
+  override with the item's own **Shopping Portal Link**.
+- The public page shows a button labelled **Buy Here** by default — put your
+  own text in **Button Label** ("Book Now", "Order Here"…). It opens the
+  shopping portal in a new tab.
+- Taps are recorded as **buy clicks** in the analytics dashboard.
+- Safety: every external link on public pages opens in a new tab with
+  `rel="noopener"`, purchase URLs pass URL sanitization, and every rendered
+  label/text is HTML-escaped.
+
+### Featured and ordering actually working now
+- Ticking **Featured** on a product or service now lifts it to the top of
+  every listing (business page, card page and the public API) —
+  ordering is `Featured first, then sort order`.
+- A **★ Featured** chip shows on the tiles in the Business and Card page
+  listings, plus on the detail page.
+- Without Featured ticked, the previous sort-order arrangement continues to
+  apply (lower numbers first).
+
+## Upgrade
+
+```bash
+bench --site <site> migrate
+bench --site <site> clear-cache
+bench --site <site> build
+```
+
+No data changes — existing products/services keep their current behavior
+until Buy Here or Featured is ticked.
+
+---
+
 # Release Notes - business_connect (v1.2.6)
 
 **Release Date:** 3 November 2026

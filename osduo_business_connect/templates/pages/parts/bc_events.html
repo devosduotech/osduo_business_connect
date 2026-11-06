@@ -1,0 +1,60 @@
+{# ===== CLIENT EVENT BEACON (product & service pages) =====
+   Compact variant of the card page tracker: knows the business/doc from
+   controller-injected hidden inputs and fires whitelisted client events for
+   any [data-bc-event] click (currently buy_click). #}
+<form id="bc-page-events" style="display:none;" aria-hidden="true">
+    <input type="hidden" name="business" value="{{ tracking_business | e }}">
+    <input type="hidden" name="product" value="{{ (ce_product or '') | e }}">
+    <input type="hidden" name="service" value="{{ (ce_service or '') | e }}">
+</form>
+<div id="bc-csrf-token" data-token="{{ frappe.session.csrf_token or '' }}" style="display:none;"></div>
+{% raw %}
+<script>
+(function () {
+    'use strict';
+    var form = document.getElementById('bc-page-events');
+    if (!form) { return; }
+    var endpoint = '/api/method/osduo_business_connect.analytics.analytics_service.log_event';
+
+    function sendEvent(eventType) {
+        var ctx = {
+            business: form.elements['business'].value || '',
+            event_type: eventType,
+            product: form.elements['product'].value || '',
+            service: form.elements['service'].value || '',
+            landing_url: window.location.href,
+            referrer: document.referrer || ''
+        };
+        var body = new URLSearchParams();
+        Object.keys(ctx).forEach(function (k) {
+            if (ctx[k]) { body.append(k, ctx[k]); }
+        });
+        if (navigator.sendBeacon) {
+            navigator.sendBeacon(endpoint, body);
+        } else {
+            fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+                body: body.toString(),
+                keepalive: true
+            }).catch(function () {});
+        }
+    }
+
+    document.addEventListener('click', function (event) {
+        var trigger = event.target.closest('[data-bc-event]');
+        if (!trigger) { return; }
+        var type = trigger.getAttribute('data-bc-event');
+        if (type === 'buy_click') {
+            if (trigger.getAttribute('data-bc-product')) {
+                form.elements['product'].value = trigger.getAttribute('data-bc-product');
+            }
+            if (trigger.getAttribute('data-bc-service')) {
+                form.elements['service'].value = trigger.getAttribute('data-bc-service');
+            }
+            sendEvent(type);
+        }
+    });
+})();
+</script>
+{% endraw %}

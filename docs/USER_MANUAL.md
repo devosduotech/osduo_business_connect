@@ -372,7 +372,25 @@ Add multiple images to showcase your product:
 | Brochure | PDF file for download |
 | Location | Google Maps URL for "View on Map" |
 | Enquiry Enabled | Show enquiry form on product page |
-| Featured | Highlight on business page |
+| Featured | Highlight on business page (lifts the item to the top of listings — Featured items sort before everything else, then sort order) |
+
+### 4.5a Buy Here (Purchase Link)
+
+Sell a product from your own shopping portal:
+
+1. On the Product (or Service) record, tick **Show Buy Here Button** under
+   **Buy Here (Purchase Link)**.
+2. If your whole business sells in one place (Flipkart / Amazon / hosted
+   store), set the **Buying Portal Link** once on the **Business** record —
+   that is the default destination for every enabled item.
+3. For an item that lives somewhere else, override it with the item's own
+   **Shopping Portal Link**.
+4. Optional **Button Label** to rename the button — e.g. "Book Now",
+   "Order Here". Default is **Buy Here**.
+
+The public page then shows the button (opens in a new tab), each tap is
+counted as a **buy click** in analytics, and nothing renders for items where
+the checkbox is off or no link exists.
 
 ### 4.6 Creating Services
 

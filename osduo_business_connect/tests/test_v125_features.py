@@ -424,5 +424,102 @@ class TestCrmSidePanelLayout(unittest.TestCase):
         self.assertIn("def _integrate_osduo_section", install)
 
 
+class TestBuyHereAndFeatured(unittest.TestCase):
+    """v1.2.7 — Buy Here purchase links + working Featured badges / ordering."""
+
+    def setUp(self):
+        self.product = load_json("showcase", "doctype", "showcase_product", "showcase_product.json")
+        self.service = load_json("showcase", "doctype", "showcase_service", "showcase_service.json")
+        self.business = load_json("business", "doctype", "business", "business.json")
+        self.product_py = read("templates", "pages", "product", "product.py")
+        self.service_py = read("templates", "pages", "service", "service.py")
+        self.product_html = read("templates", "pages", "product", "product.html")
+        self.service_html = read("templates", "pages", "service", "service.html")
+
+    def _names(self, doc):
+        return [f["fieldname"] for f in doc["fields"]]
+
+    def test_purchase_fields_on_items(self):
+        for doc in (self.product, self.service):
+            names = self._names(doc)
+            for req in ("section_purchase", "purchase_enabled", "purchase_url", "purchase_label"):
+                self.assertIn(req, names, req)
+            url_field = next(f for f in doc["fields"] if f["fieldname"] == "purchase_url")
+            self.assertEqual(url_field.get("options"), "URL")
+
+    def test_business_shop_url_defaults(self):
+        names = self._names(self.business)
+        self.assertIn("shop_url", names)
+        site = next(f for f in self.business["fields"] if f["fieldname"] == "shop_url")
+        self.assertEqual(site.get("options"), "URL")
+
+    def test_link_resolution_chain_and_sanitization(self):
+        for source in (self.product_py, self.service_py):
+            self.assertIn("purchase_enabled", source)
+            self.assertIn('doc.get("purchase_url")', source)
+            self.assertIn('"Business", business.name, "shop_url"', source)
+            self.assertIn("sanitize_url(", source)
+            self.assertIn('doc.get("purchase_label") or "Buy Here"', source)
+            self.assertIn("context.tracking_business = business.name", source)
+
+    def test_buy_cta_is_safe_and_new_tab(self):
+        partial = read("templates", "pages", "parts", "buy_cta.html")
+        for token in ('target="_blank" rel="noopener"', "{{ buy_url | e }}",
+                      "{{ buy_label | e }}", 'data-bc-event="buy_click"'):
+            self.assertIn(token, partial)
+        for page in (self.product_html, self.service_html):
+            self.assertIn('include "osduo_business_connect/templates/pages/parts/buy_cta.html"', page)
+            self.assertIn('include "osduo_business_connect/templates/pages/parts/bc_events.html"', page)
+
+    def test_external_links_all_open_in_new_tab_with_noopener(self):
+        for path in ("templates/pages/product/product.html",
+                     "templates/pages/service/service.html",
+                     "templates/pages/business/business.html",
+                     "templates/pages/card/team_member.html"):
+            source = read(*path.split("/"))
+            self.assertNotIn('target="_blank" class=', source, path)
+            self.assertNotIn('target="_blank" style=', source, path)
+
+    def test_buy_click_is_a_client_event(self):
+        service = read("analytics", "analytics_service.py")
+        block = service.split("CLIENT_EVENT_TYPES = {", 1)[1].split("}", 1)[0]
+        self.assertIn("buy_click", block)
+        event_py = read("analytics", "doctype", "engagement_event", "engagement_event.py")
+        self.assertIn('"buy_click",', event_py)
+        event_json = load_json("analytics", "doctype", "engagement_event", "engagement_event.json")
+        options = next(f for f in event_json["fields"] if f["fieldname"] == "event_type")["options"]
+        self.assertIn("buy_click", options.split("\n"))
+
+    def test_listings_order_featured_first(self):
+        business_py = read("templates", "pages", "business", "business.py")
+        card_py = read("templates", "pages", "card", "card.py")
+        public_api = read("showcase", "public_api.py")
+        for source in (public_api,):
+            self.assertIn('order_by="featured desc, sort_order ASC"', source)
+        for source in (business_py, card_py):
+            self.assertIn('"featured"', source)
+
+    def test_featured_badges_are_rendered(self):
+        for tokens, page in (
+            ('include "osduo_business_connect/templates/pages/parts/featured_chip.html"', self.product_html),
+            ('include "osduo_business_connect/templates/pages/parts/featured_chip.html"', self.service_html),
+        ):
+            self.assertIn(tokens, page)
+        for page in (read("templates", "pages", "business", "business.html"),
+                     read("templates", "pages", "card", "card.html")):
+            self.assertIn("bc-featured-chip", page)
+
+    def test_chip_partial_renders_for_featured_only(self):
+        chip = read("templates", "pages", "parts", "featured_chip.html")
+        self.assertIn("{% if doc.featured %}", chip)
+        self.assertIn("bc-featured-chip", chip)
+
+    def test_beacon_partial_is_self_contained(self):
+        beacon = read("templates", "pages", "parts", "bc_events.html")
+        self.assertIn("log_event", beacon)
+        self.assertIn("{% raw %}", beacon)
+        self.assertIn("navigator.sendBeacon", beacon)
+
+
 if __name__ == "__main__":
     unittest.main()

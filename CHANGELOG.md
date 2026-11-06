@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.2.7 - 6 November 2026
+
+### Features (v1.2.7)
+
+#### Buy Here (purchase link)
+- Showcase Product and Showcase Service gain a **Buy Here** checkbox
+  (`purchase_enabled`) with three supporting fields: an optional per-item
+  **Shopping Portal Link** override and an optional **Button Label**
+  (defaults to "Buy Here"; e.g. "Book Now", "Order Here").
+- Business gains an optional **Buying Portal Link** (`shop_url`) — "custom
+  location as per business requirement" — so items only need the checkbox
+  when the whole company sells in one place.
+- Public product/service pages render a **Buy Here →** button when the
+  checkbox is on and a link resolves (item override → business link). Every
+  destination passes the app's `safe_url` sanitizer before rendering.
+- **All external links on public pages now open in a new tab with
+  `rel="noopener"`** (buy CTA + previously un-hardened map / brochure /
+  website / member / social links).
+- Button label and URL are HTML-escaped at render time; the event fires a new
+  whitelisted client engagement event **`buy_click`** (product or service
+  scope), so the analytics Events-by-type chart shows real purchase intent.
+
+#### Featured & sort order now take effect
+- Confirmed broken: `featured` was stored but never used in any template, and
+  listings ignored it entirely. All four listing queries (business page
+  products/services, card page products/services, both public API endpoints)
+  now order by `featured desc, sort_order asc`.
+- A **★ Featured** accent chip renders on Business page product/service tiles
+  and Card page tiles, plus a labeled chip on the detail pages.
+
+### Upgrade
+`bench --site <site> migrate && bench --site <site> clear-cache && bench --site <site> build`.
+
+---
+
 ## v1.2.6 - 3 November 2026
 
 ### Polish (v1.2.6)
