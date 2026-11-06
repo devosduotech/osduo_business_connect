@@ -1,6 +1,6 @@
 # Pending To-Do List — OSDuo Business Connect
 
-**Last updated:** 3 November 2026 · **Shipped version:** 1.2.6 (`main`)
+**Last updated:** 6 November 2026 · **Shipped version:** 1.2.7 (`main`)
 
 This is the single working list of everything pending across the project: the
 committed next release, the product backlog, known tech debt and documentation
@@ -9,6 +9,36 @@ cleanups. Items elsewhere (e.g. the committed scope in
 authoritative. Tick items off and re-date this header as they move.
 
 ---
+
+## 0. Next up — Doctype UX positioning pass (gate before v1.3.0)
+
+**Status: gathering. The user is reviewing each doctype's desk form for better
+UX — field positioning, grouping and labels. Changes will be collected for
+ALL doctypes first, then implemented in one planned pass. This pass lands
+BEFORE the v1.3.0 SEO work.**
+
+Already captured from `business.uat` (Customize Form output, Nov 2026):
+
+- [ ] **Business** — `description` relabelled **About Us**; decide `allow_import`
+  at source level (global for all sites, pending user confirmation)
+- [ ] **Showcase Product** — replicate the captured field order: name · category ·
+  slug (hidden naming series + business on the right) | description | media
+  (image, video, brochure, location) with gallery/features on the right | pricing
+  (mode · currency / price) | enquiry | purchase split across two columns
+  (checkbox · featured / link · label) | status · sort order on its own column |
+  public URL
+- [ ] **Showcase Service** — same treatment as captured (media includes brochure
+  and location; enquiry | featured two-column; status · sort order on own column);
+  ignore the stale `benefits` reference in the saved field order
+- [ ] Implementation approach (agreed with user): bake the order into the source
+  `.json` files (`naming_series` hidden, named column breaks replacing the four
+  `custom_column_break_*` records), then delete those Custom Fields / Property
+  Setters on the sites so the source remains the single truth
+- [ ] **To review by user:** Digital Card, Contact Exchange, Enquiry, BC Theme,
+  Business Member, Product Category, Feature, Product Gallery Item, Business
+  Social Link, Business Hour
+- [ ] Tests updated + CHANGELOG entry (planned as v1.2.8 patch) before starting
+  v1.3.0
 
 ## 1. Committed next — v1.3.0 (SEO & brand attribution)
 
