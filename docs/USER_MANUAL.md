@@ -338,7 +338,7 @@ Categories help organize your products:
 | Category Name | e.g., "Electronics", "Software", "Consulting" |
 | Business | Your business |
 | Description | Brief category description |
-| Sort Order | Display order (1, 2, 3...) |
+| Sort Order | Display order (lower numbers appear first; see [Featured & Sort Order](#48-featured--sort-order--how-it-works)) |
 
 ### 4.4 Product Gallery
 
@@ -356,7 +356,7 @@ Add multiple images to showcase your product:
 | Image | Upload or select image |
 | Caption | Short description of the image |
 | Alt Text | Accessibility text |
-| Sort Order | Display order |
+| Sort Order | Display order (lower numbers first, Featured items above; see [Featured & Sort Order](#48-featured--sort-order--how-it-works)) |
 
 **Gallery features:**
 - 4-column grid on desktop, 2-column on mobile
@@ -424,6 +424,44 @@ Features display on both product and service pages with an optional icon beside 
 | Sort Order | Display order |
 
 Features display on the page with an optional image icon beside the bold title and description below it.
+
+### 4.8 Featured & Sort Order — How It Works
+
+Two fields control the order of products and services on the public listings:
+**Featured** (a checkbox) and **Sort Order** (a number). The rule, in one line:
+
+> **Featured first, then sort order (lowest number first).**
+
+| Placement | Works as |
+|---|---|
+| Business page (`/b/<slug>`) product & service grids | Featured checkbox lifts the item to the top; Sort Order arranges the rest |
+| Digital Card page (`/c/<slug>`) product & service lists | Same rule — Featured items come first, then sort order |
+| Public API feeds (`/api` product/service lists) | Same rule |
+| Product / Service detail pages | Not affected — every item has its own page in full |
+
+**How Sort Order works:**
+- Each Product and Service has a **Sort Order** field — a whole number, default `0`.
+- **Lower numbers appear first** in listings: `5` before `10`.
+- Sort order only compares items of the **same kind and same business** (products among products, services among services).
+- If two items have the same sort order, they keep form order until you change the numbers.
+- To interleave categories as you like, a practical pattern is numbering in steps of 10 — `10, 20, 30…` — so you can slot a new item at `15` later without renumbering everything.
+
+**How Featured works (v1.2.7):**
+- Tick **Featured** on any Published product or service.
+- It moves **above all non-featured items** in every listing, regardless of sort order.
+- A **★ Featured** chip appears on the item's tile in the Business page grid and the Digital Card list.
+- The chip is intentionally **not shown on the item's own detail page** — the detail pages stay clean; the chip signals prominence on the list.
+- Featured is a presentation signal only: it does not change search behavior, hide items, or affect whether a detail page exists.
+
+**Where the chip shows up:**
+
+| Page | Chip |
+|---|---|
+| Business product/service tile | ★ Featured (top-right of the tile) |
+| Digital Card item list | ★ (compact star, top-right) |
+| Product / Service detail page | none |
+
+**Good practice:** tick Featured sparingly — most businesses run one to three featured items; re-check the listing after changes since "Featured first" also means "everything else below".
 
 ---
 
