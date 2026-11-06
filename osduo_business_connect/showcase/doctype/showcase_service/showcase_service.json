@@ -138,7 +138,7 @@
   {
    "fieldname": "section_purchase",
    "fieldtype": "Section Break",
-   "label": "Buy Here (Purchase Link)"
+   "label": "Purchase Link"
   },
   {
    "default": 0,
