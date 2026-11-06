@@ -40,6 +40,14 @@ Already captured from `business.uat` (Customize Form output, Nov 2026):
 - [ ] Tests updated + CHANGELOG entry (planned as v1.2.8 patch) before starting
   v1.3.0
 
+- [ ] **Public page (theme) spacing audit** — fix padding & margin between
+  sections to remove extra white space (both desktop and mobile). Rides in the
+  same v1.2.8 pass: normalise `--bc-section-spacing`, section breaks after
+  minor MF (hero → description, buy CTA below description, enquiry/share
+  sections), and check dark-mode + both layouts (editorial padding rule) for
+  equal rhythm before/after each theme template (Modern, Professional, Minimal,
+  Classic, Luxury, Creative) with a before/after screenshot set
+
 ## 1. Committed next — v1.3.0 (SEO & brand attribution)
 
 Single release, all ten items planned in
