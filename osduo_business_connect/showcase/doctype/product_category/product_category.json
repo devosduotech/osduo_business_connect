@@ -14,6 +14,7 @@
   "is_tree": 0,
   "track_changes": 1,
   "allow_rename": 0,
+  "allow_import": 1,
   "sort_field": "modified",
   "sort_order": "DESC",
   "fields": [
@@ -37,6 +38,10 @@
       "description": "e.g., Electronics, Furniture, Clothing"
     },
     {
+      "fieldname": "column_break_afve",
+      "fieldtype": "Column Break"
+    },
+    {
       "fieldname": "business",
       "fieldtype": "Link",
       "label": "Business",
@@ -45,6 +50,10 @@
       "in_list_view": 1,
       "in_standard_filter": 1,
       "description": "Leave empty for global categories shared across all businesses"
+    },
+    {
+      "fieldname": "section_break_tycc",
+      "fieldtype": "Section Break"
     },
     {
       "fieldname": "description",

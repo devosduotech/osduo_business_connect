@@ -14,6 +14,7 @@
   "is_tree": 0,
   "track_changes": 1,
   "allow_rename": 0,
+  "allow_import": 1,
   "sort_field": "modified",
   "sort_order": "DESC",
   "fields": [
@@ -24,7 +25,8 @@
       "default": "CARD-.#####",
       "options": "CARD-.#####",
       "reqd": 1,
-      "set_only_once": 1
+      "set_only_once": 1,
+      "hidden": 1
     },
     {
       "fieldname": "business",
@@ -45,6 +47,11 @@
       "in_standard_filter": 1
     },
     {
+      "fieldname": "designation",
+      "fieldtype": "Data",
+      "label": "Designation"
+    },
+    {
       "fieldname": "display_name",
       "fieldtype": "Data",
       "label": "Display Name",
@@ -60,9 +67,8 @@
       "description": "Unique identifier for public URLs. Only lowercase letters, numbers, and hyphens."
     },
     {
-      "fieldname": "designation",
-      "fieldtype": "Data",
-      "label": "Designation"
+      "fieldname": "column_break_nbjf",
+      "fieldtype": "Column Break"
     },
     {
       "fieldname": "profile_image",
@@ -86,16 +92,20 @@
       "options": "Phone"
     },
     {
-      "fieldname": "email",
-      "fieldtype": "Data",
-      "label": "Email",
-      "options": "Email"
-    },
-    {
       "fieldname": "whatsapp",
       "fieldtype": "Data",
       "label": "WhatsApp",
       "options": "Phone"
+    },
+    {
+      "fieldname": "column_break_ytly",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "email",
+      "fieldtype": "Data",
+      "label": "Email",
+      "options": "Email"
     },
     {
       "fieldname": "website",
@@ -137,6 +147,11 @@
       "allow_on_submit": 1
     },
     {
+      "fieldname": "sort_order",
+      "fieldtype": "Int",
+      "label": "Sort Order"
+    },
+    {
       "fieldname": "column_break_settings",
       "fieldtype": "Column Break"
     },
@@ -160,6 +175,10 @@
       "default": 1
     },
     {
+      "fieldname": "column_break_pbif",
+      "fieldtype": "Column Break"
+    },
+    {
       "fieldname": "show_business",
       "fieldtype": "Check",
       "label": "Show Business",
@@ -181,11 +200,6 @@
       "allow_on_submit": 1
     },
     {
-      "fieldname": "sort_order",
-      "fieldtype": "Int",
-      "label": "Sort Order"
-    },
-    {
       "fieldname": "section_computed",
       "fieldtype": "Section Break",
       "label": "Computed Fields"
@@ -198,18 +212,22 @@
       "description": "Generated public URL for this card"
     },
     {
-      "fieldname": "qr_image",
-      "fieldtype": "Attach Image",
-      "label": "QR Code Image",
-      "read_only": 1
-    },
-    {
       "fieldname": "amended_from",
       "fieldtype": "Link",
       "label": "Amended From",
       "options": "Digital Card",
       "reqd": 0,
       "hidden": 1
+    },
+    {
+      "fieldname": "column_break_euts",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "qr_image",
+      "fieldtype": "Attach Image",
+      "label": "QR Code Image",
+      "read_only": 1
     }
   ],
   "permissions": [

@@ -14,6 +14,7 @@
   "is_tree": 0,
   "track_changes": 1,
   "allow_rename": 0,
+  "allow_import": 1,
   "sort_field": "modified",
   "sort_order": "DESC",
   "fields": [
@@ -24,7 +25,8 @@
       "default": "BIZ-.#####",
       "options": "BIZ-.#####",
       "reqd": 1,
-      "set_only_once": 1
+      "set_only_once": 1,
+      "hidden": 1
     },
     {
       "fieldname": "business_name",
@@ -50,6 +52,17 @@
       "description": "Unique identifier for public URLs. Only lowercase letters, numbers, and hyphens."
     },
     {
+      "fieldname": "industry",
+      "fieldtype": "Data",
+      "label": "Industry",
+      "reqd": 0,
+      "allow_on_submit": 1
+    },
+    {
+      "fieldname": "column_break_jroc",
+      "fieldtype": "Column Break"
+    },
+    {
       "fieldname": "status",
       "fieldtype": "Select",
       "label": "Status",
@@ -70,19 +83,6 @@
       "in_standard_filter": 1
     },
     {
-      "fieldname": "industry",
-      "fieldtype": "Data",
-      "label": "Industry",
-      "reqd": 0,
-      "allow_on_submit": 1
-    },
-    {
-      "fieldname": "description",
-      "fieldtype": "Text Editor",
-      "label": "Description",
-      "allow_on_submit": 1
-    },
-    {
       "fieldname": "logo",
       "fieldtype": "Attach Image",
       "label": "Logo"
@@ -91,6 +91,16 @@
       "fieldname": "cover_image",
       "fieldtype": "Attach Image",
       "label": "Cover Image"
+    },
+    {
+      "fieldname": "section_break_jsbn",
+      "fieldtype": "Section Break"
+    },
+    {
+      "fieldname": "description",
+      "fieldtype": "Text Editor",
+      "label": "About Us",
+      "allow_on_submit": 1
     },
     {
       "fieldname": "section_contact",
@@ -121,13 +131,13 @@
       "label": "WhatsApp",
       "options": "Phone"
     },
-  {
-   "description": "Optional. Default Buy Here destination for products/services that enable Purchase but have no own link (your Flipkart / Amazon / hosted store).",
-   "fieldname": "shop_url",
-   "fieldtype": "Data",
-   "label": "Buying Portal Link",
-   "options": "URL"
-  },
+    {
+      "description": "Optional. Default Buy Here destination for products/services that enable Purchase but have no own link (your Flipkart / Amazon / hosted store).",
+      "fieldname": "shop_url",
+      "fieldtype": "Data",
+      "label": "Buying Portal Link",
+      "options": "URL"
+    },
     {
       "fieldname": "column_break_contact",
       "fieldtype": "Column Break"
