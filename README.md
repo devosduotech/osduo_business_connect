@@ -1,6 +1,6 @@
 # OSDuo Business Connect
 
-**v1.2.6** | **Your digital identity. Your customers. Your growth.**
+**v1.2.8** | **Your digital identity. Your customers. Your growth.**
 
 Business Connect transforms how small businesses and professionals establish their digital presence. Create a stunning business profile, showcase products and services, capture customer enquiries and card exchanges, and install it all as a mobile app — all seamlessly integrated with Frappe CRM.
 
@@ -196,6 +196,8 @@ documentation cleanups), see **[docs/TODO.md](docs/TODO.md)**.
 - [x] Buy Here purchase links on products/services (v1.2.7) — per-item override +
       business default + analytics
 - [x] Featured badges & featured-first ordering on all listings (v1.2.7)
+- [x] Fullscreen product/service gallery lightbox — zoom, pan, pinch, swipe,
+      keyboard navigation, and full gallery above Features (v1.2.8)
 - [ ] SEO engine — v1.3.0 scope committed and prioritized (canonical/OG, JSON-LD,
       sitemap, catalogue SEO fields, web vitals, brand attribution) — see
       [docs/TODO.md](docs/TODO.md) §1

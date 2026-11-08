@@ -1,3 +1,44 @@
+# Release Notes - business_connect (v1.2.8)
+
+**Release Date:** 8 November 2026
+**Version:** v1.2.8
+
+Product and service galleries are now clickable and zoomable, show every
+image, and appear above the Features section.
+
+## Changes (v1.2.8)
+
+### Click to enlarge — fullscreen gallery lightbox
+- Click any gallery thumbnail (or hero image) to open the image fullscreen
+  instead of opening a new tab.
+- **Previous / next** buttons, image counter and captions.
+- **Zoom in / out / reset**, **drag to pan** when zoomed, **pinch-to-zoom** on
+  phones, **double-click** to toggle zoom, **swipe** to navigate, and
+  **keyboard** shortcuts (`Esc`, `←`, `→`, `+`, `-`, `0`).
+- Thumbnails look clickable (zoom cursor + `+` badge) and are keyboard
+  accessible.
+- No external JavaScript library and no extra build step.
+
+### Full gallery, before Features
+- The gallery now shows **all** images, not just the first three. The section
+  title shows the count, e.g. **"Gallery · 5 photos"**.
+- The gallery sits **after Description / Buy Here and before Features** on
+  both product and service detail pages.
+- The hero keeps its 3-image preview and adds a **"View all N photos"**
+  button that opens the full gallery.
+- The gallery section renders for **all templates**, including Professional.
+
+## Upgrade
+
+```bash
+bench --site <site> clear-cache
+bench --site <site> build
+```
+
+No data or schema changes.
+
+---
+
 # Release Notes - business_connect (v1.2.7)
 
 **Release Date:** 6 November 2026
