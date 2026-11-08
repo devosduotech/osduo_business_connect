@@ -32,14 +32,34 @@ image, and appear above the Features section.
 - Fixed horizontal scrolling on mobile caused by the full-width purchase
   button overflowing its container.
 
+### Standard desk form layout
+- The form layout tuned on the UAT site with **Customize Form** is now shipped
+  in the app itself, so every site gets the same layout on `migrate` — no
+  manual Customize Form work.
+- **Business**: Industry sits next to Slug, and the About Us / contact /
+  branding / social / hours sections are rearranged. The description field is
+  now labelled **About Us**.
+- **Business Member**, **Digital Card**, **Product Category**, **Showcase
+  Product** and **Showcase Service** forms have their fields regrouped into
+  logical columns.
+- **Showcase Product / Service**: the separate Enquiry and Purchase Link
+  sections are merged into one **Enquiry and Purchase Link** section.
+- `naming_series` is hidden on all seven forms, and import is enabled for
+  Business, Business Member, Digital Card, Product Category, Showcase Product
+  and Showcase Service.
+- Migration automatically removes the old site-level Customize Form records
+  (Custom Fields / Property Setters) that would otherwise override the standard
+  layout.
+
 ## Upgrade
 
 ```bash
+bench --site <site> migrate
 bench --site <site> clear-cache
 bench --site <site> build
 ```
 
-No data or schema changes.
+The desk form layout is applied by `migrate`; existing data is untouched.
 
 ---
 

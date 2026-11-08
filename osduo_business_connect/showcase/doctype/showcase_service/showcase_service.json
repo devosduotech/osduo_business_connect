@@ -14,6 +14,7 @@
   "is_tree": 0,
   "track_changes": 1,
   "allow_rename": 0,
+  "allow_import": 1,
   "sort_field": "sort_order",
   "sort_order": "ASC",
   "fields": [
@@ -24,16 +25,8 @@
       "default": "SERV-.#####",
       "options": "SERV-.#####",
       "reqd": 1,
-      "set_only_once": 1
-    },
-    {
-      "fieldname": "business",
-      "fieldtype": "Link",
-      "label": "Business",
-      "options": "Business",
-      "reqd": 1,
-      "in_list_view": 1,
-      "in_standard_filter": 1
+      "set_only_once": 1,
+      "hidden": 1
     },
     {
       "fieldname": "service_name",
@@ -49,6 +42,19 @@
       "reqd": 1,
       "in_list_view": 1,
       "description": "URL-friendly identifier"
+    },
+    {
+      "fieldname": "column_break_tysb",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "business",
+      "fieldtype": "Link",
+      "label": "Business",
+      "options": "Business",
+      "reqd": 1,
+      "in_list_view": 1,
+      "in_standard_filter": 1
     },
     {
       "fieldname": "category",
@@ -84,10 +90,6 @@
       "label": "Image"
     },
     {
-      "fieldname": "column_break_media",
-      "fieldtype": "Column Break"
-    },
-    {
       "fieldname": "brochure",
       "fieldtype": "Attach",
       "label": "Brochure",
@@ -99,6 +101,10 @@
       "label": "Location",
       "options": "URL",
       "description": "Google Maps link or any map URL"
+    },
+    {
+      "fieldname": "column_break_media",
+      "fieldtype": "Column Break"
     },
     {
       "fieldname": "features",
@@ -113,9 +119,9 @@
       "options": "Product Gallery Item"
     },
     {
-      "fieldname": "section_enquiry",
+      "fieldname": "section_purchase",
       "fieldtype": "Section Break",
-      "label": "Enquiry"
+      "label": "Enquiry and Purchase Link"
     },
     {
       "fieldname": "enquiry_enabled",
@@ -125,44 +131,39 @@
       "in_list_view": 1
     },
     {
-      "fieldname": "column_break_enquiry",
-      "fieldtype": "Column Break"
-    },
-    {
       "fieldname": "featured",
       "fieldtype": "Check",
       "label": "Featured",
       "default": 0,
       "in_list_view": 1
     },
-  {
-   "fieldname": "section_purchase",
-   "fieldtype": "Section Break",
-   "label": "Purchase Link"
-  },
-  {
-   "default": 0,
-   "fieldname": "purchase_enabled",
-   "fieldtype": "Check",
-   "label": "Show Buy Here Button"
-  },
-  {
-   "fieldname": "column_break_purchase",
-   "fieldtype": "Column Break"
-  },
-  {
-   "description": "Optional. When blank, the business-level Buying Portal Link is used.",
-   "fieldname": "purchase_url",
-   "fieldtype": "Data",
-   "label": "Shopping Portal Link (override)",
-   "options": "URL"
-  },
-  {
-   "description": "Custom text for the button (e.g. Book Now / Order Here). Defaults to 'Buy Here'.",
-   "fieldname": "purchase_label",
-   "fieldtype": "Data",
-   "label": "Button Label (optional)"
-  },
+    {
+      "default": 0,
+      "fieldname": "purchase_enabled",
+      "fieldtype": "Check",
+      "label": "Show Buy Here Button"
+    },
+    {
+      "fieldname": "column_break_purchase",
+      "fieldtype": "Column Break"
+    },
+    {
+      "description": "Optional. When blank, the business-level Buying Portal Link is used.",
+      "fieldname": "purchase_url",
+      "fieldtype": "Data",
+      "label": "Shopping Portal Link (override)",
+      "options": "URL"
+    },
+    {
+      "fieldname": "column_break_iegu",
+      "fieldtype": "Column Break"
+    },
+    {
+      "description": "Custom text for the button (e.g. Book Now / Order Here). Defaults to 'Buy Here'.",
+      "fieldname": "purchase_label",
+      "fieldtype": "Data",
+      "label": "Button Label (optional)"
+    },
     {
       "fieldname": "section_status",
       "fieldtype": "Section Break",

@@ -343,6 +343,112 @@ def after_migrate():
     create_crm_lead_source()
     apply_branding_settings()
     backfill_public_urls()
+    remove_doctype_ux_customizations()
+
+
+# DocTypes whose desk form layout is now defined in the app's doctype JSON.
+# Any Customize Form records left on a site would override that standard layout.
+DOCTYPE_UX_DOCTYPES = (
+    "BC Theme",
+    "Business",
+    "Business Member",
+    "Digital Card",
+    "Product Category",
+    "Showcase Product",
+    "Showcase Service",
+)
+
+
+def remove_doctype_ux_customizations():
+    """Delete the site-level Customize Form records that are now baked into the
+    standard DocType JSON.
+
+    This is intentionally idempotent: it runs after every migrate and does
+    nothing when the records are already gone.
+    """
+    for doctype in DOCTYPE_UX_DOCTYPES:
+        # Field order, naming-series visibility and import permission are now
+        # part of the source DocType.
+        for property_name in ("field_order", "allow_import"):
+            for name in frappe.get_all(
+                "Property Setter",
+                filters={"doc_type": doctype, "property": property_name},
+                pluck="name",
+            ):
+                frappe.delete_doc(
+                    "Property Setter", name, force=True, ignore_permissions=True
+                )
+
+        # Naming-series default / options / hidden now come from the standard
+        # field definition.
+        for name in frappe.get_all(
+            "Property Setter",
+            filters={"doc_type": doctype, "field_name": "naming_series"},
+            pluck="name",
+        ):
+            frappe.delete_doc(
+                "Property Setter", name, force=True, ignore_permissions=True
+            )
+
+        # The About Us label is now declared on the standard field.
+        for name in frappe.get_all(
+            "Property Setter",
+            filters={
+                "doc_type": doctype,
+                "field_name": "description",
+                "property": "label",
+            },
+            pluck="name",
+        ):
+            frappe.delete_doc(
+                "Property Setter", name, force=True, ignore_permissions=True
+            )
+
+        # The Enquiry and Purchase Link section label is now declared on the
+        # standard field.
+        for name in frappe.get_all(
+            "Property Setter",
+            filters={
+                "doc_type": doctype,
+                "field_name": "section_purchase",
+                "property": "label",
+            },
+            pluck="name",
+        ):
+            frappe.delete_doc(
+                "Property Setter", name, force=True, ignore_permissions=True
+            )
+
+    # Showcase Product / Service previously used auto-generated
+    # `custom_column_break_*` Custom Fields. They are replaced by named
+    # `column_break_*` fields in the standard DocType JSON.
+    for doctype in ("Showcase Product", "Showcase Service"):
+        for name in frappe.get_all(
+            "Custom Field",
+            filters={
+                "dt": doctype,
+                "fieldname": ["like", "custom_column_break_%"],
+            },
+            pluck="name",
+        ):
+            frappe.delete_doc(
+                "Custom Field", name, force=True, ignore_permissions=True
+            )
+
+        for name in frappe.get_all(
+            "Property Setter",
+            filters={
+                "doc_type": doctype,
+                "field_name": ["like", "custom_column_break_%"],
+            },
+            pluck="name",
+        ):
+            frappe.delete_doc(
+                "Property Setter", name, force=True, ignore_permissions=True
+            )
+
+    for doctype in DOCTYPE_UX_DOCTYPES:
+        frappe.clear_cache(doctype=doctype)
 
 
 def backfill_public_urls():
