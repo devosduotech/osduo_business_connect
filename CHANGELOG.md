@@ -2,6 +2,43 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.2.8 - 8 November 2026
+
+### Features (v1.2.8)
+
+#### Fullscreen gallery lightbox
+- Product and service galleries are now **clickable and zoomable**. Clicking a
+  thumbnail opens a fullscreen lightbox instead of a new tab.
+- The lightbox supports **previous / next navigation**, captions and an image
+  counter, **zoom in / out / reset**, **drag to pan** when zoomed,
+  **pinch-to-zoom** on touch devices, **double-click to toggle zoom**,
+  **swipe** left/right to navigate, and **keyboard** controls
+  (`Esc`, `←`, `→`, `+`, `-`, `0`).
+- Gallery thumbnails are accessible buttons with a `zoom-in` cursor, a `+`
+  zoom badge, focus outlines and descriptive `aria-label`s. Body scroll is
+  locked while the lightbox is open and focus is restored on close.
+- Implemented as a dependency-free partial
+  (`templates/pages/product/parts/gallery_lightbox.html`) — no external JS
+  library and no build step.
+
+#### Full gallery above Features
+- The gallery section now renders **every gallery image** (previously only the
+  first three were shown in some templates) and displays the photo count in
+  the section title, e.g. **"Gallery · 5 photos"**.
+- Gallery section moved to sit **after Description / Buy Here and before
+  Features** on both product and service detail pages, so visitors see visuals
+  before the feature list.
+- The hero keeps its 3-image preview and gains a **"View all N photos"**
+  button that opens the full gallery.
+- The full gallery section now renders for **all templates**, including
+  Professional.
+
+### Upgrade
+`bench --site <site> clear-cache && bench --site <site> build`.
+No data or schema changes.
+
+---
+
 ## v1.2.7 - 6 November 2026
 
 ### Features (v1.2.7)
