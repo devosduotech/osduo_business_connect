@@ -34,6 +34,11 @@
     {# ===== BUY HERE (purchase link) ===== #}
     {% include "osduo_business_connect/templates/pages/parts/buy_cta.html" %}
 
+    {# ===== GALLERY ===== #}
+    {% set gallery_images = doc.gallery %}
+    {% set title = "Gallery" %}
+    {% include "osduo_business_connect/templates/pages/product/parts/gallery.html" ignore missing %}
+
     {# ===== FEATURES ===== #}
     {% if doc.features %}
     <div class="bc-section">
@@ -91,13 +96,6 @@
             </div>
         </div>
     </div>
-    {% endif %}
-
-    {# ===== GALLERY ===== #}
-    {% if template_type != "Professional" %}
-    {% set gallery_images = doc.gallery %}
-    {% set title = "Gallery" %}
-    {% include "osduo_business_connect/templates/pages/product/parts/gallery.html" ignore missing %}
     {% endif %}
 
     {# ===== BUSINESS INFO ===== #}
@@ -170,6 +168,7 @@
 
     <div class="bc-footer"><p>Powered by <a href="https://connect.osduotech.com" target="_blank" rel="noopener">OSDuo Business Connect</a></p></div>
 </div>
+{% include "osduo_business_connect/templates/pages/product/parts/gallery_lightbox.html" ignore missing %}
 {% include "osduo_business_connect/templates/pages/parts/bc_events.html" %}
 
 <div class="bc-action-bar" style="display:none;">

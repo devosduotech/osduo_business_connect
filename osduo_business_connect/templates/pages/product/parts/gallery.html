@@ -1,32 +1,32 @@
 {# Reusable gallery partial — expects gallery_images list #}
-{% set sorted_gallery = gallery_images | sort(attribute='sort_order') if gallery_images else [] %}
+{% set sorted_gallery = (gallery_images | selectattr('image') | sort(attribute='sort_order')) if gallery_images else [] %}
 {% if sorted_gallery %}
 <div class="bc-section">
     <div class="bc-container">
-        <h2 class="bc-section-title">{{ title or "Gallery" }}</h2>
+        <h2 class="bc-section-title">{{ title or "Gallery" }}{% if sorted_gallery|length > 1 %}<span class="bc-gallery-count">{{ sorted_gallery|length }} photos</span>{% endif %}</h2>
         <div class="bc-gallery-grid">
             {% for image in sorted_gallery %}
-            <div class="bc-gallery-item">
-                <img
-                    class="bc-gallery-img"
-                    src="{{ image.image }}"
-                    alt="{{ image.alt_text or image.caption or '' }}"
-                    loading="lazy"
+            <figure class="bc-gallery-item">
+                <button
+                    type="button"
+                    class="bc-gallery-thumb"
                     data-full-url="{{ image.image }}"
+                    data-caption="{{ image.caption or image.alt_text or '' }}"
+                    aria-label="View {{ image.caption or image.alt_text or 'image' }} fullscreen"
                 >
+                    <img
+                        class="bc-gallery-img"
+                        src="{{ image.image }}"
+                        alt="{{ image.alt_text or image.caption or '' }}"
+                        loading="lazy"
+                    >
+                </button>
                 {% if image.caption %}
-                <p class="bc-gallery-caption">{{ image.caption }}</p>
+                <figcaption class="bc-gallery-caption">{{ image.caption }}</figcaption>
                 {% endif %}
-            </div>
+            </figure>
             {% endfor %}
         </div>
     </div>
 </div>
-<script>
-document.querySelectorAll('.bc-gallery-img[data-full-url]').forEach(function(img) {
-    img.addEventListener('click', function() {
-        window.open(this.getAttribute('data-full-url'), '_blank');
-    });
-});
-</script>
 {% endif %}
