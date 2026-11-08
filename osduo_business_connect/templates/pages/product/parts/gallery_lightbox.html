@@ -70,8 +70,10 @@
         node.classList.add('bc-zoomable');
         node.setAttribute('role', 'button');
         node.setAttribute('tabindex', '0');
-        var label = node.getAttribute('alt') || '';
-        node.setAttribute('aria-label', label ? 'View image fullscreen: ' + label : 'View image fullscreen');
+        if (!node.getAttribute('aria-label')) {
+            var label = node.getAttribute('alt') || '';
+            node.setAttribute('aria-label', label ? 'View image fullscreen: ' + label : 'View image fullscreen');
+        }
         node.addEventListener('click', function (event) {
             event.preventDefault();
             open(index);
@@ -100,20 +102,14 @@
     }
 
     function collectImages() {
-        var nodes = document.querySelectorAll('.bc-gallery-thumb[data-full-url], .bc-prof-gallery-img, .bc-cover-img');
+        var nodes = document.querySelectorAll('.bc-gallery-thumb[data-full-url]');
         Array.prototype.forEach.call(nodes, function (node) {
-            var url = node.getAttribute('data-full-url') || node.getAttribute('src');
+            var url = node.getAttribute('data-full-url');
             if (!url) { return; }
-            var alt = node.getAttribute('alt') || '';
-            if (!alt) {
-                var inner = node.querySelector('img');
-                if (inner) { alt = inner.getAttribute('alt') || ''; }
-            }
+            var alt = '';
+            var inner = node.querySelector('img');
+            if (inner) { alt = inner.getAttribute('alt') || ''; }
             var caption = captionFor(node);
-            if (node.tagName === 'IMG') {
-                var wrap = node.closest ? node.closest('.bc-prof-gallery-item') : null;
-                if (wrap) { wrap.classList.add('bc-gallery-thumb'); }
-            }
             addItem(url, caption, alt, node);
         });
     }
@@ -333,20 +329,7 @@
         if (scale > 1) { resetZoom(); } else { setScale(2); }
     });
 
-    function addHeroViewAll() {
-        var hero = document.querySelector('.bc-prof-gallery');
-        if (!hero || items.length < 2) { return; }
-        if (hero.querySelector('.bc-gallery-view-all')) { return; }
-        var btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'bc-gallery-view-all';
-        btn.textContent = 'View all ' + items.length + ' photos';
-        btn.addEventListener('click', function () { open(0); });
-        hero.appendChild(btn);
-    }
-
     collectImages();
-    addHeroViewAll();
 })();
 </script>
 {% endraw %}

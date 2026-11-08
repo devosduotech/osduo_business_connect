@@ -3,18 +3,12 @@
     <div class="bc-detail bc-prof-hero-grid">
         {% if doc.product_name %}
         <div class="bc-prof-gallery">
-            {% set gallery_rows = doc.gallery | sort(attribute='sort_order') if doc.gallery else [] %}
             {% if doc.image %}
             <div class="bc-prof-gallery-item">
                 <img src="{{ doc.image }}" alt="{{ doc.product_name }}" class="bc-prof-gallery-img">
             </div>
             {% endif %}
-            {% for image in gallery_rows[:3] %}
-            <div class="bc-prof-gallery-item">
-                <img src="{{ image.image }}" alt="{{ image.alt_text or image.caption or doc.product_name }}" class="bc-prof-gallery-img" loading="lazy">
-            </div>
-            {% endfor %}
-            {% if not doc.image and not gallery_rows %}
+            {% if not doc.image %}
             <div class="bc-prof-gallery-item">
                 <span class="bc-prof-gallery-placeholder" aria-hidden="true">&#128230;</span>
             </div>
