@@ -147,7 +147,7 @@ earlier still resolve via the retained subdomain.
 cd ~/frappe-bench/apps/osduo_business_connect
 git fetch && git pull origin main        # release branch; or develop on staging/VMs
 
-# migrate is REQUIRED whenever DocType JSON changed (v1.2.0 included such changes)
+# migrate is REQUIRED whenever DocType JSON changed (v1.2.0 and v1.2.8 included such changes; v1.2.8 also removes legacy Customize Form records for the BC doctypes)
 bench --site all migrate
 bench --site all clear-cache
 bench build --app osduo_business_connect   # only if assets/JS changed & not dev mode
@@ -155,6 +155,13 @@ bench restart
 ```
 
 Notes:
+- v1.2.8 ships the standard **desk form layouts** (field order, hidden
+  `naming_series`, About Us label on Business, merged **Enquiry and Purchase
+  Link** section) directly in the DocType JSON. `bench migrate` applies the
+  layout and removes any legacy Customize Form records — legacy **Custom
+  Fields / Property Setters** for these seven doctypes are deleted on every
+  migrate, so there is **no manual Customize Form work**. If you made your own
+  layout tweaks on a site, migrate will overwrite them with the standard form.
 - v1.2.2 creates and selects the bundled **Website Theme** `OSDuo Business
   Connect` on install/migrate, alongside the favicon/app logo/app name.
 - v1.2.1 bundles the logo/favicon/login panel in the app and applies them on

@@ -1,6 +1,6 @@
 # OSDuo Business Connect — User Manual
 
-**Version:** 1.2.6  
+**Version:** 1.2.8  
 **Last Updated:** November 2026
 
 ---
@@ -58,6 +58,16 @@ Customer scans QR code or clicks link
 - Modern web browser (Chrome, Firefox, Safari, Edge)
 - Mobile device for card sharing (QR/NFC)
 
+### 1.4 Importing Existing Data
+
+Business Connect now supports the standard **Data Import** tool. You can bulk
+load Businesses, Business Members, Digital Cards, Product Categories and
+Showcase Products / Services from CSV or XLSX:
+
+1. Go to `/app/data-import`
+2. Pick the doctype, upload your file, match the columns and start the import
+3. Naming series is pre-filled automatically, so you never need to touch it
+
 ---
 
 ## 2. Setting Up Your Business
@@ -74,8 +84,9 @@ Customer scans QR code or clicks link
 |-------|-------------|----------|
 | Business Name | Your company name | Yes |
 | Slug | URL-friendly identifier (lowercase, hyphens only) | Yes |
+| Industry | What the business does (free text, one per line of business) | No |
 | Business Owner | The user who owns this business | Yes |
-| Description | About your business | No |
+| About Us | About your business (shown on the public page) | No |
 | Logo | Company logo image | No |
 | Cover Image | Banner image for public page | No |
 
@@ -359,8 +370,11 @@ Add multiple images to showcase your product:
 | Sort Order | Display order (lower numbers first, Featured items above; see [Featured & Sort Order](#48-featured--sort-order--how-it-works)) |
 
 **Gallery features:**
+- Gallery thumbnails open a **fullscreen lightbox** — previous / next buttons,
+  an image counter, captions, **zoom in / out / reset**, drag to pan when
+  zoomed, pinch-to-zoom on phones, double-click to toggle zoom, swipe and
+  keyboard shortcuts (`Esc`, `←`, `→`, `+`, `-`, `0`)
 - 4-column grid on desktop, 2-column on mobile
-- Click to open fullscreen
 - Lazy loading for fast page speed
 - Sorted by sort order
 
@@ -378,8 +392,9 @@ Add multiple images to showcase your product:
 
 Sell a product from your own shopping portal:
 
-1. On the Product (or Service) record, tick **Show Buy Here Button** under
-   **Purchase Link**.
+1. On the Product (or Service) record, tick **Show Buy Here Button** under the
+   **Enquiry and Purchase Link** section (one combined section covering the
+   enquiry form toggle and the Buy Here button).
 2. If your whole business sells in one place (Flipkart / Amazon / hosted
    store), set the **Buying Portal Link** once on the **Business** record —
    that is the default destination for every enabled item.
