@@ -28,8 +28,8 @@ All notable changes to this project will be documented in this file.
 - Gallery section moved to sit **after Description / Buy Here and before
   Features** on both product and service detail pages, so visitors see visuals
   before the feature list.
-- The hero keeps its 3-image preview and gains a **"View all N photos"**
-  button that opens the full gallery.
+- The hero now shows only the single cover image; gallery images are no longer
+  rendered above the description and appear only in the gallery section.
 - The full gallery section now renders for **all templates**, including
   Professional.
 

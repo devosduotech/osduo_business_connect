@@ -24,8 +24,8 @@ image, and appear above the Features section.
   title shows the count, e.g. **"Gallery · 5 photos"**.
 - The gallery sits **after Description / Buy Here and before Features** on
   both product and service detail pages.
-- The hero keeps its 3-image preview and adds a **"View all N photos"**
-  button that opens the full gallery.
+- The hero now shows only the single cover image — gallery images no longer
+  appear above the description and are shown only in the gallery section.
 - The gallery section renders for **all templates**, including Professional.
 
 ## Upgrade
