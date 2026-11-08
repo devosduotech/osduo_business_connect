@@ -27,6 +27,10 @@ image, and appear above the Features section.
 - The hero now shows only the single cover image — gallery images no longer
   appear above the description and are shown only in the gallery section.
 - The gallery section renders for **all templates**, including Professional.
+- The gallery and Buy Here button now line up with the other sections and use
+  the standard content width / button size.
+- Fixed horizontal scrolling on mobile caused by the full-width purchase
+  button overflowing its container.
 
 ## Upgrade
 
