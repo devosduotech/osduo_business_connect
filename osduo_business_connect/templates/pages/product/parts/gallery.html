@@ -2,7 +2,7 @@
 {% set sorted_gallery = (gallery_images | selectattr('image') | sort(attribute='sort_order')) if gallery_images else [] %}
 {% if sorted_gallery %}
 <div class="bc-section">
-    <div class="bc-container">
+    <div class="bc-reading">
         <h2 class="bc-section-title">{{ title or "Gallery" }}{% if sorted_gallery|length > 1 %}<span class="bc-gallery-count">{{ sorted_gallery|length }} photos</span>{% endif %}</h2>
         <div class="bc-gallery-grid">
             {% for image in sorted_gallery %}

@@ -32,6 +32,11 @@ All notable changes to this project will be documented in this file.
   rendered above the description and appear only in the gallery section.
 - The full gallery section now renders for **all templates**, including
   Professional.
+- The gallery section now uses the same content width as the other sections,
+  and the Buy Here button uses the standard button size, so both line up with
+  Description / Features.
+- Fixed horizontal scrolling on mobile caused by the full-width purchase
+  button overflowing its container.
 
 ### Upgrade
 `bench --site <site> clear-cache && bench --site <site> build`.

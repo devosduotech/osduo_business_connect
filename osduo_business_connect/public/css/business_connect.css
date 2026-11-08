@@ -1188,23 +1188,7 @@
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
 }
 
-/* Buy Here — purchase link CTA */
-.bc-buy-section {
-    padding-top: 0; /* the section above already leaves bottom spacing */
-}
-
-.bc-buy-section .bc-buy-btn {
-    display: inline-block;
-    padding: 0.7rem 1.5rem;
-    font-size: 0.95rem;
-}
-
-@media (max-width: 520px) {
-    .bc-buy-section .bc-buy-btn {
-        width: 100%;
-        text-align: center;
-    }
-}
+/* Buy Here — purchase link CTA uses the standard section spacing and button size */
 
 /* ======================== */
 /* SECTION ALT (fix)        */
@@ -2185,6 +2169,7 @@
 /* BUTTONS                  */
 /* ======================== */
 .bc-btn {
+    box-sizing: border-box;
     display: inline-block;
     padding: 0.7rem 1.4rem;
     border-radius: var(--bc-btn-radius);
