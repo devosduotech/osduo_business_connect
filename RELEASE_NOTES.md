@@ -9,8 +9,8 @@ image, and appear above the Features section.
 ## Changes (v1.2.8)
 
 ### Click to enlarge — fullscreen gallery lightbox
-- Click any gallery thumbnail (or hero image) to open the image fullscreen
-  instead of opening a new tab.
+- Click any gallery thumbnail to open the image fullscreen instead of opening
+  a new tab.
 - **Previous / next** buttons, image counter and captions.
 - **Zoom in / out / reset**, **drag to pan** when zoomed, **pinch-to-zoom** on
   phones, **double-click** to toggle zoom, **swipe** to navigate, and
