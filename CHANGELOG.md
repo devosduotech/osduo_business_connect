@@ -51,6 +51,8 @@ All notable changes to this project will be documented in this file.
 - `naming_series` is hidden on all seven forms, and import is enabled for
   Business, Business Member, Digital Card, Product Category, Showcase Product
   and Showcase Service.
+- Digital Card hides **Sort Order** on the form — it still exists and drives
+  backend card ordering, it is just set programmatically.
 - `after_migrate` now removes the redundant site-level `Custom Field` /
   `Property Setter` customizations so the standard DocType JSON remains the
   single source of truth.

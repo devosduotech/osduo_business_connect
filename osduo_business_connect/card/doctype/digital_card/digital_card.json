@@ -149,7 +149,8 @@
     {
       "fieldname": "sort_order",
       "fieldtype": "Int",
-      "label": "Sort Order"
+      "label": "Sort Order",
+      "hidden": 1
     },
     {
       "fieldname": "column_break_settings",

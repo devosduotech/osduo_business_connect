@@ -47,6 +47,8 @@ image, and appear above the Features section.
 - `naming_series` is hidden on all seven forms, and import is enabled for
   Business, Business Member, Digital Card, Product Category, Showcase Product
   and Showcase Service.
+- Digital Card hides **Sort Order** on the form — it still exists and drives
+  backend card ordering, it is just set programmatically.
 - Migration automatically removes the old site-level Customize Form records
   (Custom Fields / Property Setters) that would otherwise override the standard
   layout.

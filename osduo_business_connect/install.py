@@ -419,6 +419,21 @@ def remove_doctype_ux_customizations():
                 "Property Setter", name, force=True, ignore_permissions=True
             )
 
+        # Digital Card's sort_order drives backend card ordering, so the field
+        # is hidden on the standard form.
+        for name in frappe.get_all(
+            "Property Setter",
+            filters={
+                "doc_type": doctype,
+                "field_name": "sort_order",
+                "property": "hidden",
+            },
+            pluck="name",
+        ):
+            frappe.delete_doc(
+                "Property Setter", name, force=True, ignore_permissions=True
+            )
+
     # Showcase Product / Service previously used auto-generated
     # `custom_column_break_*` Custom Fields. They are replaced by named
     # `column_break_*` fields in the standard DocType JSON.
