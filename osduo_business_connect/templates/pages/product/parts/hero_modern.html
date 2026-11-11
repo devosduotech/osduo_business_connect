@@ -17,11 +17,11 @@
         </div>
         {% elif doc.price_display_mode == "Start From" and doc.price %}
         <div style="font-size:1.4rem;font-weight:700;margin:0.75rem 0;">
-            From {% if doc.currency %}{{ doc.currency }} {% endif %}{{ doc.price }}
+            From {{ doc.price | format_money(doc.currency) }}
         </div>
         {% elif doc.price_display_mode == "Fixed" and doc.price %}
         <div style="font-size:1.4rem;font-weight:700;margin:0.75rem 0;">
-            {% if doc.currency %}{{ doc.currency }} {% endif %}{{ doc.price }}
+            {{ doc.price | format_money(doc.currency) }}
         </div>
         {% endif %}
 

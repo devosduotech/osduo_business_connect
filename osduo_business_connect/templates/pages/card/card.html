@@ -50,9 +50,9 @@
                     {% if product.price_display_mode == "Contact" %}
                     <span class="bc-card-item-price">On request</span>
                     {% elif product.price_display_mode == "Start From" and product.price %}
-                    <span class="bc-card-item-price">From {{ product.currency }} {{ product.price }}</span>
+                    <span class="bc-card-item-price">From {{ product.price | format_money(product.currency) }}</span>
                     {% elif product.price_display_mode == "Fixed" and product.price %}
-                    <span class="bc-card-item-price">{{ product.currency }} {{ product.price }}</span>
+                    <span class="bc-card-item-price">{{ product.price | format_money(product.currency) }}</span>
                     {% endif %}
                     {% if product.featured %}
                     <span class="bc-featured-chip" title="Marked as featured by the business">&#9733;</span>
@@ -84,9 +84,9 @@
                     {% if service.price_display_mode == "Contact" %}
                     <span class="bc-card-item-price">On request</span>
                     {% elif service.price_display_mode == "Start From" and service.price %}
-                    <span class="bc-card-item-price">From {{ service.currency }} {{ service.price }}</span>
+                    <span class="bc-card-item-price">From {{ service.price | format_money(service.currency) }}</span>
                     {% elif service.price_display_mode == "Fixed" and service.price %}
-                    <span class="bc-card-item-price">{{ service.currency }} {{ service.price }}</span>
+                    <span class="bc-card-item-price">{{ service.price | format_money(service.currency) }}</span>
                     {% endif %}
                     {% if service.featured %}
                     <span class="bc-featured-chip" title="Marked as featured by the business">&#9733;</span>

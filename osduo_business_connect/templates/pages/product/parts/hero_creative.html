@@ -37,9 +37,9 @@
             {% if doc.price_display_mode == "Contact" %}
             <p class="bc-prof-price">Enquire for pricing</p>
             {% elif doc.price_display_mode == "Start From" and doc.price %}
-            <p class="bc-prof-price">From {% if doc.currency %}{{ doc.currency }} {% endif %}{{ doc.price }}</p>
+            <p class="bc-prof-price">From {{ doc.price | format_money(doc.currency) }}</p>
             {% elif doc.price_display_mode == "Fixed" and doc.price %}
-            <p class="bc-prof-price">{% if doc.currency %}{{ doc.currency }} {% endif %}{{ doc.price }}</p>
+            <p class="bc-prof-price">{{ doc.price | format_money(doc.currency) }}</p>
             {% endif %}
 
             <div class="bc-prof-cta">
