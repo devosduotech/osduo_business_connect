@@ -252,6 +252,7 @@ after_migrate = "osduo_business_connect.install.after_migrate"
 jinja = {
     "filters": [
         "osduo_business_connect.utils.website",
+        "osduo_business_connect.utils.money",
     ],
 }
 
