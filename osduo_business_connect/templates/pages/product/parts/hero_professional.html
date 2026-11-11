@@ -34,12 +34,12 @@
             <p class="bc-prof-tagline">{{ doc.short_description }}</p>
             {% endif %}
 
-            {% if doc.product_name %}
-                {% if doc.price_display_mode == "Contact" %}
-                <p class="bc-prof-price">Enquire for pricing</p>
-                {% elif doc.price_display_mode != "Hidden" and doc.price %}
-                <p class="bc-prof-price">{% if doc.currency %}{{ doc.currency }} {% endif %}{{ doc.price }}</p>
-                {% endif %}
+            {% if doc.price_display_mode == "Contact" %}
+            <p class="bc-prof-price">Enquire for pricing</p>
+            {% elif doc.price_display_mode == "Start From" and doc.price %}
+            <p class="bc-prof-price">From {% if doc.currency %}{{ doc.currency }} {% endif %}{{ doc.price }}</p>
+            {% elif doc.price_display_mode == "Fixed" and doc.price %}
+            <p class="bc-prof-price">{% if doc.currency %}{{ doc.currency }} {% endif %}{{ doc.price }}</p>
             {% endif %}
 
             <div class="bc-prof-cta">

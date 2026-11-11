@@ -167,6 +167,31 @@ def _is_default_theme_slot(value):
     return (value or "").strip() in ("", "Standard")
 
 
+def _default_robots_txt():
+    """Return the bundled ``robots.txt`` body, including the sitemap pointer.
+
+    Applied only when ``Website Settings.robots_txt`` is empty, so an
+    administrator's custom robots file is never overwritten.
+    """
+    from osduo_business_connect.utils.urls import get_canonical_base_url
+
+    return "\n".join(
+        [
+            "User-agent: *",
+            "Disallow: /app",
+            "Disallow: /api",
+            "Disallow: /login",
+            "Disallow: /printview",
+            "Disallow: /analytics",
+            "Allow: /assets",
+            "Allow: /files",
+            "",
+            f"Sitemap: {get_canonical_base_url()}/sitemap.xml",
+            "",
+        ]
+    )
+
+
 def _get_or_create_color(name, value):
     """Return a ``Color`` record name, creating it once if needed.
 
@@ -259,6 +284,13 @@ def apply_branding_settings():
         if _is_generic_name(website_settings.app_name):
             changed["website_settings"] |= _set_if_changed(
                 website_settings, "app_name", OSDUO_BRANDING["app_name"]
+            )
+        # Non-destructive: only fill robots.txt when the site has not set one.
+        # This is what publishes the sitemap URL to crawlers (we never push to
+        # Google; they discover /sitemap.xml here and recrawl on their own).
+        if not (website_settings.robots_txt or "").strip():
+            changed["website_settings"] |= _set_if_changed(
+                website_settings, "robots_txt", _default_robots_txt()
             )
     except Exception:
         frappe.log_error(

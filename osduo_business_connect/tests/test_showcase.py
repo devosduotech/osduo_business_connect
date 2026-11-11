@@ -45,8 +45,15 @@ class TestShowcaseProductDocType(unittest.TestCase):
     def test_price_display_mode_options(self):
         price_field = next(f for f in self.data["fields"] if f["fieldname"] == "price_display_mode")
         options = price_field["options"]
-        for mode in ["Hidden", "Contact", "Fixed"]:
+        for mode in ["Hidden", "Contact", "Fixed", "Start From"]:
             self.assertIn(mode, options)
+
+    def test_price_fields_shown_for_fixed_and_start_from(self):
+        fields = {f["fieldname"]: f for f in self.data["fields"]}
+        for name in ("currency", "price"):
+            depends = fields[name].get("depends_on", "")
+            self.assertIn("Fixed", depends)
+            self.assertIn("Start From", depends)
 
     def test_has_permissions(self):
         roles = [p["role"] for p in self.data["permissions"]]
@@ -99,6 +106,21 @@ class TestShowcaseServiceDocType(unittest.TestCase):
         options = status_field["options"]
         for st in ["Draft", "Published", "Archived"]:
             self.assertIn(st, options)
+
+    def test_price_display_mode_options(self):
+        price_field = next(f for f in self.data["fields"] if f["fieldname"] == "price_display_mode")
+        options = price_field["options"]
+        for mode in ["Hidden", "Contact", "Fixed", "Start From"]:
+            self.assertIn(mode, options)
+
+    def test_pricing_fields_present(self):
+        fields = {f["fieldname"]: f for f in self.data["fields"]}
+        for name in ("price_display_mode", "currency", "price"):
+            self.assertIn(name, fields)
+        for name in ("currency", "price"):
+            depends = fields[name].get("depends_on", "")
+            self.assertIn("Fixed", depends)
+            self.assertIn("Start From", depends)
 
     def test_has_permissions(self):
         roles = [p["role"] for p in self.data["permissions"]]

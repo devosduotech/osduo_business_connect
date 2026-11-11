@@ -169,8 +169,8 @@ def serialize_product(product_name):
         "status": product.status,
     }
 
-    # Include price only if Fixed
-    if product.price_display_mode == "Fixed":
+    # Include price for Fixed or Start From (Contact/Hidden expose no amount)
+    if product.price_display_mode in ("Fixed", "Start From"):
         data["price"] = product.price
         data["currency"] = product.currency
 
@@ -222,10 +222,16 @@ def serialize_service(service_name):
         "short_description": service.short_description,
         "description": service.description,
         "image": service.image,
+        "price_display_mode": service.price_display_mode,
         "enquiry_enabled": service.enquiry_enabled,
         "featured": service.featured,
         "status": service.status,
     }
+
+    # Include price for Fixed or Start From (Contact/Hidden expose no amount)
+    if service.price_display_mode in ("Fixed", "Start From"):
+        data["price"] = service.price
+        data["currency"] = service.currency
 
     # Include features
     if hasattr(service, "features") and service.features:
