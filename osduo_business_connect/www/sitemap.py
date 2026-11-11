@@ -11,12 +11,12 @@ response content type is taken from the request path (``text/xml``).
 manages its own Redis cache and invalidates it on publication changes.
 """
 
-from osduo_business_connect.seo.sitemap import get_cached_entries
+from osduo_business_connect.seo.sitemap import get_render_entries
 
 no_cache = 1
 base_template_path = "www/sitemap.xml"
 
 
 def get_context(context):
-    context.links = get_cached_entries("index")
+    context.links = get_render_entries("index")
     return context

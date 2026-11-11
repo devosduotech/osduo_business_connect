@@ -168,28 +168,17 @@ def _is_default_theme_slot(value):
 
 
 def _default_robots_txt():
-    """Return the bundled ``robots.txt`` body, including the sitemap pointer.
+    """Return the bundled ``robots.txt`` crawl rules.
 
     Applied only when ``Website Settings.robots_txt`` is empty, so an
-    administrator's custom robots file is never overwritten.
+    administrator's custom robots file is never overwritten. The ``Sitemap:``
+    line is **not** stored here: ``/robots.txt`` is rendered dynamically by
+    ``www/robots.py`` and appends the correct sitemap URL for whichever host
+    served the request, so a frozen or wrong-host declaration can never leak.
     """
-    from osduo_business_connect.utils.urls import get_canonical_base_url
+    from osduo_business_connect.seo.robots import DEFAULT_ROBOTS_RULES
 
-    return "\n".join(
-        [
-            "User-agent: *",
-            "Disallow: /app",
-            "Disallow: /api",
-            "Disallow: /login",
-            "Disallow: /printview",
-            "Disallow: /analytics",
-            "Allow: /assets",
-            "Allow: /files",
-            "",
-            f"Sitemap: {get_canonical_base_url()}/sitemap.xml",
-            "",
-        ]
-    )
+    return "\n".join(DEFAULT_ROBOTS_RULES) + "\n"
 
 
 def _get_or_create_color(name, value):
@@ -286,8 +275,10 @@ def apply_branding_settings():
                 website_settings, "app_name", OSDUO_BRANDING["app_name"]
             )
         # Non-destructive: only fill robots.txt when the site has not set one.
-        # This is what publishes the sitemap URL to crawlers (we never push to
-        # Google; they discover /sitemap.xml here and recrawl on their own).
+        # This seeds the crawl rules only — the Sitemap line itself is added per
+        # request by www/robots.py (see seo/robots.py), so no host-specific URL
+        # is ever stored here. We do not push to Google; crawlers discover the
+        # sitemap through robots.txt and recrawl on their own.
         if not (website_settings.robots_txt or "").strip():
             changed["website_settings"] |= _set_if_changed(
                 website_settings, "robots_txt", _default_robots_txt()

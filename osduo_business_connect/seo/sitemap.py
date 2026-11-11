@@ -29,8 +29,15 @@ Refresh strategy
 
 Nothing is ever written to disk, so there is no stale file to replace and
 no "publish then wait three days" window. Search engines discover
-``/sitemap.xml`` through ``robots.txt`` (see ``branding.py``) and recrawl
-it on their own schedule — the app never pushes to Google.
+``/sitemap.xml`` through ``robots.txt`` (see ``seo/robots.py`` and
+``www/robots.py``) and recrawl it on their own schedule — the app never pushes
+to Google.
+
+The cache stores relative paths only; the absolute origin is added per request
+by :func:`get_render_entries` using
+:func:`osduo_business_connect.utils.urls.get_sitemap_base_url`. That keeps a
+multi-tenant subdomain site correct even when its ``host_name`` is not yet
+configured, and means the scheduled rebuild can never bake the wrong host.
 
 Run manually with::
 
@@ -42,7 +49,7 @@ from __future__ import annotations
 import frappe
 from frappe.utils import getdate
 
-from osduo_business_connect.utils.urls import get_canonical_base_url
+from osduo_business_connect.utils.urls import get_sitemap_base_url
 
 # Cache keys and TTL. A short TTL is a safety net; event based invalidation
 # is what keeps the sitemaps current between scheduled runs.
@@ -79,9 +86,23 @@ def _lastmod(value):
     return getdate(value).strftime("%Y-%m-%d")
 
 
-def _loc(*parts):
-    base = get_canonical_base_url()
-    return "/".join([base, *[str(p).strip("/") for p in parts]])
+def _path(*parts):
+    """Relative URL path for an entry, without the origin.
+
+    Cached entries stay origin-independent so a scheduled rebuild can never
+    bake the wrong host; the origin is added at render time per request by
+    :func:`get_render_entries`.
+    """
+    return "/".join(str(p).strip("/") for p in parts)
+
+
+def _absolute(entries):
+    """Return ``entries`` with an absolute ``loc`` for the current host."""
+    base = get_sitemap_base_url()
+    return [
+        {"loc": f"{base}/{e['path']}", "lastmod": e.get("lastmod")}
+        for e in entries
+    ]
 
 
 def get_business_entries():
@@ -98,7 +119,7 @@ def get_business_entries():
         """,
         as_dict=True,
     )
-    return [{"loc": _loc("b", r.slug), "lastmod": _lastmod(r.modified)} for r in rows]
+    return [{"path": _path("b", r.slug), "lastmod": _lastmod(r.modified)} for r in rows]
 
 
 def _get_child_entries(doctype, segment):
@@ -121,7 +142,7 @@ def _get_child_entries(doctype, segment):
     )
     return [
         {
-            "loc": _loc("b", r.business_slug, segment, r.slug),
+            "path": _path("b", r.business_slug, segment, r.slug),
             "lastmod": _lastmod(r.modified),
         }
         for r in rows
@@ -154,7 +175,7 @@ def get_card_entries():
         """,
         as_dict=True,
     )
-    return [{"loc": _loc("c", r.slug), "lastmod": _lastmod(r.modified)} for r in rows]
+    return [{"path": _path("c", r.slug), "lastmod": _lastmod(r.modified)} for r in rows]
 
 
 def get_index_entries():
@@ -163,7 +184,7 @@ def get_index_entries():
     for kind in KINDS:
         entries = get_cached_entries(kind)
         lastmod = max((e["lastmod"] for e in entries if e.get("lastmod")), default=None)
-        links.append({"loc": _loc(SITEMAP_FILES[kind]), "lastmod": lastmod})
+        links.append({"path": SITEMAP_FILES[kind], "lastmod": lastmod})
     return links
 
 
@@ -191,6 +212,17 @@ def get_cached_entries(kind):
     entries = get_entries(kind)
     frappe.cache.set_value(_cache_key(kind), entries, expires_in_sec=CACHE_TTL)
     return entries
+
+
+def get_render_entries(kind):
+    """Cached entries for ``kind`` with absolute URLs for the current host.
+
+    Called by the ``www`` sitemap controllers. The cache stores relative paths
+    (see :func:`_path`), so the origin is resolved per request from
+    ``get_sitemap_base_url()`` — the configured ``host_name`` or, failing that,
+    the host the sitemap was requested on.
+    """
+    return _absolute(get_cached_entries(kind))
 
 
 def invalidate_sitemap_cache(doc=None, method=None):
