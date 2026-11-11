@@ -1,6 +1,6 @@
 # Pending To-Do List — OSDuo Business Connect
 
-**Last updated:** 6 November 2026 · **Shipped version:** 1.2.7 (`main`)
+**Last updated:** 11 November 2026 · **Shipped version:** 1.2.9 (`main`)
 
 This is the single working list of everything pending across the project: the
 committed next release, the product backlog, known tech debt and documentation
@@ -51,7 +51,11 @@ Already captured from `business.uat` (Customize Form output, Nov 2026):
 ## 1. Committed next — v1.3.0 (SEO & brand attribution)
 
 Single release, all ten items planned in
-[SEO_PLAN_v1.3.0.md](SEO_PLAN_v1.3.0.md). **Depends on v1.2.6 (`main`).**
+[SEO_PLAN_v1.3.0.md](SEO_PLAN_v1.3.0.md). **Depends on v1.2.9 (`main`).**
+
+> **Shipped early in v1.2.9:** the sitemap workstream (P3) plus the non-destructive
+> `robots.txt` defaults and the sitemap-cache invalidation. P3 below is therefore
+> ticked; the remaining items are unchanged.
 
 > **Recommended priority order** (Nov 2026): the work below is listed in that
 > order. Rationale — Business Connect creates multiple public URLs per business
@@ -67,10 +71,11 @@ Single release, all ten items planned in
 - [ ] **P2 — Structured data (JSON-LD)**: `Organization`, `WebSite`, `Brand`,
   `LocalBusiness` (address, hours, socials), `Product` + `Offer`, `Service`,
   `Person`, `BreadcrumbList` (*search engine understanding*)
-- [ ] **P3 — `/sitemap-profiles.xml`**: every published business/product/
-  service/card, `lastmod`, chunked at scale (45k URLs, 10k/chunk index)
-  (*public page discovery*); incl. non-destructive `robots.txt` defaults wired
-  to the sitemap line
+- [x] **P3 — `/sitemap.xml` index + four per-type sitemaps** (v1.2.9): every
+  published business/product/service/card, `lastmod`, cached + event-invalidated,
+  full rebuild every 3 days; plus non-destructive `robots.txt` defaults wired to
+  the sitemap line (*public page discovery*). Remaining for v1.3.0: chunking once
+  a sitemap approaches 50k URLs (currently a 45k warning threshold)
 - [ ] **P4 — Product & Service SEO fields**: `seo_title` + `seo_description`
   (editable after submit, 50–60 / 150–160 char guidance), plus unique
   title/description fallbacks when blank (*better catalogue visibility*)
@@ -82,7 +87,8 @@ Single release, all ten items planned in
   `https://www.osduotech.com` (*brand visibility*; current footers still link
   `https://connect.osduotech.com` — deliberately unchanged until v1.3.0)
 - [ ] Support item: instant cache invalidation when SEO text changes (no
-  30-minute stale `<meta>`) — ships alongside P1–P3
+  30-minute stale `<meta>`) — ships alongside P1–P2 (the sitemap-cache half
+  shipped in v1.2.9)
 - [ ] Post-shipping checklist for v1.3.0: Lighthouse before/after, Search
   Console validation, `bench build` note in docs
 
@@ -146,7 +152,8 @@ Single release, all ten items planned in
 - [ ] **MARKETING_FEATURES.md** still markets features that are *not* built
   (email signature generator, lead scoring, auto-responses, WhatsApp Business
   API) — rewrite or add a "roadmap" banner linking
-  [MARKETING_FEATURE_INVENTORY.md](MARKETING_FEATURE_INVENTORY.md) §1.10- [ ] Fold any remaining "Portable apps" phrasing into the PWA naming used by
+  [MARKETING_FEATURE_INVENTORY.md](MARKETING_FEATURE_INVENTORY.md) §1.11
+- [ ] Fold any remaining "Portable apps" phrasing into the PWA naming used by
   PWA.md before v1.3.0
 - [x] Document Buy Here (§4.5a) and the Featured / Sort Order mechanics
   (§4.8) in the user manual
@@ -161,13 +168,48 @@ Single release, all ten items planned in
 - [ ] Generate/refresh `docs/images/mockup/*` screens for the new Open button
   and exchange form (referenced placeholders)
 
+## 6. Future enhancement — Campaign Performance on `/analytics`
+
+**Status: deferred; direction agreed, not scheduled.** Campaign-level attribution
+only — no per-recipient tracking for now.
+
+- [ ] **Campaigns table** on `/analytics`, grouped by
+  `Engagement Event.campaign`, with the agreed layout:
+
+  | Campaign | Card views | Contacts captured | Enquiries |
+  | --- | --- | --- | --- |
+  | `wa13` | — | — | — |
+  | `network_nov26` | — | — | — |
+  | `imtex_jan27` | — | — | — |
+
+  Show `—` (not `0`) where a campaign has no data for a column. Reuse the
+  existing business / date-range / exclude-internal filters on the page.
+- [ ] **Aggregate the right sources per column**: card views from
+  `Engagement Event` (`card_view`), contacts captured from `Contact Exchange`,
+  enquiries from `Enquiry` (campaign / source attribution). Document the
+  attribution rule for each column, including how a campaign flows through
+  Contact Exchange → Enquiry → CRM Lead.
+- [ ] **De-duplicate card views before counting**: the card controller and the
+  client JS both log `card_view`, and only the client event carries
+  `utm_campaign`, so a plain `COUNT(*)` is wrong. Choose a rule (e.g. count
+  only campaign-attributed client events, or collapse repeats per
+  session/time window) and cover it with tests.
+- [ ] **Normalise campaign IDs**: `campaign` is free text today. Document a
+  convention (`wa13`, `network_nov26`, `imtex_jan27`) and consider making the
+  field filterable in the Engagement Event list / standard filters.
+- [ ] Optional follow-on (separate decision): per-recipient `/t/<token>`
+  tracking links with a click counter and recipient registry — only if
+  contact-level attribution becomes a requirement.
+
 ---
 
 ### Priorities
 
-1. **Wait for the user's UX review of the remaining doctypes, then implement
-   section 0 (doctype positioning pass) as v1.2.8** — the gate before SEO.
-2. **v1.3.0 SEO items (section 1)** — single pass as decided (P1–P6).
-3. **Documentation cleanups (section 5, first item)** — do not market the
+1. **v1.2.8 (doctype positioning pass) and v1.2.9 (sitemap + "Start From" price
+   mode) have shipped.** Next up: the v1.3.0 SEO items (section 1) — single pass
+   as decided (P1, P2, P4–P6; P3 already shipped in v1.2.9).
+2. **Documentation cleanups (section 5, first item)** — do not market the
    unshipped features; fix before the v1.3.0 marketing push.
-4. Sections 2–4 are backlog — opportunistic.
+3. Sections 2–4 are backlog — opportunistic.
+4. Section 6 (Campaign Performance) is a deferred future enhancement — revisit
+   after v1.3.0, not before.

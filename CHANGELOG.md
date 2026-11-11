@@ -2,6 +2,64 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.2.9 - 11 November 2026
+
+### Features (v1.2.9)
+
+#### Database-driven sitemaps
+- The app now serves its own XML sitemaps so search engines can discover every
+  public Business Connect page. `/sitemap.xml` is a **sitemap index** that points
+  at four per-type sitemaps:
+  - `/sitemap-businesses.xml` — published business profiles (`/b/<slug>`)
+  - `/sitemap-products.xml` — published products (`/b/<business>/products/<slug>`)
+  - `/sitemap-services.xml` — published services (`/b/<business>/services/<slug>`)
+  - `/sitemap-cards.xml` — published digital cards (`/c/<slug>`)
+- URLs are generated **from the live records**, not a hand-maintained list: a
+  business, product, service or card that is published appears automatically;
+  drafts, suspended, archived, unpublished and cancelled records are never
+  included, and a child URL is only listed when its parent business is public.
+- Every URL carries an accurate `<lastmod>` (the record's `modified` date) and
+  uses the site's canonical origin.
+- Results are cached in Redis (6-hour safety TTL). Any publication change
+  (create, update, submit, cancel or delete) clears the cache immediately, so a
+  newly published page shows up on the next crawl instead of waiting for the
+  next scheduled run.
+- A full regeneration runs on the `0 2 */3 * *` cron (02:00 every third day) as
+  a periodic safety net; it can also be run on demand with
+  `bench --site <site> execute osduo_business_connect.seo.sitemap.generate_sitemaps`.
+- Nothing is written to disk — the sitemaps are always generated from the
+  database, so there is no stale file to replace. The app never pushes to
+  Google; search engines find the sitemap through `robots.txt` and recrawl on
+  their own schedule.
+- `robots.txt` now ships a sensible default (disallow `/app`, `/api`, `/login`,
+  `/printview`, `/analytics`; allow `/assets`, `/files`) with a `Sitemap:` line.
+  It is applied **only when `Website Settings.robots_txt` is empty**, so an
+  administrator's custom robots file is never overwritten.
+
+#### "Start From" price display mode
+- Showcase Product and Showcase Service gain a fourth price display mode,
+  **Start From**. Enter the starting **Price** and **Currency** and the profile
+  shows e.g. **"From ₹4,999"** — useful for services and made-to-order products
+  that are priced from a minimum.
+- The mode renders on all six product/service page themes, on the business card
+  listings and in the public API, alongside the existing Hidden / Contact /
+  Fixed modes.
+- **Showcase Service** now has the full pricing block (Price Display Mode +
+  Currency + Price). Previously services had no pricing fields at all, so a
+  service could not show a price.
+
+### Upgrade
+```bash
+bench --site <site> migrate
+bench --site <site> clear-cache
+bench --site <site> clear-website-cache
+```
+`migrate` applies the new DocType fields; `clear-website-cache` clears the
+30-minute HTML page cache so the new pricing renders immediately. The sitemap
+route is new — no Frappe core file is replaced.
+
+---
+
 ## v1.2.8 - 8 November 2026
 
 ### Features (v1.2.8)

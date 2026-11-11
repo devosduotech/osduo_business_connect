@@ -2,7 +2,7 @@
 
 **Status:** Internal Reference — source of truth for catalog, web page and social content
 **Date:** November 2026
-**Based on version:** 1.2.6 (shipped) + 1.3.0 (committed SEO scope, see [SEO Plan v1.3.0](SEO_PLAN_v1.3.0.md) and the single working list in [TODO](TODO.md))
+**Based on version:** 1.2.9 (shipped) + 1.3.0 (committed SEO scope, see [SEO Plan v1.3.0](SEO_PLAN_v1.3.0.md) and the single working list in [TODO](TODO.md))
 
 > This document is deliberately conservative. Every "Shipped" row below exists in the
 > code today. Section 5 lists claims that appear in older marketing material but are
@@ -29,7 +29,7 @@
 | 6 | **Product catalog** | Unlimited products per business; categories, featured flag, manual sort order, per-product enquiry toggle |
 | 7 | **Service catalog** | Same, plus location and brochure attachment |
 | 8 | **Category tree** | Hierarchical `Product Category` (e.g. Electronics → Mobiles) |
-| 9 | **Price display modes** | `Fixed` (show price + currency), `Contact` (hide figure, invite enquiry), `Hidden` — one selector per product |
+| 9 | **Price display modes** | `Fixed` (show price + currency), `Start From` (show a starting price, e.g. "From ₹4,999"), `Contact` (hide figure, invite enquiry), `Hidden` — one selector per product **and per service** |
 | 10 | **Rich product content** | Video URL, PDF brochure, image gallery, feature child-table with icons |
 
 ### 1.3 Shipped — Lead capture & CRM
@@ -94,7 +94,15 @@
 | 50 | **Buy Here (v1.2.7)** | Purchase checkbox on Product/Service with per-item shopping-portal override, business-level default link and editable button label; CTA opens in a new tab, is HTML-escaped, passes URL sanitization and logs a `buy_click` analytics event |
 | 51 | **Featured & ordering (v1.2.7)** | Featured items now genuinely sort first on all listings (business, card, public API) and show a ★ badge on tiles and detail pages; then sort order applies |
 
-### 1.9 Committed next — v1.3.0 (SEO & brand attribution)
+### 1.9 Shipped — Sitemaps & "Start From" pricing (v1.2.9)
+
+| # | Feature | What it actually does |
+|---|---|---|
+| 52 | **Database-driven sitemaps** | `/sitemap.xml` is a **sitemap index** pointing at `/sitemap-businesses.xml`, `/sitemap-products.xml`, `/sitemap-services.xml` and `/sitemap-cards.xml`. Every URL is generated from the **live published records** (never a hand-maintained list), carries an accurate `lastmod`, and uses the canonical origin. Draft / suspended / archived / unpublished / cancelled records are excluded, and a child URL is only listed when its parent business is public. Redis-cached (6 h) with instant invalidation on any publication change, plus a full rebuild every third day. Nothing is written to disk and nothing is pushed to Google — crawlers find it via `robots.txt` |
+| 53 | **robots.txt sitemap pointer** | Non-destructive defaults (disallow `/app`, `/api`, `/login`, `/printview`, `/analytics`; allow `/assets`, `/files`) with a `Sitemap:` line, applied **only when `Website Settings.robots_txt` is empty** so a custom file is never overwritten |
+| 54 | **"Start From" price mode** | A fourth price display mode on Showcase Product **and** Showcase Service: enter a starting price + currency and the profile shows e.g. **"From ₹4,999"**. Services now have the full pricing block (previously none). Renders on all six themes, the card listings and the public API |
+
+### 1.10 Committed next — v1.3.0 (SEO & brand attribution)
 
 > **Prioritization (recommended, Nov 2026):** implementation order is Canonical
 > & OG metadata → JSON-LD → Sitemap → Product/Service SEO fields → Core Web
@@ -108,13 +116,13 @@
 |---|---|---|---|---|
 | 1 | 41 | **Full on-page SEO layer** | Canonical, OG (title/description/url/image/type/site_name/locale), Twitter `summary_large_image`, robots meta, theme-color | Better sharing and indexing |
 | 2 | 44 | **Structured data (JSON-LD)** | `Organization` + `WebSite` + `Brand`, `LocalBusiness` (address, hours, socials), `Product` + `Offer`, `Service`, `Person`, `BreadcrumbList` | Search engine understanding |
-| 3 | 45 | **`/sitemap-profiles.xml`** | Every published business/product/service/card, `lastmod`, chunked at scale (45k URLs, 10k/chunk index) | Public page discovery |
+| 3 | 45 | **`/sitemap.xml` index** *(sitemap shipped in v1.2.9)* | Sitemap index + four per-type sitemaps (businesses / products / services / cards); every published business/product/service/card, `lastmod`, chunking to be added before 50k URLs | Public page discovery |
 | 4 | 42/43 | **SEO fields + smart fallbacks on Product & Service** | `seo_title` + `seo_description` (editable after submit, 50–60 / 150–160 char guidance) with unique fallbacks when blank | Better catalogue visibility |
 | 5 | 48 | **Core Web Vitals** | Self-hosted woff2 theme fonts (1–3 files instead of 12 families), inline SVG icons instead of Font Awesome CDN, image dimensions + lazy loading + LCP priority, re-cut 1200×630 OG image | Performance |
 | 6 | 49 | **OSDuo attribution** | Footer on every page and every tenant domain: "Powered by OSDuo Business Connect — A Product of OSDuo Tech LLP" → `https://www.osduotech.com` | Brand visibility |
 | — | 46/47 | **robots.txt defaults + cache invalidation** | Non-destructive robots defaults; instant page-cache clearing when SEO text changes | Supporting items — ship with priorities 1–3 |
 
-### 1.10 Roadmap — not built yet
+### 1.11 Roadmap — not built yet
 
 > The live, tickable list lives in [TODO.md](TODO.md). The summary below is the
 > marketing-facing view.

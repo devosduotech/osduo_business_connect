@@ -1,17 +1,22 @@
 # SEO Implementation Plan — v1.3.0
 
-**Status:** Approved, ready for implementation
-**Target release:** v1.3.0 (single release, all phases)
+**Status:** Partially shipped — **sitemap layer shipped in v1.2.9**; remaining phases (canonical/OG, JSON-LD, SEO fields, Core Web Vitals, footer) still pending for v1.3.0
+**Target release:** v1.3.0 (single release, all remaining phases)
 **Date:** November 2026
-**Depends on:** v1.2.6 (`main`, this release)
+**Depends on:** v1.2.9 (`main`)
 **Mirrored in:** [TODO](TODO.md) §1 — the single working pending list
 **Recommended order of work:** canonical/OG metadata → JSON-LD → sitemap →
 product/service SEO fields → Core Web Vitals → footer attribution (supporting
 robots + cache invalidation ship with the first three). Rationale: Business
 Connect creates multiple public URLs per business, and a company with several
 products and services can build a meaningful search presence through the
-individual pages. Full table: [Marketing Feature Inventory](MARKETING_FEATURE_INVENTORY.md) §1.9
+individual pages. Full table: [Marketing Feature Inventory](MARKETING_FEATURE_INVENTORY.md) §1.10
 **Related:** [Marketing Feature Inventory](MARKETING_FEATURE_INVENTORY.md) · [SaaS Plan](SAAS_IMPLEMENTATION_PLAN.md) · [PWA](PWA.md)
+
+> **Shipped early (v1.2.9):** the sitemap workstream (§E) plus the non-destructive
+> `robots.txt` defaults (§F) and the sitemap cache invalidation half of §J are
+> already live — see [CHANGELOG](../CHANGELOG.md) v1.2.9. This plan keeps those
+> sections for the record; the remaining v1.3.0 scope is unchanged.
 
 ---
 
@@ -19,7 +24,7 @@ individual pages. Full table: [Marketing Feature Inventory](MARKETING_FEATURE_IN
 
 | # | Decision | Outcome |
 |---|---|---|
-| 1 | Sitemap shape | Separate `/sitemap-profiles.xml` + `robots.txt` pointer. **No override** of Frappe core `/sitemap.xml` |
+| 1 | Sitemap shape | **`/sitemap.xml` index + four per-type sitemaps** (`/sitemap-businesses.xml`, `/sitemap-products.xml`, `/sitemap-services.xml`, `/sitemap-cards.xml`) + `robots.txt` pointer. **Overrides** Frappe core `/sitemap.xml` (which only lists Web-View pages BC does not use). *Reversed from the original `/sitemap-profiles.xml` decision — shipped in v1.2.9* |
 | 2 | SEO fields | Added to **Showcase Product** and **Showcase Service**. **Digital Card inherits from Business** |
 | 3 | Team-member page | Left as-is: no route rule, not in sitemap, templates untouched. Reserved for a future app |
 | 4 | Scope | All phases in one release |
@@ -59,7 +64,8 @@ Title characters are reserved entirely for page content.
    which **do not exist** on those doctypes → dead code, and those pages emit no description.
 4. Nothing app-related is in any sitemap. Frappe's `/sitemap.xml` only lists Web-View doctypes
    and static pages; all BC routes are dynamic and no controller sets `sitemap`. `/robots.txt`
-   is empty → no `Sitemap:` directive.
+   is empty → no `Sitemap:` directive. — ✅ **closed in v1.2.9** (own `/sitemap.xml` index +
+   four sub-sitemaps + `robots.txt` default).
 5. Meta description quality: Business only when the field is filled (no fallback); Card is a
    hardcoded `f"Contact {display_name}"` (~15 chars); Product/Service emit none.
 6. Invalid HTML: unclosed `<div>` in `product.html:26-33`.
@@ -142,17 +148,26 @@ Canonical always from `public_url` / `utils/urls.py`. This also fixes finding 8
   sanitized); soft warning (orange `msgprint`) above 70 / 160 chars — **warn, never block**.
 - No child-table or data migration; `migrate` is sufficient.
 
-### E — `www/sitemap-profiles.xml` + `.py`
+### E — Sitemaps (`/sitemap.xml` index + four per-type sitemaps) ✅ shipped in v1.2.9
 
+- `/sitemap.xml` is a **sitemap index**; it references `/sitemap-businesses.xml`,
+  `/sitemap-products.xml`, `/sitemap-services.xml` and `/sitemap-cards.xml`.
+- Served through Frappe's raw-template mechanism (`www/<name>.py` controller +
+  `www/<name>.xml` template, `base_template_path`, `no_cache = 1`), the same way Frappe's
+  own `www/sitemap` works. Because the app's `www/` is searched before core, this
+  **overrides** Frappe's `/sitemap.xml` (which only lists Web-View pages BC does not use).
 - URLs: published Businesses (`status='Published'`, `public_profile_enabled=1`,
   `docstatus < 2`, slug set), their published Products/Services, and published Cards whose
   business is public.
 - `lastmod` from `modified`; XML-escaped; canonical origin; no query strings.
-- Scales from day one: ≤ 45k URLs → single `urlset`; beyond that → `sitemapindex` +
-  10k-per-chunk pages (`/sitemap-profiles-1.xml`, `-2.xml`, …) via `website_route_rules`,
-  each redis-cached 6 h.
 - Never exposes Draft, Suspended, Archived, Unpublished, cancelled, or unpublished-parent
   records.
+- Generation lives in `osduo_business_connect/seo/sitemap.py`; results are redis-cached 6 h
+  and invalidated on every publication change (see §J). A full regeneration runs on the
+  `0 2 */3 * *` cron. `MAX_URLS_PER_SITEMAP = 45000` logs a warning before Google's 50k
+  limit; chunking (index + `-1.xml`, `-2.xml`, …) is the documented next step once a
+  sitemap approaches that size.
+- Nothing is written to disk, and the app never pushes to Google.
 
 ### F — robots.txt + noindex
 
@@ -168,12 +183,15 @@ Disallow: /printview
 Disallow: /analytics
 Allow: /assets
 Allow: /files
-Sitemap: https://<canonical>/sitemap-profiles.xml
+Sitemap: https://<canonical>/sitemap.xml
 ```
 
 - Existing custom robots text is **never** overwritten.
 - `noindex,nofollow` on login (root is `home_page = "login"`), `/offline`, `/analytics`.
   Public pages get `index,follow,max-image-preview:large`.
+
+> ✅ The non-destructive `robots.txt` default (including the `Sitemap:` line) shipped in
+> v1.2.9. The `noindex` meta work remains part of the v1.3.0 head/robots task.
 
 ### G — JSON-LD (rich results)
 
@@ -181,8 +199,8 @@ Sitemap: https://<canonical>/sitemap-profiles.xml
 |---|---|---|
 | `Organization` + `WebSite` + `Brand` | every page | OSDuo Tech LLP, `url`, `logo`, `sameAs`, `brand` = "OSDuo Business Connect", `brand.url` = vendor site until product page is live |
 | `LocalBusiness` | business | name, url, logo/image, description, telephone, email, `address` (PostalAddress), `openingHoursSpecification` from `Business Hour`, `sameAs` from social links |
-| `Product` + `Offer` | product | name, description, image, `brand` = business, `offers` **only when price is publicly displayed** (`price_display_mode = Fixed`): price, currency, availability `InStock`, url |
-| `Service` | service | name, description, image, `provider` (business ref), `areaServed` |
+| `Product` + `Offer` | product | name, description, image, `brand` = business, `offers` **only when price is publicly displayed** (`price_display_mode in ('Fixed', 'Start From')`): price, currency, availability `InStock`, url. For `Start From`, keep the same `Offer` (the listed price is the minimum) |
+| `Service` | service | name, description, image, `provider` (business ref), `areaServed`; `offers` under the same `Fixed` / `Start From` condition now that services carry price fields |
 | `Person` | card | name, jobTitle, image, `worksFor`, email, telephone, `sameAs` |
 | `BreadcrumbList` | product/service/card | Business → Item (no fake home page, since the root is a login screen) |
 
@@ -254,13 +272,20 @@ Showcase Product, Showcase Service, Digital Card → clear `website_page::<path>
 that embed them (a product edit must also clear the parent business page, which renders
 products) and clear the sitemap caches. Closes finding 13.
 
+> ✅ The **sitemap-cache half** of this shipped in v1.2.9 (the `doc_events` in `hooks.py`
+> call `invalidate_sitemap_cache`). The `website_page::<path>` page-cache clearing is still
+> to do for v1.3.0.
+
 ### K — Tests (all runnable without a bench)
 
 - `test_seo.py` — fallback chains, word-boundary truncation (155/160), absolute
   canonical/OG URLs, `jsonld()` escaping (`</script>` breakout impossible), robots values,
   **no brand suffix in `<title>`**.
 - `test_sitemap.py` — filters exclude Draft/Suspended/Archived/cancelled/unpublished-parent;
-  canonical base used; chunking threshold; XML escaping.
+  canonical base used; chunking threshold; XML escaping. ✅ **shipped in v1.2.9** as
+  structural tests (`tests/test_sitemap.py`): route/controller/template wiring, URL shapes,
+  visibility filters, index references, scheduled regeneration, event invalidation and the
+  no-static-file guarantee.
 - `test_templates.py` — HTML tag balance across **all** templates (would have caught
   `product.html:26-33`), required head tags present, no `fonts.googleapis.com` / `cdnjs`
   references, canonical/OG/Twitter blocks emitted.
@@ -278,9 +303,13 @@ products) and clear the sitemap caches. Closes finding 13.
   Search Console submission, cache-clear after SEO edits.
 - `docs/USER_MANUAL.md` — how to write SEO title/description, cards inheriting from business,
   the noindex/root-login note.
-- `docs/MARKETING_FEATURE_INVENTORY.md` — flip §1.8 rows from "committed" to shipped.
+- `docs/MARKETING_FEATURE_INVENTORY.md` — flip §1.10 rows from "committed" to shipped.
 - `CHANGELOG.md`, `RELEASE_NOTES.md`, `__version__ = "1.3.0"`; commit to `develop` →
   fast-forward `main`; tag `v1.3.0`; GitHub release.
+
+> ✅ Sitemap docs (robots pointer, sitemap URLs, cache-clear note) and the "Start From" price
+> mode shipped in **v1.2.9** — see [CHANGELOG](../CHANGELOG.md) and [RELEASE_NOTES](../RELEASE_NOTES.md).
+> The Search Console submission and remaining SEO field docs are still to do for v1.3.0.
 
 ---
 
@@ -288,8 +317,8 @@ products) and clear the sitemap caches. Closes finding 13.
 
 1. `view-source` on `/b/<slug>`, product, service and card: page-content-only `<title>`,
    unique description, canonical, complete OG set, Twitter card, valid JSON-LD.
-2. `/sitemap-profiles.xml` → 200 XML containing **only** public URLs; a Draft or Cancelled
-   record never appears.
+2. `/sitemap.xml` (index) and the four `/sitemap-*.xml` sub-sitemaps → 200 XML containing
+   **only** public URLs; a Draft or Cancelled record never appears. ✅ *shipped in v1.2.9*
 3. `/robots.txt` → disallows + `Sitemap:` line; an admin's custom robots text is untouched.
 4. Rich Results Test: LocalBusiness, Product, Service, Person, BreadcrumbList, Organization —
    0 errors, 0 warnings.
@@ -315,9 +344,14 @@ bench --site osduo.connect clear-cache
 bench --site osduo.connect clear-website-cache
 ```
 
-Then: `curl -s https://<site>/sitemap-profiles.xml`, `curl -s https://<site>/robots.txt`,
-view-source on a business page, Rich Results Test, Lighthouse. Submit
-`sitemap-profiles.xml` in Google Search Console.
+Then: `curl -s https://<site>/sitemap.xml` and each of the four sub-sitemaps
+(`/sitemap-businesses.xml`, `/sitemap-products.xml`, `/sitemap-services.xml`,
+`/sitemap-cards.xml`), `curl -s https://<site>/robots.txt`, view-source on a business page,
+Rich Results Test, Lighthouse.
+
+> The sitemap is **not** submitted to Google — the app never pushes. Google discovers
+> `/sitemap.xml` through the `Sitemap:` line in `robots.txt` and recrawls on its own
+> schedule. (Submitting once in Search Console is optional and harmless, but not required.)
 
 > `migrate` **and** `clear-website-cache` are both mandatory — DocType JSON changes plus
 > the 30-minute HTML page cache.
@@ -330,8 +364,10 @@ pure-Python.
 
 ## 5. Risk notes
 
-- The sitemap is a **new route** — no Frappe core file is overridden; only
-  `website_route_rules` + `www/` additions.
+- The sitemap is a **new route** that **intentionally shadows Frappe core's `/sitemap.xml`**
+  (core only lists Web-View pages, which Business Connect does not use). No Frappe core file
+  is modified — the app's `www/` is searched first — only `www/` additions and `hooks.py`
+  (cron + `doc_events`).
 - DocType changes are additive; `allow_on_submit` is the only behavioural change, and it is a
   fix, not a preference.
 - Icon migration is the highest visual-regression risk — the `icon_class` mapping table plus a
