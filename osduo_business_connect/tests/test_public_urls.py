@@ -26,13 +26,13 @@ def read(*parts):
 
 
 @contextlib.contextmanager
-def loaded_urls_module(conf, fallback="http://fallback.example"):
+def loaded_urls_module(conf, fallback="http://fallback.example", request=None):
     """Import utils/urls.py against a stubbed frappe, without leaking the stub."""
     frappe_stub = types.ModuleType("frappe")
     utils_stub = types.ModuleType("frappe.utils")
     utils_stub.get_url = lambda *args, **kwargs: fallback
     frappe_stub.utils = utils_stub
-    frappe_stub.local = types.SimpleNamespace(conf=conf)
+    frappe_stub.local = types.SimpleNamespace(conf=conf, request=request)
 
     saved = {name: sys.modules.get(name) for name in ("frappe", "frappe.utils")}
     sys.modules["frappe"] = frappe_stub
@@ -48,6 +48,42 @@ def loaded_urls_module(conf, fallback="http://fallback.example"):
                 sys.modules.pop(name, None)
             else:
                 sys.modules[name] = value
+
+
+class TestSitemapBaseUrl(unittest.TestCase):
+    """get_sitemap_base_url(): host_name wins, else the request host, never the
+    bare site name — so a multi-tenant subdomain stays correct per request."""
+
+    @staticmethod
+    def _request(host, proto=None):
+        headers = {} if proto is None else {"X-Forwarded-Proto": proto}
+        return types.SimpleNamespace(host=host, headers=headers)
+
+    def test_configured_host_name_wins_over_request(self):
+        conf = {"host_name": "https://connect.osduotech.com"}
+        req = self._request("beadazzled.connect.osduotech.com", "https")
+        with loaded_urls_module(conf, request=req) as urls:
+            self.assertEqual(urls.get_sitemap_base_url(), "https://connect.osduotech.com")
+
+    def test_falls_back_to_request_host_when_unconfigured(self):
+        req = self._request("beadazzled.connect.osduotech.com", "https")
+        with loaded_urls_module({}, request=req, fallback="http://beadazzled.connect") as urls:
+            self.assertEqual(urls.get_sitemap_base_url(), "https://beadazzled.connect.osduotech.com")
+
+    def test_scheme_less_public_request_host_is_https(self):
+        req = self._request("beadazzled.connect.osduotech.com")
+        with loaded_urls_module({}, request=req) as urls:
+            self.assertEqual(urls.get_sitemap_base_url(), "https://beadazzled.connect.osduotech.com")
+
+    def test_local_request_host_stays_http(self):
+        req = self._request("localhost:8000")
+        with loaded_urls_module({}, request=req) as urls:
+            self.assertEqual(urls.get_sitemap_base_url(), "http://localhost:8000")
+
+    def test_never_the_bare_site_name_when_a_request_is_present(self):
+        req = self._request("beadazzled.connect.osduotech.com", "https")
+        with loaded_urls_module({}, request=req, fallback="http://beadazzled.connect") as urls:
+            self.assertNotIn("beadazzled.connect/", urls.get_sitemap_base_url() + "/")
 
 
 class TestCanonicalUrls(unittest.TestCase):

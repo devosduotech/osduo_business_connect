@@ -3,12 +3,12 @@
 
 """Published business profiles — served at ``/sitemap-businesses.xml``."""
 
-from osduo_business_connect.seo.sitemap import get_cached_entries
+from osduo_business_connect.seo.sitemap import get_render_entries
 
 no_cache = 1
 base_template_path = "www/sitemap-businesses.xml"
 
 
 def get_context(context):
-    context.urls = get_cached_entries("businesses")
+    context.urls = get_render_entries("businesses")
     return context

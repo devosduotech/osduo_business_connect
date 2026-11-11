@@ -23,6 +23,12 @@ almost always a bench served over plain HTTP.
 that helper appends the bench's dev webserver port whenever ``developer_mode``
 is on, which would bake ``:8000`` into a real production domain.
 
+Sitemaps and ``robots.txt`` use :func:`get_sitemap_base_url`, which additionally
+falls back to the host the request was served on when ``host_name`` is not set.
+That keeps a multi-tenant subdomain site (``customer.connect.example.com``)
+correct before its ``host_name`` is configured, instead of emitting the bare
+site name.
+
 See docs/PWA.md for setup notes.
 """
 
@@ -93,6 +99,55 @@ def get_canonical_base_url():
     # Nothing configured: let Frappe resolve the site name / subdomain.
     url = frappe.utils.get_url(allow_header_override=False) or ""
     return url.rstrip("/")
+
+
+def _request_base_url():
+    """Origin derived from the current request's host, or ``None``.
+
+    Returns ``None`` outside a request (cron, console). The scheme follows
+    ``X-Forwarded-Proto`` so a TLS-terminating reverse proxy yields ``https``.
+    """
+    request = getattr(frappe.local, "request", None)
+    if request is None:
+        return None
+
+    host = (getattr(request, "host", None) or "").strip()
+    if not host:
+        return None
+
+    scheme = ""
+    headers = getattr(request, "headers", None)
+    if headers is not None:
+        forwarded = headers.get("X-Forwarded-Proto") or ""
+        scheme = forwarded.split(",")[0].strip().lower()
+    if scheme not in ("http", "https"):
+        scheme = ""
+
+    value = f"{scheme}://{host}" if scheme else host
+    return _normalize_host(value)
+
+
+def get_sitemap_base_url():
+    """Origin for sitemap and robots.txt URLs.
+
+    Sitemap URLs must live on the same host that serves the sitemap, so this
+    prefers the host the request was served on. ``host_name`` still wins when
+    configured, giving a stable canonical origin. Unlike
+    :func:`get_canonical_base_url` it never falls back to the bare Frappe site
+    name (``http://customer.connect``), which is not a resolvable public host
+    on a subdomain bench.
+    """
+    conf = frappe.local.conf or {}
+    for key in ("host_name", "hostname"):
+        if (conf.get(key) or "").strip():
+            return get_canonical_base_url()
+
+    request_base = _request_base_url()
+    if request_base:
+        return request_base
+
+    # No request (cron/console) and no configured host: last resort.
+    return get_canonical_base_url()
 
 
 def get_canonical_base_url_source():

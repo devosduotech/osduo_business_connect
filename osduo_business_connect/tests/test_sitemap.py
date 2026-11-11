@@ -55,10 +55,11 @@ class TestSitemapWiring(unittest.TestCase):
 
     def test_public_urls_are_generated_from_records(self):
         sitemap = read("seo", "sitemap.py")
-        # URL shapes must match the public page controllers.
-        self.assertIn('_loc("b", r.slug)', sitemap)
-        self.assertIn('_loc("b", r.business_slug, segment, r.slug)', sitemap)
-        self.assertIn('_loc("c", r.slug)', sitemap)
+        # URL shapes must match the public page controllers. Cached entries are
+        # origin-independent paths; the host is added at render time.
+        self.assertIn('_path("b", r.slug)', sitemap)
+        self.assertIn('_path("b", r.business_slug, segment, r.slug)', sitemap)
+        self.assertIn('_path("c", r.slug)', sitemap)
         self.assertIn('"products"', sitemap)
         self.assertIn('"services"', sitemap)
 
@@ -108,12 +109,27 @@ class TestSitemapWiring(unittest.TestCase):
         self.assertIn("frappe.cache.set_value", sitemap)
         self.assertIn("expires_in_sec", sitemap)
 
-    def test_robots_txt_points_at_sitemap(self):
+    def test_robots_txt_is_served_dynamically(self):
+        # /robots.txt is overridden by the app so the Sitemap line is resolved
+        # per request instead of frozen in Website Settings.robots_txt.
+        controller = read("www", "robots.py")
+        self.assertIn('base_template_path = "www/robots.txt"', controller)
+        self.assertIn("no_cache = 1", controller)
+        self.assertIn("build_robots_txt", controller)
+        self.assertTrue(os.path.exists(os.path.join(APP_DIR, "www", "robots.txt")))
+
+    def test_robots_rules_do_not_freeze_the_sitemap_url(self):
+        # branding seeds rules only; the sitemap URL is added at render time.
         branding = read("branding.py")
         self.assertIn("def _default_robots_txt", branding)
-        self.assertIn("/sitemap.xml", branding)
-        # Must not clobber an administrator's custom robots.txt.
         self.assertIn("robots_txt", branding)
+        self.assertNotIn("/sitemap.xml", branding)
+
+        robots = read("seo", "robots.py")
+        self.assertIn("Sitemap:", robots)
+        self.assertIn("get_sitemap_base_url", robots)
+        # A stale declaration in the admin body must be stripped, not served.
+        self.assertIn("_drop_sitemap_lines", robots)
 
     def test_no_static_sitemap_files_are_written(self):
         # Dynamic, DB-driven sitemaps: nothing should be written to disk.
