@@ -326,13 +326,20 @@ and §6.4 documents writing an NFC card or tag with that same URL.
 | Price Display Mode | What Customers See |
 |--------------------|--------------------|
 | **Hidden** | No pricing shown |
-| **Contact for Pricing** | "Enquire for Pricing" button |
+| **Contact for Pricing** | "Contact for pricing" text, inviting an enquiry |
 | **Fixed Price** | Actual price with currency |
+| **Start From** | A starting price, e.g. "From ₹4,999" |
 
-For Fixed Price:
-1. Select **Fixed Price** from dropdown
+For **Fixed Price** and **Start From**:
+1. Select the mode from the dropdown
 2. Enter **Price** amount
 3. Select **Currency** (INR, USD, etc.)
+
+Use **Start From** for made-to-order products or anything priced from a minimum
+(the page shows **"From ₹4,999"**). The Price and Currency fields only appear for
+Fixed Price and Start From — Hidden and Contact need no amount.
+
+> Services use the same four price modes. See [4.6 Creating Services](#46-creating-services).
 
 ### 4.3 Product Categories
 
@@ -422,6 +429,7 @@ the checkbox is off or no link exists.
 | Category | Service category (same as Product Category) |
 | Features | List of features (title + description + image) |
 | Gallery | Same as product gallery |
+| Pricing | Price Display Mode (Hidden / Contact / Fixed / **Start From**) + Currency + Price — see [4.2 Product Pricing](#42-product-pricing) |
 
 ### 4.7 Features
 

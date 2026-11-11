@@ -1,3 +1,56 @@
+# Release Notes - business_connect (v1.2.9)
+
+**Release Date:** 11 November 2026
+**Version:** v1.2.9
+
+Business Connect now publishes its own XML sitemaps so search engines can find
+every public page, and products and services can be priced "from" a starting
+amount.
+
+## Changes (v1.2.9)
+
+### Search engines can now find your pages
+- The app serves `/sitemap.xml` (a **sitemap index**) listing four sitemaps —
+  `/sitemap-businesses.xml`, `/sitemap-products.xml`, `/sitemap-services.xml`
+  and `/sitemap-cards.xml`.
+- The URLs come **straight from your published records**, so there is no list to
+  maintain: publish a business, product, service or card and it appears
+  automatically. Drafts, suspended, archived, unpublished and cancelled records
+  never appear, and a product/service/card is only listed when its business is
+  public.
+- Each URL has an accurate `<lastmod>` date and uses your site's canonical
+  address.
+- Sitemaps are cached for speed and refresh **immediately** when you publish or
+  change anything; a full rebuild also runs automatically every third day.
+- `robots.txt` now includes the sitemap link and blocks the private routes
+  (`/app`, `/api`, `/login`, `/printview`, `/analytics`). If you have written
+  your own `robots.txt`, it is left exactly as it is.
+- Nothing is stored as a file — the sitemaps are always generated from your live
+  data. We never submit them to Google; search engines discover them through
+  `robots.txt` and crawl on their own schedule.
+
+### "Start From" pricing
+- Products and services gain a new price display mode: **Start From**. Set the
+  starting price and currency and the page shows e.g. **"From ₹4,999"**.
+- Choose it exactly like the existing modes (Hidden / Contact / Fixed) on the
+  Showcase Product or Showcase Service form.
+- **Services now support pricing too.** Previously a service had no pricing
+  fields at all; it now has the same Hidden / Contact / Fixed / Start From
+  choices as a product.
+
+## Upgrade
+
+```bash
+bench --site <site> migrate
+bench --site <site> clear-cache
+bench --site <site> clear-website-cache
+```
+
+`migrate` adds the new pricing fields. `clear-website-cache` is needed so the new
+pricing shows immediately instead of after the 30-minute page cache expires.
+
+---
+
 # Release Notes - business_connect (v1.2.8)
 
 **Release Date:** 8 November 2026
