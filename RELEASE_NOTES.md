@@ -18,13 +18,14 @@ amount.
   automatically. Drafts, suspended, archived, unpublished and cancelled records
   never appear, and a product/service/card is only listed when its business is
   public.
-- Each URL has an accurate `<lastmod>` date and uses your site's canonical
-  address.
+- Each URL has an accurate `<lastmod>` date. The address is resolved per request
+  so every subdomain or custom domain gets its own correct `https://…` URLs.
 - Sitemaps are cached for speed and refresh **immediately** when you publish or
   change anything; a full rebuild also runs automatically every third day.
-- `robots.txt` now includes the sitemap link and blocks the private routes
-  (`/app`, `/api`, `/login`, `/printview`, `/analytics`). If you have written
-  your own `robots.txt`, it is left exactly as it is.
+- `robots.txt` is generated on the fly. Your own rules (if you set any) are
+  preserved; a sensible default blocks the private routes (`/app`, `/api`,
+  `/login`, `/printview`, `/dashboard`, `/analytics`) and the `Sitemap:` line
+  always shows the correct address for the domain being crawled.
 - Nothing is stored as a file — the sitemaps are always generated from your live
   data. We never submit them to Google; search engines discover them through
   `robots.txt` and crawl on their own schedule.
