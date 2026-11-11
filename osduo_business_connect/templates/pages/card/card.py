@@ -109,7 +109,8 @@ def get_context(context):
         context.services = frappe.get_all(
             "Showcase Service",
             filters={"business": doc["business"], "status": "Published", "docstatus": ["<", 2]},
-            fields=["name", "service_name", "slug", "short_description", "image", "featured"],
+            fields=["name", "service_name", "slug", "short_description",
+                    "price", "price_display_mode", "currency", "image", "featured"],
             order_by="featured desc, sort_order asc",
             limit=10,
         )

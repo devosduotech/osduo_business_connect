@@ -11,13 +11,17 @@
         <p class="bc-tagline">{{ doc.short_description }}</p>
         {% endif %}
 
-        {% if doc.price_display_mode != "Hidden" and doc.price %}
+        {% if doc.price_display_mode == "Contact" %}
         <div style="font-size:1.4rem;font-weight:700;margin:0.75rem 0;">
-            {% if doc.price_display_mode == "Contact" %}
-                Contact for pricing
-            {% else %}
-                {% if doc.currency %}{{ doc.currency }} {% endif %}{{ doc.price }}
-            {% endif %}
+            Contact for pricing
+        </div>
+        {% elif doc.price_display_mode == "Start From" and doc.price %}
+        <div style="font-size:1.4rem;font-weight:700;margin:0.75rem 0;">
+            From {% if doc.currency %}{{ doc.currency }} {% endif %}{{ doc.price }}
+        </div>
+        {% elif doc.price_display_mode == "Fixed" and doc.price %}
+        <div style="font-size:1.4rem;font-weight:700;margin:0.75rem 0;">
+            {% if doc.currency %}{{ doc.currency }} {% endif %}{{ doc.price }}
         </div>
         {% endif %}
 

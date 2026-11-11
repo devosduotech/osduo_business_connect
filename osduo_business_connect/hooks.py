@@ -98,9 +98,42 @@ website_route_rules = [
 # Note: All DocTypes are our own, so Frappe automatically calls their
 # controller methods (validate, on_update, after_insert, etc.) from
 # the controller files. No need to register them in doc_events.
+#
+# The only doc_events we register are cross-cutting concerns that must not
+# live in a single controller: the CRM Lead hook, and the sitemap cache
+# invalidation below.
+_SITEMAP_INVALIDATE = "osduo_business_connect.seo.sitemap.invalidate_sitemap_cache"
+
 doc_events = {
     "CRM Lead": {
         "on_update": "osduo_business_connect.crm_integration.crm_lead_hook.on_crm_lead_update",
+    },
+    # Any publication change (create/update/submit/cancel/delete) drops the
+    # cached sitemaps so new URLs appear — and removed ones disappear — on
+    # the next crawl instead of waiting for the 3-day full regeneration.
+    "Business": {
+        "on_update": _SITEMAP_INVALIDATE,
+        "on_submit": _SITEMAP_INVALIDATE,
+        "on_cancel": _SITEMAP_INVALIDATE,
+        "on_trash": _SITEMAP_INVALIDATE,
+    },
+    "Showcase Product": {
+        "on_update": _SITEMAP_INVALIDATE,
+        "on_submit": _SITEMAP_INVALIDATE,
+        "on_cancel": _SITEMAP_INVALIDATE,
+        "on_trash": _SITEMAP_INVALIDATE,
+    },
+    "Showcase Service": {
+        "on_update": _SITEMAP_INVALIDATE,
+        "on_submit": _SITEMAP_INVALIDATE,
+        "on_cancel": _SITEMAP_INVALIDATE,
+        "on_trash": _SITEMAP_INVALIDATE,
+    },
+    "Digital Card": {
+        "on_update": _SITEMAP_INVALIDATE,
+        "on_submit": _SITEMAP_INVALIDATE,
+        "on_cancel": _SITEMAP_INVALIDATE,
+        "on_trash": _SITEMAP_INVALIDATE,
     },
 }
 
@@ -120,6 +153,14 @@ scheduler_events = {
     "weekly": [
         "osduo_business_connect.services.scheduler.weekly_tasks",
     ],
+    # Full sitemap regeneration — 02:00 on every third day of the month.
+    # Publication changes are picked up immediately by the doc_events above;
+    # this cron is the periodic safety net that rebuilds and warms the cache.
+    "cron": {
+        "0 2 */3 * *": [
+            "osduo_business_connect.seo.sitemap.generate_sitemaps",
+        ],
+    },
 }
 
 # Testing
