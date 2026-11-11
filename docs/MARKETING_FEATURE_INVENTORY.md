@@ -29,7 +29,7 @@
 | 6 | **Product catalog** | Unlimited products per business; categories, featured flag, manual sort order, per-product enquiry toggle |
 | 7 | **Service catalog** | Same, plus location and brochure attachment |
 | 8 | **Category tree** | Hierarchical `Product Category` (e.g. Electronics → Mobiles) |
-| 9 | **Price display modes** | `Fixed` (show price + currency), `Start From` (show a starting price, e.g. "From ₹4,999"), `Contact` (hide figure, invite enquiry), `Hidden` — one selector per product **and per service** |
+| 9 | **Price display modes** | `Fixed` (show price + currency), `Start From` (show a starting price, e.g. "From INR 4,999"), `Contact` (hide figure, invite enquiry), `Hidden` — one selector per product **and per service** |
 | 10 | **Rich product content** | Video URL, PDF brochure, image gallery, feature child-table with icons |
 
 ### 1.3 Shipped — Lead capture & CRM
@@ -100,7 +100,7 @@
 |---|---|---|
 | 52 | **Database-driven sitemaps** | `/sitemap.xml` is a **sitemap index** pointing at `/sitemap-businesses.xml`, `/sitemap-products.xml`, `/sitemap-services.xml` and `/sitemap-cards.xml`. Every URL is generated from the **live published records** (never a hand-maintained list), carries an accurate `lastmod`, and uses the canonical origin. Draft / suspended / archived / unpublished / cancelled records are excluded, and a child URL is only listed when its parent business is public. Redis-cached (6 h) with instant invalidation on any publication change, plus a full rebuild every third day. Nothing is written to disk and nothing is pushed to Google — crawlers find it via `robots.txt` |
 | 53 | **robots.txt sitemap pointer** | Non-destructive defaults (disallow `/app`, `/api`, `/login`, `/printview`, `/analytics`; allow `/assets`, `/files`) with a `Sitemap:` line, applied **only when `Website Settings.robots_txt` is empty** so a custom file is never overwritten |
-| 54 | **"Start From" price mode** | A fourth price display mode on Showcase Product **and** Showcase Service: enter a starting price + currency and the profile shows e.g. **"From ₹4,999"**. Services now have the full pricing block (previously none). Renders on all six themes, the card listings and the public API |
+| 54 | **"Start From" price mode** | A fourth price display mode on Showcase Product **and** Showcase Service: enter a starting price + currency and the profile shows e.g. **"From INR 4,999"**. Services now have the full pricing block (previously none). Renders on all six themes, the card listings and the public API. Prices are formatted with thousands separators (e.g. **INR 12,000**) using the currency code |
 
 ### 1.10 Committed next — v1.3.0 (SEO & brand attribution)
 

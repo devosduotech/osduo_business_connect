@@ -328,7 +328,7 @@ and §6.4 documents writing an NFC card or tag with that same URL.
 | **Hidden** | No pricing shown |
 | **Contact for Pricing** | "Contact for pricing" text, inviting an enquiry |
 | **Fixed Price** | Actual price with currency |
-| **Start From** | A starting price, e.g. "From ₹4,999" |
+| **Start From** | A starting price, e.g. "From INR 4,999" |
 
 For **Fixed Price** and **Start From**:
 1. Select the mode from the dropdown
@@ -336,7 +336,7 @@ For **Fixed Price** and **Start From**:
 3. Select **Currency** (INR, USD, etc.)
 
 Use **Start From** for made-to-order products or anything priced from a minimum
-(the page shows **"From ₹4,999"**). The Price and Currency fields only appear for
+(the page shows **"From INR 4,999"**). The Price and Currency fields only appear for
 Fixed Price and Start From — Hidden and Contact need no amount.
 
 > Services use the same four price modes. See [4.6 Creating Services](#46-creating-services).

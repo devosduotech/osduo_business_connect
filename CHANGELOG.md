@@ -39,14 +39,23 @@ All notable changes to this project will be documented in this file.
 #### "Start From" price display mode
 - Showcase Product and Showcase Service gain a fourth price display mode,
   **Start From**. Enter the starting **Price** and **Currency** and the profile
-  shows e.g. **"From ₹4,999"** — useful for services and made-to-order products
-  that are priced from a minimum.
+  shows e.g. **"From INR 4,999"** — useful for services and made-to-order
+  products that are priced from a minimum.
 - The mode renders on all six product/service page themes, on the business card
   listings and in the public API, alongside the existing Hidden / Contact /
   Fixed modes.
 - **Showcase Service** now has the full pricing block (Price Display Mode +
   Currency + Price). Previously services had no pricing fields at all, so a
   service could not show a price.
+
+#### Price formatting
+- Prices now render with thousands separators using the currency **code**, e.g.
+  **INR 12,000** / **INR 140,000** instead of the previous `INR 12000` /
+  `INR 140000`, across all six product/service themes and the card listings.
+- Whole amounts drop the trailing decimals (`INR 12,000`); fractional amounts
+  keep two (`INR 12,000.50`). Formatting follows the site's configured number
+  format through a new `format_money` Jinja filter
+  (`utils/money.py`), so no currency symbol is forced.
 
 ### Upgrade
 ```bash

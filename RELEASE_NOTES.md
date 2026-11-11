@@ -31,12 +31,14 @@ amount.
 
 ### "Start From" pricing
 - Products and services gain a new price display mode: **Start From**. Set the
-  starting price and currency and the page shows e.g. **"From ₹4,999"**.
+  starting price and currency and the page shows e.g. **"From INR 4,999"**.
 - Choose it exactly like the existing modes (Hidden / Contact / Fixed) on the
   Showcase Product or Showcase Service form.
 - **Services now support pricing too.** Previously a service had no pricing
   fields at all; it now has the same Hidden / Contact / Fixed / Start From
   choices as a product.
+- Prices are shown with thousands separators, e.g. **INR 12,000**, matching the
+  currency format instead of `INR 12000`.
 
 ## Upgrade
 
