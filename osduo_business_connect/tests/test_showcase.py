@@ -59,6 +59,12 @@ class TestShowcaseProductDocType(unittest.TestCase):
         roles = [p["role"] for p in self.data["permissions"]]
         self.assertTrue(len(roles) > 0)
 
+    def test_has_video_url_field(self):
+        fields = {f["fieldname"]: f for f in self.data["fields"]}
+        self.assertIn("video_url", fields)
+        self.assertEqual(fields["video_url"]["fieldtype"], "Data")
+        self.assertEqual(fields["video_url"].get("options"), "URL")
+
     def test_controller_exists(self):
         path = os.path.join(SHOWCASE_DIR, "doctype", "showcase_product", "showcase_product.py")
         self.assertTrue(os.path.exists(path))
@@ -125,6 +131,12 @@ class TestShowcaseServiceDocType(unittest.TestCase):
     def test_has_permissions(self):
         roles = [p["role"] for p in self.data["permissions"]]
         self.assertTrue(len(roles) > 0)
+
+    def test_has_video_url_field(self):
+        fields = {f["fieldname"]: f for f in self.data["fields"]}
+        self.assertIn("video_url", fields)
+        self.assertEqual(fields["video_url"]["fieldtype"], "Data")
+        self.assertEqual(fields["video_url"].get("options"), "URL")
 
     def test_controller_exists(self):
         path = os.path.join(SHOWCASE_DIR, "doctype", "showcase_service", "showcase_service.py")

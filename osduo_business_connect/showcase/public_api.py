@@ -222,6 +222,7 @@ def serialize_service(service_name):
         "short_description": service.short_description,
         "description": service.description,
         "image": service.image,
+        "video_url": service.video_url,
         "price_display_mode": service.price_display_mode,
         "enquiry_enabled": service.enquiry_enabled,
         "featured": service.featured,

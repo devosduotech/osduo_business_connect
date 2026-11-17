@@ -90,6 +90,13 @@
       "label": "Image"
     },
     {
+      "fieldname": "video_url",
+      "fieldtype": "Data",
+      "label": "Video URL",
+      "description": "YouTube / Vimeo / Google Drive / Dailymotion link, a Nextcloud public share (/s/…), or a direct video file (.mp4 / .webm / .ogg). The player is chosen automatically.",
+      "options": "URL"
+    },
+    {
       "fieldname": "brochure",
       "fieldtype": "Attach",
       "label": "Brochure",
