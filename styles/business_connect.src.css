@@ -4071,3 +4071,12 @@ body.bc-lightbox-open {
     color: #64748b;
     text-decoration: underline;
 }
+
+/* On mobile the fixed bottom .bc-action-bar would overlay this body-level
+   footer (it is display:none on desktop). Reserve clearance so the credit
+   stays visible above the bar. */
+@media (max-width: 768px) {
+    .bc-vendor-footer {
+        padding-bottom: 4.5rem;
+    }
+}

@@ -72,6 +72,16 @@ class TestSplitFiles(unittest.TestCase):
         for shared in (".bc-vendor-footer", ".bc-icon", ".bc-share-widget", ".bc-btn", ".bc-page"):
             self.assertIn(shared, base, shared)
 
+    def test_footer_clears_mobile_action_bar(self):
+        # The fixed .bc-action-bar overlays the body-level footer on mobile; the
+        # footer must reserve bottom clearance so the credit stays visible.
+        base = read_css("business_connect.css")
+        self.assertRegex(
+            base,
+            r"@media \(max-width: 768px\)[^}]*\{[^}]*\.bc-vendor-footer \{[^}]*padding-bottom",
+            "vendor footer needs mobile padding-bottom to clear the fixed action bar",
+        )
+
 
 class TestHeadWiring(unittest.TestCase):
     def setUp(self):

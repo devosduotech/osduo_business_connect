@@ -2059,3 +2059,9 @@ color: inherit;
 color: #64748b;
     text-decoration: underline;
 }
+
+@media (max-width: 768px) {
+.bc-vendor-footer {
+padding-bottom: 4.5rem;
+}
+}
