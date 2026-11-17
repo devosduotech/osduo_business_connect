@@ -8,6 +8,9 @@ Injects branding variables into all web templates so they can
 use {{ bc_app_name }}, {{ bc_logo }}, etc. without hardcoding.
 """
 
+import re
+from urllib.parse import parse_qs, urlparse
+
 from osduo_business_connect.hooks import OSDUO_BRANDING
 
 
@@ -53,47 +56,180 @@ def safe_url(url):
     return url
 
 
-def safe_video_url(url):
-    """Jinja filter: sanitize video iframe src to prevent XSS.
+# Hosts a user is allowed to embed from, and the share/page hosts whose plain
+# URLs are *not* frameable and must be rewritten to an embed URL.
+# Provider hosts that render inside an <iframe> (directly or after rewriting to
+# their /embed form in _to_embed_url).
+_ALLOWED_VIDEO_DOMAINS = [
+    "youtube.com", "www.youtube.com", "youtu.be",
+    "youtube-nocookie.com", "www.youtube-nocookie.com",
+    "vimeo.com", "www.vimeo.com",
+    "player.vimeo.com",
+    "dailymotion.com", "www.dailymotion.com",
+    "wistia.com", "www.wistia.com",
+    "loom.com", "www.loom.com",
+    "streamable.com", "www.streamable.com",
+    "facebook.com", "www.facebook.com",
+    "drive.google.com",
+]
+_YOUTUBE_HOSTS = {"youtube.com", "www.youtube.com", "m.youtube.com", "music.youtube.com"}
+_YOUTUBE_SHORT_HOSTS = {"youtu.be", "www.youtu.be"}
+_VIMEO_SHARE_HOSTS = {"vimeo.com", "www.vimeo.com"}
+_DAILYMOTION_SHARE_HOSTS = {"dailymotion.com", "www.dailymotion.com"}
 
-    Only allows https/http URLs from known video embed domains.
-    Returns empty string for invalid or dangerous URLs.
+# YouTube ids are 11 chars in practice; allow a short lower bound for legacy /v/ ids.
+_YOUTUBE_ID_RE = re.compile(r"^[A-Za-z0-9_-]{6,11}$")
+
+
+def _youtube_video_id(parsed):
+    """Return the 11-char id for any YouTube URL shape, else ``None``."""
+    host = (parsed.hostname or "").lower()
+    parts = [p for p in (parsed.path or "").split("/") if p]
+
+    if host in _YOUTUBE_SHORT_HOSTS:
+        vid = parts[0] if parts else ""
+        return vid if _YOUTUBE_ID_RE.match(vid) else None
+
+    if host in _YOUTUBE_HOSTS:
+        if parts and parts[0] in ("embed", "shorts", "live", "v") and len(parts) >= 2:
+            vid = parts[1]
+            return vid if _YOUTUBE_ID_RE.match(vid) else None
+        if parts and parts[0] == "watch":
+            vids = parse_qs(parsed.query or "").get("v") or []
+            if vids and _YOUTUBE_ID_RE.match(vids[0]):
+                return vids[0]
+
+    return None
+
+
+def _to_embed_url(parsed):
+    """Rewrite a share/page URL to a provider URL that renders in an <iframe>.
+
+    Only the common cases where the plain link is *not* embeddable are handled;
+    anything already embeddable (or a provider we pass through) returns ``None``
+    so the caller keeps the original, allow-listed URL.
     """
+    host = (parsed.hostname or "").lower()
+
+    # YouTube: watch / youtu.be / shorts / live  →  privacy-friendly nocookie embed.
+    vid = _youtube_video_id(parsed)
+    if vid:
+        return f"https://www.youtube-nocookie.com/embed/{vid}"
+
+    # Vimeo share page vimeo.com/ID → player.vimeo.com/video/ID.
+    if host in _VIMEO_SHARE_HOSTS:
+        parts = [p for p in (parsed.path or "").split("/") if p]
+        if parts and parts[0].isdigit():
+            return f"https://player.vimeo.com/video/{parts[0]}"
+
+    # Google Drive /file/d/ID/view → /preview (the only frameable form).
+    if host == "drive.google.com":
+        parts = [p for p in (parsed.path or "").split("/") if p]
+        if "d" in parts:
+            idx = parts.index("d")
+            if idx + 1 < len(parts) and parts[idx + 1]:
+                return f"https://drive.google.com/file/d/{parts[idx + 1]}/preview"
+
+    # Dailymotion /video/xID → /embed/video/xID.
+    if host in _DAILYMOTION_SHARE_HOSTS:
+        parts = [p for p in (parsed.path or "").split("/") if p]
+        if len(parts) >= 2 and parts[0] == "video":
+            return f"https://www.dailymotion.com/embed/video/{parts[1]}"
+
+    return None
+
+
+# Video-file extensions that can play directly in an HTML5 <video> element from
+# any host (a self-hosted server, a CDN, an S3 bucket, …).
+_VIDEO_FILE_EXTENSIONS = (".mp4", ".webm", ".ogg", ".ogv", ".m4v", ".mov")
+
+# Nextcloud public share: https://host[/index.php]/s/<token>[/download|/video|/preview]
+_NEXTCLOUD_SHARE_RE = re.compile(
+    r"^(?P<pre>/index\.php)?/s/(?P<token>[A-Za-z0-9._-]+)(?:/(?P<action>download|video|preview))?/?$",
+    re.I,
+)
+
+
+def _parse_safe_video(url):
+    """Parse a user-entered video URL, or return ``None`` if it is not usable."""
     if not url:
-        return ""
+        return None
     url = str(url).strip()
     url_lower = url.lower()
 
-    # Block dangerous protocols
-    dangerous = ["javascript:", "data:", "vbscript:", "file:"]
-    for proto in dangerous:
+    # Block dangerous protocols.
+    for proto in ("javascript:", "data:", "vbscript:", "file:"):
         if url_lower.startswith(proto):
-            return ""
+            return None
 
-    # Only allow https or http
+    # Only allow https or http.
     if not url_lower.startswith("http://") and not url_lower.startswith("https://"):
-        return ""
+        return None
 
-    # Allow known video embed domains
-    allowed_domains = [
-        "youtube.com", "www.youtube.com", "youtu.be",
-        "vimeo.com", "www.vimeo.com",
-        "player.vimeo.com",
-        "dailymotion.com", "www.dailymotion.com",
-        "wistia.com", "www.wistia.com",
-        "loom.com", "www.loom.com",
-        "streamable.com", "www.streamable.com",
-        "facebook.com", "www.facebook.com",
-        "drive.google.com",
-    ]
-
-    from urllib.parse import urlparse
     try:
-        parsed = urlparse(url)
-        host = parsed.hostname or ""
-        if host and any(host == d or host.endswith("." + d) for d in allowed_domains):
-            return url
+        return urlparse(url)
     except Exception:
-        pass
+        return None
 
+
+def _is_allowed_video_host(host):
+    return bool(host) and any(host == d or host.endswith("." + d) for d in _ALLOWED_VIDEO_DOMAINS)
+
+
+def _nextcloud_download_url(parsed):
+    """Direct-download URL for a Nextcloud ``/s/<token>`` share page, else ``None``.
+
+    The share page itself is not frameable, but the file can be played straight
+    from ``…/s/<token>/download?inline=true`` in an HTML5 ``<video>`` element.
+    """
+    match = _NEXTCLOUD_SHARE_RE.match(parsed.path or "")
+    if not match:
+        return None
+    prefix = match.group("pre") or ""
+    token = match.group("token")
+    return f"{parsed.scheme}://{parsed.netloc}{prefix}/s/{token}/download?inline=true"
+
+
+def video_embed(url):
+    """Jinja filter: resolve a pasted video link into a player spec.
+
+    Returns ``{"kind": "iframe", "src": ...}`` for known embed providers
+    (YouTube, Vimeo, Google Drive, Dailymotion, Loom, …), or
+    ``{"kind": "file", "src": ...}`` for a direct video file or a **Nextcloud**
+    public share on any host (played with an HTML5 ``<video>`` — self-hosted
+    share pages are not iframable). Returns ``None`` when the URL is unsafe or
+    unrecognised, so the template renders nothing instead of a broken/blank box.
+    """
+    parsed = _parse_safe_video(url)
+    if parsed is None:
+        return None
+    url = str(url).strip()
+    host = (parsed.hostname or "").lower()
+
+    # Known providers → embeddable iframe.
+    if _is_allowed_video_host(host):
+        return {"kind": "iframe", "src": _to_embed_url(parsed) or url}
+
+    # Direct video file on any https host → HTML5 <video>.
+    if (parsed.path or "").lower().endswith(_VIDEO_FILE_EXTENSIONS):
+        return {"kind": "file", "src": url}
+
+    # Nextcloud (or similar) public share page → direct file in <video>.
+    nc = _nextcloud_download_url(parsed)
+    if nc:
+        return {"kind": "file", "src": nc}
+
+    return None
+
+
+def safe_video_url(url):
+    """Jinja filter (kept for compatibility): the iframe src for a known provider.
+
+    Prefer :func:`video_embed`, which also supports direct files and Nextcloud
+    shares. This returns an empty string for anything that is not an
+    iframe-embeddable provider URL.
+    """
+    embed = video_embed(url)
+    if embed and embed["kind"] == "iframe":
+        return embed["src"]
     return ""
