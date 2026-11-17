@@ -1032,6 +1032,7 @@ visit — no reinstall. (Bump of the app version rotates the offline cache.)
 | Desk "Open" button missing beside Public URL | `bench --site <site> build` — the button ships in the bundled JS — then hard-refresh |
 | PWA does not install | Needs HTTPS and a correct `host_name`; see §11.7 |
 | CRM Lead page shows no OSDuo fields | `bench --site <site> migrate` — the "OSDuo Attribution" section is appended to the CRM Lead side panel automatically |
+| Sitemap / robots shows `http://` or the wrong domain | Deploy the app then `bench --site <site> clear-cache` + `clear-website-cache`. `/sitemap*.xml` and `/robots.txt` resolve their origin from `host_name` or, failing that, the host being served — they are never frozen, so the correct `https://` address appears automatically |
 
 ---
 

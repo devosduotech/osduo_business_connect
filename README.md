@@ -1,6 +1,6 @@
 # OSDuo Business Connect
 
-**v1.2.8** | **Your digital identity. Your customers. Your growth.**
+**v1.2.9** | **Your digital identity. Your customers. Your growth.**
 
 Business Connect transforms how small businesses and professionals establish their digital presence. Create a stunning business profile, showcase products and services, capture customer enquiries and card exchanges, and install it all as a mobile app — all seamlessly integrated with Frappe CRM.
 
@@ -57,6 +57,9 @@ Analytics Dashboard updates with real-time metrics
 
 ### Product Showcase & Service Listings
 - Catalog with categories, galleries, pricing modes, brochures, and video embeds
+- Price display modes: Hidden, Contact for pricing, Fixed and **Start From**
+  (a "From …" starting price) — formatted with thousands separators on the
+  currency code (e.g. **INR 12,000**)
 - Detail pages inherit the parent business theme and header
 
 ### Theming & Branding
@@ -102,6 +105,20 @@ Analytics Dashboard updates with real-time metrics
   server-side `shared_link_open` event per channel
 - `/my-card` page with one-tap card opening attributed by `?ref=mycard`; desk "Open"
   button directly beside the Public URL on all profile forms (v1.2.6)
+
+### Search Engine Discovery (v1.2.9)
+- **Database-driven sitemaps**: `/sitemap.xml` is a sitemap index pointing at
+  `/sitemap-businesses.xml`, `/sitemap-products.xml`, `/sitemap-services.xml`
+  and `/sitemap-cards.xml`. Every URL is generated from live published records,
+  carries an accurate `lastmod`, and excludes drafts/archived/unpublished items.
+- **Correct origin per host**: sitemap and robots origins resolve `host_name`
+  first, otherwise the served host — so each tenant subdomain lists its own
+  `https://…` URLs with no per-site maintenance and no stale host baked in.
+- **Dynamic `robots.txt`**: admin rules are respected; the `Sitemap:` line is
+  rebuilt on every request so a wrong-host declaration can never leak.
+- Refreshed on every publication change (event-based cache invalidation) plus a
+  full regeneration every third day. Nothing is written to disk; the app never
+  pushes to Google — crawlers discover the sitemap through `robots.txt`.
 
 ---
 
@@ -198,8 +215,10 @@ documentation cleanups), see **[docs/TODO.md](docs/TODO.md)**.
 - [x] Featured badges & featured-first ordering on all listings (v1.2.7)
 - [x] Fullscreen product/service gallery lightbox — zoom, pan, pinch, swipe,
       keyboard navigation, and full gallery above Features (v1.2.8)
-- [ ] SEO engine — v1.3.0 scope committed and prioritized (canonical/OG, JSON-LD,
-      sitemap, catalogue SEO fields, web vitals, brand attribution) — see
+- [x] Database-driven sitemaps + dynamic `robots.txt` + "Start From" pricing
+      with formatted currency (v1.2.9)
+- [ ] SEO engine — remaining v1.3.0 scope (canonical/OG, JSON-LD, catalogue SEO
+      fields, web vitals, brand attribution); sitemap + robots shipped in v1.2.9 — see
       [docs/TODO.md](docs/TODO.md) §1
 - [ ] SaaS tiers & quotas (`BC Subscription`)
 - [ ] Web push notifications for installed PWAs
