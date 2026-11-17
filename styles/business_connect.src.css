@@ -4059,7 +4059,7 @@ body.bc-lightbox-open {
     padding: 1.25rem 1rem 2rem;
     font-size: 0.8rem;
     letter-spacing: 0.01em;
-    color: #94a3b8;
+    color: #4b5563;
     background: var(--bc-footer-bg, #f8fafc);
 }
 .bc-vendor-footer a {
@@ -4068,7 +4068,7 @@ body.bc-lightbox-open {
 }
 .bc-vendor-footer a:hover,
 .bc-vendor-footer a:focus-visible {
-    color: #64748b;
+    color: #1f2937;
     text-decoration: underline;
 }
 
