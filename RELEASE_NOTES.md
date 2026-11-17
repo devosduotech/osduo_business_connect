@@ -1,3 +1,38 @@
+# Release Notes - business_connect (v1.2.92)
+
+**Release Date:** 17 November 2026
+**Version:** v1.2.92 (patch)
+
+A housekeeping patch that bakes the desk form layout into the app, so every
+site gets the tidied forms on `migrate` without any Customize Form work.
+
+## Changes (v1.2.92)
+
+### Standard desk forms for every site
+- The form layout tuned on the UAT site is now part of the app's own DocType
+  definitions. Deploying and running `migrate` applies it everywhere.
+- **BC Theme** fields are regrouped, the naming rule is corrected, **Import** is
+  enabled, and the unused *Activation* section is removed.
+- **Showcase Product** keeps its Purchase Link checkbox and button label
+  together in a two-column block.
+- **Showcase Service** now mirrors the Showcase Product form — media, pricing
+  (with location) and status laid out in the same columns.
+- Business, Business Member, Digital Card and Product Category were reviewed and
+  are unchanged.
+- `migrate` removes the old site-level Customize Form records (Custom Fields and
+  Property Setters) that would otherwise override the standard layout.
+
+## Upgrade
+
+```bash
+bench --site <site> migrate
+bench --site <site> clear-cache
+```
+
+The layout is applied by `migrate`; existing data is untouched.
+
+---
+
 # Release Notes - business_connect (v1.2.91)
 
 **Release Date:** 17 November 2026

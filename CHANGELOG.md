@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.2.92 - 17 November 2026
+
+### Changes (v1.2.92)
+
+#### Desk form layout baked into the app
+- The desk form layout tuned on `business.uat` with **Customize Form** is now
+  part of the app's own DocType definitions, so every site gets it on `migrate`
+  with no manual Customize Form work.
+- **BC Theme**: field order regrouped; `naming_rule` corrected to
+  `By "Naming Series" field`; **Import** enabled; the unused *Activation*
+  section removed; four named column breaks added in place of the old
+  `custom_column_break_*` records.
+- **Showcase Product**: the Purchase Link checkbox and its button label now sit
+  together in their own two-column block (`column_break_vacj`).
+- **Showcase Service**: field order now mirrors Showcase Product — media
+  (image · video · gallery | brochure · features), pricing with location below,
+  and status · sort order on their own column.
+- **Business, Business Member, Digital Card and Product Category** were reviewed
+  and need no change.
+- `migrate` deletes the leftover site-level Custom Fields / Property Setters
+  (including the auto-generated `custom_column_break_*` records) so the source
+  DocType stays the single truth.
+
+### Upgrade
+```bash
+bench --site <site> migrate
+bench --site <site> clear-cache
+```
+`migrate` rewrites the standard DocType layout and removes the stale Customize
+Form records; existing data is untouched.
+
+---
+
 ## v1.2.91 - 17 November 2026
 
 ### Bug fixes (v1.2.91)
