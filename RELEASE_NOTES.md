@@ -1,3 +1,72 @@
+# Release Notes - business_connect (v1.3.0)
+
+**Release Date:** 17 November 2026
+**Version:** v1.3.0 (minor)
+
+The SEO & brand-attribution release. Business Connect pages are now fully
+indexable, rich-result ready, faster, and carry the OSDuo attribution — six
+phases delivered in one release.
+
+## What's new (v1.3.0)
+
+### Pages show up properly in search and when shared
+- Every public page now emits a clean `<title>` (no brand clutter), a unique
+  meta description, a canonical URL, the full Open Graph set and a Twitter
+  card. Links shared to WhatsApp / LinkedIn / X render a proper preview with
+  the page's own image.
+- Private pages (login, offline, analytics, my-card) are marked `noindex` so
+  they never appear in search results.
+
+### Structured data for Google rich results
+- Businesses, products, services and cards now carry schema.org JSON-LD:
+  LocalBusiness (address, opening hours, socials), Product + price, Service,
+  Person, plus organisation/brand, website and breadcrumb nodes. An unpriced
+  product intentionally omits the price node so the Rich Results Test reports
+  zero warnings.
+
+### Editable SEO titles & descriptions on products and services
+- Products and services (and businesses) now have an **SEO** section with
+  *SEO Title* and *SEO Description*. They're the fallback-aware source for the
+  page title/description; leave them blank and a sensible value is generated.
+- Editable even on submitted records (no amend needed), with live character
+  guidance and a non-blocking warning if you go long.
+
+### Faster pages
+- Fonts are self-hosted (subset to Latin + the ₹ sign) and the Font Awesome
+  CDN was replaced with inline SVG icons — **no third-party render-blocking
+  requests** remain. Images declare dimensions/async decoding, lazy-load below
+  the fold, and the hero is prioritised. The Open Graph image was re-cut to
+  1200×630. The stylesheet was split so each page only loads its own theme.
+  Measured mobile Lighthouse Performance improved from 82 to 94 (LCP 4.3 s →
+  2.9 s).
+
+### "Powered by OSDuo Business Connect" attribution
+- A small, tasteful credit now appears once at the foot of every public page,
+  linking to the product page. White-label deployments turn it off with a single
+  config flag (`show_vendor_credit`).
+
+### SEO edits show instantly
+- Publishing or editing a business, product, service or card now clears the
+  affected cached pages automatically, so an SEO change is live on the next
+  visit instead of after a delay.
+
+## Upgrade
+
+```bash
+cd ~/frappe-bench/apps/osduo_business_connect && git pull
+bench --site <site> migrate                 # required: SEO fields on Product/Service
+bench --site <site> build --app osduo_business_connect   # fonts + split CSS
+bench restart
+bench --site <site> clear-cache
+bench --site <site> clear-website-cache
+```
+
+`migrate` and `clear-website-cache` are both required. After deploy, run
+Lighthouse and Google's Rich Results Test on a business, product, service and
+card page to confirm.
+
+---
+
 # Release Notes - business_connect (v1.2.93)
 
 **Release Date:** 17 November 2026

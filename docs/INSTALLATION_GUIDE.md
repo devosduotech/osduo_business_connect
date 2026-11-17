@@ -224,6 +224,26 @@ it the default. Rules:
   `bench --site <site> execute osduo_business_connect.branding.apply_branding_settings`
   then `bench --site <site> clear-cache`.
 
+### SEO, sitemap & cache (v1.3.0)
+
+Public pages emit canonical + Open Graph + Twitter meta, structured data
+(JSON-LD), a page-specific OG image, and are listed in a per-host sitemap.
+Nothing is pushed to Google — discovery happens through `robots.txt`.
+
+| Concern | How it works |
+|---|---|
+| Canonical / OG origin | Always from `site_config.json → host_name` (see above), **never** the request host. BYOD customers: set `host_name` to the custom domain so canonical / OG / sitemap all follow it. Private pages (login/root, `/offline`, `/analytics`, `/my-card`) are `noindex,nofollow`. |
+| Sitemap | `/sitemap.xml` is an index of four per-type sitemaps (`/sitemap-businesses.xml`, `/sitemap-products.xml`, `/sitemap-services.xml`, `/sitemap-cards.xml`), built from published records with `lastmod`. |
+| robots.txt | `/robots.txt` is served by the app and rebuilt per request; the `Sitemap:` line always matches the host the crawler reached. Admin-set rules in Website Settings are respected (only the `Sitemap:` line is managed). |
+| Search Console (optional) | You may submit `/sitemap.xml` once, but it is not required — Google discovers it via the `Sitemap:` line and recrawls on its own schedule. The app never pushes. |
+| SEO edits show immediately | `utils/cache.py` clears the cached page for the record and its related pages on publish/edit, so title/description/JSON-LD changes appear on the next request (no waiting for the ~30-minute page cache). |
+| Vendor / product link | The footer + JSON-LD Brand link `OSDUO_BRANDING["product_url"]` while `product_url_live` is `True` (current), else the vendor site. The credit is shown when `show_vendor_credit` is `True` — set it `False` to white-label the footer off with no code change. |
+
+**Deploy note:** the fonts and split CSS in `public/` are served from the asset
+bundle, so after `git pull` run `bench --site <site> build --app
+osduo_business_connect` (then `clear-website-cache`). Schema (SEO fields) needs
+`bench migrate`.
+
 ---
 
 ## 🔧 Troubleshooting

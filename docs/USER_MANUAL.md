@@ -486,6 +486,37 @@ Two fields control the order of products and services on the public listings:
 
 **Good practice:** tick Featured sparingly — most businesses run one to three featured items; re-check the listing after changes since "Featured first" also means "everything else below".
 
+### 4.9 SEO Title & Description
+
+Each **Business**, **Product** and **Service** has an **SEO** section with two
+optional fields that control how the page appears in search results and when
+shared on social apps:
+
+| Field | Aim | What it becomes |
+|---|---|---|
+| **SEO Title** | 50–60 characters | The page `<title>` / `og:title` (the blue link text in Google) |
+| **SEO Description** | 150–160 characters | The `meta description` / `og:description` (the snippet under the title) |
+
+**Leave them blank and good defaults are generated:**
+- Title — Product/Service: *"<Name> — <Business>"*; Business: *"<Name> — <Industry>"*
+  (or *"<Name> in <City>"*).
+- Description — the item's Short Description, then its full Description, then a
+  location line. Any pasted formatting is stripped automatically.
+
+Notes:
+- Both are editable **even on a submitted record** — change them and save; no
+  amend needed. A soft warning appears only if you go well past the suggested
+  length; it never blocks saving.
+- Changes appear on the live page **immediately** (the cache clears itself),
+  though Google re-crawls on its own schedule before search results refresh.
+- **Cards** have no SEO fields: they use the person's name and designation as
+  the title and **inherit the business's SEO description** (falling back to the
+  card bio) for the search snippet.
+- The site root is the login screen and is intentionally hidden from search, as
+  are `/offline`, `/analytics` and `/my-card`. Only published business, product,
+  service and card pages are indexed, and all of them are listed in
+  `/sitemap.xml`.
+
 ---
 
 ## 5. Theming & Branding

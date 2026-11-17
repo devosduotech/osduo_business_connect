@@ -2,6 +2,112 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.3.0 - 17 November 2026
+
+### SEO & brand attribution (the v1.3.0 release)
+
+The full [SEO plan](docs/SEO_PLAN_v1.3.0.md) ships in one release. Sitemaps,
+the dynamic `robots.txt` and the "Start From" price mode already shipped in
+v1.2.9; everything below is new.
+
+#### Canonical & Open Graph metadata on every public page (Phase A)
+- New `utils/seo.py` — `build_seo()` produces the title, description,
+  canonical, robots, the complete OG set (title/description/url/image/
+  `image:alt`/type/site_name/locale `en_IN`) and the Twitter
+  `summary_large_image` card. `clean_text()` cuts descriptions to a 155-char
+  search snippet on a word boundary; `absolute_url()` always resolves against
+  the canonical, `host_name`-first origin (never the request host, so printed
+  QR/NFC links stay stable).
+- `templates/bc_base.html` `<head>` rewritten: page-content-only `<title>` (no
+  brand suffix), canonical, robots, the full OG + Twitter blocks,
+  `application-name`, `generator`, `theme-color`, and a JSON-LD `<script>` per
+  block. All values HTML-escaped (Frappe Jinja autoescape is off). The dead
+  `og_title`/`og_description`/`og_image` guards are gone.
+- Per-page precedence (SEO_PLAN §C) wired into the Business / Product / Service
+  / Card controllers; the card share/landing URL now uses the canonical base.
+- `noindex,nofollow` on the login screen (site root), `/offline`, `/analytics`
+  and `/my-card`. Relocated the dead `www/analytics.py` controller to
+  `templates/pages/analytics.py`, which also fixes its never-firing login gate.
+
+#### Structured data / rich results (Phase B)
+- New `seo/jsonld.py`: `Organization` + `Brand` (sitewide), `WebSite` (business
+  pages only), `LocalBusiness` (address, opening hours, social `sameAs`),
+  `Product` + `Offer`, `Service`, `Person` wrapped in `ProfilePage`, and
+  `BreadcrumbList`. Prices are coerced to JSON-safe floats; every URL uses the
+  canonical origin; serialisation escapes `<` so no `</script>` breakout.
+- `Product` + `Offer` are emitted **only when a price is displayed** (Fixed /
+  Start From, priced, currency set); an unpriced product emits a `WebPage` +
+  `BreadcrumbList` instead, so Rich Results reports no "missing offers" warning.
+
+#### Product & Service SEO fields (Phase C)
+- `Showcase Product` and `Showcase Service` gain an **SEO** section with
+  `seo_title` + `seo_description`; `Business`'s SEO fields move out of
+  "Branding & Theme" into their own SEO section. All six fields are
+  `allow_on_submit` — editable after submit without an amend — with
+  50-60 / 150-160 character guidance.
+- `utils/seo.normalize_seo_fields()` strips markup from the stored SEO fields
+  and shows a non-blocking length warning past 70 / 160 characters; called from
+  the Business / Product / Service controllers. The page controllers already
+  prefer the explicit fields, so they feed `<title>`, OG and JSON-LD directly.
+- **Schema change** — requires `bench migrate`.
+
+#### Core Web Vitals (Phase D)
+- **Self-hosted fonts**: the 12-family Google Fonts request is replaced with
+  38 `woff2` faces in `public/fonts/` + `public/css/fonts.css`
+  (`font-display: swap`), subset to **latin + latin-ext + `U+20B9` (₹)** by
+  `scripts/gen_fonts.py`. `scripts/build_icons.py` regenerates `utils/icons.py`
+  from the upstream SVGs (re-run after editing).
+- **Font Awesome CDN removed**: `utils/icons.py` renders brand icons as inline
+  SVG (Simple Icons, CC0) and the three generic glyphs from Lucide (ISC);
+  templates use `{{ icon_class | bc_icon(...) }}` with a generic fallback.
+- **Images**: every `<img>` gets `decoding="async"`; above-the-fold heroes
+  `fetchpriority="high"`; below-the-fold / modal images `loading="lazy"`.
+  `og-image.png` re-cut 1731×909 → **1200×630, ~279 KB**, and `og:image:width`
+  `/height` are now emitted for the default image.
+- The page hero is `<link rel=preload as=image>`d; a `<main>` landmark added.
+
+#### Sitewide vendor attribution footer (Phase E)
+- New `parts/vendor_footer.html` included **once** in `bc_base.html`, so it
+  appears on every public route with zero per-template edits. It links the
+  product page (`www.osduotech.com/solutions/business-connect`, now live), is
+  gated by `show_vendor_credit`, uses no `nofollow`, and clears the fixed mobile
+  action bar. The five old inline "Powered by … connect.osduotech.com" footers
+  are removed; the link meets WCAG AA contrast.
+
+#### Unused-CSS split (Phase D follow-up)
+- `business_connect.css` is split into a shared base file (loaded everywhere)
+  and one `theme-<name>.css` per theme (loaded only when active) via
+  `scripts/split_css.py` — the source of truth is
+  `styles/business_connect.src.css`. Served base went **89.6 KB → ~37 KB**; a
+  themed page loads base + one theme file and never fetches the other five.
+  Verified as a complete, isolated partition. Measured: mobile Lighthouse
+  Performance **82 → 94** (LCP 4.3 s → 2.9 s).
+
+#### Instant cache invalidation (Phase F)
+- New `utils/cache.py` clears the Frappe website-page cache for the affected
+  routes on any Business / Product / Service / Card change, **bidirectionally**
+  (a child change clears its own page and the parent business page; a business
+  change clears every child page). Wired into `doc_events` alongside the
+  existing sitemap invalidation, so SEO edits show immediately (no 30-minute
+  wait).
+
+#### Configuration
+- `OSDUO_BRANDING` gains the vendor/product identity keys (single source for
+  the JSON-LD `Organization`/`Brand` and the footer) and `product_url_live` is
+  now `True`.
+
+### Upgrade
+```bash
+cd ~/frappe-bench/apps/osduo_business_connect && git pull
+bench --site <site> migrate                 # Phase C SEO fields (schema)
+bench --site <site> build --app osduo_business_connect   # self-hosted fonts + split CSS
+bench restart                               # new Jinja filters, doc_events, utils
+bench --site <site> clear-cache
+bench --site <site> clear-website-cache
+```
+
+---
+
 ## v1.2.93 - 17 November 2026
 
 ### Bug fixes (v1.2.93)
