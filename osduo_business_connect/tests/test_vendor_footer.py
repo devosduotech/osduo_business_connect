@@ -59,19 +59,20 @@ class TestBrandingContext(unittest.TestCase):
         get_branding_context(ctx)
         return ctx
 
-    def test_credit_url_is_vendor_site_while_product_offline(self):
-        # product_url_live is False, so the footer must point at the vendor site.
-        self.assertFalse(OSDUO_BRANDING["product_url_live"])
+    def test_credit_url_points_at_live_product_page(self):
+        # The product page is live, so the footer links straight to it.
+        self.assertTrue(OSDUO_BRANDING["product_url_live"])
         ctx = self._ctx()
-        self.assertEqual(ctx["bc_credit_url"], OSDUO_BRANDING["vendor_url"])
-        self.assertNotIn(OSDUO_BRANDING["product_url"], str(ctx))
+        self.assertEqual(ctx["bc_credit_url"], OSDUO_BRANDING["product_url"])
 
-    def test_credit_url_follows_product_when_live(self):
+    def test_credit_url_falls_back_to_vendor_site_when_offline(self):
+        # Escape hatch: if the product page ever goes offline, credit -> vendor.
         saved = OSDUO_BRANDING["product_url_live"]
         try:
-            OSDUO_BRANDING["product_url_live"] = True
+            OSDUO_BRANDING["product_url_live"] = False
             ctx = self._ctx()
-            self.assertEqual(ctx["bc_credit_url"], OSDUO_BRANDING["product_url"])
+            self.assertEqual(ctx["bc_credit_url"], OSDUO_BRANDING["vendor_url"])
+            self.assertNotIn(OSDUO_BRANDING["product_url"], str(ctx))
         finally:
             OSDUO_BRANDING["product_url_live"] = saved
 

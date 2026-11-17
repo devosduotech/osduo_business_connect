@@ -19,6 +19,7 @@ import unittest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
+from osduo_business_connect.hooks import OSDUO_BRANDING
 from osduo_business_connect.seo import jsonld as jl
 from osduo_business_connect.utils.seo import (
     DEFAULT_ROBOTS,
@@ -392,11 +393,23 @@ class TestVendorBlocks(unittest.TestCase):
         self.assertEqual(brand["@type"], "Brand")
         self.assertEqual(brand["name"], "OSDuo Business Connect")
 
-    def test_product_url_not_emitted_while_unpublished(self):
-        # product_url_live is False, so Brand.url must fall back to the vendor
-        # site and the (not-yet-live) product URL must appear nowhere.
+    def test_product_url_emitted_for_brand_when_live(self):
+        # The product page is live, so Brand.url points straight at it.
+        self.assertTrue(OSDUO_BRANDING["product_url_live"])
         with canonical_base(CANON):
-            dumped = json.dumps(jl.vendor_blocks())
+            brand = jl.vendor_blocks()[1]
+        self.assertEqual(brand["url"], OSDUO_BRANDING["product_url"])
+
+    def test_brand_falls_back_to_vendor_site_when_product_offline(self):
+        # Escape hatch: while product_url_live is False the not-yet-live product
+        # URL must appear nowhere and Brand.url must be the vendor site.
+        saved = OSDUO_BRANDING["product_url_live"]
+        try:
+            OSDUO_BRANDING["product_url_live"] = False
+            with canonical_base(CANON):
+                dumped = json.dumps(jl.vendor_blocks())
+        finally:
+            OSDUO_BRANDING["product_url_live"] = saved
         self.assertIn("https://www.osduotech.com", dumped)
         self.assertNotIn("solutions/business-connect", dumped)
 

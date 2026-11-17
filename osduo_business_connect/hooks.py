@@ -30,15 +30,15 @@ OSDUO_BRANDING = {
     "text_color": "#333333",
     # Vendor / product identity — single source of truth for the JSON-LD
     # Organization+Brand node (Phase B) and the footer credit (Phase E).
-    # product_url is never emitted while product_url_live is False: the Brand
-    # url falls back to vendor_url, so attribution points at the vendor site
-    # until the product page ships. Flipping product_url_live to True is the
-    # only edit needed once it is live.
+    # product_url_live is True and the product page is live, so Brand.url and
+    # the footer credit link straight to product_url. Flip it back to False only
+    # if that page ever goes away — the JSON-LD and footer fall back to
+    # vendor_url automatically.
     "vendor_name": "OSDuo Tech LLP",
     "vendor_url": "https://www.osduotech.com",
     "product_name": "OSDuo Business Connect",
     "product_url": "https://www.osduotech.com/solutions/business-connect",
-    "product_url_live": False,
+    "product_url_live": True,
     "show_vendor_credit": True,
     "vendor_credit_text": "Powered by OSDuo Business Connect \u2014 A Product of OSDuo Tech LLP",
     "title_brand_suffix": "",
@@ -114,40 +114,44 @@ website_route_rules = [
 # the controller files. No need to register them in doc_events.
 #
 # The only doc_events we register are cross-cutting concerns that must not
-# live in a single controller: the CRM Lead hook, and the sitemap cache
-# invalidation below.
+# live in a single controller: the CRM Lead hook, and the cache invalidation
+# below.
 _SITEMAP_INVALIDATE = "osduo_business_connect.seo.sitemap.invalidate_sitemap_cache"
+_PAGE_CACHE_INVALIDATE = "osduo_business_connect.utils.cache.on_publication_change"
+_PUBLICATION_EVENTS = [_SITEMAP_INVALIDATE, _PAGE_CACHE_INVALIDATE]
 
 doc_events = {
     "CRM Lead": {
         "on_update": "osduo_business_connect.crm_integration.crm_lead_hook.on_crm_lead_update",
     },
     # Any publication change (create/update/submit/cancel/delete) drops the
-    # cached sitemaps so new URLs appear — and removed ones disappear — on
-    # the next crawl instead of waiting for the 3-day full regeneration.
+    # cached sitemaps so new URLs appear — and removed ones disappear — on the
+    # next crawl, and clears the cached HTML of the affected public pages so an
+    # edit (including SEO text) is served immediately, not after the 30-minute
+    # page-cache TTL (SEO_PLAN acceptance #7).
     "Business": {
-        "on_update": _SITEMAP_INVALIDATE,
-        "on_submit": _SITEMAP_INVALIDATE,
-        "on_cancel": _SITEMAP_INVALIDATE,
-        "on_trash": _SITEMAP_INVALIDATE,
+        "on_update": _PUBLICATION_EVENTS,
+        "on_submit": _PUBLICATION_EVENTS,
+        "on_cancel": _PUBLICATION_EVENTS,
+        "on_trash": _PUBLICATION_EVENTS,
     },
     "Showcase Product": {
-        "on_update": _SITEMAP_INVALIDATE,
-        "on_submit": _SITEMAP_INVALIDATE,
-        "on_cancel": _SITEMAP_INVALIDATE,
-        "on_trash": _SITEMAP_INVALIDATE,
+        "on_update": _PUBLICATION_EVENTS,
+        "on_submit": _PUBLICATION_EVENTS,
+        "on_cancel": _PUBLICATION_EVENTS,
+        "on_trash": _PUBLICATION_EVENTS,
     },
     "Showcase Service": {
-        "on_update": _SITEMAP_INVALIDATE,
-        "on_submit": _SITEMAP_INVALIDATE,
-        "on_cancel": _SITEMAP_INVALIDATE,
-        "on_trash": _SITEMAP_INVALIDATE,
+        "on_update": _PUBLICATION_EVENTS,
+        "on_submit": _PUBLICATION_EVENTS,
+        "on_cancel": _PUBLICATION_EVENTS,
+        "on_trash": _PUBLICATION_EVENTS,
     },
     "Digital Card": {
-        "on_update": _SITEMAP_INVALIDATE,
-        "on_submit": _SITEMAP_INVALIDATE,
-        "on_cancel": _SITEMAP_INVALIDATE,
-        "on_trash": _SITEMAP_INVALIDATE,
+        "on_update": _PUBLICATION_EVENTS,
+        "on_submit": _PUBLICATION_EVENTS,
+        "on_cancel": _PUBLICATION_EVENTS,
+        "on_trash": _PUBLICATION_EVENTS,
     },
 }
 
