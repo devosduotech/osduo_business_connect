@@ -29,6 +29,14 @@ All notable changes to this project will be documented in this file.
 - The Showcase Product and Service **Video URL** field descriptions list the
   supported sources.
 
+### UI changes (v1.2.91)
+
+#### Digital card page
+- Removed the fixed **bottom navigation bar** (Home / Products / Enquiry) from
+  the digital card page — it was the only page that carried one. The card
+  content and its "Powered by" attribution are unchanged; the reserved bottom
+  spacing was reduced to suit the removed bar.
+
 ### Upgrade
 ```bash
 bench --site <site> migrate

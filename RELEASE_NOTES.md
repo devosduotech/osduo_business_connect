@@ -21,6 +21,10 @@ links now play in the page instead of rendering nothing.
 - Unsupported or unsafe links are skipped quietly rather than rendering a broken
   video box.
 
+### Digital card page tidied
+- Removed the fixed bottom navigation bar (Home / Products / Enquiry) from the
+  digital card page — it was the only page that had one.
+
 ## Upgrade
 
 ```bash
