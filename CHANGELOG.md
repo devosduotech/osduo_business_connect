@@ -59,6 +59,25 @@ All notable changes to this project will be documented in this file.
   format through a new `format_money` Jinja filter
   (`utils/money.py`), so no currency symbol is forced.
 
+#### Video embed rendering
+- A pasted **YouTube** link (watch / `youtu.be` / shorts / live) previously put
+  the non-embeddable share URL straight into the `<iframe>`, so it played as
+  **"Refused to connect"**. It is now rewritten to the provider's embed URL
+  (`youtube-nocookie.com/embed/…`), and Vimeo / Google Drive / Dailymotion share
+  links are likewise converted to their frameable form.
+- A **Nextcloud** public-share link (`/s/<token>`) — or any self-hosted / direct
+  video file (`.mp4`, `.webm`, `.ogg`, …) — previously matched none of the fixed
+  provider allow-list and rendered nothing at all. These now play through an
+  HTML5 `<video>` element using the direct file URL (Nextcloud shares resolve to
+  `…/download?inline=true`).
+- The choice is made by a new `video_embed` Jinja filter
+  (`utils/website.py`) returning `{kind: "iframe" | "file", src}`; the product
+  and service templates render the matching player and render **no empty box**
+  when a URL cannot be resolved. `safe_video_url` is kept (iframe providers
+  only) for backwards compatibility.
+- The Showcase Product **Video URL** field description now lists the supported
+  sources.
+
 ### Upgrade
 ```bash
 bench --site <site> migrate

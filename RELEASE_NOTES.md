@@ -41,6 +41,16 @@ amount.
 - Prices are shown with thousands separators, e.g. **INR 12,000**, matching the
   currency format instead of `INR 12000`.
 
+### Product videos now play
+- **YouTube links work.** A watch / `youtu.be` / Shorts link you paste is now
+  turned into the proper embed, so it no longer shows "Refused to connect".
+  Vimeo, Google Drive and Dailymotion share links are handled the same way.
+- **Your own Nextcloud (or any direct video file) plays too.** A public-share
+  link (`…/s/…`) or a direct `.mp4` / `.webm` / `.ogg` URL now streams in the
+  page's built-in player instead of showing nothing.
+- Unsupported or unsafe links are skipped quietly rather than rendering a broken
+  video box.
+
 ## Upgrade
 
 ```bash
