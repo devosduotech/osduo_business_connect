@@ -268,6 +268,7 @@ jinja = {
         "osduo_business_connect.utils.website",
         "osduo_business_connect.utils.money",
         "osduo_business_connect.utils.seo",
+        "osduo_business_connect.utils.icons",
     ],
 }
 

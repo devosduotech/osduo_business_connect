@@ -32,7 +32,7 @@
 
     {% if share_qr %}
     <div class="bc-card-share-qr">
-        <img src="{{ share_qr }}" alt="{{ share_qr_alt or 'QR code' }}">
+        <img decoding="async" loading="lazy" src="{{ share_qr }}" alt="{{ share_qr_alt or 'QR code' }}">
         <p>Scan to view</p>
     </div>
     {% endif %}

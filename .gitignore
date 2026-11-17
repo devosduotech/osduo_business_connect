@@ -15,6 +15,8 @@ pip-delete-this-directory.txt
 # Virtual Environment
 env/
 venv/
+.venv/
+uv.lock
 .env/
 .python-version
 

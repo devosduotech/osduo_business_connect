@@ -2,7 +2,7 @@
 <div class="bc-header">
     <div class="bc-detail">
         {% if doc.image %}
-        <img src="{{ doc.image }}" alt="{{ doc.product_name or doc.service_name }}" class="bc-cover-img">
+        <img decoding="async" fetchpriority="high" src="{{ doc.image }}" alt="{{ doc.product_name or doc.service_name }}" class="bc-cover-img">
         {% endif %}
 
         <h1>{{ doc.product_name or doc.service_name }}</h1>

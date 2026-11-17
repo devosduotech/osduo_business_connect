@@ -37,7 +37,7 @@
                 {% for product in products %}
                 <a href="/b/{{ doc.business_slug }}/products/{{ product.slug }}" class="bc-card-item" data-bc-event="product_view" data-bc-product="{{ product.name }}">
                     {% if product.image %}
-                    <img src="{{ product.image }}" alt="{{ product.product_name }}" class="bc-card-item-img" loading="lazy">
+                    <img decoding="async" src="{{ product.image }}" alt="{{ product.product_name }}" class="bc-card-item-img" loading="lazy">
                     {% else %}
                     <span class="bc-card-item-img bc-card-item-img-fallback">&#128230;</span>
                     {% endif %}
@@ -71,7 +71,7 @@
                 {% for service in services %}
                 <a href="/b/{{ doc.business_slug }}/services/{{ service.slug }}" class="bc-card-item" data-bc-event="service_view" data-bc-service="{{ service.name }}">
                     {% if service.image %}
-                    <img src="{{ service.image }}" alt="{{ service.service_name }}" class="bc-card-item-img" loading="lazy">
+                    <img decoding="async" src="{{ service.image }}" alt="{{ service.service_name }}" class="bc-card-item-img" loading="lazy">
                     {% else %}
                     <span class="bc-card-item-img bc-card-item-img-fallback">&#128295;</span>
                     {% endif %}

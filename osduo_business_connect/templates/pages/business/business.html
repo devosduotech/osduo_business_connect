@@ -39,7 +39,7 @@
                 {% for product in products %}
                 <a href="/b/{{ doc.slug }}/products/{{ product.slug }}" class="bc-card bc-product-card">
                     {% if product.image %}
-                    <img src="{{ product.image }}" alt="{{ product.product_name }}">
+                    <img decoding="async" loading="lazy" src="{{ product.image }}" alt="{{ product.product_name }}">
                     {% else %}
                     <div style="height:160px;background:#f1f5f9;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#94a3b8;">&#128230;</div>
                     {% endif %}
@@ -67,7 +67,7 @@
                 {% for service in services %}
                 <a href="/b/{{ doc.slug }}/services/{{ service.slug }}" class="bc-card bc-product-card">
                     {% if service.image %}
-                    <img src="{{ service.image }}" alt="{{ service.service_name }}">
+                    <img decoding="async" loading="lazy" src="{{ service.image }}" alt="{{ service.service_name }}">
                     {% else %}
                     <div style="height:160px;background:#f1f5f9;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#94a3b8;">&#128295;</div>
                     {% endif %}
@@ -182,7 +182,7 @@
             <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
                 {% for link in social_links %}
                 <a href="{{ link.url | safe_url }}" target="_blank" rel="noopener" class="bc-btn bc-btn-secondary" style="font-size:0.8rem;">
-                    {% if link.icon_class %}<i class="{{ link.icon_class }}" style="margin-right:0.3rem;"></i>{% endif %}{{ link.platform }}
+                    {{ link.icon_class | bc_icon(link.platform) }}{{ link.platform }}
                 </a>
                 {% endfor %}
             </div>

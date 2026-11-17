@@ -14,7 +14,7 @@
                     data-caption="{{ image.caption or image.alt_text or '' }}"
                     aria-label="View {{ image.caption or image.alt_text or 'image' }} fullscreen"
                 >
-                    <img
+                    <img decoding="async"
                         class="bc-gallery-img"
                         src="{{ image.image }}"
                         alt="{{ image.alt_text or image.caption or '' }}"

@@ -5,7 +5,7 @@
     <div class="bc-container bc-biz-header-inner">
         <a href="/b/{{ business_slug }}" class="bc-biz-brand" title="{{ business.business_name or business_name }}">
             {% if business.logo %}
-            <img src="{{ business.logo }}" alt="{{ business.business_name or business_name }}" class="bc-biz-logo-img">
+            <img decoding="async" loading="lazy" src="{{ business.logo }}" alt="{{ business.business_name or business_name }}" class="bc-biz-logo-img">
             {% else %}
             <span class="bc-biz-logo-fallback" aria-hidden="true">{{ (business.business_name or business_name or 'B')[0] }}</span>
             {% endif %}

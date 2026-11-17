@@ -27,6 +27,11 @@ OG_LOCALE = "en_IN"
 OG_TYPE_DEFAULT = "website"
 TWITTER_CARD = "summary_large_image"
 
+# Bundled open-graph image dimensions (public/images/og-image.png, re-cut in
+# Phase D to 1200x630). Used to emit og:image:width/height only when the
+# default image is in play.
+OG_IMAGE_SIZE = (1200, 630)
+
 # Paths that must never be indexed: the site root (``home_page = "login"``) and
 # the login route itself. Other private pages set ``context.seo`` directly.
 # Compared on the slash-stripped form, so both ``login`` and ``/login`` match.
@@ -173,10 +178,14 @@ def build_seo(
     clean_description = clean_text(description, limit=155)
 
     canonical = absolute_url(path)
-    image_url = absolute_url(image) if image else absolute_url(OSDUO_BRANDING["og_image"])
+    # Dimensions are only asserted for the bundled OG image (known size); a
+    # business/product cover or logo has arbitrary dimensions we cannot know at
+    # render time, so width/height are simply omitted for custom images.
+    use_bundled = not image
+    image_url = absolute_url(image) if not use_bundled else absolute_url(OSDUO_BRANDING["og_image"])
     image_alt = clean_title or OSDUO_BRANDING["app_name"]
 
-    return {
+    seo = {
         "title": clean_title,
         "description": clean_description,
         "canonical": canonical,
@@ -192,3 +201,6 @@ def build_seo(
         "twitter_card": TWITTER_CARD,
         "jsonld": list(blocks or []),
     }
+    if use_bundled:
+        seo["og_image_width"], seo["og_image_height"] = OG_IMAGE_SIZE
+    return seo

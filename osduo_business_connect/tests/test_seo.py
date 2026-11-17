@@ -238,6 +238,20 @@ class TestBuildSeo(unittest.TestCase):
         with canonical_base("https://connect.osduotech.com"):
             self.assertEqual(build_seo("T", "D", "/b/acme")["jsonld"], [])
 
+    def test_bundled_og_image_carries_dimensions(self):
+        # Phase D: the default og-image is known to be 1200x630, so emit the hints.
+        with canonical_base("https://connect.osduotech.com"):
+            result = build_seo("T", "D", "/b/acme")
+        self.assertEqual(result["og_image_width"], 1200)
+        self.assertEqual(result["og_image_height"], 630)
+
+    def test_custom_og_image_has_no_dimensions(self):
+        # A business cover/logo has arbitrary dimensions we cannot know; omit.
+        with canonical_base("https://connect.osduotech.com"):
+            result = build_seo("T", "D", "/b/acme", image="/files/cover.jpg")
+        self.assertNotIn("og_image_width", result)
+        self.assertNotIn("og_image_height", result)
+
 
 class TestLoginPath(unittest.TestCase):
     def test_root_and_login_are_login_paths(self):

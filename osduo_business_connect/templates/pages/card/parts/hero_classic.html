@@ -14,7 +14,7 @@
 
     <div class="bc-hero-classic-avatar-overlap">
         {% if doc.profile_image %}
-        <img src="{{ doc.profile_image }}" alt="{{ doc.display_name }}" class="bc-hero-classic-avatar">
+        <img decoding="async" fetchpriority="high" src="{{ doc.profile_image }}" alt="{{ doc.display_name }}" class="bc-hero-classic-avatar">
         {% else %}
         <div class="bc-hero-classic-avatar-fallback" aria-hidden="true">
             {{ doc.display_name[0] if doc.display_name else '?' }}
@@ -70,7 +70,7 @@
         <div class="bc-card-links bc-hero-classic-links">
             {% for link in links %}
             <a href="{{ link.url | safe_url }}" target="_blank" rel="noopener" class="bc-btn bc-hero-classic-link-btn">
-                {% if link.icon_class %}<i class="{{ link.icon_class }}" aria-hidden="true"></i>{% endif %}
+                {{ link.icon_class | bc_icon(link.link_type) }}
                 {{ link.label or link.link_type }}
             </a>
             {% endfor %}

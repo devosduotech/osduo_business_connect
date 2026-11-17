@@ -4080,3 +4080,13 @@ body.bc-lightbox-open {
 .bc-hours-row-today .bc-hours-day {
     color: var(--bc-primary-text, var(--bc-primary));
 }
+
+/* Inline SVG icons (replaces the Font Awesome CDN — see utils/icons.py). */
+.bc-icon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.125em;
+    margin-inline-end: 0.35em;
+    flex: none;
+}

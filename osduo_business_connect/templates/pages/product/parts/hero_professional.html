@@ -5,7 +5,7 @@
         <div class="bc-prof-gallery">
             {% if doc.image %}
             <div class="bc-prof-gallery-item">
-                <img src="{{ doc.image }}" alt="{{ doc.product_name }}" class="bc-prof-gallery-img">
+                <img decoding="async" fetchpriority="high" src="{{ doc.image }}" alt="{{ doc.product_name }}" class="bc-prof-gallery-img">
             </div>
             {% endif %}
             {% if not doc.image %}
@@ -18,7 +18,7 @@
         <div class="bc-prof-gallery">
             {% if doc.image %}
             <div class="bc-prof-gallery-item">
-                <img src="{{ doc.image }}" alt="{{ doc.service_name }}" class="bc-prof-gallery-img">
+                <img decoding="async" fetchpriority="high" src="{{ doc.image }}" alt="{{ doc.service_name }}" class="bc-prof-gallery-img">
             </div>
             {% else %}
             <div class="bc-prof-gallery-item">

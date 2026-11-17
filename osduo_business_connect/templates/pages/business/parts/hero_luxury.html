@@ -2,13 +2,13 @@
 <header class="bc-prof-band bc-hero-luxury">
     {% if doc.cover_image %}
     <div class="bc-prof-cover-wrap">
-        <img src="{{ doc.cover_image }}" alt="" class="bc-prof-cover-img">
+        <img decoding="async" fetchpriority="high" src="{{ doc.cover_image }}" alt="" class="bc-prof-cover-img">
     </div>
     {% endif %}
     <div class="bc-container bc-prof-band-inner">
         <div class="bc-prof-logo">
             {% if doc.logo %}
-            <img src="{{ doc.logo }}" alt="{{ doc.business_name }}">
+            <img decoding="async" loading="lazy" src="{{ doc.logo }}" alt="{{ doc.business_name }}">
             {% else %}
             <span aria-hidden="true">{{ (doc.business_name or 'B')[0] }}</span>
             {% endif %}

@@ -48,7 +48,7 @@
                 {% for feature in doc.features %}
                 <div class="bc-feature-item">
                     {% if feature.image %}
-                    <img src="{{ feature.image }}" alt="{{ feature.title }}" class="bc-feature-img" loading="lazy">
+                    <img decoding="async" src="{{ feature.image }}" alt="{{ feature.title }}" class="bc-feature-img" loading="lazy">
                     {% endif %}
                     <div>
                         <strong class="bc-feature-title">{{ feature.title }}</strong>
