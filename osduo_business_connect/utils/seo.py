@@ -120,9 +120,9 @@ def build_seo(
     ``title`` and ``description`` are cleaned of markup (the title is not
     truncated, the description is cut to a 155-character search snippet).
     ``image`` may be a relative or absolute URL; when falsy the bundled Open
-    Graph image is used. ``business`` is reserved for the JSON-LD builders
-    (Phase B) and is not read here yet. ``blocks`` is the list of JSON-LD dicts
-    to emit (empty until Phase B).
+    Graph image is used. ``blocks`` is the ordered list of JSON-LD nodes (from
+    :mod:`osduo_business_connect.seo.jsonld`) to emit in the ``<head>``.
+    ``business`` is carried for builders that need the parent context.
     """
     clean_title = clean_text(title, limit=0)
     clean_description = clean_text(description, limit=155)

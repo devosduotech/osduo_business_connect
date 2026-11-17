@@ -1,11 +1,14 @@
-import frappe
 from datetime import datetime, timedelta
-from ....services.theme_service import get_business_theme, get_theme_variables
+
+import frappe
+
 from ....analytics.tracking import capture_analytics_context, track_event
 from ....card.my_card import get_user_card_slug
-from ....utils.urls import get_business_public_url
+from ....seo import jsonld
+from ....services.theme_service import get_business_theme, get_theme_variables
 from ....utils.seo import build_seo
 from ....utils.share import get_share_by, get_share_ref
+from ....utils.urls import get_business_public_url
 
 
 def _format_hour_time(value):
@@ -106,6 +109,11 @@ def get_context(context):
         image=doc.get("cover_image") or doc.get("logo"),
         page_type="website",
         business=doc,
+        blocks=[
+            *jsonld.vendor_blocks(),
+            jsonld.website_node(),
+            jsonld.local_business_node(doc, context.business_hours, context.social_links),
+        ],
     )
 
     # Share — attributed to the card of whoever is sharing, when they have one.

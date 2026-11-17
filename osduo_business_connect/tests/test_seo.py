@@ -19,6 +19,7 @@ import unittest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
+from osduo_business_connect.seo import jsonld as jl
 from osduo_business_connect.utils.seo import (
     DEFAULT_ROBOTS,
     NOINDEX,
@@ -28,6 +29,54 @@ from osduo_business_connect.utils.seo import (
     is_login_path,
     jsonld,
 )
+
+CANON = "https://connect.osduotech.com"
+
+BUSINESS = {
+    "name": "BIZ-0001",
+    "business_name": "OSDuo Tech",
+    "slug": "osduo",
+    "logo": "/files/logo.png",
+    "cover_image": "/files/cover.jpg",
+    "description": "<p>We do <b>tech</b>.</p>",
+    "phone": "+91 90000 00000",
+    "email": "hi@osduo.com",
+    "address": "1 MG Road",
+    "city": "Chennai",
+    "state": "TN",
+    "postal_code": "600001",
+    "country": "India",
+}
+PRODUCT = {
+    "name": "PROD-1",
+    "product_name": "Widget",
+    "slug": "widget",
+    "short_description": "A widget",
+    "image": "/files/w.png",
+    "price": "12000",
+    "currency": "INR",
+    "price_display_mode": "Fixed",
+}
+SERVICE = {
+    "name": "SERV-1",
+    "service_name": "Consulting",
+    "slug": "consulting",
+    "short_description": "expert advice",
+    "price": "5000",
+    "currency": "INR",
+    "price_display_mode": "Start From",
+}
+CARD = {
+    "name": "CARD-1",
+    "display_name": "Karthic",
+    "designation": "Managing Director",
+    "slug": "karthic",
+    "profile_image": "/files/k.png",
+    "bio": "Leads the firm",
+    "phone": "+91 90000 00000",
+    "email": "k@osduo.com",
+    "website": "https://karthic.dev",
+}
 
 APP_DIR = os.path.join(os.path.dirname(__file__), "..")
 URLS_PATH = os.path.join(APP_DIR, "utils", "urls.py")
@@ -313,6 +362,236 @@ class TestSeoWiring(unittest.TestCase):
         source = read("templates", "pages", "card", "card.py")
         self.assertIn("seo_description", source)
         self.assertIn("logo", source)
+
+
+class TestVendorBlocks(unittest.TestCase):
+    def test_organization_and_brand(self):
+        with canonical_base(CANON):
+            org, brand = jl.vendor_blocks()
+        self.assertEqual(org["@type"], "Organization")
+        self.assertEqual(org["name"], "OSDuo Tech LLP")
+        self.assertEqual(org["url"], "https://www.osduotech.com")
+        self.assertEqual(brand["@type"], "Brand")
+        self.assertEqual(brand["name"], "OSDuo Business Connect")
+
+    def test_product_url_not_emitted_while_unpublished(self):
+        # product_url_live is False, so Brand.url must fall back to the vendor
+        # site and the (not-yet-live) product URL must appear nowhere.
+        with canonical_base(CANON):
+            dumped = json.dumps(jl.vendor_blocks())
+        self.assertIn("https://www.osduotech.com", dumped)
+        self.assertNotIn("solutions/business-connect", dumped)
+
+    def test_organization_logo_is_absolute(self):
+        with canonical_base(CANON):
+            org = jl.vendor_blocks()[0]
+        self.assertTrue(org["logo"].startswith(CANON + "/assets/"))
+
+
+class TestWebSiteNode(unittest.TestCase):
+    def test_url_is_canonical_base_and_publisher_is_vendor(self):
+        with canonical_base(CANON):
+            node = jl.website_node()
+        self.assertEqual(node["@type"], "WebSite")
+        self.assertEqual(node["url"], CANON)
+        self.assertEqual(node["publisher"]["@type"], "Organization")
+        self.assertEqual(node["publisher"]["name"], "OSDuo Tech LLP")
+
+
+class TestLocalBusinessNode(unittest.TestCase):
+    def test_core_fields(self):
+        with canonical_base(CANON):
+            node = jl.local_business_node(BUSINESS)
+        self.assertEqual(node["@type"], "LocalBusiness")
+        self.assertEqual(node["name"], "OSDuo Tech")
+        self.assertEqual(node["url"], CANON + "/b/osduo")
+        self.assertEqual(node["telephone"], "+91 90000 00000")
+        self.assertEqual(node["email"], "hi@osduo.com")
+        self.assertEqual(node["description"], "We do tech.")  # cleaned of tags
+
+    def test_postal_address(self):
+        with canonical_base(CANON):
+            addr = jl.local_business_node(BUSINESS)["address"]
+        self.assertEqual(addr["@type"], "PostalAddress")
+        self.assertEqual(addr["addressLocality"], "Chennai")
+        self.assertEqual(addr["addressCountry"], "India")
+
+    def test_opening_hours(self):
+        hours = [
+            {"day": "Monday", "open_time": "9:00 AM", "close_time": "6:00 PM", "is_24_hours": 0, "enabled": 1},
+            {"day": "Sunday", "open_time": "", "close_time": "", "is_24_hours": 1, "enabled": 1},
+            {"day": "Tuesday", "open_time": "9:00 AM", "close_time": "1:00 PM", "is_24_hours": 0, "enabled": 0},
+        ]
+        with canonical_base(CANON):
+            spec = jl.local_business_node(BUSINESS, hours=hours)["openingHoursSpecification"]
+        by_day = {s["dayOfWeek"]: s for s in spec}
+        self.assertEqual(by_day["Monday"]["opens"], "09:00")
+        self.assertEqual(by_day["Monday"]["closes"], "18:00")
+        self.assertEqual(by_day["Sunday"]["opens"], "00:00")
+        self.assertEqual(by_day["Sunday"]["closes"], "23:59")
+        self.assertNotIn("Tuesday", by_day)  # disabled rows are dropped
+
+    def test_same_as_filters_non_http(self):
+        socials = [
+            {"url": "https://linkedin.com/company/osduo"},
+            {"url": "not-a-url"},
+            {"url": ""},
+        ]
+        with canonical_base(CANON):
+            same = jl.local_business_node(BUSINESS, socials=socials)["sameAs"]
+        self.assertEqual(same, ["https://linkedin.com/company/osduo"])
+
+    def test_image_prefers_cover_then_logo(self):
+        with canonical_base(CANON):
+            self.assertTrue(jl.local_business_node(BUSINESS)["image"].endswith("/cover.jpg"))
+            no_cover = {k: v for k, v in BUSINESS.items() if k != "cover_image"}
+            self.assertTrue(jl.local_business_node(no_cover)["image"].endswith("/logo.png"))
+
+
+class TestProductNode(unittest.TestCase):
+    def test_priced_product_has_offer(self):
+        with canonical_base(CANON):
+            node = jl.product_node(BUSINESS, PRODUCT)
+        self.assertEqual(node["@type"], "Product")
+        self.assertEqual(node["brand"], {"@type": "Brand", "name": "OSDuo Tech"})
+        offer = node["offers"]
+        self.assertEqual(offer["@type"], "Offer")
+        self.assertEqual(offer["price"], 12000.0)  # coerced to float, JSON-safe
+        self.assertEqual(offer["priceCurrency"], "INR")
+        self.assertTrue(offer["availability"].endswith("/InStock"))
+        self.assertEqual(offer["url"], CANON + "/b/osduo/products/widget")
+
+    def test_start_from_is_priced(self):
+        with canonical_base(CANON):
+            self.assertIsNotNone(jl.product_node(BUSINESS, {**PRODUCT, "price_display_mode": "Start From"}))
+
+    def test_unpriced_returns_none(self):
+        with canonical_base(CANON):
+            self.assertIsNone(jl.product_node(BUSINESS, {**PRODUCT, "price_display_mode": "Hidden"}))
+            self.assertIsNone(jl.product_node(BUSINESS, {**PRODUCT, "price_display_mode": "Contact"}))
+            self.assertIsNone(jl.product_node(BUSINESS, {**PRODUCT, "price": 0}))
+            self.assertIsNone(jl.product_node(BUSINESS, {**PRODUCT, "currency": None}))
+
+
+class TestServiceNode(unittest.TestCase):
+    def test_service_always_emitted_with_area_and_offer(self):
+        with canonical_base(CANON):
+            node = jl.service_node(BUSINESS, SERVICE)
+        self.assertEqual(node["@type"], "Service")
+        self.assertEqual(node["provider"]["name"], "OSDuo Tech")
+        self.assertEqual(node["areaServed"], {"@type": "City", "name": "Chennai"})
+        self.assertEqual(node["offers"]["price"], 5000.0)
+
+    def test_service_without_price_has_no_offer(self):
+        with canonical_base(CANON):
+            node = jl.service_node(BUSINESS, {**SERVICE, "price_display_mode": "Contact"})
+        self.assertEqual(node["@type"], "Service")
+        self.assertNotIn("offers", node)
+
+
+class TestWebPageFallback(unittest.TestCase):
+    def test_unpriced_uses_webpage_node(self):
+        with canonical_base(CANON):
+            node = jl.webpage_node("Widget", "desc", "/b/osduo/products/widget", image="/files/w.png")
+        self.assertEqual(node["@type"], "WebPage")
+        self.assertEqual(node["url"], CANON + "/b/osduo/products/widget")
+        self.assertTrue(node["image"].endswith("/w.png"))
+
+
+class TestProfilePageNode(unittest.TestCase):
+    def test_person_wrapped_in_profile_page(self):
+        links = [{"url": "https://linkedin.com/in/karthic"}]
+        with canonical_base(CANON):
+            node = jl.profile_page_node(CARD, BUSINESS, links)
+        self.assertEqual(node["@type"], "ProfilePage")
+        self.assertEqual(node["url"], CANON + "/c/karthic")
+        person = node["mainEntity"]
+        self.assertEqual(person["@type"], "Person")
+        self.assertEqual(person["name"], "Karthic")
+        self.assertEqual(person["jobTitle"], "Managing Director")
+        self.assertEqual(person["worksFor"]["name"], "OSDuo Tech")
+        self.assertTrue(person["image"].endswith("/k.png"))
+        self.assertIn("https://karthic.dev", person["sameAs"])
+
+    def test_card_without_business(self):
+        with canonical_base(CANON):
+            person = jl.profile_page_node(CARD, None, [])["mainEntity"]
+        self.assertNotIn("worksFor", person)
+        # the card's own website is still a legitimate sameAs
+        self.assertEqual(person["sameAs"], ["https://karthic.dev"])
+
+
+class TestBreadcrumbNode(unittest.TestCase):
+    def test_positions_and_absolute_items(self):
+        with canonical_base(CANON):
+            node = jl.breadcrumb_node(
+                [("OSDuo Tech", "/b/osduo"), ("Widget", "/b/osduo/products/widget")]
+            )
+        self.assertEqual(node["@type"], "BreadcrumbList")
+        items = node["itemListElement"]
+        self.assertEqual([i["position"] for i in items], [1, 2])
+        self.assertEqual(items[0]["item"], CANON + "/b/osduo")
+        self.assertEqual(items[1]["item"], CANON + "/b/osduo/products/widget")
+
+
+class TestTimeNormalisation(unittest.TestCase):
+    def test_formats(self):
+        from datetime import time, timedelta
+
+        self.assertEqual(jl._hhmm("9:00 AM"), "09:00")
+        self.assertEqual(jl._hhmm("6:00 PM"), "18:00")
+        self.assertEqual(jl._hhmm("12:00 AM"), "00:00")
+        self.assertEqual(jl._hhmm("12:30 PM"), "12:30")
+        self.assertEqual(jl._hhmm("13:45:00"), "13:45")
+        self.assertEqual(jl._hhmm(time(9, 30)), "09:30")
+        self.assertEqual(jl._hhmm(timedelta(hours=9, minutes=30)), "09:30")
+        self.assertIsNone(jl._hhmm(""))
+        self.assertIsNone(jl._hhmm(None))
+
+
+class TestJsonldIntegration(unittest.TestCase):
+    def test_product_output_has_no_bare_angle_bracket(self):
+        with canonical_base(CANON):
+            node = jl.product_node({**BUSINESS, "business_name": "A & <B>"}, PRODUCT)
+        serialized = jsonld(node)
+        self.assertNotIn("<", serialized)
+        self.assertIn("\\u003c", serialized)
+
+    def test_build_seo_threads_blocks_into_jsonld(self):
+        with canonical_base(CANON):
+            blocks = [*jl.vendor_blocks(), jl.website_node(), jl.local_business_node(BUSINESS)]
+            result = build_seo("T", "D", "/b/osduo", blocks=blocks)
+        self.assertEqual(len(result["jsonld"]), 4)
+
+
+class TestControllerWiring(unittest.TestCase):
+    """Each controller assembles the documented node set (SEO_PLAN §G)."""
+
+    def test_business(self):
+        src = read("templates", "pages", "business", "business.py")
+        self.assertIn("from ....seo import jsonld", src)
+        self.assertIn("jsonld.vendor_blocks()", src)
+        self.assertIn("jsonld.website_node()", src)
+        self.assertIn("jsonld.local_business_node(", src)
+
+    def test_product(self):
+        src = read("templates", "pages", "product", "product.py")
+        self.assertIn("jsonld.vendor_blocks()", src)
+        self.assertIn("jsonld.product_node(", src)
+        self.assertIn("jsonld.webpage_node(", src)  # unpriced fallback
+        self.assertIn("jsonld.breadcrumb_node(", src)
+
+    def test_service(self):
+        src = read("templates", "pages", "service", "service.py")
+        self.assertIn("jsonld.vendor_blocks()", src)
+        self.assertIn("jsonld.service_node(", src)
+        self.assertIn("jsonld.breadcrumb_node(", src)
+
+    def test_card(self):
+        src = read("templates", "pages", "card", "card.py")
+        self.assertIn("jsonld.vendor_blocks()", src)
+        self.assertIn("jsonld.profile_page_node(", src)
+        self.assertIn("jsonld.breadcrumb_node(", src)
 
 
 if __name__ == "__main__":

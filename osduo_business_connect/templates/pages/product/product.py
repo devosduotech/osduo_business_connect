@@ -1,10 +1,12 @@
 import frappe
-from ....services.theme_service import get_business_theme, get_theme_variables
+
 from ....analytics.tracking import capture_analytics_context, track_event
 from ....card.my_card import get_user_card_slug
-from ....utils.urls import get_business_public_url
+from ....seo import jsonld
+from ....services.theme_service import get_business_theme, get_theme_variables
 from ....utils.seo import build_seo
 from ....utils.share import get_share_by, get_share_ref
+from ....utils.urls import get_business_public_url
 
 
 def get_context(context):
@@ -56,6 +58,30 @@ def get_context(context):
         or doc.short_description
         or doc.description
     )
+    product_blocks = jsonld.vendor_blocks()
+    product_jsonld = jsonld.product_node(business, doc)
+    if product_jsonld:
+        product_blocks.append(product_jsonld)
+    else:
+        # Unpriced product: no Product node (would warn in Rich Results) — the
+        # generic WebPage node + breadcrumb describe the page instead (§G).
+        product_blocks.append(
+            jsonld.webpage_node(
+                seo_title,
+                seo_description,
+                f"/b/{business.slug}/products/{doc.slug}",
+                image=doc.image or business.get("logo"),
+            )
+        )
+    product_blocks.append(
+        jsonld.breadcrumb_node(
+            [
+                (business.business_name or business.name, f"/b/{business.slug}"),
+                (doc.product_name or doc.name, f"/b/{business.slug}/products/{doc.slug}"),
+            ]
+        )
+    )
+
     context.seo = build_seo(
         seo_title,
         seo_description,
@@ -63,6 +89,7 @@ def get_context(context):
         image=doc.image or business.get("logo"),
         page_type="product",
         business=business,
+        blocks=product_blocks,
     )
 
     # Share — attributed to the card of whoever is sharing, when they have one.

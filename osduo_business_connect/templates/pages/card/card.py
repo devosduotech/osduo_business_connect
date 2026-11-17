@@ -1,9 +1,16 @@
 import frappe
-from ....services.theme_service import get_business_theme, get_theme_data, get_default_theme, get_theme_variables
+
 from ....analytics.tracking import capture_analytics_context, track_event
-from ....utils.urls import get_card_public_url
+from ....seo import jsonld
+from ....services.theme_service import (
+    get_business_theme,
+    get_default_theme,
+    get_theme_data,
+    get_theme_variables,
+)
 from ....utils.seo import build_seo
 from ....utils.share import get_share_by, get_share_ref
+from ....utils.urls import get_card_public_url
 
 
 def get_context(context):
@@ -105,6 +112,17 @@ def get_context(context):
         or (business.get("description") if business else None)
         or doc.get("bio")
     )
+    card_blocks = [*jsonld.vendor_blocks(), jsonld.profile_page_node(doc, business, context.links)]
+    if business and business.get("slug"):
+        card_blocks.append(
+            jsonld.breadcrumb_node(
+                [
+                    (business.get("business_name") or business.get("name"), f"/b/{business['slug']}"),
+                    (card_title, f"/c/{slug}"),
+                ]
+            )
+        )
+
     context.seo = build_seo(
         card_title,
         seo_description,
@@ -112,6 +130,7 @@ def get_context(context):
         image=doc.get("profile_image") or (business.get("logo") if business else None),
         page_type="profile",
         business=business,
+        blocks=card_blocks,
     )
 
     # Products (if enabled)

@@ -28,6 +28,20 @@ OSDUO_BRANDING = {
     "accent_color": "#00C49A",
     "background_color": "#F4F6F8",
     "text_color": "#333333",
+    # Vendor / product identity — single source of truth for the JSON-LD
+    # Organization+Brand node (Phase B) and the footer credit (Phase E).
+    # product_url is never emitted while product_url_live is False: the Brand
+    # url falls back to vendor_url, so attribution points at the vendor site
+    # until the product page ships. Flipping product_url_live to True is the
+    # only edit needed once it is live.
+    "vendor_name": "OSDuo Tech LLP",
+    "vendor_url": "https://www.osduotech.com",
+    "product_name": "OSDuo Business Connect",
+    "product_url": "https://www.osduotech.com/solutions/business-connect",
+    "product_url_live": False,
+    "show_vendor_credit": True,
+    "vendor_credit_text": "Powered by OSDuo Business Connect \u2014 A Product of OSDuo Tech LLP",
+    "title_brand_suffix": "",
 }
 
 # Apps

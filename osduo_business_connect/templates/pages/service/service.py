@@ -1,10 +1,12 @@
 import frappe
-from ....services.theme_service import get_business_theme, get_theme_variables
+
 from ....analytics.tracking import capture_analytics_context, track_event
 from ....card.my_card import get_user_card_slug
-from ....utils.urls import get_business_public_url
+from ....seo import jsonld
+from ....services.theme_service import get_business_theme, get_theme_variables
 from ....utils.seo import build_seo
 from ....utils.share import get_share_by, get_share_ref
+from ....utils.urls import get_business_public_url
 
 
 def get_context(context):
@@ -56,6 +58,17 @@ def get_context(context):
         or doc.short_description
         or doc.description
     )
+    service_blocks = [
+        *jsonld.vendor_blocks(),
+        jsonld.service_node(business, doc),
+        jsonld.breadcrumb_node(
+            [
+                (business.business_name or business.name, f"/b/{business.slug}"),
+                (doc.service_name or doc.name, f"/b/{business.slug}/services/{doc.slug}"),
+            ]
+        ),
+    ]
+
     context.seo = build_seo(
         seo_title,
         seo_description,
@@ -63,6 +76,7 @@ def get_context(context):
         image=doc.image or business.get("logo"),
         page_type="website",
         business=business,
+        blocks=service_blocks,
     )
 
     # Share — attributed to the card of whoever is sharing, when they have one.
