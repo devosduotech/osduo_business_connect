@@ -1,3 +1,37 @@
+# Release Notes - business_connect (v1.2.91)
+
+**Release Date:** 17 November 2026
+**Version:** v1.2.91 (bug fix)
+
+A fix release for product/service videos: YouTube links now embed correctly
+instead of showing "Refused to connect", and Nextcloud / direct video-file
+links now play in the page instead of rendering nothing.
+
+## Changes (v1.2.91)
+
+### Product videos now play
+- **YouTube links work.** A watch / `youtu.be` / Shorts / Live link you paste is
+  now turned into the proper embed, so it no longer shows "Refused to connect".
+  Vimeo, Google Drive and Dailymotion share links are handled the same way.
+- **Your own Nextcloud (or any direct video file) plays too.** A public-share
+  link (`…/s/…`) or a direct `.mp4` / `.webm` / `.ogg` URL now streams in the
+  page's built-in player instead of showing nothing.
+- Unsupported or unsafe links are skipped quietly rather than rendering a broken
+  video box.
+
+## Upgrade
+
+```bash
+bench --site <site> migrate
+bench --site <site> clear-cache
+bench --site <site> clear-website-cache
+```
+
+`migrate` refreshes the Video URL field help text; `clear-website-cache` makes
+the new player markup show immediately.
+
+---
+
 # Release Notes - business_connect (v1.2.9)
 
 **Release Date:** 11 November 2026
@@ -40,16 +74,6 @@ amount.
   choices as a product.
 - Prices are shown with thousands separators, e.g. **INR 12,000**, matching the
   currency format instead of `INR 12000`.
-
-### Product videos now play
-- **YouTube links work.** A watch / `youtu.be` / Shorts link you paste is now
-  turned into the proper embed, so it no longer shows "Refused to connect".
-  Vimeo, Google Drive and Dailymotion share links are handled the same way.
-- **Your own Nextcloud (or any direct video file) plays too.** A public-share
-  link (`…/s/…`) or a direct `.mp4` / `.webm` / `.ogg` URL now streams in the
-  page's built-in player instead of showing nothing.
-- Unsupported or unsafe links are skipped quietly rather than rendering a broken
-  video box.
 
 ## Upgrade
 

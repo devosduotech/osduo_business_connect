@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.2.91 - 17 November 2026
+
+### Bug fixes (v1.2.91)
+
+#### Product / service video rendering
+- **YouTube embeds now play.** A pasted watch / `youtu.be` / shorts / live link
+  was placed straight into the `<iframe>` as a non-embeddable share URL, so it
+  showed **"Refused to connect"**. It is now rewritten to the provider's embed
+  URL (`youtube-nocookie.com/embed/…`). Vimeo, Google Drive and Dailymotion
+  share links are converted to their frameable form the same way.
+- **Nextcloud and direct video files now play.** A Nextcloud public-share link
+  (`/s/<token>`) or any direct video file (`.mp4`, `.webm`, `.ogg`, …) matched
+  none of the fixed provider allow-list and rendered nothing (no error either).
+  These now play through an HTML5 `<video>` element — a Nextcloud share resolves
+  to its direct download (`…/download?inline=true`).
+- **No more empty video box.** A new `video_embed` Jinja filter
+  (`utils/website.py`) returns `{kind: "iframe" | "file", src}`; the product and
+  service templates render the matching player, and an unresolvable or unsafe
+  URL renders nothing instead of a broken frame. `safe_video_url` is kept
+  (iframe providers only) for backwards compatibility.
+- The Showcase Product **Video URL** field description now lists the supported
+  sources.
+
+### Upgrade
+```bash
+bench --site <site> migrate
+bench --site <site> clear-website-cache
+```
+`migrate` applies the updated Video URL field description;
+`clear-website-cache` refreshes the product/service HTML so the new player
+markup renders.
+
+---
+
 ## v1.2.9 - 11 November 2026
 
 ### Features (v1.2.9)
@@ -58,25 +92,6 @@ All notable changes to this project will be documented in this file.
   keep two (`INR 12,000.50`). Formatting follows the site's configured number
   format through a new `format_money` Jinja filter
   (`utils/money.py`), so no currency symbol is forced.
-
-#### Video embed rendering
-- A pasted **YouTube** link (watch / `youtu.be` / shorts / live) previously put
-  the non-embeddable share URL straight into the `<iframe>`, so it played as
-  **"Refused to connect"**. It is now rewritten to the provider's embed URL
-  (`youtube-nocookie.com/embed/…`), and Vimeo / Google Drive / Dailymotion share
-  links are likewise converted to their frameable form.
-- A **Nextcloud** public-share link (`/s/<token>`) — or any self-hosted / direct
-  video file (`.mp4`, `.webm`, `.ogg`, …) — previously matched none of the fixed
-  provider allow-list and rendered nothing at all. These now play through an
-  HTML5 `<video>` element using the direct file URL (Nextcloud shares resolve to
-  `…/download?inline=true`).
-- The choice is made by a new `video_embed` Jinja filter
-  (`utils/website.py`) returning `{kind: "iframe" | "file", src}`; the product
-  and service templates render the matching player and render **no empty box**
-  when a URL cannot be resolved. `safe_video_url` is kept (iframe providers
-  only) for backwards compatibility.
-- The Showcase Product **Video URL** field description now lists the supported
-  sources.
 
 ### Upgrade
 ```bash
