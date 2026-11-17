@@ -97,33 +97,26 @@
       "options": "URL"
     },
     {
-      "fieldname": "brochure",
-      "fieldtype": "Attach",
-      "label": "Brochure",
-      "description": "PDF files only"
-    },
-    {
-      "fieldname": "location",
-      "fieldtype": "Data",
-      "label": "Location",
-      "options": "URL",
-      "description": "Google Maps link or any map URL"
+      "fieldname": "gallery",
+      "fieldtype": "Table",
+      "label": "Gallery",
+      "options": "Product Gallery Item"
     },
     {
       "fieldname": "column_break_media",
       "fieldtype": "Column Break"
     },
     {
+      "fieldname": "brochure",
+      "fieldtype": "Attach",
+      "label": "Brochure",
+      "description": "PDF files only"
+    },
+    {
       "fieldname": "features",
       "fieldtype": "Table",
       "label": "Features",
       "options": "Feature"
-    },
-    {
-      "fieldname": "gallery",
-      "fieldtype": "Table",
-      "label": "Gallery",
-      "options": "Product Gallery Item"
     },
     {
       "fieldname": "section_pricing",
@@ -158,6 +151,13 @@
     {
       "fieldname": "column_break_pricing",
       "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "location",
+      "fieldtype": "Data",
+      "label": "Location",
+      "options": "URL",
+      "description": "Google Maps link or any map URL"
     },
     {
       "fieldname": "section_purchase",
@@ -222,10 +222,16 @@
       "allow_on_submit": 1
     },
     {
-      "fieldname": "sort_order",
-      "fieldtype": "Int",
-      "label": "Sort Order",
-      "default": 0
+      "fieldname": "amended_from",
+      "fieldtype": "Link",
+      "label": "Amended From",
+      "options": "Showcase Service",
+      "reqd": 0,
+      "hidden": 1
+    },
+    {
+      "fieldname": "column_break_jcgd",
+      "fieldtype": "Column Break"
     },
     {
       "fieldname": "public_url",
@@ -236,12 +242,10 @@
       "description": "The public-facing URL for this entry"
     },
     {
-      "fieldname": "amended_from",
-      "fieldtype": "Link",
-      "label": "Amended From",
-      "options": "Showcase Service",
-      "reqd": 0,
-      "hidden": 1
+      "fieldname": "sort_order",
+      "fieldtype": "Int",
+      "label": "Sort Order",
+      "default": 0
     }
   ],
   "permissions": [

@@ -4,7 +4,7 @@
   "doctype": "DocType",
   "document_type": "Document",
   "engine": "InnoDB",
-  "naming_rule": "By \"Series\" field",
+  "naming_rule": "By \"Naming Series\" field",
   "autoname": "naming_series:",
   "title_field": "theme_name",
   "search_fields": "theme_name,business,template",
@@ -14,6 +14,7 @@
   "is_tree": 0,
   "track_changes": 1,
   "allow_rename": 0,
+  "allow_import": 1,
   "sort_field": "modified",
   "sort_order": "DESC",
   "fields": [
@@ -35,6 +36,10 @@
       "unique": 0,
       "description": "A friendly name for this theme (e.g., 'My Brand Theme', 'Summer Campaign')",
       "in_list_view": 1
+    },
+    {
+      "fieldname": "column_break_rfoi",
+      "fieldtype": "Column Break"
     },
     {
       "fieldname": "business",
@@ -60,14 +65,6 @@
       "description": "Controls the page structure and layout"
     },
     {
-      "fieldname": "layout_mode",
-      "fieldtype": "Select",
-      "label": "Layout Mode",
-      "default": "Centered",
-      "options": "Centered\nWide\nSplit\nEditorial",
-      "description": "Content width and column behavior (auto-set from template, can override)"
-    },
-    {
       "fieldname": "column_break_look",
       "fieldtype": "Column Break"
     },
@@ -80,6 +77,18 @@
       "options": "Violet\nIndigo\nBlue\nGreen\nYellow\nOrange\nRed\nGold\nCustom",
       "in_list_view": 1,
       "description": "Select a preset or 'Custom' to choose your own colors"
+    },
+    {
+      "fieldname": "column_break_kbsx",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "layout_mode",
+      "fieldtype": "Select",
+      "label": "Layout Mode",
+      "default": "Centered",
+      "options": "Centered\nWide\nSplit\nEditorial",
+      "description": "Content width and column behavior (auto-set from template, can override)"
     },
     {
       "fieldname": "section_colors",
@@ -106,6 +115,17 @@
       "description": "Background or text inverse color"
     },
     {
+      "fieldname": "font_color",
+      "fieldtype": "Color",
+      "label": "Font Color",
+      "default": "#1E293B",
+      "description": "Main text color (used with Custom color scheme)"
+    },
+    {
+      "fieldname": "column_break_nryz",
+      "fieldtype": "Column Break"
+    },
+    {
       "fieldname": "accent_color",
       "fieldtype": "Color",
       "label": "Accent Color",
@@ -118,13 +138,6 @@
       "label": "Background Color",
       "default": "#F8FAFC",
       "description": "Page background color (used with Custom color scheme)"
-    },
-    {
-      "fieldname": "font_color",
-      "fieldtype": "Color",
-      "label": "Font Color",
-      "default": "#1E293B",
-      "description": "Main text color (used with Custom color scheme)"
     },
     {
       "fieldname": "section_style",
@@ -141,6 +154,13 @@
       "in_list_view": 1
     },
     {
+      "fieldname": "dark_mode",
+      "fieldtype": "Check",
+      "label": "Dark Mode",
+      "default": 0,
+      "description": "Enable dark background variant (default for Luxury theme)"
+    },
+    {
       "fieldname": "column_break_style",
       "fieldtype": "Column Break"
     },
@@ -153,6 +173,10 @@
       "in_list_view": 1
     },
     {
+      "fieldname": "column_break_ythm",
+      "fieldtype": "Column Break"
+    },
+    {
       "fieldname": "font_size",
       "fieldtype": "Select",
       "label": "Font Size",
@@ -160,13 +184,6 @@
       "options": "Small\nDefault\nLarge",
       "in_list_view": 1,
       "description": "Base font size preset"
-    },
-    {
-      "fieldname": "dark_mode",
-      "fieldtype": "Check",
-      "label": "Dark Mode",
-      "default": 0,
-      "description": "Enable dark background variant (default for Luxury theme)"
     },
     {
       "fieldname": "section_advanced",
@@ -180,11 +197,6 @@
       "label": "Custom Settings",
       "options": "JSON",
       "description": "JSON configuration for advanced theme customization"
-    },
-    {
-      "fieldname": "section_activation",
-      "fieldtype": "Section Break",
-      "label": "Activation"
     }
   ],
   "permissions": [

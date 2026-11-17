@@ -196,6 +196,10 @@
       "options": "URL"
     },
     {
+      "fieldname": "column_break_vacj",
+      "fieldtype": "Column Break"
+    },
+    {
       "description": "Custom text for the button (e.g. Book Now / Order Here). Defaults to 'Buy Here'.",
       "fieldname": "purchase_label",
       "fieldtype": "Data",
