@@ -206,20 +206,23 @@
       "default": 1
     },
     {
-      "fieldname": "column_break_branding",
-      "fieldtype": "Column Break"
+      "fieldname": "section_seo",
+      "fieldtype": "Section Break",
+      "label": "SEO"
     },
     {
       "fieldname": "seo_title",
       "fieldtype": "Data",
       "label": "SEO Title",
-      "description": "Title for search engine optimization"
+      "description": "Shown as the clickable heading in search results. Aim for 50–60 characters.",
+      "allow_on_submit": 1
     },
     {
       "fieldname": "seo_description",
       "fieldtype": "Small Text",
       "label": "SEO Description",
-      "description": "Description for search engine optimization"
+      "description": "Meta description for search results. Aim for 150–160 characters.",
+      "allow_on_submit": 1
     },
     {
       "fieldname": "section_social",

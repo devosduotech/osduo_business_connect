@@ -12,6 +12,7 @@ from osduo_business_connect.utils.sanitize import (
     sanitize_text,
     sanitize_url,
 )
+from osduo_business_connect.utils.seo import normalize_seo_fields
 
 
 class ShowcaseProduct(Document):
@@ -22,6 +23,7 @@ class ShowcaseProduct(Document):
             self.description = sanitize_rich_text(self.description)
         if self.short_description:
             self.short_description = sanitize_text(self.short_description)
+        normalize_seo_fields(self)
         normalize_url_fields(self)
         for fieldname in ("location", "video_url", "brochure"):
             value = self.get(fieldname)

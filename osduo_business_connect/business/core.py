@@ -9,9 +9,9 @@ from osduo_business_connect.utils.roles import is_system_manager
 from osduo_business_connect.utils.sanitize import (
     normalize_url_fields,
     sanitize_rich_text,
-    sanitize_text,
     sanitize_url,
 )
+from osduo_business_connect.utils.seo import normalize_seo_fields
 from osduo_business_connect.utils.urls import get_business_public_url
 
 
@@ -21,8 +21,7 @@ class Business(Document):
             self.slug = self.slug.lower().strip()
         if self.description:
             self.description = sanitize_rich_text(self.description)
-        if self.seo_description:
-            self.seo_description = sanitize_text(self.seo_description)
+        normalize_seo_fields(self)
         normalize_url_fields(self)
         if self.website:
             self.website = sanitize_url(self.website)

@@ -105,6 +105,51 @@ def is_login_path(path):
     return path in _LOGIN_PATHS
 
 
+# Soft length ceilings for stored SEO fields. The desk help text guides authors
+# to 50-60 / 150-160 characters; we only *warn* (never block) past these.
+SEO_TITLE_LIMIT = 70
+SEO_DESCRIPTION_LIMIT = 160
+
+
+def clean_seo_value(value):
+    """Normalise a stored SEO title/description to plain text.
+
+    Removes markup and decodes entities (``clean_text`` with no truncation) so a
+    pasted rich-text value cannot leak tags into ``<title>`` / ``og:title``.
+    """
+    return clean_text(value, limit=0)
+
+
+def normalize_seo_fields(doc, title_limit=SEO_TITLE_LIMIT, description_limit=SEO_DESCRIPTION_LIMIT):
+    """Strip markup from ``doc.seo_title`` / ``doc.seo_description`` and soft-warn.
+
+    Called from the Business / Showcase Product / Showcase Service controllers'
+    ``before_validate``. A length over the limit shows a non-blocking orange
+    message — it never prevents saving. ``frappe`` is imported lazily so this
+    module stays import-safe without a bench and :func:`clean_seo_value` alone
+    can be unit-tested offline.
+    """
+    import frappe
+
+    for fieldname, limit, label in (
+        ("seo_title", title_limit, "SEO Title"),
+        ("seo_description", description_limit, "SEO Description"),
+    ):
+        value = doc.get(fieldname)
+        if not value:
+            continue
+        cleaned = clean_seo_value(value)
+        if cleaned != value:
+            doc.set(fieldname, cleaned)
+        if len(cleaned) > limit:
+            frappe.msgprint(
+                f"{label} is {len(cleaned)} characters. Search results usually show about the first "
+                f"{limit}, so consider shortening it.",
+                indicator="orange",
+                title="SEO length",
+            )
+
+
 def build_seo(
     title,
     description,

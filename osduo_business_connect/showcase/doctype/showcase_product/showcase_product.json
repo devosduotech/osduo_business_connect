@@ -246,6 +246,25 @@
       "fieldtype": "Int",
       "label": "Sort Order",
       "default": 0
+    },
+    {
+      "fieldname": "section_seo",
+      "fieldtype": "Section Break",
+      "label": "SEO"
+    },
+    {
+      "fieldname": "seo_title",
+      "fieldtype": "Data",
+      "label": "SEO Title",
+      "description": "Shown as the clickable heading in search results. Aim for 50–60 characters.",
+      "allow_on_submit": 1
+    },
+    {
+      "fieldname": "seo_description",
+      "fieldtype": "Small Text",
+      "label": "SEO Description",
+      "description": "Meta description for search results. Aim for 150–160 characters.",
+      "allow_on_submit": 1
     }
   ],
   "permissions": [
