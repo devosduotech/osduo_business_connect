@@ -1,7 +1,7 @@
 # OSDuo Business Connect — User Manual
 
-**Version:** 1.2.8  
-**Last Updated:** November 2026
+**Version:** 1.2.91  
+**Last Updated:** 17 November 2026
 
 ---
 
@@ -1033,6 +1033,7 @@ visit — no reinstall. (Bump of the app version rotates the offline cache.)
 | PWA does not install | Needs HTTPS and a correct `host_name`; see §11.7 |
 | CRM Lead page shows no OSDuo fields | `bench --site <site> migrate` — the "OSDuo Attribution" section is appended to the CRM Lead side panel automatically |
 | Sitemap / robots shows `http://` or the wrong domain | Deploy the app then `bench --site <site> clear-cache` + `clear-website-cache`. `/sitemap*.xml` and `/robots.txt` resolve their origin from `host_name` or, failing that, the host being served — they are never frozen, so the correct `https://` address appears automatically |
+| Video does not play on a product or service page | Deploy the app and run `bench restart` — the player uses a Jinja filter added in v1.2.91, and a running web worker keeps the old code until it is restarted. Supported sources: YouTube / Vimeo / Google Drive / Dailymotion share links, a Nextcloud **single-file** public share (`/s/…`, which plays inline), or a direct file URL (`.mp4` / `.webm` / `.ogg` / `.ogv` / `.m4v` / `.mov`). A Nextcloud **folder** share returns a zip and cannot play, and any unsupported or unsafe link is skipped quietly — the page renders no video box rather than a broken one |
 
 ---
 
