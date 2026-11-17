@@ -78,9 +78,17 @@ class TestBrandingContext(unittest.TestCase):
 
     def test_all_vendor_keys_injected(self):
         ctx = self._ctx()
-        for key in ("bc_credit_url", "bc_show_vendor_credit", "bc_vendor_credit_text", "bc_vendor_name", "bc_product_name"):
+        for key in ("bc_credit_url", "bc_show_vendor_credit", "bc_vendor_credit_text"):
             self.assertIn(key, ctx, key)
         self.assertTrue(ctx["bc_show_vendor_credit"])
+        # dead context keys dropped (no template read them)
+        for gone in ("bc_vendor_name", "bc_product_name"):
+            self.assertNotIn(gone, ctx, gone)
+
+    def test_title_brand_suffix_dropped_from_branding(self):
+        # decision 6 makes the page title always suffix-free; the inert
+        # title_brand_suffix key is gone rather than left reading as a toggle.
+        self.assertNotIn("title_brand_suffix", OSDUO_BRANDING)
 
 
 class TestOldFootersRemoved(unittest.TestCase):

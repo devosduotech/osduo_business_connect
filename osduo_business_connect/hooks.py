@@ -41,7 +41,6 @@ OSDUO_BRANDING = {
     "product_url_live": True,
     "show_vendor_credit": True,
     "vendor_credit_text": "Powered by OSDuo Business Connect \u2014 A Product of OSDuo Tech LLP",
-    "title_brand_suffix": "",
 }
 
 # Apps
