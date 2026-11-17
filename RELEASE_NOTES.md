@@ -16,6 +16,8 @@ links now play in the page instead of rendering nothing.
 - **Your own Nextcloud (or any direct video file) plays too.** A public-share
   link (`…/s/…`) or a direct `.mp4` / `.webm` / `.ogg` URL now streams in the
   page's built-in player instead of showing nothing.
+- **Services can have videos too.** Showcase Service gains the same **Video URL**
+  field as Showcase Product, shown on the public service page.
 - Unsupported or unsafe links are skipped quietly rather than rendering a broken
   video box.
 

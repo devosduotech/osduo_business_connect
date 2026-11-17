@@ -22,15 +22,19 @@ All notable changes to this project will be documented in this file.
   service templates render the matching player, and an unresolvable or unsafe
   URL renders nothing instead of a broken frame. `safe_video_url` is kept
   (iframe providers only) for backwards compatibility.
-- The Showcase Product **Video URL** field description now lists the supported
-  sources.
+- **Services get videos too.** The **Video URL** field (identical to the product
+  one) is added to **Showcase Service** — the service template and controller
+  already supported it, only the field was missing. It also flows through the
+  public service API.
+- The Showcase Product and Service **Video URL** field descriptions list the
+  supported sources.
 
 ### Upgrade
 ```bash
 bench --site <site> migrate
 bench --site <site> clear-website-cache
 ```
-`migrate` applies the updated Video URL field description;
+`migrate` adds the Service **Video URL** field and the field help text;
 `clear-website-cache` refreshes the product/service HTML so the new player
 markup renders.
 

@@ -389,7 +389,7 @@ Add multiple images to showcase your product:
 
 | Field | Description |
 |-------|-------------|
-| Video URL | YouTube/Vimeo link for product video |
+| Video URL | Embed a video on the page: a YouTube / Vimeo / Google Drive / Dailymotion link, a Nextcloud public share (`/s/…`), or a direct file (`.mp4` / `.webm` / `.ogg`). The player is chosen automatically. Available on products **and** services |
 | Brochure | PDF file for download |
 | Location | Google Maps URL for "View on Map" |
 | Enquiry Enabled | Show enquiry form on product page |
