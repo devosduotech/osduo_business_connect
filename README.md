@@ -1,6 +1,6 @@
 # OSDuo Business Connect
 
-**v1.3.0** | **Your digital identity. Your customers. Your growth.**
+**v1.3.1** | **Your digital identity. Your customers. Your growth.**
 
 Business Connect transforms how small businesses and professionals establish their digital presence. Create a stunning business profile, showcase products and services, capture customer enquiries and card exchanges, and install it all as a mobile app — all seamlessly integrated with Frappe CRM.
 
@@ -16,7 +16,7 @@ Business Connect transforms how small businesses and professionals establish the
 | **Service Listings** | Service pages with features, locations, and descriptions |
 | **Lead Generation** | Enquiry forms and card exchanges that auto-create Enquiries, then CRM leads with full tracking |
 | **Contact Exchange** | Owner records who a card/business/product was shared with at events — saved as an Enquiry, appears in CRM with the message context |
-| **Universal Share Bar** | Copy / WhatsApp / SMS / Email / native share on every public page, all attributed with `?ref=` + sharer |
+| **Universal Share Bar** | Copy / WhatsApp / SMS / Email / native share on every public page, tagged with standard `utm_*` + sharer; canonical URLs stay parameter-free |
 | **My Card** | `/my-card` lists your published cards with one-tap Open, plus desk navbar / analytics entry points and an Open button beside Public URL in the desk forms |
 | **Analytics Dashboard** | Real-time engagement metrics — visits, scans, top cards, visitor mix, enquiry pipeline |
 | **Mobile App (PWA)** | Every customer site installs as a branded app — offline card pages, home-screen icon |
@@ -98,12 +98,14 @@ Analytics Dashboard updates with real-time metrics
 - Android install prompt + iOS "Add to Home Screen" guidance on the login app entry
 - See **[docs/PWA.md](docs/PWA.md)**
 
-### Sharing, Attribution & My Card (v1.2.5)
+### Sharing, Attribution & My Card (v1.2.5, UTM since v1.3.1)
 - Canonical public URLs for QR/NFC safety — `host_name` honoured with its explicit
   scheme; scheme-less public hosts read as `https://` (no dev port on real domains)
-- Share links carry `?ref=share_*&by=<sharer's card slug>`; opening one logs a
-  server-side `shared_link_open` event per channel
-- `/my-card` page with one-tap card opening attributed by `?ref=mycard`; desk "Open"
+- Share buttons carry standard `?utm_source=<channel>&utm_medium=share&by=<sharer's
+  card slug>`; opening one logs a server-side `shared_link_open` event per channel.
+  Legacy `?ref=share_*` links (already shared/printed) still attribute — canonical
+  URLs themselves stay parameter-free
+- `/my-card` page with one-tap card opening tagged `?utm_source=mycard`; desk "Open"
   button directly beside the Public URL on all profile forms (v1.2.6)
 
 ### Search Engine Discovery (v1.2.9)

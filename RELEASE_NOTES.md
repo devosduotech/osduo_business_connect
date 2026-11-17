@@ -1,3 +1,50 @@
+# Release Notes - business_connect (v1.3.1)
+
+**Release Date:** 17 November 2026
+**Version:** v1.3.1 (patch)
+
+A tracking-hygiene patch. Share links now use standard, search-safe **UTM**
+parameters instead of the custom `?ref=` token — while every canonical, sitemap
+and printed QR/NFC URL stays exactly as clean (and unchanged) as before.
+
+## What changed (v1.3.1)
+
+### Cleaner share links, zero SEO impact
+- WhatsApp / SMS / Email / native / copy share buttons, the desk Contact
+  Exchange links, and the *My Card* open now carry
+  `?utm_source=<channel>&utm_medium=share&by=<slug>`. These are standard Google
+  campaign tags — ignored by Search Console and never part of a page's
+  canonical, so they can't dilute or dirty an indexed URL.
+- The page canonical, `og:url`, sitemap URLs and the **printed QR / NFC** payload
+  are unchanged and stay parameter-free, so nothing already in the market breaks.
+
+### Nothing lost in analytics
+- Old `?ref=share_*` links you've already shared or printed still attribute —
+  the reader accepts both formats and records the **same** campaign labels, so
+  your dashboards and historical reports don't shift.
+- Per-sharer attribution (`by=`) is kept, so "who shared it" still shows.
+
+### Housekeeping
+- Removed a couple of dead branding config knobs that nothing read.
+
+## What is intentionally *not* in this patch
+- A fully parameter-free **Copy** link (would need a new analytics event type)
+  and a `/q/` QR-scan redirect counter — both change live URL/analytics
+  behaviour, so they're deferred rather than shipped in a patch.
+
+## Upgrade
+
+```bash
+cd ~/frappe-bench/apps/osduo_business_connect && git pull
+bench restart
+bench --site <site> clear-website-cache
+```
+
+No `migrate`, no `bench build` (no schema or asset change). Newly shared links
+use UTM; previously shared/printed links keep working.
+
+---
+
 # Release Notes - business_connect (v1.3.0)
 
 **Release Date:** 17 November 2026

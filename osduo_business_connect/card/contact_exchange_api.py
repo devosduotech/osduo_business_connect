@@ -18,14 +18,16 @@ from frappe import _
 
 from osduo_business_connect.card.my_card import get_user_card_slug
 from osduo_business_connect.utils.roles import is_system_manager
+from osduo_business_connect.utils.share import build_share_url
 from osduo_business_connect.utils.urls import get_business_public_url, get_card_public_url
 
 CHANNELS = ("WhatsApp", "SMS", "Email", "In-person")
 
-CHANNEL_REFS = {
-    "WhatsApp": "share_whatsapp",
-    "SMS": "share_sms",
-    "Email": "share_email",
+# desk channel label -> utm_source value (Decision 12)
+CHANNEL_UTM = {
+    "WhatsApp": "whatsapp",
+    "SMS": "sms",
+    "Email": "email",
 }
 
 # Enquiry.source is a Select, so the exchanged contact has to map onto one of
@@ -144,14 +146,11 @@ def _share_target(business, card=None, product=None, service=None, user=None):
 
 
 def _attributed_url(url, channel, by_slug):
-    ref = CHANNEL_REFS.get(channel)
-    if not ref:
+    """Append standard share UTM (Decision 12); In-person carries none."""
+    utm_source = CHANNEL_UTM.get(channel)
+    if not utm_source:
         return url
-    separator = "&" if "?" in url else "?"
-    suffix = f"ref={ref}"
-    if by_slug:
-        suffix += f"&by={quote(str(by_slug))}"
-    return f"{url}{separator}{suffix}"
+    return build_share_url(url, utm_source, by=by_slug)
 
 
 def _build_share_link(channel, phone, email, subject, text, url, by_slug):

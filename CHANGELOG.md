@@ -2,6 +2,53 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.3.1 - 17 November 2026
+
+### Share & tracking URL hygiene (Decision 12) — no URL format change to anything printed
+
+Retired the custom `?ref=` share token in favour of standard UTM, while keeping
+every indexable and printed URL byte-for-byte clean and every already-circulating
+link attributable.
+
+- **Share buttons now emit standard UTM** — `?utm_source=<channel>&utm_medium=share&by=<slug>`
+  on the public share bar (WhatsApp/SMS/Email/native/copy) and the desk Contact
+  Exchange links, replacing `?ref=share_<channel>`. `utm_*` is ignored by Google
+  Search Console and never appears on a page's `rel=canonical` / `og:url`, so
+  sharing stays clean without touching canonicals.
+- **Canonical / sitemap / printed QR & NFC URLs are unchanged** — they never
+  carried these params; `qr_service` still encodes the clean `public_url`
+  (Decision 11 preserved, so existing printed media keeps working).
+- **Backward-compatible inbound reader** — `utils.share.get_share_ref()` now
+  accepts the standard `utm_source` **and** the legacy `?ref=share_*` tokens
+  already in circulation on live/printed media, mapping both to the **same**
+  stored campaign value, so analytics history stays comparable and no baseline
+  shifts. A non-share `utm_medium` (e.g. `cpc`) is not mistaken for a share open.
+- **`by=` retained** — per-sharer ("which teammate shared this") attribution is
+  preserved rather than dropped.
+- **Copy link keeps `utm_source=copy`** rather than going fully bare, so copy
+  attribution isn't silently lost; a fully parameterless Copy (with an outbound
+  `sendBeacon`) needs a new `event_type` (schema) and is deferred, along with the
+  optional `/q/` scan-redirect counter.
+- **Removed dead branding knobs** — the unused `title_brand_suffix` key and the
+  `bc_vendor_name`/`bc_product_name` context injection (no template read them).
+
+Tests: new `test_share_utm.py` (pure `build_share_url` + a stubbed-`form_dict`
+reader verifying the UTM↔legacy round trip, stable campaign tokens, `by=`
+capping, non-share media ignored); `test_v125_features.py` updated to the new
+contract. Docs (README, USER_MANUAL, MARKETING_FEATURES/INVENTORY, SEO_PLAN
+Decision 12) refreshed. No schema change — no `migrate`.
+
+### Upgrade
+```bash
+cd ~/frappe-bench/apps/osduo_business_connect && git pull
+bench restart                       # Python: utils/share.py + contact_exchange_api
+bench --site <site> clear-website-cache
+```
+No `migrate` and no `bench build` needed (no schema or asset change). Legacy
+`?ref=` links keep working; newly shared links use standard `utm_*`.
+
+---
+
 ## v1.3.0 - 17 November 2026
 
 ### SEO & brand attribution (the v1.3.0 release)

@@ -166,7 +166,7 @@ def get_context(context):
     analytics_ctx = capture_analytics_context(doc.business)
     track_event(doc.business, "card_view", card=doc.name, **analytics_ctx)
 
-    # Attribution: a share link was opened (?ref=share_* / mycard)
+    # Attribution: a share link was opened (utm_source=<channel> / legacy ?ref=)
     share_ref = get_share_ref()
     share_by = get_share_by()
     if share_ref:

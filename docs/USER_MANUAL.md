@@ -661,10 +661,12 @@ the URL into the browser.
 
 Every public page (business, card, product and service) has the same share bar:
 **Copy**, **WhatsApp**, **SMS**, **Email** and the device's native share sheet.
-Share links carry a small `ref=share_*` token (and `by=<your card slug>`) so
-analytics can show which channel brought the visit — and who shared it. The
-copied link always uses the canonical domain, never the host you happen to be
-browsing from. The Share & Save Contact form below the bar is styled to match
+Share links carry standard `utm_source=<channel>&utm_medium=share` (and
+`by=<your card slug>`) so analytics can show which channel brought the visit —
+and who shared it. These `utm_*` tags are ignored by Google Search Console and
+never appear on the page's canonical URL, so sharing and indexing stay clean.
+The copied link always uses the canonical domain, never the host you happen to
+be browsing from. The Share & Save Contact form below the bar is styled to match
 the public "Send a Message" form, with large tap targets on phones.
 
 ### 6.4 NFC Cards & Tags
@@ -677,16 +679,18 @@ premium than a scan. No special hardware is needed beyond a tag writer.
 | Medium | Typical choice | Capacity notes |
 |---|---|---|
 | **NFC business card / collector card** (NTAG213, 144 B) | Card short URL `/c/<card-slug>` | Fits comfortably; keep it to the bare URL, no tracking params |
-| **NTAG215 / sticker on a podium, reception desk, vehicle** | Business profile `/b/<business-slug>` | round stickers are the most economical; remember direct URLs need ~30 B, with `?ref=` tokens 60–80 B |
-| **NTAG216 or NFC key chain / wristband** (504 B+) | Product or service page for a specific line | plenty of room for long URLs + attribution (`?ref=` / `?campaign=`) |
+| **NTAG215 / sticker on a podium, reception desk, vehicle** | Business profile `/b/<business-slug>` | round stickers are the most economical; a bare URL needs ~30 B, an optional `?utm_campaign=<tag>` ~50–70 B |
+| **NTAG216 or NFC key chain / wristband** (504 B+) | Product or service page for a specific line | plenty of room for long URLs + an optional `?utm_campaign=` tag |
 
 **How to write a tag:**
 
 1. Get the exact public URL from the desk — open the record and use the **Open**
    button beside **Public URL** (or copy it from the page's share bar; both show
    the canonical URL).
-2. Optional: append `?ref=share_copy&by=<your-card-slug>` if you want taps
-   attributed to a channel in analytics (any tag ≥ NTAG213 supports this).
+2. Optional: to measure a specific print run, append `?utm_campaign=<tag>` (e.g.
+   `?utm_campaign=conf2026`). `utm_*` is ignored by search engines and never
+   affects the canonical. Prefer a bare canonical URL for anything you expect to
+   reprint or reuse, so the printed media stays stable.
 3. Write the tag with any standards-compliant NFC tool — **NFC Tools** (iOS /
    Android) or **NXP TagWriter** — as an **URI record**. Choose the card type the
    tool asks for (Web URL), paste the URL, lock the tag afterwards.
@@ -706,7 +710,8 @@ keep working forever.
 
 Open **/my-card** (also linked from the desk navbar and the analytics header) to
 see every published card that belongs to you. **Open Card** launches it with
-`?ref=mycard`, so your own visits are labelled correctly in analytics.
+`?utm_source=mycard&utm_medium=share`, so your own visits are labelled correctly
+in analytics.
 
 ### 6.6 Contact Exchange (login only)
 
@@ -1107,7 +1112,7 @@ A: Upload a Profile Photo on the Digital Card, or a Logo on the Business record.
 A: Yes. The VCF download button saves your contact to their phone.
 
 **Q: How do I track where enquiries come from?**  
-A: Each enquiry records its source (Digital Card, Product, Service, QR, Campaign) automatically. Share links additionally stamp the channel — `ref=share_whatsapp|share_sms|share_email|share_copy` plus `by=<sharer's card slug>` — and Contact Exchanges flow in as Enquiries with the channel, event and notes attached.
+A: Each enquiry records its source (Digital Card, Product, Service, QR, Campaign) automatically. Share links additionally stamp the channel — `utm_source=whatsapp|sms|email|copy` (legacy `ref=share_*` links still resolve to the same labels) plus `by=<sharer's card slug>` — and Contact Exchanges flow in as Enquiries with the channel, event and notes attached.
 
 **Q: Does it support NFC business cards?**  
 A: Yes. Write your public URL to any standard NTAG21x NFC card or tag — a tap opens your digital profile exactly like a QR scan, and the tap lands with the same analytics attribution (see [NFC Cards & Tags](#64-nfc-cards--tags) for choosing, writing and locking tags).

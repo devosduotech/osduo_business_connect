@@ -5,7 +5,7 @@
     share_text   — message shown before the link
     share_title  — email subject / native share title
     share_by     — slug used for attribution when share_ref is enabled
-    share_ref    — enable ?ref=share_<channel>&by=<share_by> tokens
+    share_ref    — enable standard share UTM (?utm_source=<channel>&utm_medium=share&by=<slug>)
     share_qr     — optional QR image URL
     share_qr_alt — optional QR alt text
 #}
@@ -16,12 +16,14 @@
 {% set _mail_link = share_url %}
 {% set _copy_link = share_url %}
 {% if share_ref and share_url %}
+    {#- Decision 12: standard utm_source/utm_medium (GSC ignores utm_*; the
+        page's rel=canonical stays clean). by= kept for per-sharer attribution. -#}
     {% set _q = '&' if '?' in share_url else '?' %}
     {% set _by = ('&by=' ~ (share_by | urlencode)) if share_by else '' %}
-    {% set _wa_link = share_url ~ _q ~ 'ref=share_whatsapp' ~ _by %}
-    {% set _sms_link = share_url ~ _q ~ 'ref=share_sms' ~ _by %}
-    {% set _mail_link = share_url ~ _q ~ 'ref=share_email' ~ _by %}
-    {% set _copy_link = share_url ~ _q ~ 'ref=share_copy' ~ _by %}
+    {% set _wa_link = share_url ~ _q ~ 'utm_source=whatsapp&utm_medium=share' ~ _by %}
+    {% set _sms_link = share_url ~ _q ~ 'utm_source=sms&utm_medium=share' ~ _by %}
+    {% set _mail_link = share_url ~ _q ~ 'utm_source=email&utm_medium=share' ~ _by %}
+    {% set _copy_link = share_url ~ _q ~ 'utm_source=copy&utm_medium=share' ~ _by %}
 {% endif %}
 <div class="bc-share-widget">
     <div class="bc-card-share-link" data-copy-url="{{ _copy_link }}" role="button" tabindex="0" aria-label="Copy link">

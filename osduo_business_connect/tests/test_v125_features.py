@@ -41,9 +41,12 @@ class TestShareBar(unittest.TestCase):
         for channel in ("wa.me", "sms:", "mailto:", "bc-card-share-link", "data-bc-native-share"):
             self.assertIn(channel, self.template)
 
-    def test_ref_tokens_are_emitted(self):
-        for ref in ("share_whatsapp", "share_sms", "share_email", "share_copy"):
-            self.assertIn(ref, self.template)
+    def test_utm_params_are_emitted(self):
+        # Decision 12: share buttons use standard UTM, not the old ?ref= token.
+        for utm in ("utm_source=whatsapp", "utm_source=sms", "utm_source=email", "utm_source=copy"):
+            self.assertIn(utm, self.template)
+            self.assertIn("utm_medium=share", self.template)
+        self.assertNotIn("ref=share_", self.template)
 
     def test_share_by_slug_is_encoded(self):
         self.assertIn("share_by | urlencode", self.template)
@@ -90,8 +93,10 @@ class TestMyCard(unittest.TestCase):
         self.assertIn("Login required", source)
         self.assertIn("get_my_cards_for_user", source)
 
-    def test_mycard_ref_is_used(self):
-        self.assertIn("ref=mycard", read("templates", "pages", "my-card.html"))
+    def test_mycard_utm_is_used(self):
+        # Decision 12: my-card open carries standard UTM (reader maps it to the
+        # same "mycard" campaign token).
+        self.assertIn("utm_source=mycard&utm_medium=share", read("templates", "pages", "my-card.html"))
 
     def test_entry_points_exist(self):
         self.assertIn("/my-card", read("public", "js", "branding.js"))
@@ -231,11 +236,14 @@ class TestContactExchange(unittest.TestCase):
         self.assertIn("sharer or business_row.slug", self.api)
         self.assertIn("def get_user_card_slug", read("card", "my_card.py"))
 
-    def test_api_uses_canonical_urls_and_refs(self):
+    def test_api_uses_canonical_urls_and_utm(self):
         self.assertIn("get_card_public_url", self.api)
         self.assertIn("get_business_public_url", self.api)
-        for ref in ("share_whatsapp", "share_sms", "share_email"):
-            self.assertIn(ref, self.api)
+        # Decision 12: desk shares emit standard UTM via the shared builder.
+        self.assertIn("build_share_url", self.api)
+        for utm in ("whatsapp", "sms", "email"):
+            self.assertIn(utm, self.api)
+        self.assertNotIn("CHANNEL_REFS", self.api)
 
     def test_share_targets_must_be_publicly_reachable(self):
         self.assertIn("def _require_shareable", self.api)
@@ -265,12 +273,22 @@ class TestShareAttribution(unittest.TestCase):
     def setUp(self):
         self.source = read("utils", "share.py")
 
-    def test_whitelist_values(self):
-        for ref in ("share_whatsapp", "share_sms", "share_email", "share_copy", "mycard"):
-            self.assertIn(ref, self.source)
+    def test_stable_campaign_tokens_present(self):
+        # Stored campaign tokens are unchanged, so analytics history stays
+        # comparable across the Decision 12 wire-format change.
+        for token in ("share_whatsapp", "share_sms", "share_email", "share_copy", "mycard"):
+            self.assertIn(token, self.source)
 
-    def test_unknown_refs_are_dropped(self):
-        self.assertIn("return ref if ref in SHARE_REFS else None", self.source)
+    def test_reader_accepts_utm_and_legacy_ref(self):
+        # new: utm_source mapped only with utm_medium=share; legacy ?ref= still honoured.
+        self.assertIn("utm_medium", self.source)
+        self.assertIn("LEGACY_REFS", self.source)
+        self.assertIn("CHANNELS", self.source)
+
+    def test_build_share_url_emits_utm(self):
+        # the shared builder is what both share_bar and desk paths route through.
+        self.assertIn("def build_share_url", self.source)
+        self.assertIn('params = {"utm_source": utm_source, "utm_medium": UTM_MEDIUM}', self.source)
 
     def test_shared_link_open_is_logged(self):
         for page in ("business/business.py", "product/product.py",
