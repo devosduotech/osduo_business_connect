@@ -3,11 +3,34 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ title or (bc_app_name or 'OSDuo Business Connect') }}</title>
-    {% if meta_description %}<meta name="description" content="{{ meta_description }}">{% endif %}
-    {% if og_title %}<meta property="og:title" content="{{ og_title }}">{% endif %}
-    {% if og_description %}<meta property="og:description" content="{{ og_description }}">{% endif %}
-    {% if og_image %}<meta property="og:image" content="{{ og_image }}">{% endif %}
+    {#- SEO — built by utils/seo.py; falls back to the raw title/description
+        for pages that do not set a `seo` dict (e.g. login-gated routes).
+        Values are escaped with | e (Jinja autoescape is off in Frappe). -#}
+    {%- set seo = seo or {} -%}
+    {%- set seo_title = seo.get('title') or title or (bc_app_name or 'OSDuo Business Connect') -%}
+    {%- set seo_description = seo.get('description') or meta_description or '' -%}
+    {%- set seo_canonical = seo.get('canonical') or '' -%}
+    {%- set seo_image = seo.get('og_image') or '' -%}
+    <title>{{ seo_title | e }}</title>
+    {% if seo_description %}<meta name="description" content="{{ seo_description | e }}">{% endif %}
+    {% if seo_canonical %}<link rel="canonical" href="{{ seo_canonical | e }}">{% endif %}
+    <meta name="robots" content="{{ (seo.get('robots') or 'index,follow,max-image-preview:large') | e }}">
+    <meta property="og:type" content="{{ (seo.get('og_type') or 'website') | e }}">
+    <meta property="og:site_name" content="{{ (seo.get('og_site_name') or (bc_app_name or 'OSDuo Business Connect')) | e }}">
+    <meta property="og:locale" content="{{ (seo.get('og_locale') or 'en_IN') | e }}">
+    <meta property="og:title" content="{{ (seo.get('og_title') or seo_title) | e }}">
+    {% if seo_description %}<meta property="og:description" content="{{ seo_description | e }}">{% endif %}
+    {% if seo.get('og_url') %}<meta property="og:url" content="{{ seo.get('og_url') | e }}">{% endif %}
+    {% if seo_image %}<meta property="og:image" content="{{ seo_image | e }}">{% endif %}
+    {% if seo.get('og_image_alt') %}<meta property="og:image:alt" content="{{ seo.get('og_image_alt') | e }}">{% endif %}
+    <meta name="twitter:card" content="{{ (seo.get('twitter_card') or 'summary_large_image') | e }}">
+    <meta name="twitter:title" content="{{ (seo.get('og_title') or seo_title) | e }}">
+    {% if seo_description %}<meta name="twitter:description" content="{{ seo_description | e }}">{% endif %}
+    {% if seo_image %}<meta name="twitter:image" content="{{ seo_image | e }}">{% endif %}
+    <meta name="application-name" content="{{ (bc_app_name or 'OSDuo Business Connect') | e }}">
+    <meta name="generator" content="OSDuo Business Connect">
+    <meta name="theme-color" content="{{ (bc_primary_color or '#0B3D91') | e }}">
+    {% for block in seo.get('jsonld') or [] %}<script type="application/ld+json">{{ block | jsonld | safe }}</script>{% endfor %}
     <link rel="icon" href="{{ bc_favicon or '/assets/osduo_business_connect/images/favicon-256.png' }}" type="image/png">
     <meta name="csrf-token" content="{{ frappe.session.csrf_token or '' }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">

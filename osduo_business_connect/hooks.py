@@ -253,6 +253,7 @@ jinja = {
     "filters": [
         "osduo_business_connect.utils.website",
         "osduo_business_connect.utils.money",
+        "osduo_business_connect.utils.seo",
     ],
 }
 

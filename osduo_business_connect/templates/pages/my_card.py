@@ -13,6 +13,7 @@ Frappe resolves this module from the adjacent ``my-card.html`` template
 import frappe
 
 from osduo_business_connect.card.my_card import get_my_cards_for_user
+from osduo_business_connect.utils.seo import NOINDEX, build_seo
 
 no_cache = 1
 
@@ -24,4 +25,5 @@ def get_context(context):
     context.title = "My Card"
     context.no_cache = 1
     context.my_cards = get_my_cards_for_user(frappe.session.user)
+    context.seo = build_seo("My Card", "", "/my-card", robots=NOINDEX)
     return context

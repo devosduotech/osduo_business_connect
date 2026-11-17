@@ -4,6 +4,7 @@ from ....services.theme_service import get_business_theme, get_theme_variables
 from ....analytics.tracking import capture_analytics_context, track_event
 from ....card.my_card import get_user_card_slug
 from ....utils.urls import get_business_public_url
+from ....utils.seo import build_seo
 from ....utils.share import get_share_by, get_share_ref
 
 
@@ -87,11 +88,25 @@ def get_context(context):
         order_by="featured desc, sort_order asc",
     )
 
-    # SEO
-    if doc.get("seo_title"):
-        context.title = doc["seo_title"]
-    if doc.get("seo_description"):
-        context.meta_description = doc["seo_description"]
+    # SEO — canonical / Open Graph metadata. Precedence per SEO_PLAN §C.
+    seo_title = doc.get("seo_title") or (
+        f"{doc.business_name} — {doc.industry}"
+        if doc.get("industry")
+        else (doc.business_name or doc.name)
+    )
+    seo_description = (
+        doc.get("seo_description")
+        or doc.get("description")
+        or (f"{doc.business_name} in {doc.city}" if doc.get("city") else "")
+    )
+    context.seo = build_seo(
+        seo_title,
+        seo_description,
+        f"/b/{doc.slug}",
+        image=doc.get("cover_image") or doc.get("logo"),
+        page_type="website",
+        business=doc,
+    )
 
     # Share — attributed to the card of whoever is sharing, when they have one.
     context.share_url = get_business_public_url(doc.get("slug"))

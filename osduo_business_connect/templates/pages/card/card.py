@@ -2,6 +2,7 @@ import frappe
 from ....services.theme_service import get_business_theme, get_theme_data, get_default_theme, get_theme_variables
 from ....analytics.tracking import capture_analytics_context, track_event
 from ....utils.urls import get_card_public_url
+from ....utils.seo import build_seo
 from ....utils.share import get_share_by, get_share_ref
 
 
@@ -38,7 +39,7 @@ def get_context(context):
 
     # Card URL for sharing — always the canonical URL (printed QR/NFC safety).
     context.card_url = get_card_public_url(slug)
-    context.landing_url = frappe.request.url if frappe.request else context.card_url
+    context.landing_url = context.card_url
     context.share_url = context.card_url
     context.share_by = slug
     context.share_title = doc.get("display_name") or doc.get("name") or "Digital Card"
@@ -80,17 +81,38 @@ def get_context(context):
         order_by="sort_order asc",
     )
 
-    # Business info
+    # Business info — also feeds the SEO description/image fallbacks below.
+    business = None
     if doc.get("business"):
         business = frappe.db.get_value(
             "Business",
             doc["business"],
-            ["business_name", "slug"],
+            ["business_name", "slug", "description", "seo_description", "logo"],
             as_dict=True,
         )
         if business:
             doc["business_name"] = business.get("business_name")
             doc["business_slug"] = business.get("slug")
+
+    # SEO — canonical / Open Graph metadata. Precedence per SEO_PLAN §C.
+    card_title = doc.get("display_name") or doc.get("name")
+    if doc.get("designation"):
+        card_title = f"{card_title} — {doc.designation}"
+    if doc.get("business_name"):
+        card_title = f"{card_title} — {doc.business_name}"
+    seo_description = (
+        (business.get("seo_description") if business else None)
+        or (business.get("description") if business else None)
+        or doc.get("bio")
+    )
+    context.seo = build_seo(
+        card_title,
+        seo_description,
+        f"/c/{slug}",
+        image=doc.get("profile_image") or (business.get("logo") if business else None),
+        page_type="profile",
+        business=business,
+    )
 
     # Products (if enabled)
     context.products = []

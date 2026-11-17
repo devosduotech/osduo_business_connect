@@ -12,6 +12,7 @@ import re
 from urllib.parse import parse_qs, urlparse
 
 from osduo_business_connect.hooks import OSDUO_BRANDING
+from osduo_business_connect.utils.seo import NOINDEX, is_login_path
 
 
 def get_branding_context(context):
@@ -20,6 +21,11 @@ def get_branding_context(context):
 
     Called via update_website_context hook in hooks.py.
     Available in all web templates as {{ bc_app_name }}, {{ bc_logo }}, etc.
+
+    Also marks the login screen (the site root, ``home_page = "login"``) as
+    ``noindex`` so the private login page is never indexed. Runs after Frappe
+    has populated ``context.metatags``, so mutating it here reaches the
+    standard ``meta_block`` renderer.
     """
     context.update({
         "bc_app_name": OSDUO_BRANDING["app_name"],
@@ -38,6 +44,9 @@ def get_branding_context(context):
         "bc_background_color": OSDUO_BRANDING["background_color"],
         "bc_text_color": OSDUO_BRANDING["text_color"],
     })
+
+    if is_login_path(context.get("path")):
+        context.setdefault("metatags", {})["robots"] = NOINDEX
 
 
 def safe_url(url):
