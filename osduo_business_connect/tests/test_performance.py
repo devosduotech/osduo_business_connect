@@ -174,5 +174,15 @@ class TestOpenGraphImage(unittest.TestCase):
         self.assertLess(os.path.getsize(path), 300_000)
 
 
+class TestDocumentStructure(unittest.TestCase):
+    def test_single_main_landmark(self):
+        head = read("templates", "bc_base.html")
+        self.assertEqual(head.count("<main>"), 1)
+        self.assertIn("</main>", head)
+
+    def test_hero_image_preloaded_when_custom(self):
+        self.assertIn('rel="preload" as="image"', read("templates", "bc_base.html"))
+
+
 if __name__ == "__main__":
     unittest.main()

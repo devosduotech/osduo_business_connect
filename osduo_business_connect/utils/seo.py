@@ -203,4 +203,8 @@ def build_seo(
     }
     if use_bundled:
         seo["og_image_width"], seo["og_image_height"] = OG_IMAGE_SIZE
+    else:
+        # The page's own image (cover/logo/product) is almost always its LCP
+        # element — expose it so the head can <link rel=preload as=image>.
+        seo["preload_image"] = image_url
     return seo

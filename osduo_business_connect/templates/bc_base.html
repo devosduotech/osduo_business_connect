@@ -33,6 +33,7 @@
     <meta name="generator" content="OSDuo Business Connect">
     <meta name="theme-color" content="{{ (bc_primary_color or '#0B3D91') | e }}">
     {% for block in seo.get('jsonld') or [] %}<script type="application/ld+json">{{ block | jsonld | safe }}</script>{% endfor %}
+    {% if seo.get('preload_image') %}<link rel="preload" as="image" href="{{ seo.get('preload_image') | e }}" fetchpriority="high">{% endif %}
     <link rel="icon" href="{{ bc_favicon or '/assets/osduo_business_connect/images/favicon-256.png' }}" type="image/png">
     <meta name="csrf-token" content="{{ frappe.session.csrf_token or '' }}">
     <link rel="stylesheet" href="/assets/osduo_business_connect/css/fonts.css">
@@ -42,6 +43,6 @@
     </style>
 </head>
 <body>
-    {% block page_content %}{% endblock %}
+    <main>{% block page_content %}{% endblock %}</main>
 </body>
 </html>
