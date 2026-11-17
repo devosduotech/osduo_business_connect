@@ -1190,7 +1190,7 @@
     --bc-font-size: 16px;
     --bc-header-bg: linear-gradient(135deg, #2563EB, #60A5FA);
     --bc-header-text: white;
-    --bc-section-spacing: 2rem 0;
+    --bc-section-spacing: 1rem;
     --bc-card-shadow: 0 1px 3px rgba(0,0,0,0.1);
     --bc-card-border: none;
     --bc-btn-radius: 8px;

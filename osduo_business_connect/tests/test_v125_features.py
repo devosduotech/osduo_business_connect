@@ -512,10 +512,10 @@ class TestBuyHereAndFeatured(unittest.TestCase):
         self.assertIn(".bc-card-item .bc-featured-chip {", css)
         self.assertIn(".bc-product-card .bc-featured-chip {", css)
 
-    def test_backend_section_is_named_purchase_link(self):
+    def test_backend_section_is_named_enquiry_and_purchase_link(self):
         for doc in (self.product, self.service):
             label = next(f["label"] for f in doc["fields"] if f["fieldname"] == "section_purchase")
-            self.assertEqual(label, "Purchase Link")
+            self.assertEqual(label, "Enquiry and Purchase Link")
 
     def test_buy_cta_sits_after_the_description(self):
         for source in (self.product_html, self.service_html):
@@ -527,9 +527,21 @@ class TestBuyHereAndFeatured(unittest.TestCase):
             self.assertGreater(buy_at, hero_end, source[:80])
             self.assertGreater(buy_at, max(desc_at, about_at))
 
-    def test_buy_section_spacing_is_tightened(self):
+    def test_buy_cta_uses_standard_section(self):
+        partial = read("templates", "pages", "parts", "buy_cta.html")
+        self.assertIn('class="bc-section bc-buy-section"', partial)
+
+    def test_section_spacing_token_is_normalised(self):
+        """v1.2.92 spacing audit — `--bc-section-spacing` is a single vertical
+        length, so `.bc-section { padding: var(--bc-section-spacing) 0; }` gives
+        symmetric top/bottom padding with no horizontal leak."""
         css = read("public", "css", "business_connect.css")
-        self.assertIn(".bc-buy-section {\n    padding-top: 0;", css)
+        self.assertIn("--bc-section-spacing: 1rem;", css)
+        self.assertIn("padding: var(--bc-section-spacing) 0;", css)
+        theme = read("services", "theme_service.py")
+        for two_value in ('"2rem 1.5rem"', '"1.5rem 1.5rem"', '"1rem 1.5rem"',
+                          '"3rem 2rem"', '"2.5rem 1.5rem"'):
+            self.assertNotIn(two_value, theme, two_value)
 
     def test_beacon_partial_is_self_contained(self):
         beacon = read("templates", "pages", "parts", "bc_events.html")

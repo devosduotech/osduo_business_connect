@@ -409,13 +409,18 @@ def get_theme_variables(theme_data):
     else:
         header_text = on_primary
 
-    # Section spacing
+    # Section spacing — a single vertical length. `.bc-section` applies it as
+    # `padding: var(--bc-section-spacing) 0`, so top and bottom match and no
+    # horizontal padding leaks into the full-width section (the inner
+    # .bc-container already supplies the side gutters). Values are half the old
+    # top-only spacing so the section-to-section rhythm is unchanged.
+    # Professional keeps its dedicated 2.5rem rule (below in the stylesheet).
     spacing_map = {
-        "Modern": "2rem 1.5rem", "Professional": "1.5rem 1.5rem",
-        "Minimal": "1rem 1.5rem", "Classic": "2rem 1.5rem",
-        "Luxury": "3rem 2rem", "Creative": "2.5rem 1.5rem",
+        "Modern": "1rem", "Professional": "2.5rem",
+        "Minimal": "0.5rem", "Classic": "1rem",
+        "Luxury": "1.5rem", "Creative": "1.25rem",
     }
-    section_spacing = spacing_map.get(template, "2rem 1.5rem")
+    section_spacing = spacing_map.get(template, "1rem")
 
     # Display font (for hero/title text)
     display_font_map = {
