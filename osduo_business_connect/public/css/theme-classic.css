@@ -1,0 +1,190 @@
+/* GENERATED — do not edit. Source: styles/business_connect.src.css
+   Regenerate: python3 scripts/split_css.py */
+.bc-hero-classic {
+padding: 0;
+    overflow: hidden;
+}
+
+.bc-hero-classic-banner {
+background: linear-gradient(135deg, var(--bc-primary-fill), var(--bc-accent-fill));
+    background: linear-gradient(135deg, var(--bc-primary), var(--bc-accent));
+    padding: 2rem 1.25rem 2.25rem;
+    text-align: center;
+}
+
+.bc-hero-classic-banner-inner h1 {
+color: var(--bc-on-primary);
+    color: white;
+    margin: 0 0 0.2rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.bc-hero-classic-designation {
+color: var(--bc-on-primary);
+    color: rgba(255,255,255,0.85);
+    margin: 0 0 0.1rem;
+    font-size: 0.95rem;
+}
+
+.bc-hero-classic-business {
+color: var(--bc-on-primary);
+    color: rgba(255,255,255,0.65);
+    margin: 0;
+    font-size: 0.85rem;
+}
+
+.bc-hero-classic-avatar-overlap {
+text-align: center;
+    margin-top: -45px;
+    position: relative;
+    z-index: 2;
+}
+
+.bc-hero-classic-avatar {
+width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid white;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+
+.bc-hero-classic-avatar-fallback {
+width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: var(--bc-primary-fill);
+    color: var(--bc-on-primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    border: 4px solid white;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+
+.bc-hero-classic-body {
+padding: 0.6rem 1.25rem 1.25rem;
+    text-align: center;
+}
+
+.bc-hero-classic-contact {
+margin: 0.6rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.bc-hero-classic-contact-item {
+color: var(--bc-text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.88rem;
+    color: #475569;
+    text-decoration: none;
+    padding: 0.3rem 0;
+    transition: color 0.2s;
+}
+
+.bc-hero-classic-contact-item:hover {
+color: var(--bc-primary-text);
+    color: var(--bc-primary);
+}
+
+.bc-hero-classic-divider-line {
+height: 1px;
+    background: linear-gradient(90deg, transparent, var(--bc-border-color), transparent);
+    margin: 0.75rem 0;
+}
+
+.bc-hero-classic-actions {
+display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.bc-hero-classic-btn {
+flex: 1;
+    justify-content: center;
+    border: none;
+    border-radius: 8px !important;
+    font-size: 0.82rem !important;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.bc-hero-classic-btn:hover {
+transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.bc-hero-classic-btn-whatsapp {
+background: #25D366 !important;
+    color: white !important;
+}
+
+.bc-hero-classic-btn-email {
+background: #EA4335 !important;
+    color: white !important;
+}
+
+.bc-hero-classic-links {
+margin-top: 0;
+    justify-content: center;
+}
+
+.bc-hero-classic-link-btn {
+color: var(--bc-text-muted);
+    border: 1px solid var(--bc-border-color);
+    background: white;
+    color: #475569;
+    border-radius: 6px;
+    font-size: 0.75rem;
+}
+
+.bc-hero-classic-qr {
+margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #eee;
+    text-align: center;
+}
+
+.bc-template-classic .bc-header {
+background: var(--bc-header-bg);
+    border-radius: 0;
+    border-bottom: 4px solid var(--bc-accent);
+}
+
+.bc-template-classic .bc-card {
+border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border: 1px solid #f1f5f9;
+}
+
+.bc-template-classic .bc-section-title {
+font-style: italic;
+    border-left: 4px solid var(--bc-primary);
+    padding-left: 0.75rem;
+}
+
+@media (max-width: 768px) {
+.bc-hero-classic-banner {
+background: linear-gradient(135deg, var(--bc-primary-fill), var(--bc-accent-fill)); padding: 1.5rem 1rem 1.75rem;
+}
+
+.bc-hero-classic-banner-inner h1 {
+color: var(--bc-on-primary); font-size: 1.3rem;
+}
+
+.bc-hero-classic-body {
+padding: 0.5rem 1rem 1rem;
+}
+
+.bc-hero-classic-avatar, .bc-hero-classic-avatar-fallback {
+width: 80px; height: 80px;
+}
+}

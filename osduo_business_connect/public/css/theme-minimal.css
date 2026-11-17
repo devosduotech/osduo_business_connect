@@ -1,0 +1,217 @@
+/* GENERATED — do not edit. Source: styles/business_connect.src.css
+   Regenerate: python3 scripts/split_css.py */
+.bc-hero-minimal {
+background: var(--bc-surface);
+    text-align: left;
+    padding: 1.5rem 1.25rem 1rem;
+}
+
+.bc-hero-minimal-header {
+display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.bc-hero-minimal-avatar {
+width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--bc-border-color);
+}
+
+.bc-hero-minimal-avatar-fallback {
+background: var(--bc-background);
+    color: var(--bc-text-muted);
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+}
+
+.bc-hero-minimal-identity h1 {
+margin: 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.bc-hero-minimal-designation {
+color: var(--bc-text-muted);
+    color: #64748b;
+    margin: 0.15rem 0 0;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.bc-hero-minimal-business {
+color: var(--bc-text-faint);
+    color: #94a3b8;
+    margin: 0 0 0.6rem;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.bc-hero-minimal-contact {
+margin: 0.6rem 0;
+}
+
+.bc-hero-minimal-contact-row {
+color: var(--bc-text-muted);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid var(--bc-border-color);
+    text-decoration: none;
+    color: #475569;
+    transition: color 0.2s;
+}
+
+.bc-hero-minimal-contact-row:hover {
+color: var(--bc-primary);
+}
+
+.bc-hero-minimal-contact-label {
+color: var(--bc-text-faint);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #94a3b8;
+    min-width: 55px;
+    font-weight: 500;
+}
+
+.bc-hero-minimal-contact-value {
+font-size: 0.88rem;
+}
+
+.bc-hero-minimal-divider {
+height: 1px;
+    background: var(--bc-border-color);
+    margin: 0.6rem 0;
+}
+
+.bc-hero-minimal-actions {
+display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.bc-hero-minimal-btn {
+color: var(--bc-text-muted) !important;
+    flex: 1;
+    justify-content: center;
+    border: 1px solid var(--bc-border-color);
+    background: white !important;
+    color: #475569 !important;
+    border-radius: 0 !important;
+    font-size: 0.82rem !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: all 0.2s;
+}
+
+.bc-hero-minimal-btn:hover {
+transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+}
+
+.bc-hero-minimal-btn-whatsapp {
+border-color: #25D366;
+    color: #25D366 !important;
+}
+
+.bc-hero-minimal-btn-email {
+border-color: #EA4335;
+    color: #EA4335 !important;
+}
+
+.bc-hero-minimal-links {
+margin-top: 0.75rem;
+    justify-content: flex-start;
+}
+
+.bc-hero-minimal-link-btn {
+color: var(--bc-text-muted);
+    border: 1px solid var(--bc-border-color);
+    background: white;
+    color: #475569;
+    border-radius: 0;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.bc-hero-minimal-qr {
+margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #e2e8f0;
+    text-align: left;
+}
+
+.bc-template-minimal .bc-header {
+background: transparent;
+    color: var(--bc-text);
+    padding: 2rem 0;
+}
+
+.bc-template-minimal .bc-header h1 {
+color: var(--bc-text);
+}
+
+.bc-template-minimal .bc-header .bc-tagline {
+color: #64748b;
+}
+
+.bc-template-minimal .bc-card {
+border-radius: 0;
+    box-shadow: none;
+    border: none;
+    border-bottom: 1px solid #f1f5f9;
+    padding: 1.25rem 0;
+}
+
+.bc-template-minimal .bc-section-title {
+font-weight: 400;
+    color: #94a3b8;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.bc-template-minimal .bc-btn {
+border-radius: 0;
+}
+
+@media (max-width: 768px) {
+.bc-hero-minimal-identity h1 {
+font-size: 1.15rem;
+}
+
+.bc-hero-minimal-avatar, .bc-hero-minimal-avatar-fallback {
+background: var(--bc-background);
+    color: var(--bc-text-muted); width: 64px; height: 64px;
+}
+}
+
+@media (max-width: 480px) {
+.bc-hero-minimal-identity h1 {
+font-size: 1rem;
+}
+
+.bc-hero-minimal-avatar, .bc-hero-minimal-avatar-fallback {
+background: var(--bc-background);
+    color: var(--bc-text-muted); width: 56px; height: 56px;
+}
+}

@@ -1,0 +1,147 @@
+/* GENERATED — do not edit. Source: styles/business_connect.src.css
+   Regenerate: python3 scripts/split_css.py */
+.bc-hero-modern {
+background: var(--bc-surface);
+    border-radius: var(--bc-card-radius) var(--bc-card-radius) 0 0;
+    border-bottom: 1px solid var(--bc-border-color);
+}
+
+.bc-hero-modern-avatar-wrap {
+margin-bottom: 0.75rem;
+}
+
+.bc-hero-modern-avatar {
+width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--bc-primary);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    display: block;
+    margin: 0 auto;
+}
+
+.bc-hero-modern-avatar-fallback {
+width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: var(--bc-primary-fill);
+    color: var(--bc-on-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.4rem;
+    margin: 0 auto;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    border: 4px solid white;
+}
+
+.bc-hero-modern-name {
+margin: 0.3rem 0 0.15rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.bc-hero-modern-designation {
+color: var(--bc-text-muted);
+    color: #64748b;
+    margin: 0 0 0.15rem;
+    font-size: 0.95rem;
+}
+
+.bc-hero-modern-business {
+color: var(--bc-text-faint);
+    color: #94a3b8;
+    margin: 0 0 0.6rem;
+    font-size: 0.85rem;
+}
+
+.bc-hero-modern-contact {
+color: var(--bc-text-muted);
+    margin: 0.6rem 0;
+    font-size: 0.85rem;
+    color: #64748b;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.bc-hero-modern-actions {
+gap: 0.5rem;
+}
+
+.bc-hero-modern-btn {
+background: var(--bc-primary-fill);
+    color: var(--bc-on-primary);
+    border-radius: 50px !important;
+    padding: 0.6rem 1.1rem !important;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: all 0.2s;
+}
+
+.bc-hero-modern-btn:hover {
+transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.bc-hero-modern-links {
+margin-top: 0.5rem;
+}
+
+.bc-hero-modern-qr {
+margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f1f5f9;
+}
+
+.bc-template-modern .bc-header {
+background: var(--bc-header-bg);
+    border-radius: 0 0 1.5rem 1.5rem;
+}
+
+.bc-template-modern .bc-card {
+border-radius: var(--bc-card-radius);
+    box-shadow: var(--bc-card-shadow);
+}
+
+.bc-template-modern .bc-section-title {
+position: relative;
+    padding-bottom: 0.5rem;
+}
+
+.bc-template-modern .bc-section-title::after {
+content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 3px;
+    background: var(--bc-primary);
+    border-radius: 2px;
+}
+
+@media (max-width: 768px) {
+.bc-hero-modern-avatar, .bc-hero-modern-avatar-fallback {
+width: 100px; height: 100px;
+}
+
+.bc-hero-modern-name {
+font-size: 1.3rem;
+}
+
+.bc-hero-modern-btn {
+background: var(--bc-primary-fill);
+    color: var(--bc-on-primary); padding: 0.5rem 0.9rem !important; font-size: 0.78rem !important;
+}
+}
+
+@media (max-width: 480px) {
+.bc-hero-modern-avatar, .bc-hero-modern-avatar-fallback {
+width: 90px; height: 90px;
+}
+
+.bc-hero-modern-name {
+font-size: 1.2rem;
+}
+}
