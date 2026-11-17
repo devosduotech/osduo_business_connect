@@ -99,7 +99,7 @@ def _business_ref(business):
     name = business.get("business_name") or business.get("name")
     ref = {"@type": "Organization", "name": name}
     if business.get("slug"):
-        ref["url"] = absolute_url(f"/b/{business['slug']}")
+        ref["url"] = absolute_url(f"/b/{business.get('slug')}")
     return ref
 
 
@@ -171,7 +171,7 @@ def _postal_address(business):
         ("country", "addressCountry"),
     ):
         if business.get(field):
-            parts[key] = business[field]
+            parts[key] = business.get(field)
     return {"@type": "PostalAddress", **parts} if parts else None
 
 
@@ -215,14 +215,14 @@ def local_business_node(business, hours=None, socials=None):
     if image:
         node["image"] = absolute_url(image)
     if business.get("logo"):
-        node["logo"] = absolute_url(business["logo"])
+        node["logo"] = absolute_url(business.get("logo"))
     description = clean_text(business.get("seo_description") or business.get("description") or "", limit=0)
     if description:
         node["description"] = description
     if business.get("phone"):
-        node["telephone"] = business["phone"]
+        node["telephone"] = business.get("phone")
     if business.get("email"):
-        node["email"] = business["email"]
+        node["email"] = business.get("email")
     address = _postal_address(business)
     if address:
         node["address"] = address
@@ -279,7 +279,7 @@ def product_node(business, product):
     if description:
         node["description"] = description
     if product.get("image"):
-        node["image"] = absolute_url(product["image"])
+        node["image"] = absolute_url(product.get("image"))
     brand_name = business.get("business_name") or business.get("name")
     if brand_name:
         node["brand"] = {"@type": "Brand", "name": brand_name}
@@ -304,12 +304,12 @@ def service_node(business, service):
     if description:
         node["description"] = description
     if service.get("image"):
-        node["image"] = absolute_url(service["image"])
+        node["image"] = absolute_url(service.get("image"))
     provider = _business_ref(business)
     if provider.get("name"):
         node["provider"] = provider
     if business.get("city"):
-        node["areaServed"] = {"@type": "City", "name": business["city"]}
+        node["areaServed"] = {"@type": "City", "name": business.get("city")}
     if has_public_price(service):
         node["offers"] = _offer(service, url)
     return node
@@ -344,22 +344,22 @@ def profile_page_node(card, business=None, links=None):
         "url": url,
     }
     if card.get("designation"):
-        person["jobTitle"] = card["designation"]
+        person["jobTitle"] = card.get("designation")
     if card.get("profile_image"):
-        person["image"] = absolute_url(card["profile_image"])
+        person["image"] = absolute_url(card.get("profile_image"))
     bio = clean_text(card.get("bio") or "", limit=0)
     if bio:
         person["description"] = bio
     if card.get("email"):
-        person["email"] = card["email"]
+        person["email"] = card.get("email")
     if card.get("phone"):
-        person["telephone"] = card["phone"]
+        person["telephone"] = card.get("phone")
     if business and (business.get("business_name") or business.get("name")):
         person["worksFor"] = _business_ref(business)
     same_as = _same_as(links)
-    if _is_http(card.get("website")):
-        if card["website"] not in same_as:
-            same_as.append(card["website"])
+    website = card.get("website")
+    if _is_http(website) and website not in same_as:
+        same_as.append(website)
     if same_as:
         person["sameAs"] = same_as
     return {

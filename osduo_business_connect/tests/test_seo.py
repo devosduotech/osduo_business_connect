@@ -594,5 +594,68 @@ class TestControllerWiring(unittest.TestCase):
         self.assertIn("jsonld.breadcrumb_node(", src)
 
 
+class _NoSubscript:
+    """Mimics a ``frappe`` Document: supports ``.get``/attribute access but NOT ``obj['field']``.
+
+    The controllers pass ``frappe.get_doc(...)`` for Product/Service into these
+    builders, so subscripting the record — even right after a ``.get`` guard —
+    raises ``TypeError`` at render time. This stub reproduces that contract so the
+    builders are tested against the real input type, not a dict.
+    """
+
+    def __init__(self, data):
+        self._data = dict(data)
+        for key, value in self._data.items():
+            setattr(self, key, value)
+
+    def get(self, key, default=None):
+        return self._data.get(key, default)
+
+    def __getitem__(self, key):
+        raise TypeError("'ShowcaseService' object is not subscriptable")
+
+
+class TestDocumentLikeInput(unittest.TestCase):
+    def test_product_node_with_document(self):
+        with canonical_base(CANON):
+            node = jl.product_node(_NoSubscript(BUSINESS), _NoSubscript(PRODUCT))
+        self.assertEqual(node["@type"], "Product")
+        self.assertTrue(node["image"].endswith("/w.png"))
+        self.assertEqual(node["offers"]["price"], 12000.0)
+
+    def test_service_node_with_document(self):
+        with canonical_base(CANON):
+            node = jl.service_node(_NoSubscript(BUSINESS), _NoSubscript(SERVICE))
+        self.assertEqual(node["@type"], "Service")
+        self.assertEqual(node["provider"]["name"], "OSDuo Tech")
+        self.assertEqual(node["areaServed"], {"@type": "City", "name": "Chennai"})
+
+    def test_service_unpriced_with_document_no_offer(self):
+        with canonical_base(CANON):
+            node = jl.service_node(_NoSubscript(BUSINESS), _NoSubscript({**SERVICE, "price_display_mode": "Contact"}))
+        self.assertNotIn("offers", node)
+
+    def test_local_business_with_document(self):
+        with canonical_base(CANON):
+            node = jl.local_business_node(_NoSubscript(BUSINESS), [], [])
+        self.assertEqual(node["@type"], "LocalBusiness")
+        self.assertEqual(node["address"]["addressLocality"], "Chennai")
+
+    def test_profile_page_with_document(self):
+        with canonical_base(CANON):
+            node = jl.profile_page_node(_NoSubscript(CARD), _NoSubscript(BUSINESS), [])
+        person = node["mainEntity"]
+        self.assertEqual(person["jobTitle"], "Managing Director")
+        self.assertEqual(person["worksFor"]["name"], "OSDuo Tech")
+        self.assertIn("https://karthic.dev", person["sameAs"])
+
+
+class TestNoDocumentSubscripts(unittest.TestCase):
+    def test_builders_never_subscript_the_record(self):
+        src = read("seo", "jsonld.py")
+        for pattern in ('business["', 'product["', 'service["', 'card["', 'item["', 'doc["'):
+            self.assertNotIn(pattern, src, pattern)
+
+
 if __name__ == "__main__":
     unittest.main()
