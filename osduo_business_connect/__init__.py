@@ -1,2 +1,2 @@
-__version__ = "1.2.92"
+__version__ = "1.2.93"
 app_name = "osduo_business_connect"

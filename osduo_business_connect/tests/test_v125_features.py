@@ -532,7 +532,7 @@ class TestBuyHereAndFeatured(unittest.TestCase):
         self.assertIn('class="bc-section bc-buy-section"', partial)
 
     def test_section_spacing_token_is_normalised(self):
-        """v1.2.92 spacing audit — `--bc-section-spacing` is a single vertical
+        """v1.2.93 spacing audit — `--bc-section-spacing` is a single vertical
         length, so `.bc-section { padding: var(--bc-section-spacing) 0; }` gives
         symmetric top/bottom padding with no horizontal leak."""
         css = read("public", "css", "business_connect.css")

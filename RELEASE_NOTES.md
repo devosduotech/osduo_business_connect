@@ -1,3 +1,34 @@
+# Release Notes - business_connect (v1.2.93)
+
+**Release Date:** 17 November 2026
+**Version:** v1.2.93 (patch)
+
+A small CSS fix that gives every public page an even, symmetric section rhythm
+and removes the stray white space that appeared between sections.
+
+## Changes (v1.2.93)
+
+### Even spacing on every public page
+- `--bc-section-spacing` was a two-value shorthand applied as a three-value
+  `padding`, which left the **bottom padding at 0** and leaked horizontal
+  padding into each section. It is now a single vertical length, so sections
+  have equal top and bottom breathing room and no side bleed.
+- The per-template values were halved so the gap between sections stays exactly
+  as it was — only the rhythm is now balanced.
+- Covers all six themes (Modern, Professional, Minimal, Classic, Luxury,
+  Creative) and both layouts, in light and dark mode, on desktop and mobile.
+
+## Upgrade
+
+```bash
+bench --site <site> clear-website-cache
+bench restart
+```
+
+CSS-only fix — no `migrate` needed.
+
+---
+
 # Release Notes - business_connect (v1.2.92)
 
 **Release Date:** 17 November 2026

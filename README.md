@@ -1,6 +1,6 @@
 # OSDuo Business Connect
 
-**v1.2.92** | **Your digital identity. Your customers. Your growth.**
+**v1.2.93** | **Your digital identity. Your customers. Your growth.**
 
 Business Connect transforms how small businesses and professionals establish their digital presence. Create a stunning business profile, showcase products and services, capture customer enquiries and card exchanges, and install it all as a mobile app — all seamlessly integrated with Frappe CRM.
 
@@ -221,6 +221,8 @@ documentation cleanups), see **[docs/TODO.md](docs/TODO.md)**.
       and direct video files play inline (v1.2.91)
 - [x] Desk form layout baked into the app — every site gets the tidied forms on
       `migrate`, no Customize Form work (v1.2.92)
+- [x] Even, symmetric section spacing on every public page — balanced top/bottom
+      rhythm with no stray white space (v1.2.93)
 - [ ] SEO engine — remaining v1.3.0 scope (canonical/OG, JSON-LD, catalogue SEO
       fields, web vitals, brand attribution); sitemap + robots shipped in v1.2.9 — see
       [docs/TODO.md](docs/TODO.md) §1

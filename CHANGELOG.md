@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.2.93 - 17 November 2026
+
+### Bug fixes (v1.2.93)
+
+#### Even section spacing on every public page
+- `--bc-section-spacing` was a **two-value** shorthand (e.g. `2rem 1.5rem`) but
+  `.bc-section` applied it as `padding: var(--bc-section-spacing) 0`. A
+  two-value variable in a three-value padding expands to *top / sides / bottom*,
+  so the **bottom padding was always 0** and the theme's horizontal value leaked
+  in as side padding — the source of the uneven rhythm and stray white space.
+- The token is now a **single vertical length**; `.bc-section` gets symmetric
+  top/bottom padding and no horizontal leak (the inner `.bc-container` already
+  supplies the side gutters).
+- Per-template values were halved so the section-to-section rhythm is unchanged:
+  Modern 2rem, Minimal 1rem, Classic 2rem, Luxury 3rem, Creative 2.5rem and
+  Professional 5rem. The Professional / editorial `2.5rem` overrides are left in
+  place.
+- Verified across all six themes and both layouts, in light and dark mode, on
+  desktop and mobile.
+
+### Upgrade
+```bash
+bench --site <site> clear-website-cache
+bench restart
+```
+CSS-only change (served straight from `/assets`); the per-template spacing
+values come from `theme_service.py`, so `bench restart` picks them up. No
+`migrate` required.
+
+---
+
 ## v1.2.92 - 17 November 2026
 
 ### Changes (v1.2.92)
