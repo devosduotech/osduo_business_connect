@@ -158,16 +158,18 @@ TLS, per-customer sites, bring-your-own domains) and the update procedure:
 
 | Document | Audience | Contents |
 |---|---|---|
+| **[Feature Catalog](docs/FEATURE_CATALOG.md)** | **Marketing, sales, demos** | **Canonical all-features source of truth — derive every campaign asset from it** |
+| [Marketing collateral](docs/marketing/README.md) | Marketing, sales | Product catalog copy + demo-video scripts (derived from the Feature Catalog) |
 | [User Manual](docs/USER_MANUAL.md) | End users & admins | Businesses, cards, products, services, theming, publishing, enquiries, analytics, roles, mobile app |
 | [Installation Guide](docs/INSTALLATION_GUIDE.md) | Operators | Fresh install, SaaS multi-site setup, BYOD domains, updates, troubleshooting |
 | [PWA](docs/PWA.md) | Operators & devs | Manifest/service-worker architecture, caching strategy, canonical URL policy, testing |
 | [SaaS Implementation Plan](docs/SAAS_IMPLEMENTATION_PLAN.md) | Product | Tiers, quotas, SEO engine — planned capabilities |
 | [Theme Redesign Plan](docs/THEME_REDESIGN_PLAN.md) | Designers | Design system behind the public pages |
-| [Marketing Features](docs/MARKETING_FEATURES.md) | Sales | Feature & benefit catalogue |
-| [Marketing Feature Inventory](docs/MARKETING_FEATURE_INVENTORY.md) | Sales & product | Every shipped capability with evidence, plus the prioritized v1.3.0 scope |
+| [Marketing Feature Inventory](docs/MARKETING_FEATURE_INVENTORY.md) | Sales & product | Evidence-backed capability list + web/social copy; §5 = do-not-claim guardrails |
+| [Marketing Features](docs/MARKETING_FEATURES.md) | Sales | Long-form feature & benefit write-up (cross-check the catalog first) |
 | [Pending To-Do List](docs/TODO.md) | Team | Single working list: next release, backlog, tech debt, doc cleanups |
 | [Release Notes](RELEASE_NOTES.md) / [Changelog](CHANGELOG.md) | Everyone | What shipped in each version |
-| [SEO Plan](docs/SEO_PLAN_v1.3.0.md) | Team | Committed v1.3.0 SEO scope with recommended work order |
+| [SEO Plan](docs/SEO_PLAN_v1.3.0.md) | Team | v1.3.0 SEO scope (shipped) + Decision 12 (v1.3.1 UTM) |
 
 ---
 
@@ -229,7 +231,8 @@ documentation cleanups), see **[docs/TODO.md](docs/TODO.md)**.
       results, Product/Service SEO fields, Core Web Vitals (self-hosted fonts,
       inline SVG icons, split CSS, re-cut OG image), sitewide vendor footer and
       instant cache invalidation (v1.3.0; sitemap + robots shipped in v1.2.9)
-      — see [docs/TODO.md](docs/TODO.md) §1
+- [x] Decision 12 — share links on standard `utm_*` (backward-compatible reader;
+      canonical / printed QR·NFC URLs unchanged and parameter-free) (v1.3.1)
 - [ ] SaaS tiers & quotas (`BC Subscription`)
 - [ ] Web push notifications for installed PWAs
 - [ ] Play Store listing via TWA wrappers
