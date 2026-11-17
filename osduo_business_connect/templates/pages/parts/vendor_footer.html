@@ -1,0 +1,10 @@
+{#- Vendor attribution credit (Phase E). Included once in bc_base.html, so it
+    appears on business / product / service / card and every future public route
+    with zero per-template edits. Gated by OSDUO_BRANDING["show_vendor_credit"];
+    links to the product page only once product_url_live is True (else the
+    vendor site). No nofollow — the association is the point. -#}
+{%- if bc_show_vendor_credit -%}
+<footer class="bc-vendor-footer" aria-label="About this site">
+    <a href="{{ bc_credit_url }}" target="_blank" rel="noopener">{{ bc_vendor_credit_text }}</a>
+</footer>
+{%- endif -%}

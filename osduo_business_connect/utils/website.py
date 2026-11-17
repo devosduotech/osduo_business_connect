@@ -43,6 +43,18 @@ def get_branding_context(context):
         "bc_accent_color": OSDUO_BRANDING["accent_color"],
         "bc_background_color": OSDUO_BRANDING["background_color"],
         "bc_text_color": OSDUO_BRANDING["text_color"],
+        # Vendor attribution (Phase E footer). The credit links to the product
+        # page only once it is live; until then it points at the vendor site, so
+        # the not-yet-published product URL is never surfaced.
+        "bc_vendor_name": OSDUO_BRANDING["vendor_name"],
+        "bc_product_name": OSDUO_BRANDING["product_name"],
+        "bc_show_vendor_credit": OSDUO_BRANDING["show_vendor_credit"],
+        "bc_vendor_credit_text": OSDUO_BRANDING["vendor_credit_text"],
+        "bc_credit_url": (
+            OSDUO_BRANDING["product_url"]
+            if OSDUO_BRANDING.get("product_url_live")
+            else OSDUO_BRANDING["vendor_url"]
+        ),
     })
 
     if is_login_path(context.get("path")):
