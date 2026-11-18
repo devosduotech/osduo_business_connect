@@ -31,7 +31,7 @@ def record_engagement(business, event_type, **kwargs):
 
     except Exception as e:
         frappe.log_error(
-            message=f"Failed to record engagement: {str(e)}",
+            message=f"Failed to record engagement: {e!s}",
             title="Analytics Error",
         )
         return None
@@ -108,10 +108,16 @@ def get_business_analytics(business_name, days=30, exclude_internal=False):
     from_date = frappe.utils.add_days(frappe.utils.nowdate(), -days)
     visitor_filter = _internal_filter(exclude_internal)
 
+    # "Link Visits" counts page views only. Attribution/funnel rows
+    # (shared_link_open, contact_exchanged, enquiry_submitted, clicks) are
+    # separate events for the same visit and must not inflate it.
+    page_views = ("card_view", "profile_view", "product_view", "service_view")
+    placeholders = ", ".join(["%s"] * len(page_views))
     total_events = frappe.db.sql(
         f"""SELECT COUNT(name) FROM `tabEngagement Event`
-        WHERE business = %s AND event_time >= %s{visitor_filter}""",
-        (business_name, from_date),
+        WHERE business = %s AND event_time >= %s
+        AND event_type IN ({placeholders}){visitor_filter}""",
+        (business_name, from_date, *page_views),
     )[0][0]
 
     events_by_type = frappe.db.sql(
@@ -236,7 +242,8 @@ CLIENT_EVENT_TYPES = {
     "website_click",
     "brochure_download",
     "qr_landing",
-    "enquiry_submitted",
+    # enquiry_submitted is deliberately absent: create_enquiry() is its single
+    # writer, so stale client pages cannot double-count a submission.
     "buy_click",
 }
 
@@ -326,7 +333,7 @@ def log_event(business=None, event_type=None, card=None, product=None, service=N
         return {"ok": bool(result)}
     except Exception as e:
         frappe.log_error(
-            message=f"Client analytics event failed: {str(e)}",
+            message=f"Client analytics event failed: {e!s}",
             title="Analytics Client Event Error",
         )
         return {"ok": False, "error": "server_error"}

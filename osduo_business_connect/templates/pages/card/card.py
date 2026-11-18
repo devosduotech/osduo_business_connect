@@ -164,9 +164,10 @@ def get_context(context):
 
     context.meta_description = f"Contact {doc.get('display_name', '')}"
 
-    # Track card view (non-blocking)
+    # Card views are sent by the page's client beacon: Frappe may serve cached
+    # HTML (or the PWA may open offline), in which case get_context never runs.
+    # Only the share attribution event remains server-side here.
     analytics_ctx = capture_analytics_context(doc.business)
-    track_event(doc.business, "card_view", card=doc.name, **analytics_ctx)
 
     # Attribution: a share link was opened (utm_source=<channel> / legacy ?ref=)
     share_ref = get_share_ref()

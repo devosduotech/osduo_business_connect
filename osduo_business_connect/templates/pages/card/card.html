@@ -35,7 +35,7 @@
             <h2 class="bc-card-section-title">Products</h2>
             <div class="bc-card-item-list">
                 {% for product in products %}
-                <a href="/b/{{ doc.business_slug }}/products/{{ product.slug }}" class="bc-card-item" data-bc-event="product_view" data-bc-product="{{ product.name }}">
+                <a href="/b/{{ doc.business_slug }}/products/{{ product.slug }}" class="bc-card-item">
                     {% if product.image %}
                     <img decoding="async" src="{{ product.image }}" alt="{{ product.product_name }}" class="bc-card-item-img" loading="lazy">
                     {% else %}
@@ -69,7 +69,7 @@
             <h2 class="bc-card-section-title">Services</h2>
             <div class="bc-card-item-list">
                 {% for service in services %}
-                <a href="/b/{{ doc.business_slug }}/services/{{ service.slug }}" class="bc-card-item" data-bc-event="service_view" data-bc-service="{{ service.name }}">
+                <a href="/b/{{ doc.business_slug }}/services/{{ service.slug }}" class="bc-card-item">
                     {% if service.image %}
                     <img decoding="async" src="{{ service.image }}" alt="{{ service.service_name }}" class="bc-card-item-img" loading="lazy">
                     {% else %}
@@ -255,13 +255,17 @@
                         message: fd.get('message')
                     }),
                     source: 'Digital Card',
-                    references: JSON.stringify({ card: fd.get('card') })
+                    references: JSON.stringify({
+                        card: fd.get('card'),
+                        campaign: context.campaign
+                    })
                 })
             })
             .then(function (r) { return r.json(); })
             .then(function (result) {
                 if (result.message && result.message.name) {
-                    sendEvent('enquiry_submitted');
+                    // enquiry_submitted is recorded once by create_enquiry() on
+                    // the server, for every submission path. Do not beacon it here.
                     form.innerHTML = '<div class="bc-form-success"><h3>Message Sent!</h3><p>Thank you. We will get back to you soon.</p></div>';
                 } else {
                     var msg = 'Error sending message';

@@ -145,16 +145,21 @@ def _share_target(business, card=None, product=None, service=None, user=None):
     )
 
 
-def _attributed_url(url, channel, by_slug):
-    """Append standard share UTM (Decision 12); In-person carries none."""
+def _attributed_url(url, channel, by_slug, campaign=None):
+    """Append standard share UTM (Decision 12); In-person carries none.
+
+    A recorded event/meeting is carried as ``utm_campaign`` so the recipient's
+    card/product/service view is grouped under the same campaign. Canonical and
+    printed QR/NFC URLs are never passed through this function.
+    """
     utm_source = CHANNEL_UTM.get(channel)
     if not utm_source:
         return url
-    return build_share_url(url, utm_source, by=by_slug)
+    return build_share_url(url, utm_source, by=by_slug, campaign=campaign)
 
 
-def _build_share_link(channel, phone, email, subject, text, url, by_slug):
-    linked_url = _attributed_url(url, channel, by_slug)
+def _build_share_link(channel, phone, email, subject, text, url, by_slug, campaign=None):
+    linked_url = _attributed_url(url, channel, by_slug, campaign=campaign)
     message = f"{text} {linked_url}".strip()
 
     if channel == "WhatsApp":
@@ -356,7 +361,9 @@ def record_contact_exchange(
             card=card,
             product=product,
             service=service,
-            campaign=channel,
+            # The event/meeting is the campaign the owner is tracking; fall back
+            # to the share channel when no event was entered.
+            campaign=event_name or channel,
             **capture_analytics_context(business),
         )
     except Exception:
@@ -370,6 +377,7 @@ def record_contact_exchange(
         text,
         public_url,
         by_slug,
+        campaign=event_name,
     )
 
     return {

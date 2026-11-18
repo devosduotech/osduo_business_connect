@@ -9,7 +9,7 @@ from ....services.theme_service import (
     get_theme_variables,
 )
 from ....utils.seo import build_seo
-from ....utils.share import get_share_by, get_share_ref
+from ....utils.share import get_share_by, get_share_campaign, get_share_ref
 from ....utils.urls import get_business_public_url
 
 
@@ -117,7 +117,10 @@ def get_context(context):
 
     # Capture analytics context BEFORE enqueueing
     analytics_ctx = capture_analytics_context(business.name)
-    track_event(business.name, "service_view", service=doc.name, **analytics_ctx)
+    track_event(
+        business.name, "service_view", service=doc.name,
+        campaign=get_share_campaign(), **analytics_ctx,
+    )
 
     share_ref = get_share_ref()
     share_by = get_share_by()

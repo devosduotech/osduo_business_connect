@@ -93,6 +93,7 @@ def create_enquiry(business_name, visitor_data, source="Other", references=None)
     # Track event with page references
     track_enquiry_event(
         business_name, enquiry.name, source,
+        campaign=enquiry.campaign,
         card=references.get("card") if references else None,
         product=references.get("product") if references else None,
         service=references.get("service") if references else None,
@@ -108,14 +109,20 @@ def create_enquiry(business_name, visitor_data, source="Other", references=None)
     }
 
 
-def track_enquiry_event(business_name, enquiry_name, source, card=None, product=None, service=None):
+def track_enquiry_event(business_name, enquiry_name, source, campaign=None,
+                        card=None, product=None, service=None):
     """
     Track enquiry submission event with page context.
+
+    This is the single writer for ``enquiry_submitted``: public forms, webhook
+    and Share & Save Contact all create their Enquiry here, so the event is
+    recorded exactly once per submission.
 
     Args:
         business_name: Business name
         enquiry_name: Enquiry name
-        source: Enquiry source
+        source: Enquiry source (fallback campaign for older callers)
+        campaign: Named campaign from the Enquiry (event/meeting or share link)
         card: Digital Card name (if enquiry came from a card page)
         product: Showcase Product name (if enquiry came from a product page)
         service: Showcase Service name (if enquiry came from a service page)
@@ -125,7 +132,7 @@ def track_enquiry_event(business_name, enquiry_name, source, card=None, product=
         record_engagement(
             business=business_name,
             event_type="enquiry_submitted",
-            campaign=source,
+            campaign=campaign or source,
             card=card,
             product=product,
             service=service,

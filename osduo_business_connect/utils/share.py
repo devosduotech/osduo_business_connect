@@ -48,17 +48,41 @@ CHANNELS = {
 LEGACY_REFS = frozenset(CHANNELS.values())
 
 
-def build_share_url(url, utm_source, by=None):
+def build_share_url(url, utm_source, by=None, campaign=None):
     """Return ``url`` with standard share UTM params appended.
 
     Emits ``utm_source=<channel>&utm_medium=share`` and, when given, ``by=<slug>``.
+    An optional ``utm_campaign`` carries a named event/meeting from the logged-in
+    Share & Save Contact flow so recipient views can be grouped under it.
     Never touches a canonical URL — this is only for outbound share buttons.
     """
     params = {"utm_source": utm_source, "utm_medium": UTM_MEDIUM}
     if by:
         params["by"] = by
+    if campaign:
+        params["utm_campaign"] = str(campaign).strip()[:140]
     separator = "&" if "?" in url else "?"
     return f"{url}{separator}{urlencode(params)}"
+
+
+def get_share_campaign():
+    """Return the named campaign carried on an inbound share link, if any.
+
+    ``utm_campaign`` is set by Share & Save Contact for a recorded event/meeting.
+    The legacy ``campaign`` token is accepted for links already in circulation.
+    """
+    import frappe
+
+    try:
+        value = (
+            frappe.form_dict.get("utm_campaign")
+            or frappe.form_dict.get("campaign")
+            or ""
+        )
+    except Exception:
+        return None
+    value = str(value).strip()[:140]
+    return value or None
 
 
 def _form(name):
