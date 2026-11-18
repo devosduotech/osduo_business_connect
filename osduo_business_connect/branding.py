@@ -367,16 +367,31 @@ def apply_branding_settings():
 #
 # The ``hidden`` flag is left untouched by that sync and is honoured by both
 # menus, so it is the one lever that lasts.
+#
+# The standard rows belong in ``help_dropdown``, but the header menu renders
+# ``settings_dropdown`` *flat* as well, and a site carried over from an older
+# release can hold a stray "Frappe Support" row in either table. Both are swept
+# so the link cannot survive in the header menu whichever table it sits in.
 
 _FRAPPE_HELP_ITEM_LABELS = frozenset({"About", "System Health", "Frappe Support"})
 _FRAPPE_HELP_ITEM_ROUTES = frozenset(
     {
         "https://frappe.io/support",
+        "https://frappecloud.com/support",
         "/desk/system-health-report",
         "/app/system-health-report",
     }
 )
 _FRAPPE_HELP_ITEM_ACTIONS = frozenset({"frappe.ui.toolbar.show_about()"})
+
+# Substrings that mark a route as pointing at Frappe's own support, whatever
+# scheme, trailing slash or query string a stored row happens to carry.
+_FRAPPE_SUPPORT_ROUTE_MARKERS = ("frappe.io/support", "frappecloud.com/support")
+
+# The two Navbar Settings child tables the desk renders. ``help_dropdown`` is
+# where Frappe's standard rows belong; ``settings_dropdown`` is rendered flat in
+# the header menu and can hold a stray help row on an upgraded site.
+_NAVBAR_DROPDOWN_FIELDS = ("help_dropdown", "settings_dropdown")
 
 
 def support_menu_items():
@@ -414,11 +429,30 @@ def support_menu_items():
 
 def _is_frappe_help_item(item):
     """True for one of Frappe's standard help rows (see frappe/hooks.py)."""
+    label = item.get("item_label")
+    route = (item.get("route") or "").rstrip("/")
+    action = item.get("action") or ""
     return (
-        item.get("item_label") in _FRAPPE_HELP_ITEM_LABELS
-        or (item.get("route") or "").rstrip("/") in _FRAPPE_HELP_ITEM_ROUTES
-        or (item.get("action") or "") in _FRAPPE_HELP_ITEM_ACTIONS
+        label in _FRAPPE_HELP_ITEM_LABELS
+        or route in _FRAPPE_HELP_ITEM_ROUTES
+        or any(marker in route for marker in _FRAPPE_SUPPORT_ROUTE_MARKERS)
+        or action in _FRAPPE_HELP_ITEM_ACTIONS
     )
+
+
+def _hide_frappe_help_rows(navbar):
+    """Set ``hidden`` on every Frappe help row in both dropdown tables.
+
+    Returns ``True`` when at least one row was changed. Hiding (rather than
+    deleting) is deliberate: see :func:`apply_navbar_support`.
+    """
+    changed = False
+    for field in _NAVBAR_DROPDOWN_FIELDS:
+        for row in getattr(navbar, field) or []:
+            if _is_frappe_help_item(row) and not row.hidden:
+                row.hidden = 1
+                changed = True
+    return changed
 
 
 def apply_navbar_support():
@@ -433,12 +467,7 @@ def apply_navbar_support():
     Returns ``True`` when the Navbar Settings record was changed.
     """
     navbar = frappe.get_doc("Navbar Settings")
-    changed = False
-
-    for row in navbar.help_dropdown or []:
-        if _is_frappe_help_item(row) and not row.hidden:
-            row.hidden = 1
-            changed = True
+    changed = _hide_frappe_help_rows(navbar)
 
     existing_routes = {
         (row.route or "").rstrip("/") for row in (navbar.settings_dropdown or [])

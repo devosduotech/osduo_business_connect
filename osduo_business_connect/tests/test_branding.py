@@ -1,10 +1,43 @@
+import importlib
 import os
 import sys
+import types
 import unittest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
 APP_DIR = os.path.join(os.path.dirname(__file__), "..")
+
+
+def _load_branding():
+    """Import ``branding.py`` without a Frappe install.
+
+    The module only needs ``frappe`` at call time, so a bare stub is enough to
+    exercise the pure helpers (the matcher and the dropdown sweeper).
+    """
+    if "frappe" not in sys.modules:
+        try:
+            import frappe
+        except Exception:
+            sys.modules["frappe"] = types.ModuleType("frappe")
+    return importlib.import_module("osduo_business_connect.branding")
+
+
+def _row_class():
+    """A dict that also supports the ``row.field`` access the helpers use."""
+
+    class Row(dict):
+        def __getattr__(self, name):
+            try:
+                return self[name]
+            except KeyError:
+                raise AttributeError(name) from None
+
+        def __setattr__(self, name, value):
+            self[name] = value
+
+    return Row
+
 
 # Brand files that must ship inside the app (never be copied into a site's
 # public/files directory).
@@ -149,10 +182,16 @@ class TestDeskSupportMenu(unittest.TestCase):
     def test_navbar_support_hides_frappe_help_rows(self):
         branding = read("branding.py")
         self.assertIn("def apply_navbar_support", branding)
+        self.assertIn("def _hide_frappe_help_rows", branding)
         self.assertIn('"Frappe Support"', branding)
         self.assertIn('"System Health"', branding)
         self.assertIn("frappe.ui.toolbar.show_about()", branding)
-        self.assertIn("help_dropdown", branding)
+        # Both dropdown tables are swept: the header menu renders
+        # settings_dropdown flat, so a stray help row there must be hidden too.
+        self.assertIn(
+            '_NAVBAR_DROPDOWN_FIELDS = ("help_dropdown", "settings_dropdown")',
+            branding,
+        )
         # Hidden in the stored record, not deleted: sync_standard_items
         # re-adds any missing standard row on every migrate.
         self.assertIn("row.hidden = 1", branding)
@@ -189,6 +228,59 @@ class TestDeskSupportMenu(unittest.TestCase):
         css = read("public", "css", "branding.css")
         self.assertIn("display: none", css)
         self.assertNotIn("opacity: 0.5", css)
+
+
+class TestFrappeHelpRowSweeper(unittest.TestCase):
+    """Unit coverage for the row matcher and the two-table sweeper."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.branding = _load_branding()
+        cls.Row = _row_class()
+
+    def test_matches_frappe_help_rows(self):
+        matches = self.branding._is_frappe_help_item
+        self.assertTrue(
+            matches({"item_label": "Frappe Support", "route": "https://frappe.io/support"})
+        )
+        self.assertTrue(
+            matches({"item_label": "System Health", "route": "/desk/system-health-report"})
+        )
+        self.assertTrue(
+            matches({"item_label": "About", "action": "frappe.ui.toolbar.show_about()"})
+        )
+        # Route marker catches scheme/slash variants of Frappe's support link.
+        self.assertTrue(matches({"item_label": "Help", "route": "http://frappecloud.com/support/"}))
+
+    def test_ignores_osduo_and_other_rows(self):
+        matches = self.branding._is_frappe_help_item
+        self.assertFalse(
+            matches(
+                {
+                    "item_label": "User Manual",
+                    "route": "https://www.osduotech.com/business-connect-manual",
+                }
+            )
+        )
+        self.assertFalse(matches({"item_label": "Support Email", "route": "mailto:connect@osduotech.com"}))
+        self.assertFalse(matches({"item_label": "Apps", "route": "/apps"}))
+
+    def test_sweeps_both_dropdown_tables(self):
+        row = lambda **kw: self.Row(**kw)  # noqa: E731
+        navbar = types.SimpleNamespace(
+            help_dropdown=[row(item_label="Frappe Support", route="https://frappe.io/support", hidden=0)],
+            settings_dropdown=[
+                row(item_label="Frappe Support", route="https://frappe.io/support", hidden=0),
+                row(item_label="User Manual", route="https://www.osduotech.com/business-connect-manual", hidden=0),
+            ],
+        )
+        self.assertTrue(self.branding._hide_frappe_help_rows(navbar))
+        self.assertEqual(navbar.help_dropdown[0].hidden, 1)
+        self.assertEqual(navbar.settings_dropdown[0].hidden, 1)
+        # The OSDuo row is untouched.
+        self.assertEqual(navbar.settings_dropdown[1].hidden, 0)
+        # Idempotent: a second pass finds nothing to change.
+        self.assertFalse(self.branding._hide_frappe_help_rows(navbar))
 
 
 if __name__ == "__main__":
