@@ -1,3 +1,51 @@
+# Release Notes - business_connect (v1.3.3)
+
+**Release Date:** 18 November 2026
+**Version:** v1.3.3 (patch)
+
+A theme and stability patch. Business saves are reliable again, font-size presets
+actually resize the public pages, the hero logo behaves consistently across all
+six themes, and the colour you pick in BC Theme is what you see — including on
+transparent logos.
+
+## What changed (v1.3.3)
+
+### Stability
+- Saving a Business no longer fails with `TypeError: 'Business' object is not
+  subscriptable` when the cache hook refreshes; it reads the document name via
+  `.get("name")`.
+
+### Appearance
+- **Font-size presets work** on every themed page: the chosen size is applied to
+  the root element so all `rem`-based theme styles scale together.
+- **Hero logo sizing is consistent** across Modern, Professional, Minimal,
+  Classic, Luxury and Creative; the shared rules now load for every theme, and
+  Professional keeps its smaller mobile heading.
+- **Your selected colour wins** — the Primary/Secondary/Accent pickers on BC
+  Theme now drive the rendered page even with a preset scheme selected. Picking
+  a preset updates the pickers; fine-tuning a picker takes effect immediately.
+- **Transparent logos stay transparent** — the hero logo tile has no background
+  of its own, so a transparent PNG shows no blue/gold backdrop. When no logo is
+  selected, the brand-coloured letter tile is shown instead.
+
+## Upgrade
+
+```bash
+cd ~/frappe-bench/apps/osduo_business_connect && git pull
+bench --site <site> migrate
+bench --site <site> clear-cache
+bench restart
+```
+
+`migrate` is required once: it backfills preset colours into existing themes
+whose pickers were never set, without touching colours a user has chosen.
+Hard-refresh the browser after restart. No `bench build` is needed.
+
+No canonical URLs, sitemaps, `robots.txt`, or printed QR/NFC payloads change in
+this release.
+
+---
+
 # Release Notes - business_connect (v1.3.2)
 
 **Release Date:** 18 November 2026

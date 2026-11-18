@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.3.3 - 18 November 2026
+
+### Bug fixes
+
+- **Business save no longer errors on cache refresh** — the cache hook indexed a
+  Frappe `Document` like a dict (`doc["name"]`), which raised
+  `TypeError: 'Business' object is not subscriptable`. It now uses `doc.get("name")`.
+- **Font-size presets now take effect** — presets were applied to a wrapper
+  variable that theme CSS (which uses `rem`) never read. The selected size is
+  published by every themed page controller and applied to `<html>` via an
+  escaped inline `font-size` rule on the base template.
+- **Shared hero logo sizing works across all six themes** — the CSS splitter
+  stranded the shared `.bc-prof-logo` rules in the Professional-only stylesheet.
+  Shared `bc-prof-` rules now stay in the base CSS; Professional's mobile heading
+  override is preserved with a more specific selector.
+- **Selected Theme Colour is honoured** — `get_theme_data()` previously ignored
+  the stored Colour pickers for preset schemes. They are now authoritative;
+  choosing a preset syncs its palette into the pickers on create or scheme
+  change, and `migrate` backfills legacy themes whose pickers still hold factory
+  defaults (never overwriting a user's own colours).
+- **Selected logos sit on no background** — the hero logo tile no longer paints
+  a background, so transparent logos show no blue (or other colour) backdrop.
+  The brand colour is applied only to the fallback letter shown when no logo is
+  selected. Classic, Luxury and Minimal no longer hard-code a different tile
+  colour.
+
+### Notes
+
+- `bench migrate` is required once to backfill legacy theme colours; no
+  `bench build` is needed.
+- Canonical URLs, sitemaps, `robots.txt`, and printed QR/NFC payloads are
+  unchanged by this release.
+
 ## v1.3.2 - 18 November 2026
 
 ### Desk support links (end users)
