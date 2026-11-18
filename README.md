@@ -154,6 +154,50 @@ TLS, per-customer sites, bring-your-own domains) and the update procedure:
 
 ---
 
+## Release & Deployment
+
+The repository keeps two long-lived branches so staging and production can be updated
+independently:
+
+| Branch | Deploys to | Purpose |
+|---|---|---|
+| `develop` | test / staging server | Integration branch — day-to-day work lands here first |
+| `main` | live / production server | Release branch — only ever fast-forwarded from `develop` |
+
+### Publish a release (run from the development machine)
+
+```bash
+git checkout main
+git merge --ff-only develop     # main must only ever fast-forward
+git push origin main develop
+```
+
+### Deploy to the live server
+
+```bash
+cd ~/connect-bench/apps/osduo_business_connect
+git pull upstream main          # the remote is named origin on some clones
+cd ~/connect-bench && bench restart
+bench --site <site> clear-website-cache
+```
+
+### Update the test / staging server
+
+```bash
+cd ~/frappe-bench/apps/osduo_business_connect
+git pull upstream develop
+```
+
+Run `bench migrate` and `bench build --app osduo_business_connect` **only** when a
+release changes schema or bundled assets; docs-only releases just need a restart and a
+website-cache clear.
+
+> **After a history rewrite or force-push**, a normal pull reports *divergent branches*.
+> Recover by resetting onto the rewritten refs — never by merging or rebasing:
+> `git fetch --all --prune --tags --force` then `git reset --hard <remote>/<branch>`.
+
+---
+
 ## Documentation
 
 | Document | Audience | Contents |
