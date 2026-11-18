@@ -691,8 +691,8 @@ premium than a scan. No special hardware is needed beyond a tag writer.
    `?utm_campaign=conf2026`). `utm_*` is ignored by search engines and never
    affects the canonical. Prefer a bare canonical URL for anything you expect to
    reprint or reuse, so the printed media stays stable.
-3. Write the tag with any standards-compliant **NXP TagWriter** — as an 
-   **URI record**. Choose the card type the tool asks for (Web URL), paste the 
+3. Write the tag with any standards-compliant **NXP TagWriter** — as an
+   **URI record**. Choose the card type the tool asks for (Web URL), paste the
    URL, lock the tag afterwards.
 4. **Lock it.** Once written and encrypted-lock the tag so nobody overwrites your
    printed material with a different link.
@@ -725,7 +725,8 @@ it to:
 3. The contact is saved **as an Enquiry** — the same record and pipeline as the
    public "Send an Enquiry" form — so it appears under **Enquiries** and a CRM
    Lead is created automatically through the standard sync. Untick
-   **Save as an Enquiry** if you only want the exchange record and not share.
+   **Save as an Enquiry** if you only want to record the exchange without creating
+   an enquiry.
 4. Choose **Save & Share** — the app saves the exchange and opens the chosen
    channel pre-addressed to the recipient.
 
@@ -1063,11 +1064,13 @@ A: No — Business Connect relies on the integrated CRM to manage leads, so CRM 
 required part of the platform.
 
 **Q: How many businesses can I create?**  
-A: Limit depends on the Subscription Plan.  
-   Professional Plan: 1 Businesd
-   Business Plan: 3 Business.
-   EnterPrise Plan: 5 Business. 
-   **Each business is independent with its own team, products, and cards.**
+A: The limit depends on your subscription plan:
+
+- **Professional Plan:** 1 business
+- **Business Plan:** 3 businesses
+- **Enterprise Plan:** 5 businesses
+
+**Each business is independent with its own team, products, and cards.**
 
 **Q: Can guests see enquiry submissions?**  
 A: No. Enquiries are only visible to business members with appropriate roles.
