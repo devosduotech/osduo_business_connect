@@ -638,8 +638,10 @@ still change **Status** directly — no amendment is needed.
 
 All public URLs are generated automatically from the site's **canonical domain**
 (set by your administrator via `host_name`). You never type them, and they are the
-same URLs encoded in QR codes and NFC tags — so links you print keep working even
-after a custom domain is attached to the site.
+same URLs encoded in QR codes and NFC tags. Adding a custom domain is *additive* —
+both addresses serve the same pages — so keep the original address serving and
+already-printed links keep resolving. (Changing `host_name` itself re-derives the
+URLs; see §6.4.)
 
 **Opening a public page from the desk:** every Business, Digital Card, Showcase
 Product and Showcase Service form has an **Open** button right beside the
@@ -702,9 +704,11 @@ premium than a scan. No special hardware is needed beyond a tag writer.
 **Ordering blank cards:** any NTAG21x printed PVC card from your regular printer
 works — no special request needed; just ask for "NFC NTAG21x card".
 
-Everything above inherits the URL-safety model: slugs lock on submit and the
-canonical URL never changes when you add a custom domain later, so locked tags
-keep working forever.
+Everything above inherits the URL-safety model: slugs lock on submit, so editing
+content never changes a printed URL. Adding a custom domain is additive — keep the
+original hosted address serving and locked tags keep resolving. Note that changing
+`host_name` itself re-derives `public_url` and regenerates the QR images, so treat a
+domain switch as a migration, not a casual edit.
 
 ### 6.5 My Card
 
@@ -1042,8 +1046,8 @@ visit — no reinstall. (Bump of the app version rotates the offline cache.)
   the branded `/offline` page when there is no connection, and never caches
   `/api`, `/desk`, `/app` or any authenticated response
 - Both routes are provided by the app — there is nothing to upload per site
-- Operator-level details, cache strategy and test steps:
-  **[docs/PWA.md](PWA.md)**
+- Operator-level details, cache strategy and test steps are kept with the app's
+  internal PWA runbook (not published in this repository)
 
 ### 11.7 PWA troubleshooting
 
@@ -1090,8 +1094,11 @@ that's deliberate, because QR codes and NFC tags may already reference it. To ch
 content on a submitted card use **Cancel → Amend**; the amendment keeps the same URL.
 
 **Q: I already printed cards with my QR codes — can I still add a custom domain?**  
-A: Yes. Printed QR/NFC links keep resolving through the original hosted subdomain,
-which stays permanently attached to your site. The custom domain is additional.
+A: Yes — as long as the original hosted address keeps serving. Adding a custom
+domain is additive (both addresses serve the same site), so printed QR/NFC links
+keep resolving through the original subdomain. Do **not** repoint `host_name` to the
+new domain and decommission the old one: that re-derives the URLs and breaks the
+printed codes.
 
 **Q: Is there a mobile app?**  
 A: Yes — Business Connect is an installable PWA (see

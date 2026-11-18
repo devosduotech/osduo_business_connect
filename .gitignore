@@ -80,7 +80,12 @@ Development Document/
 VM_SETUP_GUIDE.md
 setup-frappe-v16.sh
 osduo_business_connect.zip
-docs/REAL_ESTATE_VERTICAL.md
+
+# Docs: only the User Manual + Installation Guide ship in the repo.
+# Everything else under docs/ is kept locally and never committed/pushed.
+docs/*
+!docs/INSTALLATION_GUIDE.md
+!docs/USER_MANUAL.md
 
 # Screenshots
 Images/

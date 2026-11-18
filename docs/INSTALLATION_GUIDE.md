@@ -134,10 +134,16 @@ bench --site karthic.connect.yourdomain.com clear-cache
 4. `bench setup nginx && sudo service nginx reload`
 
 **Policy for printed media:** keep `host_name` on the hosted subdomain — it is the
-permanent NFC/QR anchor. The custom domain is *additive*: both hostnames serve the same
-site, so already-printed cards keep working forever. Only switch `host_name` to the
-custom domain deliberately (then re-migrate) when you accept that QR codes printed
-earlier still resolve via the retained subdomain.
+address printed codes were generated from. The custom domain is *additive*: both
+hostnames serve the same site, so keep the hosted subdomain serving and already-printed
+cards keep resolving. Switching `host_name` to the custom domain **re-derives `public_url`
+and regenerates the QR images**, so only do it deliberately (then `bench migrate`) and
+only while the previously-printed subdomain stays served — otherwise earlier codes break.
+
+> **Two URLs, one setting.** `host_name` feeds **both** the printed QR/NFC URLs and the
+> canonical/OG/sitemap origin, so "permanent printed URL" and "preferred SEO domain" are
+> the *same* value here. Choose the origin you want indexed and printed, and keep every
+> host already printed for still serving.
 
 ---
 
@@ -232,7 +238,7 @@ Nothing is pushed to Google — discovery happens through `robots.txt`.
 
 | Concern | How it works |
 |---|---|
-| Canonical / OG origin | Always from `site_config.json → host_name` (see above), **never** the request host. BYOD customers: set `host_name` to the custom domain so canonical / OG / sitemap all follow it. Private pages (login/root, `/offline`, `/analytics`, `/my-card`) are `noindex,nofollow`. |
+| Canonical / OG origin | Always from `site_config.json → host_name` (see above), **never** the request host. BYOD customers: set `host_name` to the custom domain so canonical / OG / sitemap all follow it — but note `host_name` also feeds printed QR/NFC URLs, so keep the previously-printed host serving (see the BYOD printed-media policy above). Private pages (login/root, `/offline`, `/analytics`, `/my-card`) are `noindex,nofollow`. |
 | Sitemap | `/sitemap.xml` is an index of four per-type sitemaps (`/sitemap-businesses.xml`, `/sitemap-products.xml`, `/sitemap-services.xml`, `/sitemap-cards.xml`), built from published records with `lastmod`. |
 | robots.txt | `/robots.txt` is served by the app and rebuilt per request; the `Sitemap:` line always matches the host the crawler reached. Admin-set rules in Website Settings are respected (only the `Sitemap:` line is managed). |
 | Search Console (optional) | You may submit `/sitemap.xml` once, but it is not required — Google discovers it via the `Sitemap:` line and recrawls on its own schedule. The app never pushes. |
@@ -277,6 +283,4 @@ bench doctor                                   # workers/redis health
 
 ## Related Docs
 
-- [User Manual](USER_MANUAL.md) · [PWA Architecture & Runbook](PWA.md) ·
-  [SaaS Implementation Plan](SAAS_IMPLEMENTATION_PLAN.md) ·
-  [Release Notes](../RELEASE_NOTES.md)
+- [User Manual](USER_MANUAL.md) · [Release Notes](../RELEASE_NOTES.md)

@@ -53,7 +53,8 @@ No `migrate` and no `bench build` needed (no schema or asset change). Legacy
 
 ### SEO & brand attribution (the v1.3.0 release)
 
-The full [SEO plan](docs/SEO_PLAN_v1.3.0.md) ships in one release. Sitemaps,
+The full SEO plan (kept with the project's internal docs, not published in this
+repository) ships in one release. Sitemaps,
 the dynamic `robots.txt` and the "Start From" price mode already shipped in
 v1.2.9; everything below is new.
 
@@ -718,15 +719,15 @@ Upgrade: `bench --site <site> migrate && bench --site <site> clear-cache`
 
 ### Next Releases
 - **v1.0.3** (Planned): Mobile responsiveness improvements, advanced analytics depth
-- **v1.1.0** (Planned): New feature set TBD - watch for updates in [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md)
+- **v1.1.0** (Planned): New feature set TBD - see the project's local development plan
 
 ---
 
 ## Support & Resources
 
-- **[Full API Reference]**(/docs/api-reference.md) - Complete RESTful API documentation  
-- **[Development Roadmap]**(DEVELOPMENT_PLAN.md) - Future feature plans and timelines
-- **[Architecture Decisions]**(ARCHITECTURE_DECISIONS.md) - Design choices for the project
+- **Full API Reference** — RESTful API documentation (maintained with the app's internal docs)
+- **Development Roadmap** — future feature plans and timelines (maintained locally)
+- **Architecture Decisions** — design choices for the project (maintained locally)
 - Buy CTA now renders **below the Description/About section** with tightened
   spacing (no double section spacing) for better reading flow, instead of
   directly under the hero.

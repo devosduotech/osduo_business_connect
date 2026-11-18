@@ -96,7 +96,7 @@ Analytics Dashboard updates with real-time metrics
   (API and desk traffic never cached), automatic update roll-forward
 - `/offline` — branded fallback page
 - Android install prompt + iOS "Add to Home Screen" guidance on the login app entry
-- See **[docs/PWA.md](docs/PWA.md)**
+- Details: see the **Mobile App (PWA)** section of the [User Manual](docs/USER_MANUAL.md)
 
 ### Sharing, Attribution & My Card (v1.2.5, UTM since v1.3.1)
 - Canonical public URLs for QR/NFC safety — `host_name` honoured with its explicit
@@ -158,18 +158,12 @@ TLS, per-customer sites, bring-your-own domains) and the update procedure:
 
 | Document | Audience | Contents |
 |---|---|---|
-| **[Feature Catalog](docs/FEATURE_CATALOG.md)** | **Marketing, sales, demos** | **Canonical all-features source of truth — derive every campaign asset from it** |
-| [Marketing collateral](docs/marketing/README.md) | Marketing, sales | Product catalog copy + demo-video scripts (derived from the Feature Catalog) |
 | [User Manual](docs/USER_MANUAL.md) | End users & admins | Businesses, cards, products, services, theming, publishing, enquiries, analytics, roles, mobile app |
 | [Installation Guide](docs/INSTALLATION_GUIDE.md) | Operators | Fresh install, SaaS multi-site setup, BYOD domains, updates, troubleshooting |
-| [PWA](docs/PWA.md) | Operators & devs | Manifest/service-worker architecture, caching strategy, canonical URL policy, testing |
-| [SaaS Implementation Plan](docs/SAAS_IMPLEMENTATION_PLAN.md) | Product | Tiers, quotas, SEO engine — planned capabilities |
-| [Theme Redesign Plan](docs/THEME_REDESIGN_PLAN.md) | Designers | Design system behind the public pages |
-| [Marketing Feature Inventory](docs/MARKETING_FEATURE_INVENTORY.md) | Sales & product | Evidence-backed capability list + web/social copy; §5 = do-not-claim guardrails |
-| [Marketing Features](docs/MARKETING_FEATURES.md) | Sales | Long-form feature & benefit write-up (cross-check the catalog first) |
-| [Pending To-Do List](docs/TODO.md) | Team | Single working list: next release, backlog, tech debt, doc cleanups |
 | [Release Notes](RELEASE_NOTES.md) / [Changelog](CHANGELOG.md) | Everyone | What shipped in each version |
-| [SEO Plan](docs/SEO_PLAN_v1.3.0.md) | Team | v1.3.0 SEO scope (shipped) + Decision 12 (v1.3.1 UTM) |
+
+> Internal planning, marketing and architecture documents are maintained locally and
+> are **not published** in this repository.
 
 ---
 
@@ -202,7 +196,8 @@ by `has_permission` + permission query conditions.
 ## Development Roadmap
 
 For the full pending to-do list (next release scope, backlog, tech debt and
-documentation cleanups), see **[docs/TODO.md](docs/TODO.md)**.
+documentation cleanups), see the project's local task list (not published in this
+repository).
 
 - [x] Core business profile creation
 - [x] Dynamic card generation with multiple templates
