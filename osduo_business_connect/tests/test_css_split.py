@@ -130,31 +130,33 @@ class TestSharedHeroComponents(unittest.TestCase):
             bare = [sel for sel, _ in rules if sel in (".bc-prof-logo", ".bc-prof-logo img")]
             self.assertFalse(bare, f"theme-{theme}.css must not own the shared logo rule: {bare}")
 
-    def test_logo_background_uses_the_exact_selected_colour(self):
+    def test_only_the_fallback_letter_has_a_background(self):
         base = read_css("business_connect.css")
         tile = re.search(r"\.bc-prof-logo \{[^}]*\}", base)
         self.assertIsNotNone(tile)
-        self.assertIn("background: var(--bc-primary);", tile.group(0))
-        self.assertNotIn("primary-fill", tile.group(0))
+        self.assertNotIn("background", tile.group(0), "a selected logo must sit on a transparent tile")
+        fallback = re.search(r"\.bc-prof-logo-fallback \{[^}]*\}", base)
+        self.assertIsNotNone(fallback)
+        self.assertIn("background: var(--bc-primary);", fallback.group(0))
+        self.assertIn("color: var(--bc-on-primary);", fallback.group(0))
 
-    def test_no_logo_variant_hardcodes_a_background(self):
+    def test_no_logo_variant_sets_a_background(self):
         for theme in THEMES:
             for selector, decls in rules_in(read_css(f"theme-{theme}.css")):
                 if not selector.endswith(".bc-prof-logo"):
                     continue
-                for declaration in decls:
-                    if declaration.startswith("background:"):
-                        self.assertIn("var(--bc-primary)", declaration, (theme, selector))
-                        self.assertNotIn("#C9A227", declaration, (theme, selector))
-                        self.assertNotIn("transparent", declaration, (theme, selector))
+                backgrounds = [d for d in decls if d.startswith("background:")]
+                self.assertFalse(backgrounds, (theme, selector, decls))
 
-    def test_every_business_hero_uses_the_shared_logo_class(self):
+    def test_every_business_hero_marks_the_fallback_letter(self):
         parts_dir = os.path.join(APP_DIR, "templates", "pages", "business", "parts")
         heroes = [name for name in os.listdir(parts_dir) if name.startswith("hero_") and name.endswith(".html")]
         self.assertEqual(len(heroes), 6, heroes)
         for name in heroes:
             with open(os.path.join(parts_dir, name)) as f:
-                self.assertIn('class="bc-prof-logo"', f.read(), name)
+                source = f.read()
+            self.assertIn('class="bc-prof-logo"', source, name)
+            self.assertIn('class="bc-prof-logo-fallback"', source, name)
 
 
 class TestHeadWiring(unittest.TestCase):

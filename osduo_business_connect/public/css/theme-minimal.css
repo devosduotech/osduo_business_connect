@@ -224,9 +224,7 @@ background: var(--bc-background);
 }
 
 .bc-prof-band.bc-hero-minimal .bc-prof-logo {
-background: var(--bc-primary);
-    color: var(--bc-on-primary);
-    border: none;
+border: none;
     border-radius: 50%;
 }
 

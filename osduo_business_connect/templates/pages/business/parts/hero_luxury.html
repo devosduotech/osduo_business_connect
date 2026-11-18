@@ -10,7 +10,7 @@
             {% if doc.logo %}
             <img decoding="async" loading="lazy" src="{{ doc.logo }}" alt="{{ doc.business_name }}">
             {% else %}
-            <span aria-hidden="true">{{ (doc.business_name or 'B')[0] }}</span>
+            <span class="bc-prof-logo-fallback" aria-hidden="true">{{ (doc.business_name or 'B')[0] }}</span>
             {% endif %}
         </div>
         <div class="bc-prof-band-info">
