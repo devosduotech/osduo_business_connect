@@ -342,8 +342,8 @@ box-sizing: border-box;
 
 .bc-prof-band.bc-hero-luxury .bc-prof-logo {
 border-radius: 0;
-    background: #C9A227;
-    color: #0B0B0C;
+    background: var(--bc-primary);
+    color: var(--bc-on-primary);
 }
 
 .bc-prof-band.bc-hero-luxury .bc-prof-band-info h1 {

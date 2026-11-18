@@ -252,22 +252,36 @@ def get_theme_data(theme_name):
 
     template = theme_data.template or "Modern"
     scheme = theme_data.color_scheme or "Blue"
-    scheme_colors = COLOR_SCHEMES.get(scheme, COLOR_SCHEMES["Blue"])
+    palette = COLOR_SCHEMES.get(scheme, COLOR_SCHEMES["Blue"]) if scheme != "Custom" else {}
 
-    if scheme == "Custom":
-        primary = theme_data.primary_color or "#2563EB"
-        accent = theme_data.accent_color or "#60A5FA"
-        scheme_colors = {
-            "primary": primary,
-            "primary_dark": darken(primary, 0.12, "#2563EB"),
-            "on_primary": on_color(primary),
-            "secondary": theme_data.secondary_color or "#FFFFFF",
-            "accent": accent,
-            "gradient_start": primary,
-            "gradient_end": accent,
-            "background": theme_data.background_color or "#F8FAFC",
-            "font_color": theme_data.font_color or "#1E293B",
-        }
+    # The stored Colour fields are authoritative. Picking a new Primary Color
+    # must change the rendered page even when a preset scheme stays selected.
+    # BCTheme.validate (and the migrate backfill) keep these fields in sync with
+    # a preset, so existing themes keep their chosen palette until edited.
+    primary = theme_data.primary_color or palette.get("primary", "#2563EB")
+    accent = theme_data.accent_color or palette.get("accent", "#60A5FA")
+    secondary = theme_data.secondary_color or palette.get("secondary", "#FFFFFF")
+
+    if primary == palette.get("primary"):
+        # Unchanged preset — keep its exact derived values.
+        primary_dark = palette.get("primary_dark") or darken(primary)
+        on_primary = palette.get("on_primary") or on_color(primary)
+    else:
+        # Picker value — derive matching supporting colours from it.
+        primary_dark = darken(primary, 0.12, "#2563EB")
+        on_primary = on_color(primary)
+
+    scheme_colors = {
+        "primary": primary,
+        "primary_dark": primary_dark,
+        "on_primary": on_primary,
+        "secondary": secondary,
+        "accent": accent,
+        "gradient_start": primary,
+        "gradient_end": accent,
+        "background": palette.get("background") or theme_data.background_color or "#F8FAFC",
+        "font_color": palette.get("font_color") or theme_data.font_color or "#1E293B",
+    }
 
     return {
         "name": theme_name,

@@ -148,6 +148,75 @@ class TestThemeFontSize(unittest.TestCase):
         self.assertIn("--bc-font-size: 18px;", variables)
 
 
+class TestThemeColourSelection(unittest.TestCase):
+    """The Colour pickers on BC Theme must drive the rendered page."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.service = load_theme_service()
+
+    def theme_row(self, **overrides):
+        row = {
+            "theme_name": "Test Theme",
+            "template": "Modern",
+            "color_scheme": "Blue",
+            "primary_color": "#2563EB",
+            "secondary_color": "#FFFFFF",
+            "accent_color": "#60A5FA",
+            "background_color": "#F8FAFC",
+            "font_color": "#1E293B",
+            "button_style": "Filled",
+            "font_family": "System Default",
+            "font_size": "Default",
+            "layout_mode": "Centered",
+            "dark_mode": 0,
+        }
+        row.update(overrides)
+        return types.SimpleNamespace(**row)
+
+    def resolve(self, row):
+        service = self.service
+        original = getattr(service.frappe, "db", None)
+        service.frappe.db = types.SimpleNamespace(get_value=lambda *a, **kw: row)
+        try:
+            return service.get_theme_data("THEME-00001")
+        finally:
+            service.frappe.db = original
+
+    def test_picker_colour_wins_over_preset_palette(self):
+        data = self.resolve(self.theme_row(color_scheme="Green", primary_color="#EA580C"))
+        self.assertEqual(data["primary_color"], "#EA580C")
+        self.assertEqual(data["primary_dark"], self.service.darken("#EA580C"))
+        self.assertEqual(data["on_primary"], self.service.on_color("#EA580C"))
+        self.assertIn("--bc-primary: #EA580C;", self.service.get_theme_variables(data))
+
+    def test_untouched_preset_keeps_its_exact_palette(self):
+        data = self.resolve(self.theme_row())
+        self.assertEqual(data["primary_color"], "#2563EB")
+        self.assertEqual(data["primary_dark"], "#1E40AF")
+        self.assertEqual(data["on_primary"], "#FFFFFF")
+
+    def test_custom_scheme_uses_all_pickers(self):
+        data = self.resolve(self.theme_row(
+            color_scheme="Custom", primary_color="#123456", accent_color="#ABCDEF"
+        ))
+        self.assertEqual(data["primary_color"], "#123456")
+        self.assertEqual(data["accent_color"], "#ABCDEF")
+
+    def test_controller_keeps_pickers_synced_with_preset(self):
+        src = read("showcase", "doctype", "bc_theme", "bc_theme.py")
+        self.assertIn("def apply_scheme_colors", src)
+        self.assertIn("COLOR_SCHEMES", src)
+        self.assertIn('has_value_changed("color_scheme")', src)
+
+    def test_migrate_backfills_preset_colours(self):
+        src = read("install.py")
+        self.assertIn("def sync_theme_colors", src)
+        self.assertIn("sync_theme_colors()", src)
+        after_migrate = src[src.index("def after_migrate()"):]
+        self.assertIn("sync_theme_colors()", after_migrate)
+
+
 class TestThemeFontSizeWiring(unittest.TestCase):
     """Every themed public page publishes the preset; the base template uses it."""
 

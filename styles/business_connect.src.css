@@ -3102,7 +3102,8 @@ body.bc-lightbox-open {
     width: 80px;
     height: 80px;
     border-radius: 16px;
-    background: var(--bc-primary-fill);
+    /* Exact brand colour: the contrast-adjusted fill is for buttons. */
+    background: var(--bc-primary);
     color: var(--bc-on-primary);
     display: flex;
     align-items: center;
@@ -3221,9 +3222,9 @@ body.bc-lightbox-open {
 }
 
 .bc-prof-band.bc-hero-minimal .bc-prof-logo {
-    background: transparent;
-    color: #0F172A;
-    border: 1px solid #CBD5E1;
+    background: var(--bc-primary);
+    color: var(--bc-on-primary);
+    border: none;
     border-radius: 50%;
 }
 
@@ -3261,8 +3262,8 @@ body.bc-lightbox-open {
 
 .bc-prof-band.bc-hero-classic .bc-prof-logo {
     border-radius: 8px;
-    background: #C9A227;
-    color: #0C2238;
+    background: var(--bc-primary);
+    color: var(--bc-on-primary);
 }
 
 .bc-prof-band.bc-hero-classic .bc-prof-band-info h1 {
@@ -3299,8 +3300,8 @@ body.bc-lightbox-open {
 
 .bc-prof-band.bc-hero-luxury .bc-prof-logo {
     border-radius: 0;
-    background: #C9A227;
-    color: #0B0B0C;
+    background: var(--bc-primary);
+    color: var(--bc-on-primary);
 }
 
 .bc-prof-band.bc-hero-luxury .bc-prof-band-info h1 {

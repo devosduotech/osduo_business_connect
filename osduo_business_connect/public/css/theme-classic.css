@@ -197,8 +197,8 @@ width: 80px; height: 80px;
 
 .bc-prof-band.bc-hero-classic .bc-prof-logo {
 border-radius: 8px;
-    background: #C9A227;
-    color: #0C2238;
+    background: var(--bc-primary);
+    color: var(--bc-on-primary);
 }
 
 .bc-prof-band.bc-hero-classic .bc-prof-band-info h1 {

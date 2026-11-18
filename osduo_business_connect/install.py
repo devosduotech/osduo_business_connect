@@ -37,13 +37,13 @@ def after_install():
     # Create CRM Custom Fields
     create_crm_custom_fields()
     ensure_crm_fields_layout()
-    
+
     # Create default roles
     create_default_roles()
-    
+
     # Create built-in themes
     create_builtin_themes()
-    
+
     # Create CRM Lead Source
     create_crm_lead_source()
 
@@ -54,7 +54,7 @@ def after_install():
 def create_crm_custom_fields():
     """
     Create custom fields on CRM Lead for OSDuo integration.
-    
+
     These fields enable the link between OSDuo enquiries and CRM leads.
     """
     custom_fields = [
@@ -139,7 +139,7 @@ def create_crm_custom_fields():
             "event/channel context of a shared card)",
         },
     ]
-    
+
     for field in custom_fields:
         create_custom_field_if_not_exists("CRM Lead", field)
 
@@ -340,6 +340,7 @@ def after_migrate():
     migrate_crm_custom_fields()
     create_default_roles()
     create_builtin_themes()
+    sync_theme_colors()
     create_crm_lead_source()
     apply_branding_settings()
     backfill_public_urls()
@@ -624,6 +625,45 @@ def create_builtin_themes():
                 "button_style": "Filled",
             }).insert(ignore_permissions=True)
             frappe.db.commit()
+
+
+def sync_theme_colors():
+    """Backfill preset palettes into the Colour pickers once.
+
+    Legacy themes stored the picker defaults while rendering from the preset.
+    The pickers are now the source of truth, so copy the selected preset's
+    values into them without touching Custom themes or modification stamps.
+    """
+    from osduo_business_connect.services.theme_service import COLOR_SCHEMES
+
+    themes = frappe.get_all(
+        "BC Theme",
+        filters={"color_scheme": ["!=", "Custom"]},
+        fields=["name", "color_scheme", "primary_color", "secondary_color", "accent_color"],
+    )
+    defaults = {
+        "primary_color": "#2563EB",
+        "secondary_color": "#FFFFFF",
+        "accent_color": "#60A5FA",
+    }
+    palette_keys = {
+        "primary_color": "primary",
+        "secondary_color": "secondary",
+        "accent_color": "accent",
+    }
+    for theme in themes:
+        palette = COLOR_SCHEMES.get(theme.color_scheme)
+        if not palette:
+            continue
+        # Only fill pickers still showing the factory default — a user's own
+        # colour must survive every subsequent migrate.
+        updates = {}
+        for field, key in palette_keys.items():
+            current = (theme.get(field) or "").strip()
+            if not current or current == defaults[field]:
+                updates[field] = palette[key]
+        if updates:
+            frappe.db.set_value("BC Theme", theme.name, updates, update_modified=False)
 
 
 def _get_scheme_primary(scheme):

@@ -1658,7 +1658,8 @@ position: relative;
 width: 80px;
     height: 80px;
     border-radius: 16px;
-    background: var(--bc-primary-fill);
+    /* Exact brand colour: the contrast-adjusted fill is for buttons. */
+    background: var(--bc-primary);
     color: var(--bc-on-primary);
     display: flex;
     align-items: center;

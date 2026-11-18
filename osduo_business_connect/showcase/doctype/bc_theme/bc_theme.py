@@ -4,6 +4,7 @@
 import frappe
 from frappe.model.document import Document
 
+from osduo_business_connect.services.theme_service import COLOR_SCHEMES
 from osduo_business_connect.utils.roles import is_system_manager
 
 
@@ -17,8 +18,24 @@ class BCTheme(Document):
 
     def validate(self):
         """Validate theme data."""
+        if self.is_new() or self.has_value_changed("color_scheme"):
+            self.apply_scheme_colors()
         self.validate_colors()
         self.validate_custom_settings()
+
+    def apply_scheme_colors(self):
+        """Mirror a preset palette into the Colour pickers.
+
+        The stored fields are what the public page renders, so selecting a
+        preset must refresh them. Leaving ``Custom`` untouched lets the user's
+        own colours stand; after a preset is chosen the pickers can be tuned.
+        """
+        palette = COLOR_SCHEMES.get(self.color_scheme)
+        if not palette:
+            return
+        self.primary_color = palette["primary"]
+        self.secondary_color = palette["secondary"]
+        self.accent_color = palette["accent"]
 
     def validate_colors(self):
         """Validate color values if custom scheme."""
@@ -40,7 +57,7 @@ class BCTheme(Document):
                 import json
                 json.loads(self.custom_settings)
             except json.JSONDecodeError as e:
-                frappe.throw(f"Invalid JSON in custom settings: {str(e)}")
+                frappe.throw(f"Invalid JSON in custom settings: {e!s}")
 
             forbidden_patterns = ['<script', 'javascript:', 'eval(', 'function(']
             for pattern in forbidden_patterns:
