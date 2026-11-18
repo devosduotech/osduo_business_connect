@@ -1,3 +1,48 @@
+# Release Notes - business_connect (v1.3.2)
+
+**Release Date:** 18 November 2026
+**Version:** v1.3.2 (patch)
+
+A Desk usability patch. Signed-in users now find OSDuo support resources directly
+in the Desk avatar and header menus, and Frappe's built-in help links no longer
+appear.
+
+## What changed (v1.3.2)
+
+### OSDuo support links in Desk
+- **User Manual** → `https://www.osduotech.com/business-connect-manual` (new tab)
+- **Support Email** → `mailto:connect@osduotech.com` (default mail client)
+- **Support Portal** → `https://www.osduotech.com/contact` (new tab)
+
+The same three rows now appear in both the Desk user menu (sidebar/dock avatar)
+and the module-header menu. Destinations remain defined once in `OSDUO_BRANDING`
+and published to the client as `frappe.boot.osduo_support`; the Desk JS has no
+hard-coded URLs.
+
+### Frappe help links removed
+- **About**, **System Health** and **Frappe Support** are hidden in the stored
+  `Navbar Settings` record, in both `help_dropdown` and `settings_dropdown`.
+- The hard-coded **About** and **Frappe Support** rows in the Desktop/Workspace
+  avatar menu are removed by a narrowly scoped client patch. Other Frappe
+  dropdowns are untouched.
+
+No public pages, canonical URLs, sitemaps, `robots.txt`, or printed QR/NFC
+payloads are affected by this release.
+
+## Upgrade
+
+```bash
+cd ~/frappe-bench/apps/osduo_business_connect && git pull
+bench --site <site> migrate
+bench --site <site> clear-cache
+bench restart
+```
+
+Hard-refresh the browser after restart. `migrate` is required so the hidden help
+rows are persisted in `Navbar Settings`. No `bench build` is needed.
+
+---
+
 # Release Notes - business_connect (v1.3.1)
 
 **Release Date:** 17 November 2026

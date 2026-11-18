@@ -1,6 +1,6 @@
 # OSDuo Business Connect
 
-**v1.3.1** | **Your digital identity. Your customers. Your growth.**
+**v1.3.2** | **Your digital identity. Your customers. Your growth.**
 
 Business Connect transforms how small businesses and professionals establish their digital presence. Create a stunning business profile, showcase products and services, capture customer enquiries and card exchanges, and install it all as a mobile app — all seamlessly integrated with Frappe CRM.
 
@@ -18,6 +18,7 @@ Business Connect transforms how small businesses and professionals establish the
 | **Contact Exchange** | Owner records who a card/business/product was shared with at events — saved as an Enquiry, appears in CRM with the message context |
 | **Universal Share Bar** | Copy / WhatsApp / SMS / Email / native share on every public page, tagged with standard `utm_*` + sharer; canonical URLs stay parameter-free |
 | **My Card** | `/my-card` lists your published cards with one-tap Open, plus desk navbar / analytics entry points and an Open button beside Public URL in the desk forms |
+| **Desk Support Links** | User Manual, Support Email and Support Portal in the Desk avatar and header menus; built-in Frappe help links removed |
 | **Analytics Dashboard** | Real-time engagement metrics — visits, scans, top cards, visitor mix, enquiry pipeline |
 | **Mobile App (PWA)** | Every customer site installs as a branded app — offline card pages, home-screen icon |
 | **Multi-Tenant SaaS** | One bench serves many customers on `customer.connect.domain.com` + bring-your-own domains |
@@ -272,6 +273,8 @@ repository).
       instant cache invalidation (v1.3.0; sitemap + robots shipped in v1.2.9)
 - [x] Decision 12 — share links on standard `utm_*` (backward-compatible reader;
       canonical / printed QR·NFC URLs unchanged and parameter-free) (v1.3.1)
+- [x] Desk support links in the avatar and header menus; Frappe help links removed
+      (v1.3.2)
 - [ ] SaaS tiers & quotas (`BC Subscription`)
 - [ ] Web push notifications for installed PWAs
 - [ ] Play Store listing via TWA wrappers

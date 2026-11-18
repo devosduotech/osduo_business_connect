@@ -2,6 +2,44 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.3.2 - 18 November 2026
+
+### Desk support links (end users)
+
+- Added **User Manual**, **Support Email** and **Support Portal** to both Desk
+  menus: the sidebar/dock avatar menu and the module-header menu. The rows are
+  built from `OSDUO_BRANDING` via `frappe.boot.osduo_support`, with `mailto:` for
+  email and `_blank` for the two web links; Frappe adds
+  `rel="noopener noreferrer"` automatically.
+- Removed Frappe's built-in **About**, **System Health** and **Frappe Support**
+  help rows. They are hidden (not deleted) in the stored `Navbar Settings`
+  record, so `sync_standard_items()` cannot re-add visible rows on migrate.
+  Both `help_dropdown` and `settings_dropdown` are swept, including upgraded
+  sites where a help row had drifted into `settings_dropdown`.
+- Patched the separate Desktop/Workspace avatar menu that Frappe 16.54 hard-codes
+  in `desktop.js`. `frappe.ui.Dropdown.prototype.open` is wrapped only when the
+  trigger is `.desktop-avatar`; the hard-coded help rows are filtered and the
+  OSDuo rows are inserted above **Logout**. Other dropdowns are unaffected, and
+  rebuilding from `opts.options` on every open keeps the patch idempotent.
+- Both client patches are installed independently with load-order polling.
+- Tests: `TestDeskSupportMenu` and `TestFrappeHelpRowSweeper` cover the boot
+  payload, href/target behaviour, both Navbar Settings tables, and the scoped
+  Desktop/Workspace patch (including Node syntax/runtime verification).
+
+### Upgrade
+
+```bash
+cd ~/frappe-bench/apps/osduo_business_connect && git pull
+bench --site <site> migrate
+bench --site <site> clear-cache
+bench restart
+```
+
+`migrate` persists the hidden help rows; hard-refresh Desk afterwards. No
+`bench build` and no public URL/QR/NFC change.
+
+---
+
 ## v1.3.1 - 17 November 2026
 
 ### Share & tracking URL hygiene (Decision 12) — no URL format change to anything printed
