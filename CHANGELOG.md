@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.3.4 - 18 November 2026
+
+### Analytics fixes
+
+- **One view per visit** — a card open was written twice: once from the page
+  controller and once from the card page's client beacon. QR scans and NFC taps
+  (which carry no tracking params) therefore logged two identical `card_view`
+  rows. The client beacon is now the single writer, so views still count when
+  Frappe serves cached HTML or the PWA opens offline. The separate
+  `shared_link_open` attribution row for UTM links is unchanged.
+- **Enquiries are recorded once** — the card page beaconed `enquiry_submitted`
+  on top of the server event from `create_enquiry()`. The client call is gone and
+  the public beacon endpoint no longer accepts that event type.
+- **Product/service tiles no longer double count** — clicking a tile on a card
+  beaconed a view that the destination page controller also recorded. The
+  destination view is now the only one.
+- **Link Visits is accurate** — the dashboard headline now counts page views
+  only; attribution and funnel events for the same visit no longer inflate it.
+
+### Campaign tracking
+
+- The **Event / meeting** field in the logged-in Share & Save Contact form is now
+  used as the Campaign on the `contact_exchanged` event (falling back to the
+  share channel when empty), on the linked Enquiry, and as `utm_campaign` on the
+  generated WhatsApp/SMS/Email share link. Recipient card/product/service views
+  and the resulting enquiry inherit the same campaign.
+
+### Notes
+
+- Canonical URLs, sitemaps, `robots.txt`, and printed QR/NFC payloads are
+  unchanged. No `migrate` or `bench build` is needed.
+
 ## v1.3.3 - 18 November 2026
 
 ### Bug fixes

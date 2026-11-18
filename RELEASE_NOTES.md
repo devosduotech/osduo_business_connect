@@ -1,3 +1,49 @@
+# Release Notes - business_connect (v1.3.4)
+
+**Release Date:** 18 November 2026
+**Version:** v1.3.4 (patch)
+
+An analytics patch. Every shared link, QR scan, NFC tap and enquiry is now
+counted once, and the Event / meeting you enter in Share & Save Contact becomes
+the Campaign for the whole sharing funnel.
+
+## What changed (v1.3.4)
+
+### One event per action
+- A card open no longer writes two `card_view` rows. The page's client beacon is
+  the single writer, so visits still register on cached pages and offline PWA
+  opens.
+- Enquiries are recorded once by `create_enquiry()` for every submission path;
+  the duplicate client beacon is removed.
+- Clicking a product or service tile on a card no longer beacons a view that the
+  destination page also records.
+- **Link Visits** in the analytics dashboard now counts page views only.
+  The `shared_link_open` attribution row for UTM links is kept, but is reported
+  separately under *Events by Type* rather than as an extra visit.
+
+### Event / meeting as Campaign
+- The Event / meeting entered in Share & Save Contact is stored as Campaign on
+  the exchange event and its Enquiry, and added as `utm_campaign` to the
+  generated share link. Recipient views and enquiries for that share are
+  grouped under the same campaign. Without an event name, the share channel
+  remains the Campaign as before.
+
+## Upgrade
+
+```bash
+cd ~/frappe-bench/apps/osduo_business_connect && git pull
+bench --site <site> clear-cache
+bench restart
+```
+
+Hard-refresh the browser after restart so the updated card page loads. No
+`migrate` and no `bench build` are needed.
+
+No canonical URLs, sitemaps, `robots.txt`, or printed QR/NFC payloads change in
+this release.
+
+---
+
 # Release Notes - business_connect (v1.3.3)
 
 **Release Date:** 18 November 2026
