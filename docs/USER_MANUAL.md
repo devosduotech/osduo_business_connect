@@ -388,7 +388,7 @@ Add multiple images to showcase your product:
 
 | Field | Description |
 |-------|-------------|
-| Video URL | Embed a video on the page: a YouTube / Vimeo / Google Drive / Dailymotion link, a Nextcloud public share (`/s/…`), or a direct file (`.mp4` / `.webm` / `.ogg`). The player is chosen automatically. Available on products **and** services |
+| Video URL | Embed a video on the page: a YouTube / Vimeo / Google Drive / Dailymotion link, a Nextcloud public share (`/s/…`). The player is chosen automatically. Available on products **and** services |
 | Brochure | PDF file for download |
 | Location | Google Maps URL for "View on Map" |
 | Enquiry Enabled | Show enquiry form on product page |
@@ -691,16 +691,15 @@ premium than a scan. No special hardware is needed beyond a tag writer.
    `?utm_campaign=conf2026`). `utm_*` is ignored by search engines and never
    affects the canonical. Prefer a bare canonical URL for anything you expect to
    reprint or reuse, so the printed media stays stable.
-3. Write the tag with any standards-compliant NFC tool — **NFC Tools** (iOS /
-   Android) or **NXP TagWriter** — as an **URI record**. Choose the card type the
-   tool asks for (Web URL), paste the URL, lock the tag afterwards.
+3. Write the tag with any standards-compliant **NXP TagWriter** — as an 
+   **URI record**. Choose the card type the tool asks for (Web URL), paste the 
+   URL, lock the tag afterwards.
 4. **Lock it.** Once written and encrypted-lock the tag so nobody overwrites your
    printed material with a different link.
 5. Test by tapping with Android (reads the URI record directly) and an iPhone XR+
    (iOS shows a notification when a background NFC scan picks up the tag).
 
-**Ordering blank cards:** any NTAG21x printed PVC card from your regular printer
-works — no special request needed; just ask for "NFC NTAG21x card".
+**Ordering blank cards:** write to info@osduotech.com for the same.
 
 Everything above inherits the URL-safety model: slugs lock on submit, so editing
 content never changes a printed URL. Adding a custom domain is additive — keep the
@@ -720,13 +719,13 @@ in analytics.
 When you share your card at an exhibition, show or meeting, record who you gave
 it to:
 
-1. Open your card, business, product or service page while logged in.
+1. Open your card, business, product or service page while **logged in**.
 2. Fill in **Share & Save Contact**: recipient name, company, mobile, email,
    channel (WhatsApp / SMS / Email / In person), event/meeting and notes.
 3. The contact is saved **as an Enquiry** — the same record and pipeline as the
    public "Send an Enquiry" form — so it appears under **Enquiries** and a CRM
    Lead is created automatically through the standard sync. Untick
-   **Save as an Enquiry** if you only want the exchange record.
+   **Save as an Enquiry** if you only want the exchange record and not share.
 4. Choose **Save & Share** — the app saves the exchange and opens the chosen
    channel pre-addressed to the recipient.
 
@@ -822,6 +821,7 @@ Track your sales funnel:
 ---
 
 ## 8. Analytics Dashboard
+(Visible only for Business and Enterprise Plan Subscription Customers)
 
 ### 8.1 Overview
 
@@ -1045,7 +1045,7 @@ visit — no reinstall. (Bump of the app version rotates the offline cache.)
 | Theme not applying | Check the Business record has a **Default Theme** selected |
 | PWA does not install | The site must be served over HTTPS; see §11.5 |
 | Desk **Open** button missing beside Public URL | Hard-refresh the page (Ctrl/Cmd + Shift + R) |
-| Video does not play on a product or service page | Check the link is a supported share link — YouTube, Vimeo, Google Drive, Dailymotion, a Nextcloud **single-file** public share (`/s/…`), or a direct `.mp4` / `.webm` / `.ogg` / `.ogv` / `.m4v` / `.mov` URL. A Nextcloud **folder** share returns a zip and cannot play, and unsupported or unsafe links are skipped quietly — the page renders no video box rather than a broken one |
+| Video does not play on a product or service page | Check the link is a supported share link — YouTube, Vimeo, Google Drive, Dailymotion, a Nextcloud **single-file** public share (`/s/…`). A Nextcloud **folder** share returns a zip and cannot play, and unsupported or unsafe links are skipped quietly — the page renders no video box rather than a broken one |
 
 Anything not listed here — a QR code that won't generate, a public page that won't
 open, the wrong domain in a shared link, a CRM lead that wasn't created, or any other
@@ -1063,14 +1063,18 @@ A: No — Business Connect relies on the integrated CRM to manage leads, so CRM 
 required part of the platform.
 
 **Q: How many businesses can I create?**  
-A: Unlimited. Each business is independent with its own team, products, and cards.
+A: Limit depends on the Subscription Plan.  
+   Professional Plan: 1 Businesd
+   Business Plan: 3 Business.
+   EnterPrise Plan: 5 Business. 
+   **Each business is independent with its own team, products, and cards.**
 
 **Q: Can guests see enquiry submissions?**  
 A: No. Enquiries are only visible to business members with appropriate roles.
 
 **Q: How do I change my card's URL?**  
 A: Edit the **Slug** while the card is still a draft. Once submitted the slug locks —
-that's deliberate, because QR codes and NFC tags may already reference it. To change
+that's intentional, because QR codes and NFC tags may already reference it. To change
 content on a submitted card use **Cancel → Amend**; the amendment keeps the same URL.
 
 **Q: I already printed cards with my QR codes — can I still add a custom domain?**  
@@ -1082,7 +1086,7 @@ codes.
 
 **Q: Is there a mobile app?**  
 A: Yes — Business Connect is an installable PWA (see
-[Mobile App (PWA)](#11-mobile-app-pwa)). One tap installs your branded app on Android
+[Mobile App (PWA)](#11-mobile-app-pwa)). One tap installs your domain app on Android
 or iPhone, with offline viewing of previously opened pages.
 
 **Q: Who can submit, cancel, or amend a business/card/product?**  
@@ -1111,7 +1115,7 @@ A: Through the personalized public URL, the QR code generated from it, an NFC ca
 A: Yes. Every public page offers one-tap channels matching what you filled in: WhatsApp, phone, email and website links, plus the enquiry form.
 
 **Q: Is it suitable for individual professionals?**  
-A: Yes. It supports individual professionals, consultants, entrepreneurs, small businesses and enterprises — the Professional plan covers a single user and the same card/profile features.
+A: Yes. It supports individual professionals, consultants, entrepreneurs, small businesses and enterprises.
 
 **Q: Can I customize my business profile?**  
 A: Yes. Choose from the professional theme templates (BC Theme: layout, color schemes, dark mode, custom colors) to match your brand. New businesses start on the bundled default theme, and per-site branding (logo, favicon) comes built-in.
@@ -1120,19 +1124,19 @@ A: Yes. Choose from the professional theme templates (BC Theme: layout, color sc
 A: Yes. Every public page is designed for smartphones, tablets and desktops — and the whole site installs as your branded PWA (see [Mobile App (PWA)](#11-mobile-app-pwa)).
 
 **Q: How much does OSDuo Business Connect cost?**  
-A: Annual subscription plans, per user / year: **Professional INR 595** (min 1 user), **Business INR 895** (min 5 users), **Enterprise INR 1,295** (min 10 users); 18% GST extra, billed annually. Select plans also offer add-ons — Custom NFC Business Card (INR 399/user/card), Custom Domain Service (INR 5,999/year; one included with Enterprise), and domain registration/renewal at actual cost. Prices can change — the marketplace is authoritative.
+A: Refer to https://www.osduotech.com/solutions/business-connect for more details.
 
 **Q: How is the subscription billed?**  
-A: Annually, based on the plan's minimum user commitment (Professional INR 595, Business INR 4,475, Enterprise INR 12,950 minimum annual amounts).
+A: Annually, based on the plan's minimum user commitment.
 
 **Q: Where do I order, or change my plan?**  
-A: Online at the OSDuo marketplace (**https://www.aasriva.in**) or by contacting OSDuo Tech LLP (https://www.osduotech.com/contact).
+A: Online at the AASRIVA marketplace (**https://www.aasriva.in**) or by contacting OSDuo Tech LLP (https://www.osduotech.com/contact).
 
 **Q: Which plan is right for me?**  
 A: All plans include the digital card, business profile, QR/NFC sharing, product & service showcase, lead capture, contact management and the mobile PWA. Higher plans add **Multiple Business Profiles** and **Team Management** (Business), and **Advanced Administration** (Enterprise). As always, feature availability is subject to the final plan configuration — confirm the entitlements for your site when you order.
 
 **Q: How do I open my profile page without typing its URL?**  
-A: In the desk, open any Business / Digital Card / Product / Service record and click the **Open** button next to **Public URL** — it launches the live page in a new tab.
+A: In the desk, open any Digital Card record and click the **Open** button next to **Public URL** — it launches the live page in a new tab.
 
 **Q: Why do my own visits show up as "Owner"/"Member"?**  
 A: Events are classified from the live session for people who are logged in. You can hide those from the dashboard with the **Exclude owner/member views** checkbox (see the Analytics Dashboard section).
@@ -1145,8 +1149,3 @@ A: Events are classified from the live session for people who are logged in. You
 - **Email:** connect@osduotech.com
 - **Support portal:** https://www.osduotech.com/contact
 
----
-
-## License
-
-MIT License
