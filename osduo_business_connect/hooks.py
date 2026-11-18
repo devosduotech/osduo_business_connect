@@ -41,6 +41,12 @@ OSDUO_BRANDING = {
     "product_url_live": True,
     "show_vendor_credit": True,
     "vendor_credit_text": "Powered by OSDuo Business Connect \u2014 A Product of OSDuo Tech LLP",
+    # Support resources for the desk menus (sidebar avatar menu and the module
+    # header menu). support_email is the SUPPORT address and is deliberately
+    # distinct from app_email above, which is the general enquiries address.
+    "support_manual_url": "https://www.osduotech.com/business-connect-manual",
+    "support_email": "connect@osduotech.com",
+    "support_portal_url": "https://www.osduotech.com/contact",
 }
 
 # Apps
@@ -73,6 +79,10 @@ web_include_js = [
 # Desk branding CSS (sidebar logo, app title, browser title)
 app_include_css = "/assets/osduo_business_connect/css/branding.css"
 app_include_js = "/assets/osduo_business_connect/js/branding.js"
+
+# Desk support menu (avatar menu + module-header menu) and removal of Frappe's
+# help rows — see osduo_business_connect.branding.boot_session.
+boot_session = "osduo_business_connect.branding.boot_session"
 
 # include js, css files in header of web template
 # NOT using web_include_css — it injects into login/auth pages too.

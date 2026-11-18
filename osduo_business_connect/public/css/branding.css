@@ -110,8 +110,7 @@
 .sidebar-menu .sidebar-footer .frappe-version,
 .sidebar-menu .sidebar-footer a[href*="frappeframework"],
 .sidebar-menu .sidebar-footer a[href*="frappe.io"] {
-  opacity: 0.5;
-  font-size: 0.7rem;
+  display: none !important;
 }
 
 /* ============================================================

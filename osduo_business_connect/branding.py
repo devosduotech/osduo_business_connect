@@ -330,3 +330,120 @@ def apply_branding_settings():
         )
 
     return changed
+
+
+# ---------------------------------------------------------------------------
+# Desk support menu
+# ---------------------------------------------------------------------------
+#
+# The three OSDuo support rows shown in the desk. On Frappe v16 the avatar
+# "user menu" is built in JS (``frappe.ui.Sidebar.user_menu_options``) and the
+# site-authored menu lives in Navbar Settings, so the rows are published twice:
+#
+#   * ``frappe.boot.osduo_support`` — read by ``public/js/branding.js``, which
+#     appends them to the avatar menu (sidebar and dock rail).
+#   * ``Navbar Settings.settings_dropdown`` — rendered natively by the desk's
+#     module-header menu.
+#
+# Frappe's own help rows (About / System Health / Frappe Support) are filtered
+# out of the boot payload rather than deleted from Navbar Settings, because
+# ``navbar_settings.sync_standard_items()`` re-adds any missing standard row on
+# every migrate.
+
+_FRAPPE_HELP_ITEM_LABELS = frozenset({"About", "System Health", "Frappe Support"})
+_FRAPPE_HELP_ITEM_ROUTES = frozenset(
+    {
+        "https://frappe.io/support",
+        "/desk/system-health-report",
+        "/app/system-health-report",
+    }
+)
+_FRAPPE_HELP_ITEM_ACTIONS = frozenset({"frappe.ui.toolbar.show_about()"})
+
+
+def support_menu_items():
+    """The OSDuo support rows, in menu order.
+
+    ``url`` is what the row links to (a ``mailto:`` for the email row) and
+    ``target`` is ``_blank`` for the two web links, so the desk's menu component
+    also adds ``rel="noopener noreferrer"``. This is the single source of truth
+    for both the header menu and the avatar menu.
+    """
+    return [
+        {
+            "name": "osduo-user-manual",
+            "label": "User Manual",
+            "icon": "book-open",
+            "url": OSDUO_BRANDING["support_manual_url"],
+            "target": "_blank",
+        },
+        {
+            "name": "osduo-support-email",
+            "label": "Support Email",
+            "icon": "mail",
+            "url": f"mailto:{OSDUO_BRANDING['support_email']}",
+            "target": "",
+        },
+        {
+            "name": "osduo-support-portal",
+            "label": "Support Portal",
+            "icon": "life-buoy",
+            "url": OSDUO_BRANDING["support_portal_url"],
+            "target": "_blank",
+        },
+    ]
+
+
+def _is_frappe_help_item(item):
+    """True for one of Frappe's standard help rows (see frappe/hooks.py)."""
+    return (
+        item.get("item_label") in _FRAPPE_HELP_ITEM_LABELS
+        or (item.get("route") or "").rstrip("/") in _FRAPPE_HELP_ITEM_ROUTES
+        or (item.get("action") or "") in _FRAPPE_HELP_ITEM_ACTIONS
+    )
+
+
+def _navbar_settings_payload(navbar_settings):
+    """Navbar Settings as a plain dict, minus Frappe's help rows, plus ours."""
+    if isinstance(navbar_settings, dict):
+        data = dict(navbar_settings)
+    else:
+        data = navbar_settings.as_dict()
+
+    data["help_dropdown"] = [
+        row
+        for row in (data.get("help_dropdown") or [])
+        if not _is_frappe_help_item(row)
+    ]
+
+    settings_dropdown = list(data.get("settings_dropdown") or [])
+    existing_routes = {
+        (row.get("route") or "").rstrip("/") for row in settings_dropdown
+    }
+    for item in support_menu_items():
+        if item["url"].rstrip("/") in existing_routes:
+            continue
+        settings_dropdown.append(
+            {
+                "item_label": item["label"],
+                "item_type": "Route",
+                "route": item["url"],
+                "icon": item["icon"],
+                "is_standard": 0,
+                "hidden": 0,
+            }
+        )
+    data["settings_dropdown"] = settings_dropdown
+    return data
+
+
+def boot_session(bootinfo):
+    """Publish the desk support links and drop Frappe's help rows.
+
+    Runs on every desk boot (registered as the ``boot_session`` hook).
+    """
+    bootinfo.osduo_support = {"items": support_menu_items()}
+
+    navbar_settings = bootinfo.get("navbar_settings")
+    if navbar_settings is not None:
+        bootinfo.navbar_settings = _navbar_settings_payload(navbar_settings)

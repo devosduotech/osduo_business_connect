@@ -116,5 +116,61 @@ class TestBundledBranding(unittest.TestCase):
         self.assertIn("OSDUO_BRANDING[\"logo_mark\"]", pwa)
 
 
+class TestDeskSupportMenu(unittest.TestCase):
+    """Desk support links (avatar menu + header menu) and Frappe help removal."""
+
+    def test_branding_exposes_support_destinations(self):
+        hooks = read("hooks.py")
+        self.assertIn(
+            '"support_manual_url": "https://www.osduotech.com/business-connect-manual"',
+            hooks,
+        )
+        self.assertIn('"support_email": "connect@osduotech.com"', hooks)
+        self.assertIn(
+            '"support_portal_url": "https://www.osduotech.com/contact"', hooks
+        )
+
+    def test_boot_session_hook_registered(self):
+        hooks = read("hooks.py")
+        self.assertIn(
+            'boot_session = "osduo_business_connect.branding.boot_session"', hooks
+        )
+
+    def test_boot_session_publishes_and_filters(self):
+        branding = read("branding.py")
+        self.assertIn("def boot_session(bootinfo)", branding)
+        self.assertIn("bootinfo.osduo_support", branding)
+        self.assertIn("def support_menu_items", branding)
+        # Frappe's standard help rows are filtered out of the boot payload
+        # (sync_standard_items re-adds them to the DB on every migrate).
+        self.assertIn('"Frappe Support"', branding)
+        self.assertIn('"System Health"', branding)
+        self.assertIn("frappe.ui.toolbar.show_about()", branding)
+        self.assertIn("help_dropdown", branding)
+        self.assertIn("settings_dropdown", branding)
+
+    def test_support_menu_rows_open_correctly(self):
+        branding = read("branding.py")
+        # Email row opens the default mail client, not a new tab.
+        self.assertIn("mailto:", branding)
+        self.assertIn("support_email", branding)
+        # The two web rows open a new tab; Frappe then adds rel="noopener".
+        self.assertIn('"target": "_blank"', branding)
+
+    def test_desk_js_reads_boot_config_without_hardcoding(self):
+        js = read("public", "js", "branding.js")
+        self.assertIn("frappe.boot.osduo_support", js)
+        self.assertIn("user_menu_options", js)
+        self.assertIn("target", js)
+        # Destinations live in hooks.py, never in the JS.
+        self.assertNotIn("osduotech.com", js)
+        self.assertNotIn("connect@", js)
+
+    def test_desk_css_hides_frappe_footer_links(self):
+        css = read("public", "css", "branding.css")
+        self.assertIn("display: none", css)
+        self.assertNotIn("opacity: 0.5", css)
+
+
 if __name__ == "__main__":
     unittest.main()

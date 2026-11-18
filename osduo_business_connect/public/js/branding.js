@@ -129,4 +129,54 @@ function add_my_card_link() {
       }
     }, 3000);
   }
+
+  // ── Desk support menu (avatar) ────────────────────────────
+  //
+  // Frappe v16 builds the avatar "user menu" in JS
+  // (frappe.ui.Sidebar.user_menu_options) and it carries no OSDuo links.
+  // Append the support rows the server publishes as frappe.boot.osduo_support,
+  // so both the sidebar avatar and the dock rail avatar get them. External rows
+  // carry target="_blank"; Frappe's menu component then adds
+  // rel="noopener noreferrer".
+
+  function support_menu_rows() {
+    var support = (frappe.boot && frappe.boot.osduo_support) || null;
+    var items = (support && support.items) || [];
+    var rows = [];
+    for (var i = 0; i < items.length; i++) {
+      var item = items[i];
+      if (!item || !item.url) continue;
+      var row = { label: item.label, icon: item.icon, href: item.url };
+      if (item.target) row.target = item.target;
+      rows.push(row);
+    }
+    return rows;
+  }
+
+  function patch_user_menu() {
+    if (typeof frappe === "undefined" || !frappe.ui || !frappe.ui.Sidebar) return false;
+    var proto = frappe.ui.Sidebar.prototype;
+    if (proto.__osduoSupportPatched) return true;
+    if (typeof proto.user_menu_options !== "function") return false;
+    if (!support_menu_rows().length) return false;
+
+    var original = proto.user_menu_options;
+    proto.user_menu_options = function () {
+      var groups = original.apply(this, arguments) || [];
+      // Sit above the last group (Logout) when the menu has more than one.
+      var at = groups.length > 1 ? groups.length - 1 : groups.length;
+      groups.splice(at, 0, { group: "", options: support_menu_rows() });
+      return groups;
+    };
+    proto.__osduoSupportPatched = true;
+    return true;
+  }
+
+  if (typeof frappe !== "undefined") {
+    // app_include_js loads after Frappe's desk bundle, so the class is defined
+    // before the sidebar is built; the retry is only a safety net.
+    if (!patch_user_menu()) {
+      setTimeout(patch_user_menu, 500);
+    }
+  }
 })();
