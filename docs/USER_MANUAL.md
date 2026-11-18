@@ -53,9 +53,8 @@ Customer scans QR code or clicks link
 
 ### 1.3 System Requirements
 
-- Frappe Framework v16
-- Frappe CRM
 - Modern web browser (Chrome, Firefox, Safari, Edge)
+- A stable internet connection
 - Mobile device for card sharing (QR/NFC)
 
 ### 1.4 Importing Existing Data
@@ -137,7 +136,7 @@ Businesses, Digital Cards, Products and Services are *submittable* records:
 
 | Field | Description | Required |
 |-------|-------------|----------|
-| User | Frappe user account | Yes |
+| User | User account (email) | Yes |
 | Person Name | Display name | Yes |
 | Designation | Job title (e.g., "Sales Manager") | No |
 | Role | Owner / Manager / Member / Marketing / CRM User | Yes |
@@ -281,7 +280,7 @@ Click the **Template** dropdown and select:
 The slug becomes read-only on submit. If card details need changes later,
 **Cancel → Amend** — the amendment keeps the same slug, so the QR/NFC and Public URL
 field update in place; the printed card is unaffected. If the canonical domain ever
-changes, the QR regenerates automatically on the next save or `bench migrate`.
+changes, the QR regenerates automatically the next time the card is saved.
 
 ### 3.7 QR Code & Sharing
 
@@ -636,12 +635,11 @@ still change **Status** directly — no amendment is needed.
 | `/b/<business>/services/<service>` | Service detail page |
 | `/c/<card-slug>` | Digital Card (short URL) |
 
-All public URLs are generated automatically from the site's **canonical domain**
-(set by your administrator via `host_name`). You never type them, and they are the
-same URLs encoded in QR codes and NFC tags. Adding a custom domain is *additive* —
-both addresses serve the same pages — so keep the original address serving and
-already-printed links keep resolving. (Changing `host_name` itself re-derives the
-URLs; see §6.4.)
+All public URLs are generated automatically from the site's **canonical domain**.
+You never type them, and they are the same URLs encoded in QR codes and NFC tags.
+Adding a custom domain is *additive* — both addresses serve the same pages — so keep
+the original address serving and already-printed links keep resolving. (Changing the
+canonical domain itself re-derives the URLs; see §6.4.)
 
 **Opening a public page from the desk:** every Business, Digital Card, Showcase
 Product and Showcase Service form has an **Open** button right beside the
@@ -706,9 +704,9 @@ works — no special request needed; just ask for "NFC NTAG21x card".
 
 Everything above inherits the URL-safety model: slugs lock on submit, so editing
 content never changes a printed URL. Adding a custom domain is additive — keep the
-original hosted address serving and locked tags keep resolving. Note that changing
-`host_name` itself re-derives `public_url` and regenerates the QR images, so treat a
-domain switch as a migration, not a casual edit.
+original hosted address serving and locked tags keep resolving. Note that changing the
+canonical domain itself re-derives the public URL and regenerates the QR images, so
+treat a domain switch as a migration, not a casual edit.
 
 ### 6.5 My Card
 
@@ -1030,32 +1028,13 @@ own name, icon, and data.
 App updates deploy server-side; installed apps pick them up automatically on the next
 visit — no reinstall. (Bump of the app version rotates the offline cache.)
 
-### 11.5 Requirements (administrator)
-
-| Requirement | Why |
-|---|---|
-| **HTTPS** on the site domain | Install is only offered for secure origins (or `localhost` in a dev bench) |
-| **`host_name` set in `site_config.json`** | Feeds every generated URL and the manifest's canonical origin — see the Installing section of the [Installation Guide](INSTALLATION_GUIDE.md). A scheme-less value on a public domain is read as `https://` |
-| **App name / icon / theme color** | Created automatically from the bundled branding on `bench migrate`; per-site values (Website Settings) still win |
-
-### 11.6 How it is built (reference)
-
-- `GET /manifest.json` — a dynamic manifest generated **per site** (name, icons, theme
-  color, canonical base URL)
-- `GET /sw.js` — the service worker: caches visited public pages and assets, serves
-  the branded `/offline` page when there is no connection, and never caches
-  `/api`, `/desk`, `/app` or any authenticated response
-- Both routes are provided by the app — there is nothing to upload per site
-- Operator-level details, cache strategy and test steps are kept with the app's
-  internal PWA runbook (not published in this repository)
-
-### 11.7 PWA troubleshooting
+### 11.5 PWA troubleshooting
 
 | Symptom | Fix |
 |---|---|
-| Chrome shows no Install prompt | Site must be HTTPS + `host_name` correct; open `/manifest.json` and check it returns the manifest (not a 404) |
-| Service worker not registering | `bench --site <site> build`, then hard-refresh; check `/sw.js` returns the app's worker |
+| Chrome shows no Install prompt | The site must be served over HTTPS; also make sure you are not in a private/incognito window |
 | App still shows old content after an upgrade | Hard-refresh once — the offline cache rotates on the next visit |
+| The app misbehaves in other ways | Contact support — see the [Support](#support) section |
 
 ---
 
@@ -1063,24 +1042,25 @@ visit — no reinstall. (Bump of the app version rotates the offline cache.)
 
 | Issue | Solution |
 |-------|----------|
-| QR code not generating | Install `qrcode[pil]`: `bench pip install qrcode[pil]` |
-| Public page 404 | Check `bench clear-website-cache` |
-| CRM Lead not created | Check background worker is running |
-| Build fails | Use `bench build --app osduo_business_connect` only |
-| Theme not applying | Check Business record has default_theme linked |
-| Public URL says `http://` while the site is HTTPS | Set `"host_name": "https://your.domain"` in `site_config.json`, then `bench migrate` + `bench clear-cache` (details in the [Installation Guide](INSTALLATION_GUIDE.md) troubleshooting table) |
-| Desk "Open" button missing beside Public URL | `bench --site <site> build` — the button ships in the bundled JS — then hard-refresh |
-| PWA does not install | Needs HTTPS and a correct `host_name`; see §11.7 |
-| CRM Lead page shows no OSDuo fields | `bench --site <site> migrate` — the "OSDuo Attribution" section is appended to the CRM Lead side panel automatically |
-| Sitemap / robots shows `http://` or the wrong domain | Deploy the app then `bench --site <site> clear-cache` + `clear-website-cache`. `/sitemap*.xml` and `/robots.txt` resolve their origin from `host_name` or, failing that, the host being served — they are never frozen, so the correct `https://` address appears automatically |
-| Video does not play on a product or service page | Deploy the app and run `bench restart` — the player uses a Jinja filter added in v1.2.91, and a running web worker keeps the old code until it is restarted. Supported sources: YouTube / Vimeo / Google Drive / Dailymotion share links, a Nextcloud **single-file** public share (`/s/…`, which plays inline), or a direct file URL (`.mp4` / `.webm` / `.ogg` / `.ogv` / `.m4v` / `.mov`). A Nextcloud **folder** share returns a zip and cannot play, and any unsupported or unsafe link is skipped quietly — the page renders no video box rather than a broken one |
+| Theme not applying | Check the Business record has a **Default Theme** selected |
+| PWA does not install | The site must be served over HTTPS; see §11.5 |
+| Desk **Open** button missing beside Public URL | Hard-refresh the page (Ctrl/Cmd + Shift + R) |
+| Video does not play on a product or service page | Check the link is a supported share link — YouTube, Vimeo, Google Drive, Dailymotion, a Nextcloud **single-file** public share (`/s/…`), or a direct `.mp4` / `.webm` / `.ogg` / `.ogv` / `.m4v` / `.mov` URL. A Nextcloud **folder** share returns a zip and cannot play, and unsupported or unsafe links are skipped quietly — the page renders no video box rather than a broken one |
+
+Anything not listed here — a QR code that won't generate, a public page that won't
+open, the wrong domain in a shared link, a CRM lead that wasn't created, or any other
+server-side problem — is handled for you. Just reach out:
+
+- **Email:** connect@osduotech.com
+- **Support portal:** https://www.osduotech.com/contact
 
 ---
 
 ## 13. FAQ
 
 **Q: Can I use Business Connect without CRM?**  
-A: No, Frappe CRM is a required dependency.
+A: No — Business Connect relies on the integrated CRM to manage leads, so CRM is a
+required part of the platform.
 
 **Q: How many businesses can I create?**  
 A: Unlimited. Each business is independent with its own team, products, and cards.
@@ -1096,9 +1076,9 @@ content on a submitted card use **Cancel → Amend**; the amendment keeps the sa
 **Q: I already printed cards with my QR codes — can I still add a custom domain?**  
 A: Yes — as long as the original hosted address keeps serving. Adding a custom
 domain is additive (both addresses serve the same site), so printed QR/NFC links
-keep resolving through the original subdomain. Do **not** repoint `host_name` to the
-new domain and decommission the old one: that re-derives the URLs and breaks the
-printed codes.
+keep resolving through the original subdomain. Do **not** move the site to the new
+domain and decommission the old one: that re-derives the URLs and breaks the printed
+codes.
 
 **Q: Is there a mobile app?**  
 A: Yes — Business Connect is an installable PWA (see
@@ -1140,10 +1120,10 @@ A: Yes. Choose from the professional theme templates (BC Theme: layout, color sc
 A: Yes. Every public page is designed for smartphones, tablets and desktops — and the whole site installs as your branded PWA (see [Mobile App (PWA)](#11-mobile-app-pwa)).
 
 **Q: How much does OSDuo Business Connect cost?**  
-A: Annual subscription plans, per user / year: **Professional ₹595** (min 1 user), **Business ₹895** (min 5 users), **Enterprise ₹1,295** (min 10 users); 18% GST extra, billed annually. Select plans also offer add-ons — Custom NFC Business Card (₹399/user/card), Custom Domain Service (₹5,999/year; one included with Enterprise), and domain registration/renewal at actual cost. Prices can change — the marketplace is authoritative.
+A: Annual subscription plans, per user / year: **Professional INR 595** (min 1 user), **Business INR 895** (min 5 users), **Enterprise INR 1,295** (min 10 users); 18% GST extra, billed annually. Select plans also offer add-ons — Custom NFC Business Card (INR 399/user/card), Custom Domain Service (INR 5,999/year; one included with Enterprise), and domain registration/renewal at actual cost. Prices can change — the marketplace is authoritative.
 
 **Q: How is the subscription billed?**  
-A: Annually, based on the plan's minimum user commitment (Professional ₹595, Business ₹4,475, Enterprise ₹12,950 minimum annual amounts).
+A: Annually, based on the plan's minimum user commitment (Professional INR 595, Business INR 4,475, Enterprise INR 12,950 minimum annual amounts).
 
 **Q: Where do I order, or change my plan?**  
 A: Online at the OSDuo marketplace (**https://www.aasriva.in**) or by contacting OSDuo Tech LLP (https://www.osduotech.com/contact).
@@ -1161,8 +1141,9 @@ A: Events are classified from the live session for people who are logged in. You
 
 ## Support
 
-- **Repository:** https://github.com/devosduotech/osduo_business_connect
-- **Issues:** https://github.com/devosduotech/osduo_business_connect/issues
+- **User Manual:** https://www.osduotech.com/business-connect-manual
+- **Email:** connect@osduotech.com
+- **Support portal:** https://www.osduotech.com/contact
 
 ---
 
