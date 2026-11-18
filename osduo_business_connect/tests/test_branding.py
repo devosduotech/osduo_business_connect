@@ -136,18 +136,37 @@ class TestDeskSupportMenu(unittest.TestCase):
             'boot_session = "osduo_business_connect.branding.boot_session"', hooks
         )
 
-    def test_boot_session_publishes_and_filters(self):
+    def test_boot_session_publishes_avatar_rows(self):
         branding = read("branding.py")
         self.assertIn("def boot_session(bootinfo)", branding)
         self.assertIn("bootinfo.osduo_support", branding)
         self.assertIn("def support_menu_items", branding)
-        # Frappe's standard help rows are filtered out of the boot payload
-        # (sync_standard_items re-adds them to the DB on every migrate).
+        # The boot payload must not try to rewrite navbar_settings: Frappe's
+        # sessions.get() replaces it from the stored record after every
+        # boot_session hook has run, so such a rewrite never reaches the desk.
+        self.assertNotIn("bootinfo.navbar_settings =", branding)
+
+    def test_navbar_support_hides_frappe_help_rows(self):
+        branding = read("branding.py")
+        self.assertIn("def apply_navbar_support", branding)
         self.assertIn('"Frappe Support"', branding)
         self.assertIn('"System Health"', branding)
         self.assertIn("frappe.ui.toolbar.show_about()", branding)
         self.assertIn("help_dropdown", branding)
+        # Hidden in the stored record, not deleted: sync_standard_items
+        # re-adds any missing standard row on every migrate.
+        self.assertIn("row.hidden = 1", branding)
+
+    def test_navbar_support_adds_osduo_header_rows(self):
+        branding = read("branding.py")
         self.assertIn("settings_dropdown", branding)
+        self.assertIn('"is_standard": 0', branding)
+        self.assertIn("navbar.save(ignore_permissions=True)", branding)
+
+    def test_branding_settings_applies_navbar_support(self):
+        branding = read("branding.py")
+        self.assertIn('"navbar_settings": False', branding)
+        self.assertIn('changed["navbar_settings"] = apply_navbar_support()', branding)
 
     def test_support_menu_rows_open_correctly(self):
         branding = read("branding.py")

@@ -239,7 +239,7 @@ def ensure_default_website_theme():
 
 
 def apply_branding_settings():
-    """Apply bundled brand defaults to Website Settings and System Settings.
+    """Apply bundled brand defaults to Website/System/Navbar settings.
 
     Safe to call repeatedly (install, migrate, or manually):
     - fills empty or generic values,
@@ -247,6 +247,8 @@ def apply_branding_settings():
       brand logo/favicon with the bundled asset paths,
     - creates the bundled Website Theme when it is missing and selects it when
       the site has not chosen a theme yet,
+    - adds the OSDuo support rows to Navbar Settings and hides Frappe's own
+      help rows (see :func:`apply_navbar_support`),
     - leaves genuine per-site custom logos/names/themes untouched.
 
     Returns a dict describing which settings were changed.
@@ -255,6 +257,7 @@ def apply_branding_settings():
         "website_settings": False,
         "system_settings": False,
         "website_theme": False,
+        "navbar_settings": False,
     }
 
     website_settings = None
@@ -329,6 +332,13 @@ def apply_branding_settings():
             frappe.get_traceback(), "OSDuo branding: System Settings"
         )
 
+    try:
+        changed["navbar_settings"] = apply_navbar_support()
+    except Exception:
+        frappe.log_error(
+            frappe.get_traceback(), "OSDuo branding: Navbar Settings"
+        )
+
     return changed
 
 
@@ -336,19 +346,27 @@ def apply_branding_settings():
 # Desk support menu
 # ---------------------------------------------------------------------------
 #
-# The three OSDuo support rows shown in the desk. On Frappe v16 the avatar
-# "user menu" is built in JS (``frappe.ui.Sidebar.user_menu_options``) and the
-# site-authored menu lives in Navbar Settings, so the rows are published twice:
+# The three OSDuo support rows shown in the desk. They reach the two menus two
+# different ways, because Frappe v16 builds them from two different sources:
 #
+#   * ``Navbar Settings.settings_dropdown`` — rendered flat in the module-header
+#     menu by ``frappe.ui.SidebarHeader.navbar_items``.
 #   * ``frappe.boot.osduo_support`` — read by ``public/js/branding.js``, which
-#     appends them to the avatar menu (sidebar and dock rail).
-#   * ``Navbar Settings.settings_dropdown`` — rendered natively by the desk's
-#     module-header menu.
+#     appends the rows to the avatar menu (sidebar and dock rail). That menu is
+#     hard-coded in JS, so Navbar Settings cannot feed it.
 #
-# Frappe's own help rows (About / System Health / Frappe Support) are filtered
-# out of the boot payload rather than deleted from Navbar Settings, because
-# ``navbar_settings.sync_standard_items()`` re-adds any missing standard row on
-# every migrate.
+# Frappe's own help rows (About / System Health / Frappe Support) are hidden by
+# setting ``hidden`` on the stored rows, not deleted and not filtered out of a
+# boot payload:
+#
+#   * ``frappe.sessions.get()`` rebuilds ``frappe.boot.navbar_settings`` from the
+#     stored single on *every* request, after every ``boot_session`` hook has
+#     run, so a hook can never change what the desk reads.
+#   * ``navbar_settings.sync_standard_items()`` re-adds any missing standard row
+#     on every migrate, so deleting the rows would not survive.
+#
+# The ``hidden`` flag is left untouched by that sync and is honoured by both
+# menus, so it is the one lever that lasts.
 
 _FRAPPE_HELP_ITEM_LABELS = frozenset({"About", "System Health", "Frappe Support"})
 _FRAPPE_HELP_ITEM_ROUTES = frozenset(
@@ -403,27 +421,33 @@ def _is_frappe_help_item(item):
     )
 
 
-def _navbar_settings_payload(navbar_settings):
-    """Navbar Settings as a plain dict, minus Frappe's help rows, plus ours."""
-    if isinstance(navbar_settings, dict):
-        data = dict(navbar_settings)
-    else:
-        data = navbar_settings.as_dict()
+def apply_navbar_support():
+    """Publish the OSDuo support rows and hide Frappe's own help rows.
 
-    data["help_dropdown"] = [
-        row
-        for row in (data.get("help_dropdown") or [])
-        if not _is_frappe_help_item(row)
-    ]
+    Called on install and after every migrate (through
+    :func:`apply_branding_settings`), i.e. *after*
+    ``navbar_settings.sync_standard_items()`` has re-created Frappe's standard
+    rows, so the ``hidden`` flag it sets is not undone. Idempotent: a row that
+    is already hidden or already present is left untouched.
 
-    settings_dropdown = list(data.get("settings_dropdown") or [])
+    Returns ``True`` when the Navbar Settings record was changed.
+    """
+    navbar = frappe.get_doc("Navbar Settings")
+    changed = False
+
+    for row in navbar.help_dropdown or []:
+        if _is_frappe_help_item(row) and not row.hidden:
+            row.hidden = 1
+            changed = True
+
     existing_routes = {
-        (row.get("route") or "").rstrip("/") for row in settings_dropdown
+        (row.route or "").rstrip("/") for row in (navbar.settings_dropdown or [])
     }
     for item in support_menu_items():
         if item["url"].rstrip("/") in existing_routes:
             continue
-        settings_dropdown.append(
+        navbar.append(
+            "settings_dropdown",
             {
                 "item_label": item["label"],
                 "item_type": "Route",
@@ -431,19 +455,25 @@ def _navbar_settings_payload(navbar_settings):
                 "icon": item["icon"],
                 "is_standard": 0,
                 "hidden": 0,
-            }
+            },
         )
-    data["settings_dropdown"] = settings_dropdown
-    return data
+        changed = True
+
+    if changed:
+        navbar.save(ignore_permissions=True)
+        # The desk reads this record through the client cache
+        # (frappe.sessions.get -> client_cache.get_doc), so drop it explicitly.
+        frappe.clear_document_cache("Navbar Settings", "Navbar Settings")
+
+    return changed
 
 
 def boot_session(bootinfo):
-    """Publish the desk support links and drop Frappe's help rows.
+    """Publish the desk support links for the avatar-menu patch.
 
-    Runs on every desk boot (registered as the ``boot_session`` hook).
+    Registered as the ``boot_session`` hook. Only ``osduo_support`` is set
+    here: ``bootinfo.navbar_settings`` is overwritten by ``frappe.sessions.get``
+    after every ``boot_session`` hook has run, so the header menu is driven by
+    the stored Navbar Settings record instead (see :func:`apply_navbar_support`).
     """
     bootinfo.osduo_support = {"items": support_menu_items()}
-
-    navbar_settings = bootinfo.get("navbar_settings")
-    if navbar_settings is not None:
-        bootinfo.navbar_settings = _navbar_settings_payload(navbar_settings)

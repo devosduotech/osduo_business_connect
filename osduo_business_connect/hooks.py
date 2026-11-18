@@ -80,8 +80,11 @@ web_include_js = [
 app_include_css = "/assets/osduo_business_connect/css/branding.css"
 app_include_js = "/assets/osduo_business_connect/js/branding.js"
 
-# Desk support menu (avatar menu + module-header menu) and removal of Frappe's
-# help rows — see osduo_business_connect.branding.boot_session.
+# Desk support menu: publishes the OSDuo support rows the avatar-menu patch in
+# public/js/branding.js reads. The module-header menu and the hiding of Frappe's
+# own help rows are driven from the Navbar Settings record instead, applied by
+# osduo_business_connect.branding.apply_navbar_support() on install/migrate —
+# see that module for why a boot_session hook cannot do it.
 boot_session = "osduo_business_connect.branding.boot_session"
 
 # include js, css files in header of web template

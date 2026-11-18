@@ -655,7 +655,7 @@ def _get_scheme_accent(scheme):
 
 
 def apply_branding_settings():
-    """Apply bundled OSDuo branding to Website/System Settings.
+    """Apply bundled OSDuo branding to Website/System/Navbar settings.
 
     Kept as a stable import path; the implementation lives in
     ``osduo_business_connect.branding`` and is shared with ``after_install``

@@ -172,11 +172,20 @@ function add_my_card_link() {
     return true;
   }
 
+  function install_support_patch() {
+    // The sidebar computes its avatar options once, at construction time
+    // (frappe.Application.startup -> make_sidebar -> create_user_menu), which
+    // happens on DOMContentLoaded — after this script. app_include_js also
+    // loads after Frappe's desk bundle, so the class is normally already
+    // defined; the poll is only a safety net for a different load order.
+    if (patch_user_menu()) return;
+    var tries = 0;
+    var timer = setInterval(function () {
+      if (patch_user_menu() || ++tries > 400) clearInterval(timer);
+    }, 10);
+  }
+
   if (typeof frappe !== "undefined") {
-    // app_include_js loads after Frappe's desk bundle, so the class is defined
-    // before the sidebar is built; the retry is only a safety net.
-    if (!patch_user_menu()) {
-      setTimeout(patch_user_menu, 500);
-    }
+    install_support_patch();
   }
 })();
