@@ -88,6 +88,16 @@ class TestRouteMapping(unittest.TestCase):
         self.assertEqual(card_route("karthic"), "c/karthic")
 
 
+class FakeDoc:
+    """Mimic a Frappe Document: ``get()`` works, but it is not subscriptable."""
+
+    def __init__(self, **fields):
+        self.__dict__.update(fields)
+
+    def get(self, key, default=None):
+        return getattr(self, key, default)
+
+
 def _install_fake_frappe(deleted, get_all_rows, business_slugs):
     """Put a minimal stub frappe + frappe.website.utils in sys.modules.
 
@@ -131,7 +141,7 @@ class TestPublicationChangeHook(unittest.TestCase):
             import osduo_business_connect.utils.cache as cache_mod
 
             importlib.reload(cache_mod)
-            business_doc = {"doctype": "Business", "slug": "osduo", "name": "BIZ-1"}
+            business_doc = FakeDoc(doctype="Business", slug="osduo", name="BIZ-1")
             cache_mod.on_publication_change(business_doc, "on_update")
             self.assertEqual(
                 sorted(deleted),
@@ -147,12 +157,12 @@ class TestPublicationChangeHook(unittest.TestCase):
             )
 
             deleted.clear()
-            product_doc = {"doctype": "Showcase Product", "slug": "erp", "business": "BIZ-1"}
+            product_doc = FakeDoc(doctype="Showcase Product", slug="erp", business="BIZ-1")
             cache_mod.on_publication_change(product_doc, "on_submit")
             self.assertEqual(sorted(deleted), sorted(["b/osduo/products/erp", "b/osduo"]))
 
             deleted.clear()
-            card_doc = {"doctype": "Digital Card", "slug": "karthic", "business": "BIZ-1"}
+            card_doc = FakeDoc(doctype="Digital Card", slug="karthic", business="BIZ-1")
             cache_mod.on_publication_change(card_doc, "on_update")
             self.assertEqual(sorted(deleted), sorted(["c/karthic", "b/osduo"]))
         finally:
@@ -175,6 +185,11 @@ class TestHookWiring(unittest.TestCase):
             self.assertIn(f'"{dt}"', hooks)
         # every event for those doctypes maps to the combined list
         self.assertGreaterEqual(hooks.count('_PUBLICATION_EVENTS'), 16)
+
+    def test_handler_never_subscripts_documents(self):
+        source = read("utils", "cache.py")
+        self.assertNotIn('doc["', source)
+        self.assertNotIn("doc['", source)
 
     def test_product_url_live_flag_now_true(self):
         hooks = self.doc_events()

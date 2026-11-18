@@ -123,7 +123,10 @@ def on_publication_change(doc, method=None):
     if doctype == "Business":
         kwargs = {"doctype": doctype, "slug": slug}
         if doc.get("name"):
-            kwargs.update(_child_slugs(doc["name"]))
+            # Frappe passes a Document, not a dict: it supports .get() but is
+            # not subscriptable. Using .get() here also keeps dict-based tests
+            # and direct calls working.
+            kwargs.update(_child_slugs(doc.get("name")))
     else:
         kwargs = {
             "doctype": doctype,
