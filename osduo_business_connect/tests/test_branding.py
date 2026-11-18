@@ -224,6 +224,27 @@ class TestDeskSupportMenu(unittest.TestCase):
         self.assertNotIn("osduotech.com", js)
         self.assertNotIn("connect@", js)
 
+    def test_desk_js_patches_desktop_workspace_avatar_menu(self):
+        js = read("public", "js", "branding.js")
+        # Desktop/Workspace has a second, hard-coded avatar dropdown outside
+        # Navbar Settings. Scope the patch to its .desktop-avatar trigger.
+        self.assertIn('DESKTOP_AVATAR_SELECTOR = ".desktop-avatar"', js)
+        self.assertIn("frappe.ui.Dropdown", js)
+        self.assertIn("proto.open", js)
+        self.assertIn("is_desktop_avatar_dropdown(this)", js)
+        # All Frappe help rows are removed, and our rows go above Logout.
+        self.assertIn('"About", "System Health", "Frappe Support"', js)
+        self.assertIn('translated("Logout")', js)
+        self.assertIn("rewrite_desktop_avatar_options", js)
+        self.assertIn("support_menu_rows()", js)
+        # Reuse the shared boot rows: href/target come from hooks.py.
+        self.assertIn("href: item.url", js)
+        self.assertIn("if (item.target) row.target = item.target;", js)
+        self.assertIn("apply_patch_with_polling(patch_user_menu)", js)
+        self.assertIn(
+            "apply_patch_with_polling(patch_desktop_avatar_menu)", js
+        )
+
     def test_desk_css_hides_frappe_footer_links(self):
         css = read("public", "css", "branding.css")
         self.assertIn("display: none", css)

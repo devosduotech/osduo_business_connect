@@ -172,17 +172,95 @@ function add_my_card_link() {
     return true;
   }
 
-  function install_support_patch() {
+  // The Desktop/Workspace page has a second avatar menu built directly in
+  // frappe/desk/page/desktop/desktop.js. Its About and Frappe Support rows are
+  // hard-coded, so hiding the Navbar Settings help rows cannot remove them.
+  // Patch only dropdowns triggered by .desktop-avatar; every other Frappe
+  // dropdown must keep its original options.
+  var DESKTOP_AVATAR_SELECTOR = ".desktop-avatar";
+  var FRAPPE_DESKTOP_HELP_LABELS = ["About", "System Health", "Frappe Support"];
+
+  function translated(label) {
+    return typeof __ === "function" ? __(label) : label;
+  }
+
+  function is_desktop_avatar_dropdown(dropdown) {
+    if (!dropdown) return false;
+    var trigger = dropdown.opts && dropdown.opts.trigger;
+    if (trigger && trigger.jquery && typeof trigger.is === "function") {
+      if (trigger.is(DESKTOP_AVATAR_SELECTOR)) return true;
+    }
+    var element = dropdown.trigger_el || (trigger && trigger[0]) || trigger;
+    return !!(element && typeof element.matches === "function" && element.matches(DESKTOP_AVATAR_SELECTOR));
+  }
+
+  function is_frappe_desktop_help_row(row) {
+    if (!row || !row.label) return false;
+    var label = String(row.label);
+    for (var i = 0; i < FRAPPE_DESKTOP_HELP_LABELS.length; i++) {
+      if (label === translated(FRAPPE_DESKTOP_HELP_LABELS[i])) return true;
+    }
+    return false;
+  }
+
+  function rewrite_desktop_avatar_options(dropdown) {
+    var source = dropdown.opts && dropdown.opts.options;
+    if (!Array.isArray(source)) return;
+
+    // Rebuild from the original array on every open so the patch is
+    // idempotent and never accumulates duplicate support rows.
+    var rows = [];
+    for (var i = 0; i < source.length; i++) {
+      if (!is_frappe_desktop_help_row(source[i])) rows.push(source[i]);
+    }
+
+    var logout = translated("Logout");
+    var at = rows.length;
+    for (var j = 0; j < rows.length; j++) {
+      if (rows[j] && String(rows[j].label) === logout) {
+        at = j;
+        break;
+      }
+    }
+
+    var support = support_menu_rows();
+    for (var k = 0; k < support.length; k++) {
+      rows.splice(at + k, 0, support[k]);
+    }
+    dropdown.options = rows;
+  }
+
+  function patch_desktop_avatar_menu() {
+    if (typeof frappe === "undefined" || !frappe.ui || !frappe.ui.Dropdown) return false;
+    var proto = frappe.ui.Dropdown.prototype;
+    if (proto.__osduoDesktopAvatarPatched) return true;
+    if (typeof proto.open !== "function") return false;
+
+    var original = proto.open;
+    proto.open = function () {
+      if (is_desktop_avatar_dropdown(this)) rewrite_desktop_avatar_options(this);
+      return original.apply(this, arguments);
+    };
+    proto.__osduoDesktopAvatarPatched = true;
+    return true;
+  }
+
+  function apply_patch_with_polling(patch) {
     // The sidebar computes its avatar options once, at construction time
     // (frappe.Application.startup -> make_sidebar -> create_user_menu), which
     // happens on DOMContentLoaded — after this script. app_include_js also
-    // loads after Frappe's desk bundle, so the class is normally already
+    // loads after Frappe's desk bundle, so the classes are normally already
     // defined; the poll is only a safety net for a different load order.
-    if (patch_user_menu()) return;
+    if (patch()) return;
     var tries = 0;
     var timer = setInterval(function () {
-      if (patch_user_menu() || ++tries > 400) clearInterval(timer);
+      if (patch() || ++tries > 400) clearInterval(timer);
     }, 10);
+  }
+
+  function install_support_patch() {
+    apply_patch_with_polling(patch_user_menu);
+    apply_patch_with_polling(patch_desktop_avatar_menu);
   }
 
   if (typeof frappe !== "undefined") {
