@@ -34,7 +34,11 @@ OUTDIR = os.path.join(ROOT, "osduo_business_connect", "public", "css")
 
 THEMES = {
     "modern": ["bc-template-modern", "bc-hero-modern", "bc-modern-"],
-    "professional": ["bc-template-professional", "bc-hero-professional", "bc-prof-", "bc-hero-prof-"],
+    # `bc-prof-` looks Professional-only but is the shared hero component prefix
+    # (band/logo/nav/cover) used by every business template. Keeping it here as a
+    # theme token would strand those structural rules in theme-professional.css,
+    # leaving every other theme with an unstyled, full-size logo.
+    "professional": ["bc-template-professional", "bc-hero-professional"],
     "minimal": ["bc-template-minimal", "bc-hero-minimal", "bc-minimal-"],
     "classic": ["bc-template-classic", "bc-hero-classic", "bc-classic-"],
     "luxury": ["bc-template-luxury", "bc-hero-luxury", "bc-luxury-"],

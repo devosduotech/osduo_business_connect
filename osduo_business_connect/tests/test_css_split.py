@@ -83,6 +83,62 @@ class TestSplitFiles(unittest.TestCase):
         )
 
 
+class TestSharedHeroComponents(unittest.TestCase):
+    """The bc-prof-* hero components are shared by every template, not just Professional.
+
+    Their structural rules (logo tile, flex band, nav) must stay in the base CSS
+    bundle or every non-Professional theme renders an unstyled, full-size logo.
+    """
+
+    def test_shared_selectors_are_not_classified_as_one_theme(self):
+        for selector in (
+            ".bc-prof-band",
+            ".bc-prof-band-inner",
+            ".bc-prof-logo",
+            ".bc-prof-logo img",
+            ".bc-prof-band-info",
+            ".bc-prof-nav",
+            ".bc-prof-nav-inner",
+        ):
+            self.assertIsNone(split_css.classify(selector), selector)
+
+    def test_theme_specific_logo_variant_is_still_classified(self):
+        self.assertEqual(
+            split_css.classify(".bc-prof-band.bc-hero-modern .bc-prof-logo"),
+            "modern",
+        )
+
+    def test_logo_sizing_lives_in_base(self):
+        base = rules_in(read_css("business_connect.css"))
+        logo = [decls for sel, decls in base if sel == ".bc-prof-logo" and "width: 80px" in decls]
+        self.assertTrue(logo, "base CSS must contain the shared 80px logo tile rule")
+        self.assertIn("height: 80px", logo[0])
+        self.assertIn("overflow: hidden", logo[0])
+        img = [decls for sel, decls in base if sel == ".bc-prof-logo img"]
+        self.assertTrue(img, "base CSS must constrain the logo image")
+        self.assertIn("object-fit: cover", img[0])
+
+    def test_logo_mobile_override_lives_in_base(self):
+        base = rules_in(read_css("business_connect.css"))
+        mobile = [decls for sel, decls in base if sel == ".bc-prof-logo" and "width: 64px" in decls]
+        self.assertTrue(mobile, "the mobile 64px logo override must apply to every theme")
+        self.assertIn("height: 64px", mobile[0])
+
+    def test_no_theme_file_carries_the_shared_logo_rule(self):
+        for theme in THEMES:
+            rules = rules_in(read_css(f"theme-{theme}.css"))
+            bare = [sel for sel, _ in rules if sel in (".bc-prof-logo", ".bc-prof-logo img")]
+            self.assertFalse(bare, f"theme-{theme}.css must not own the shared logo rule: {bare}")
+
+    def test_every_business_hero_uses_the_shared_logo_class(self):
+        parts_dir = os.path.join(APP_DIR, "templates", "pages", "business", "parts")
+        heroes = [name for name in os.listdir(parts_dir) if name.startswith("hero_") and name.endswith(".html")]
+        self.assertEqual(len(heroes), 6, heroes)
+        for name in heroes:
+            with open(os.path.join(parts_dir, name)) as f:
+                self.assertIn('class="bc-prof-logo"', f.read(), name)
+
+
 class TestHeadWiring(unittest.TestCase):
     def setUp(self):
         with open(os.path.join(APP_DIR, "templates", "bc_base.html")) as f:

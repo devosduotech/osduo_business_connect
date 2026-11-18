@@ -145,3 +145,23 @@ width: 90px; height: 90px;
 font-size: 1.2rem;
 }
 }
+
+.bc-prof-band.bc-hero-modern {
+--bc-hero-overlay: linear-gradient(100deg, rgba(49, 46, 129, 0.94) 0%, rgba(79, 70, 229, 0.74) 55%, rgba(124, 58, 237, 0.45) 100%);
+    background: linear-gradient(135deg, #4338CA 0%, #7C3AED 100%);
+    border-radius: 0 0 28px 28px;
+}
+
+.bc-prof-band.bc-hero-modern .bc-prof-logo {
+border-radius: 50%;
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.18);
+}
+
+.bc-prof-band.bc-hero-modern .bc-prof-band-info h1 {
+font-size: 2.1rem;
+    letter-spacing: -0.02em;
+}
+
+.bc-prof-nav.bc-hero-modern-nav {
+background: #3730A3;
+}

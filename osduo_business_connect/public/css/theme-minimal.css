@@ -215,3 +215,43 @@ background: var(--bc-background);
     color: var(--bc-text-muted); width: 56px; height: 56px;
 }
 }
+
+.bc-prof-band.bc-hero-minimal {
+--bc-hero-overlay: linear-gradient(90deg, rgba(255, 255, 255, 0.94) 0%, rgba(255, 255, 255, 0.72) 60%, rgba(255, 255, 255, 0.5) 100%);
+    background: #FFFFFF;
+    color: #0F172A;
+    border-bottom: 1px solid #E2E8F0;
+}
+
+.bc-prof-band.bc-hero-minimal .bc-prof-logo {
+background: transparent;
+    color: #0F172A;
+    border: 1px solid #CBD5E1;
+    border-radius: 50%;
+}
+
+.bc-prof-band.bc-hero-minimal .bc-prof-band-info h1 {
+color: #0F172A;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+.bc-prof-band.bc-hero-minimal .bc-prof-band-tagline {
+color: #64748B;
+}
+
+.bc-prof-nav.bc-hero-minimal-nav {
+background: #FFFFFF;
+    border-top: 1px solid #E2E8F0;
+    border-bottom: 1px solid #E2E8F0;
+}
+
+.bc-prof-nav.bc-hero-minimal-nav .bc-prof-nav-link {
+color: #475569;
+}
+
+.bc-prof-nav.bc-hero-minimal-nav .bc-prof-nav-link:hover,
+.bc-prof-nav.bc-hero-minimal-nav .bc-prof-nav-link.active {
+color: #0F172A;
+    border-bottom-color: #0F172A;
+}

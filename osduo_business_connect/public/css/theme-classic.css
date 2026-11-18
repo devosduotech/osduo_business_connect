@@ -188,3 +188,41 @@ padding: 0.5rem 1rem 1rem;
 width: 80px; height: 80px;
 }
 }
+
+.bc-prof-band.bc-hero-classic {
+--bc-hero-overlay: linear-gradient(90deg, rgba(12, 34, 56, 0.95) 0%, rgba(22, 58, 95, 0.78) 60%, rgba(12, 34, 56, 0.55) 100%);
+    background: linear-gradient(180deg, #0C2238 0%, #163A5F 100%);
+    border-bottom: 4px solid #C9A227;
+}
+
+.bc-prof-band.bc-hero-classic .bc-prof-logo {
+border-radius: 8px;
+    background: #C9A227;
+    color: #0C2238;
+}
+
+.bc-prof-band.bc-hero-classic .bc-prof-band-info h1 {
+font-family: Georgia, "Times New Roman", serif;
+    font-size: 2.2rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+
+.bc-prof-band.bc-hero-classic .bc-prof-band-tagline {
+color: #E7DFC9;
+}
+
+.bc-prof-nav.bc-hero-classic-nav {
+background: #F8F5EC;
+    border-top: 1px solid #E7DFC9;
+}
+
+.bc-prof-nav.bc-hero-classic-nav .bc-prof-nav-link {
+color: #334155;
+}
+
+.bc-prof-nav.bc-hero-classic-nav .bc-prof-nav-link:hover,
+.bc-prof-nav.bc-hero-classic-nav .bc-prof-nav-link.active {
+color: #0C2238;
+    border-bottom-color: #C9A227;
+}
