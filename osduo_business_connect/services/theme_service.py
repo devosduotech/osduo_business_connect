@@ -10,6 +10,7 @@ Theme only supplies CSS custom properties.
 """
 
 import re
+
 import frappe
 from frappe import _
 
@@ -66,7 +67,8 @@ def _parse_hex(value, fallback="#2563EB"):
 
 
 def _rgb_to_hex(rgb):
-    return "#%02X%02X%02X" % tuple(max(0, min(255, int(round(c)))) for c in rgb)
+    r, g, b = (max(0, min(255, round(c))) for c in rgb)
+    return f"#{r:02X}{g:02X}{b:02X}"
 
 
 def darken(hex_color, amount=0.12, fallback="#2563EB"):
@@ -175,6 +177,17 @@ FONT_SIZE_MAP = {
     "Default": "16px",
     "Large": "18px",
 }
+
+
+def get_root_font_size(theme_data):
+    """Return the base font size in px for a theme's ``font_size`` preset.
+
+    The page CSS uses ``rem`` units, which are relative to ``html`` (not the
+    ``.bc-page`` element), so the preset must be applied to the root element as
+    well as exposed as ``--bc-font-size`` on the page wrapper.
+    """
+    raw = (theme_data or {}).get("font_size") or "Default"
+    return FONT_SIZE_MAP.get(raw, FONT_SIZE_MAP["Default"])
 
 # Template → default layout mode
 LAYOUT_MAP = {
@@ -331,10 +344,8 @@ def get_theme_variables(theme_data):
     button_style = theme_data.get("button_style", "Filled")
     font_family_raw = theme_data.get("font_family") or "System Default"
     font_family = FONT_FAMILY_MAP.get(font_family_raw, FONT_FAMILY_MAP["System Default"])
-    font_size_raw = theme_data.get("font_size") or "Default"
-    font_size = FONT_SIZE_MAP.get(font_size_raw, FONT_SIZE_MAP["Default"])
+    font_size = get_root_font_size(theme_data)
     color_scheme = theme_data.get("color_scheme", "Blue")
-    layout_mode = theme_data.get("layout_mode") or LAYOUT_MAP.get(template, "Centered")
     dark_mode = theme_data.get("dark_mode", False)
 
     # Card elevation — derived from template
@@ -343,7 +354,6 @@ def get_theme_variables(theme_data):
         "Classic": "shadow", "Luxury": "none", "Creative": "shadow",
     }
     card_elevation = card_elevation_map.get(template, "shadow")
-    shadow = "0 1px 3px rgba(0,0,0,0.1)" if card_elevation == "shadow" else "none"
     border = "1px solid #e2e8f0" if card_elevation == "border" else "none"
 
     # Border radius — derived from template

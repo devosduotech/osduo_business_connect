@@ -5,6 +5,7 @@ from ....seo import jsonld
 from ....services.theme_service import (
     get_business_theme,
     get_default_theme,
+    get_root_font_size,
     get_theme_data,
     get_theme_variables,
 )
@@ -78,6 +79,7 @@ def get_context(context):
 
     context.theme = theme_data
     context.theme_vars = get_theme_variables(theme_data)
+    context.theme_root_font_size = get_root_font_size(theme_data)
     context.template_type = theme_data.get("template", "Modern")
 
     # Social links

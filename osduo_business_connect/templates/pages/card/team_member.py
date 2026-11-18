@@ -1,5 +1,10 @@
 import frappe
-from ....services.theme_service import get_business_theme, get_theme_variables
+
+from ....services.theme_service import (
+    get_business_theme,
+    get_root_font_size,
+    get_theme_variables,
+)
 
 
 def get_context(context):
@@ -46,6 +51,7 @@ def get_context(context):
     theme_data = get_business_theme(business.name)
     context.theme = theme_data
     context.theme_vars = get_theme_variables(theme_data)
+    context.theme_root_font_size = get_root_font_size(theme_data)
 
     # Social links (card-level)
     context.links = frappe.get_all(

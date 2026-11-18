@@ -3,7 +3,11 @@ import frappe
 from ....analytics.tracking import capture_analytics_context, track_event
 from ....card.my_card import get_user_card_slug
 from ....seo import jsonld
-from ....services.theme_service import get_business_theme, get_theme_variables
+from ....services.theme_service import (
+    get_business_theme,
+    get_root_font_size,
+    get_theme_variables,
+)
 from ....utils.seo import build_seo
 from ....utils.share import get_share_by, get_share_ref
 from ....utils.urls import get_business_public_url
@@ -47,6 +51,7 @@ def get_context(context):
     theme_data = get_business_theme(business.name)
     context.theme = theme_data
     context.theme_vars = get_theme_variables(theme_data)
+    context.theme_root_font_size = get_root_font_size(theme_data)
     context.template_type = theme_data.get("template", "Modern")
 
     # SEO — canonical / Open Graph metadata. Precedence per SEO_PLAN §C.

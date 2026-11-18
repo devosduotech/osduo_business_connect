@@ -44,7 +44,12 @@
     {%- if _theme_css in ('modern', 'professional', 'minimal', 'classic', 'luxury', 'creative') -%}
     <link rel="stylesheet" href="/assets/osduo_business_connect/css/theme-{{ _theme_css }}.css">
     {%- endif -%}
+    {#- Theme font presets: the page CSS uses rem units, so the selected size
+        must be set on <html>. The inline --bc-font-size on .bc-page still
+        exposes the same value to any component that reads it directly. -#}
+    {%- set _root_font_size = theme_root_font_size or '16px' -%}
     <style>
+        html { font-size: {{ _root_font_size | e }}; }
         body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     </style>
 </head>
