@@ -18,6 +18,7 @@ have been agreed with the customer in Aasriva.
 
 import argparse
 import json
+import os
 import sys
 
 
@@ -67,7 +68,21 @@ def main(argv=None):
         )
         return 2
 
-    frappe.init(site=args.site, sites_path=args.sites_path)
+    # Frappe's logger resolves its log files relative to the process working
+    # directory ("../logs/<module>.log" and "<site>/logs/<module>.log"). Bench
+    # commands run with sites/ as the cwd; a plain `python script.py` from the
+    # bench root would otherwise try to write to $HOME/logs and fail. Mirror
+    # bench by entering sites/ before initialising Frappe.
+    sites_path = os.path.abspath(args.sites_path)
+    if not os.path.isdir(os.path.join(sites_path, args.site)):
+        print(
+            f"Site {args.site!r} not found under {sites_path!r}.",
+            file=sys.stderr,
+        )
+        return 1
+    os.chdir(sites_path)
+
+    frappe.init(site=args.site, sites_path=".")
     frappe.connect()
     try:
         from osduo_business_connect.subscription.provision import (

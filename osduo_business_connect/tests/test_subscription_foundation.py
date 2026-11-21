@@ -104,6 +104,16 @@ class TestSubscriptionModuleStructure(unittest.TestCase):
         path = os.path.join(APP_DIR, "..", "scripts", "provision_customer_site.py")
         self.assertTrue(os.path.exists(path))
 
+    def test_provision_script_uses_sites_as_working_directory(self):
+        # Frappe's logger writes to ../logs relative to cwd. A plain
+        # `python script.py` from the bench root must enter sites/ first or it
+        # tries to write to $HOME/logs and crashes on connect().
+        path = os.path.join(APP_DIR, "..", "scripts", "provision_customer_site.py")
+        with open(path) as handle:
+            source = handle.read()
+        self.assertIn("os.chdir(sites_path)", source)
+        self.assertIn('frappe.init(site=args.site, sites_path=".")', source)
+
 
 class TestPlanConstants(unittest.TestCase):
     """Validate the locked plan matrix without a database."""
