@@ -122,9 +122,25 @@ class TestSubscriptionModuleStructure(unittest.TestCase):
             script = handle.read()
         self.assertIn('set_query("add_on"', script)
         self.assertIn("get_orderable_addons", script)
+        self.assertIn("get_addon_quote", script)
+        for field in ("hostname", "mapping_type", "registration_details"):
+            self.assertIn('"%s"' % field, script)
+        self.assertIn('"quote_attachment", "reqd"', script)
+        self.assertIn('"section_attachments",', script)
+
+        with open(os.path.join(base, "add_on_order.py")) as handle:
+            source = handle.read()
+        self.assertIn("def get_addon_quote(", source)
+        self.assertIn("@frappe.whitelist()", source)
 
         with open(os.path.join(base, "add_on_order.json")) as handle:
             data = json.load(handle)
+        fields = {field["fieldname"]: field for field in data["fields"]}
+        self.assertEqual(fields["mapping_type"].get("read_only"), 1)
+        self.assertNotIn("default", fields["mapping_type"])
+        self.assertEqual(fields["amount"]["label"], "Estimated Amount")
+        self.assertTrue(fields["amount"].get("description"))
+
         roles = {permission["role"] for permission in data.get("permissions", [])}
         for role in ("Administrator", "System Manager", "BC Subscription Manager"):
             self.assertNotIn(role, roles)

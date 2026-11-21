@@ -1147,6 +1147,73 @@ class TestFinalHardening(unittest.TestCase):
                 order.validate()
             self.assertIn("not available on the PROFESSIONAL plan", str(ctx.exception))
 
+    def test_addon_quote_is_server_derived_and_type_specific(self):
+        with StubEnvironment() as env:
+            env.set_plan("ENTERPRISE")
+            env.frappe.db.single[("Subscription", "plan")] = "ENTERPRISE"
+            masters = {
+                "CUSTOM_DOMAIN_SERVICE": FakeDocument({
+                    "name": "CUSTOM_DOMAIN_SERVICE",
+                    "add_on_name": "Custom Domain Service",
+                    "billing_type": "Annual",
+                    "price": 5999,
+                    "is_active": 1,
+                    "applies_to_all_plans": 1,
+                    "applicable_plans": [],
+                }),
+                "PRIORITY_SUPPORT": FakeDocument({
+                    "name": "PRIORITY_SUPPORT",
+                    "add_on_name": "Priority Support",
+                    "billing_type": "Annual",
+                    "price": 12000,
+                    "is_active": 1,
+                    "applies_to_all_plans": 1,
+                    "applicable_plans": [],
+                }),
+                "DOMAIN_REGISTRATION_RENEWAL": FakeDocument({
+                    "name": "DOMAIN_REGISTRATION_RENEWAL",
+                    "add_on_name": "Domain Registration / Renewal",
+                    "billing_type": "Actual Cost",
+                    "price": 0,
+                    "is_active": 1,
+                    "applies_to_all_plans": 1,
+                    "applicable_plans": [],
+                }),
+            }
+            original_get_doc = env.frappe.get_doc
+
+            def get_doc(*args, **kwargs):
+                if args and args[0] == "Add-on Master":
+                    return masters.get(args[1])
+                return original_get_doc(*args, **kwargs)
+
+            env.frappe.get_doc = get_doc
+
+            domain = env.addon_order.get_addon_quote("CUSTOM_DOMAIN_SERVICE")
+            self.assertTrue(domain["requires_hostname"])
+            self.assertTrue(domain["requires_mapping_type"])
+            self.assertFalse(domain["requires_registration_details"])
+            self.assertFalse(domain["requires_attachment"])
+            self.assertEqual(domain["amount"], 0)
+            self.assertEqual(domain["mapping_type"], "Included")
+            self.assertEqual(domain["amount_label"], "Included in your plan")
+
+            generic = env.addon_order.get_addon_quote("PRIORITY_SUPPORT")
+            self.assertFalse(generic["requires_hostname"])
+            self.assertFalse(generic["requires_mapping_type"])
+            self.assertFalse(generic["requires_registration_details"])
+            self.assertFalse(generic["requires_attachment"])
+            self.assertEqual(generic["amount"], 12000)
+            self.assertEqual(generic["amount_label"], "Estimated annual amount")
+
+            actual = env.addon_order.get_addon_quote("DOMAIN_REGISTRATION_RENEWAL")
+            self.assertTrue(actual["requires_hostname"])
+            self.assertFalse(actual["requires_mapping_type"])
+            self.assertTrue(actual["requires_registration_details"])
+            self.assertTrue(actual["requires_attachment"])
+            self.assertEqual(actual["amount"], 0)
+            self.assertIn("Actual vendor cost", actual["amount_label"])
+
     def test_domain_addon_still_requires_hostname(self):
         with StubEnvironment() as env:
             env.set_plan("BUSINESS")

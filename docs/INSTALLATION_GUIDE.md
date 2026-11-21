@@ -396,6 +396,32 @@ the Add-on Master list stays Administrator-only. The controller fills
 Requested → Approved → Configured → Verified → Active
 ```
 
+#### Customer-facing form behaviour
+
+The Add-on Order form adapts to the selected add-on:
+
+| Add-on type | Hostname | Mapping Type | Registration Details | Quote / Invoice |
+|---|---|---|---|---|
+| Custom Domain Service | Shown, required | Shown, derived/read-only | Hidden | Hidden unless Actual Cost |
+| Domain Registration / Renewal | Shown, required | Hidden | Shown | Shown, required |
+| Generic annual add-on | Hidden | Hidden | Hidden | Hidden |
+| Generic actual-cost add-on | Hidden | Hidden | Hidden | Shown, required |
+
+`Vendor Invoice` is visible only to `Administrator`. Hidden fields are also
+cleared when the add-on is changed, and the controller re-derives the same
+values on save, so hiding a field in the browser is not a security boundary.
+
+**Yes, show the price to the customer.** The form calls a server-only quote
+method when an add-on is selected and fills the read-only **Estimated Amount**:
+
+- `Annual` add-ons show the plan/add-on derived annual amount.
+- The first Enterprise custom-domain mapping shows `Included in your plan` and
+  amount `0`; later mappings show the plan's domain price.
+- `Actual Cost` add-ons show `Actual vendor cost. Attach a quote…` and amount
+  `0`; the final amount is confirmed by the provider in Aasriva.
+
+The customer cannot edit the amount. No payment is collected in this app.
+
 Only `Active` custom-domain orders create/update a Domain Mapping on the
 Subscription. Changing an Add-on Master does not remove or alter existing
 Subscriptions, mappings, printed QR codes or NFC URLs; existing orders are

@@ -35,6 +35,84 @@ ALLOWED_TRANSITIONS = {
 }
 
 
+def derive_addon_values(add_on_code, plan_code=None):
+    """Validate an add-on for a plan and derive all server-owned order values."""
+    if not add_on_code:
+        frappe.throw("Add-on is required", exc=frappe.ValidationError)
+    plan_code = plan_code or get_plan_code()
+    try:
+        add_on = frappe.get_doc("Add-on Master", add_on_code)
+    except Exception:
+        add_on = None
+    if not add_on:
+        frappe.throw("Add-on does not exist", exc=frappe.ValidationError)
+    if not add_on.is_active:
+        frappe.throw("This add-on is not active", exc=frappe.ValidationError)
+
+    if not add_on.applies_to_all_plans:
+        plans = {row.get("plan") for row in (add_on.applicable_plans or [])}
+        if plan_code not in plans:
+            frappe.throw(
+                f"{add_on.add_on_name} is not available on the {plan_code} plan",
+                exc=frappe.ValidationError,
+            )
+
+    billing_type = add_on.billing_type
+    mapping_type = None
+    if add_on_code == CUSTOM_DOMAIN_ADDON and billing_type == "Annual":
+        # Price comes from the frozen plan entitlements, never from the payload.
+        mapping_type, amount = next_mapping()
+    elif billing_type == "Annual":
+        amount = add_on.price
+    else:
+        # Actual cost is settled by the provider; the site only records evidence.
+        amount = 0
+
+    return add_on, {
+        "plan_snapshot": plan_code,
+        "billing_type": billing_type,
+        "amount": amount,
+        "mapping_type": mapping_type,
+    }
+
+
+@frappe.whitelist()
+def get_addon_quote(add_on=None, **kwargs):
+    """Server-derived preview for the customer-facing Add-on Order form.
+
+    Returns only display metadata and values the controller will re-derive on
+    save. It never accepts or returns a client-supplied price.
+    """
+    add_on_doc, values = derive_addon_values(add_on)
+    is_domain_addon = add_on in (CUSTOM_DOMAIN_ADDON, DOMAIN_REGISTRATION_ADDON)
+    requires_attachment = values["billing_type"] == "Actual Cost"
+
+    if requires_attachment:
+        amount_label = (
+            "Actual vendor cost. Attach a quote; the final amount is confirmed "
+            "by the provider."
+        )
+    elif values["amount"] == 0 and add_on == CUSTOM_DOMAIN_ADDON:
+        amount_label = "Included in your plan"
+    else:
+        amount_label = "Estimated annual amount"
+
+    return {
+        "add_on": add_on,
+        "add_on_name": add_on_doc.add_on_name,
+        "plan_snapshot": values["plan_snapshot"],
+        "billing_type": values["billing_type"],
+        "amount": values["amount"],
+        "amount_label": amount_label,
+        "mapping_type": values["mapping_type"] or "",
+        "expires_on": get_period_end() if is_domain_addon else None,
+        "requires_hostname": is_domain_addon,
+        "requires_mapping_type": add_on == CUSTOM_DOMAIN_ADDON,
+        "requires_registration_details": add_on == DOMAIN_REGISTRATION_ADDON,
+        "requires_attachment": requires_attachment,
+    }
+
+
 class AddonOrder(Document):
     def before_insert(self):
         # A customer can create a request, never a pre-approved/active order.
@@ -70,36 +148,10 @@ class AddonOrder(Document):
         self.plan_snapshot = get_plan_code()
 
     def validate_add_on(self):
-        if not self.add_on:
-            frappe.throw("Add-on is required", exc=frappe.ValidationError)
-        try:
-            add_on = frappe.get_doc("Add-on Master", self.add_on)
-        except Exception:
-            add_on = None
-        if not add_on:
-            frappe.throw("Add-on does not exist", exc=frappe.ValidationError)
-        if not add_on.is_active:
-            frappe.throw("This add-on is not active", exc=frappe.ValidationError)
-
-        self.billing_type = add_on.billing_type
-        if not add_on.applies_to_all_plans:
-            plans = {row.get("plan") for row in (add_on.applicable_plans or [])}
-            if self.plan_snapshot not in plans:
-                frappe.throw(
-                    f"{add_on.add_on_name} is not available on the {self.plan_snapshot} plan",
-                    exc=frappe.ValidationError,
-                )
-
-        if self.add_on == CUSTOM_DOMAIN_ADDON and self.billing_type == "Annual":
-            # Price comes from the frozen plan entitlements, never the payload.
-            mapping_type, price = next_mapping()
-            self.mapping_type = mapping_type
-            self.amount = price
-        elif self.billing_type == "Annual":
-            self.amount = add_on.price
-        else:
-            # Actual cost is settled by the provider; the site only records evidence.
-            self.amount = 0
+        add_on, values = derive_addon_values(self.add_on, self.plan_snapshot)
+        self.billing_type = values["billing_type"]
+        self.amount = values["amount"]
+        self.mapping_type = values["mapping_type"]
 
     def validate_hostname(self):
         # Only domain-related add-ons need a hostname. Generic add-ons (for
