@@ -84,6 +84,19 @@ class TestSubscriptionModuleStructure(unittest.TestCase):
                 % (doctype_name, expected, sorted(classes)),
             )
 
+    def test_customers_can_read_add_on_master_for_link_validation(self):
+        path = os.path.join(SUB_DIR, "doctype", "add_on_master", "add_on_master.json")
+        with open(path) as handle:
+            data = json.load(handle)
+        roles = {
+            permission["role"]: permission
+            for permission in data.get("permissions", [])
+        }
+        for role in ("BC Business Owner", "BC Business Manager", "BC System Manager"):
+            self.assertEqual(roles.get(role, {}).get("read"), 1, role)
+            self.assertNotEqual(roles.get(role, {}).get("write"), 1, role)
+            self.assertNotEqual(roles.get(role, {}).get("create"), 1, role)
+
     def test_subscription_is_single(self):
         path = os.path.join(SUB_DIR, "doctype", "subscription", "subscription.json")
         with open(path) as handle:
