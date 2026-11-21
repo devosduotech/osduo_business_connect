@@ -345,7 +345,8 @@ uses a restricted custom query; it does not expose the master list.
      later.
    - **Add-on Name** — customer-facing label.
    - **Billing Type**:
-     - `Annual` — fixed **List Price**; the order records that amount.
+     - `Annual` — fixed price. Use **List Price** when it applies to every plan;
+       for selected plans, enter the price in each **Applicable Plans** row.
      - `Actual Cost` — set price to `0`; the customer must attach a quote/invoice
        and the order amount records `0` because payment is handled in Aasriva.
    - **Active** — keep checked to allow ordering.
@@ -354,12 +355,30 @@ uses a restricted custom query; it does not expose the master list.
      Plans** table is read-only and any rows are cleared automatically.
    - For selected plans: **uncheck** it. The table becomes editable; add one row
      per allowed plan using the SaaS Plan names `PROFESSIONAL`, `BUSINESS`,
-     `ENTERPRISE`. Saving with an empty table is blocked.
+     `ENTERPRISE`, and enter that plan's **Annual Price**. Saving with an empty
+     table or a missing price is blocked.
 4. Save. Existing sites pick it up immediately; no reprovision is required.
 
-`SaaS Plan` and the two seeded domain add-ons are created by install/migrate.
-Seeding is idempotent: it only creates missing records and never overwrites your
-Applicable Plans selections or prices.
+`SaaS Plan` and the seeded add-ons are created by install/migrate. Seeding is
+idempotent: it only creates missing records, backfills missing plan prices from
+the master List Price, and never overwrites a provider-entered price.
+
+#### Additional User add-on
+
+Use **one** `ADDITIONAL_USER` master, not one master per plan. It is seeded
+automatically with the annual per-user price for each plan:
+
+| Plan | Annual Price |
+|---|---:|
+| Professional | ₹595 |
+| Business | ₹895 |
+| Enterprise | ₹1,295 |
+
+These defaults follow the plan seed prices. Change a row in **Applicable Plans**
+if your agreed price differs. One Add-on Order represents one additional user;
+after the provider confirms payment in Aasriva, increase the site's seats with
+the provisioning CLI (`--seats <new total> --force`). The order itself records
+the request and price; it does not silently change the frozen Subscription.
 
 Console equivalent for a selected-plan add-on:
 
@@ -375,8 +394,8 @@ bench --site customer.example.com console
 ...   "is_active": 1,
 ...   "applies_to_all_plans": 0,
 ...   "applicable_plans": [
-...     {"doctype": "Add-on Applicable Plan", "plan": "BUSINESS"},
-...     {"doctype": "Add-on Applicable Plan", "plan": "ENTERPRISE"},
+...     {"doctype": "Add-on Applicable Plan", "plan": "BUSINESS", "price": 12000},
+...     {"doctype": "Add-on Applicable Plan", "plan": "ENTERPRISE", "price": 15000},
 ...   ],
 ...   "description": "Annual priority support add-on",
 ... }).insert()
@@ -386,11 +405,14 @@ bench --site customer.example.com console
 #### How customers order it
 
 A `BC Business Owner` or `BC Business Manager` creates an **Add-on Order**. The
-Add-on dropdown shows only active masters allowed by the site's frozen plan, so
-the Add-on Master list stays Administrator-only. The controller fills
-`plan_snapshot` from the frozen subscription entitlements, re-derives
-`billing_type`/`amount`, and rejects the order if the site's plan is absent from
-**Applicable Plans**. The `Administrator` then advances the order:
+Add-on dropdown shows only active masters allowed by the site's frozen, active
+plan, so the Add-on Master list stays Administrator-only. A plan-specific add-on
+for a higher plan stays hidden; the customer must upgrade through Aasriva and the
+provider must reprovision the site first. After the upgrade, the new plan's
+add-ons appear automatically. The controller always sets `plan_snapshot` from
+the frozen subscription entitlements — a client-supplied plan is ignored — and
+re-derives `billing_type`/`amount` from the matching **Applicable Plans** row.
+The `Administrator` then advances the order:
 
 ```text
 Requested → Approved → Configured → Verified → Active
@@ -414,7 +436,9 @@ values on save, so hiding a field in the browser is not a security boundary.
 **Yes, show the price to the customer.** The form calls a server-only quote
 method when an add-on is selected and fills the read-only **Estimated Amount**:
 
-- `Annual` add-ons show the plan/add-on derived annual amount.
+- `Annual` add-ons show the **Annual Price** from the matching **Applicable
+  Plans** row, or the master **List Price** for all-plan add-ons.
+- `Additional User` shows `Estimated annual price for one additional user`.
 - The first Enterprise custom-domain mapping shows `Included in your plan` and
   amount `0`; later mappings show the plan's domain price.
 - `Actual Cost` add-ons show `Actual vendor cost. Attach a quote…` and amount

@@ -19,11 +19,11 @@
     {"fieldname": "code", "fieldtype": "Data", "label": "Code", "reqd": 1, "unique": 1, "set_only_once": 1, "in_list_view": 1},
     {"fieldname": "add_on_name", "fieldtype": "Data", "label": "Add-on Name", "reqd": 1, "in_list_view": 1},
     {"fieldname": "billing_type", "fieldtype": "Select", "label": "Billing Type", "options": "Annual\nActual Cost", "default": "Annual", "reqd": 1, "in_list_view": 1},
-    {"fieldname": "price", "fieldtype": "Currency", "label": "List Price", "default": "0"},
+    {"fieldname": "price", "fieldtype": "Currency", "label": "List Price", "default": "0", "description": "Used when Applies to All Plans is checked. For selected plans, set the price in each Applicable Plans row."},
     {"fieldname": "is_active", "fieldtype": "Check", "label": "Active", "default": "1"},
     {"fieldname": "section_applicability", "fieldtype": "Section Break", "label": "Applicability"},
     {"fieldname": "applies_to_all_plans", "fieldtype": "Check", "label": "Applies to All Plans", "default": "1"},
-    {"fieldname": "applicable_plans", "fieldtype": "Table", "label": "Applicable Plans", "options": "Add-on Applicable Plan", "read_only_depends_on": "eval:doc.applies_to_all_plans", "description": "Edit and add plans only when 'Applies to All Plans' is unchecked. Rows are cleared when it is checked."},
+    {"fieldname": "applicable_plans", "fieldtype": "Table", "label": "Applicable Plans", "options": "Add-on Applicable Plan", "read_only_depends_on": "eval:doc.applies_to_all_plans", "description": "Uncheck 'Applies to All Plans' to edit. Add one row per allowed plan and enter its Annual Price."},
     {"fieldname": "section_details", "fieldtype": "Section Break", "label": "Details"},
     {"fieldname": "description", "fieldtype": "Small Text", "label": "Description"}
   ],

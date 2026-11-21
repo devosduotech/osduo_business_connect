@@ -1158,8 +1158,11 @@ A: Events are classified from the live session for people who are logged in. You
 
 | Add-on | Price | Notes |
 |--------|-------|-------|
+| Additional User | ₹595 / ₹895 / ₹1,295 per year | One order adds one user seat. Price depends on your active plan; the provider applies the seat after confirming payment in Aasriva. |
 | Custom Domain Service | ₹5,999 / year | First Enterprise mapping is included at ₹0; every other mapping is paid. |
 | Domain Registration / Renewal | Actual cost | Attach a quote or vendor invoice; the provider bills at cost. |
+
+Only add-ons available for your **current active plan** are shown. Higher-plan add-ons appear after the provider upgrades the site through Aasriva; you cannot choose another plan in an Add-on Order.
 
 An order moves through **Requested → Approved → Configured → Verified → Active**. An Active custom-domain order creates a domain mapping automatically; expired mappings and orders are handled by the daily scheduler.
 

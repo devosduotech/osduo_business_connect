@@ -11,6 +11,15 @@ APP_DIR = os.path.join(os.path.dirname(__file__), "..")
 SUB_DIR = os.path.join(APP_DIR, "subscription")
 
 
+def _load_constants():
+    spec = importlib.util.spec_from_file_location(
+        "bc_constants_structure", os.path.join(SUB_DIR, "constants.py")
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 class TestSubscriptionModuleStructure(unittest.TestCase):
     """Verify the phase-1 module layout and DocType definitions."""
 
@@ -115,6 +124,40 @@ class TestSubscriptionModuleStructure(unittest.TestCase):
             script = handle.read()
         self.assertIn("applies_to_all_plans(frm)", script)
         self.assertIn("frm.doc.applicable_plans = []", script)
+
+    def test_plan_specific_addon_prices_are_structurally_wired(self):
+        child_path = os.path.join(
+            SUB_DIR, "doctype", "add_on_applicable_plan", "add_on_applicable_plan.json"
+        )
+        with open(child_path) as handle:
+            child = json.load(handle)
+        fields = {field["fieldname"]: field for field in child["fields"]}
+        self.assertEqual(fields["price"]["fieldtype"], "Currency")
+        self.assertEqual(fields["price"]["label"], "Annual Price")
+        self.assertTrue(fields["price"].get("in_list_view"))
+
+        master_path = os.path.join(
+            SUB_DIR, "doctype", "add_on_master", "add_on_master.json"
+        )
+        with open(master_path) as handle:
+            master = json.load(handle)
+        master_fields = {field["fieldname"]: field for field in master["fields"]}
+        self.assertIn("Applicable Plans row", master_fields["price"]["description"])
+
+        constants = _load_constants()
+        self.assertEqual(constants.ADDITIONAL_USER_ADDON, "ADDITIONAL_USER")
+        seeds = {seed["code"]: seed for seed in constants.ADDON_SEEDS}
+        self.assertIn("ADDITIONAL_USER", seeds)
+        additional = seeds["ADDITIONAL_USER"]
+        self.assertEqual(additional["applies_to_all_plans"], 0)
+        self.assertEqual(
+            {row["plan"]: row["price"] for row in additional["applicable_plans"]},
+            {
+                "PROFESSIONAL": 595,
+                "BUSINESS": 895,
+                "ENTERPRISE": 1295,
+            },
+        )
 
     def test_add_on_order_uses_custom_link_query_and_is_customer_only(self):
         base = os.path.join(SUB_DIR, "doctype", "add_on_order")

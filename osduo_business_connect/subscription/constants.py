@@ -57,6 +57,7 @@ DEFAULT_UPGRADE_URL = "https://www.osduotech.com/solutions/business-connect"
 DOMAIN_MAPPING_PRICE = 5999
 CUSTOM_DOMAIN_ADDON = "CUSTOM_DOMAIN_SERVICE"
 DOMAIN_REGISTRATION_ADDON = "DOMAIN_REGISTRATION_RENEWAL"
+ADDITIONAL_USER_ADDON = "ADDITIONAL_USER"
 
 PLAN_SEEDS = {
     "PROFESSIONAL": {
@@ -171,6 +172,11 @@ PLAN_GATE_HAS_PERMISSION_DOCTYPES = (
 PLAN_GATE_QUERY_DOCTYPES = IMPORT_EXPORT_DOCTYPES | ADVANCED_ADMIN_READ_DOCTYPES
 
 
+ADDITIONAL_USER_PRICES = {
+    plan_code: PLAN_SEEDS[plan_code]["price_per_seat_per_year"]
+    for plan_code in PLAN_SEEDS
+}
+
 ADDON_SEEDS = (
     {
         "code": "CUSTOM_DOMAIN_SERVICE",
@@ -189,6 +195,21 @@ ADDON_SEEDS = (
         "description": "Domain registration and renewal, billed at actual vendor cost with no margin.",
         "applies_to_all_plans": 1,
         "applicable_plans": [],
+    },
+    {
+        "code": ADDITIONAL_USER_ADDON,
+        "add_on_name": "Additional User",
+        "billing_type": "Annual",
+        "price": 0,
+        "description": (
+            "Adds one billable user seat for the subscription year. Fulfilled "
+            "by the provider after payment is confirmed in Aasriva."
+        ),
+        "applies_to_all_plans": 0,
+        "applicable_plans": [
+            {"plan": plan_code, "price": price}
+            for plan_code, price in ADDITIONAL_USER_PRICES.items()
+        ],
     },
 )
 

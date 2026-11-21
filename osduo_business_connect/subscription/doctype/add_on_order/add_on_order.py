@@ -12,6 +12,7 @@ import frappe
 from frappe.model.document import Document
 
 from osduo_business_connect.subscription.constants import (
+    ADDITIONAL_USER_ADDON,
     CUSTOM_DOMAIN_ADDON,
     DOMAIN_REGISTRATION_ADDON,
 )
@@ -20,7 +21,7 @@ from osduo_business_connect.subscription.domains import (
     get_period_end,
     next_mapping,
 )
-from osduo_business_connect.subscription.entitlements import get_plan_code
+from osduo_business_connect.subscription.entitlements import get_entitlements, get_plan_code
 
 # Requested → Approved → Configured → Verified → Active, with Expired reserved
 # for the scheduler and Cancelled available before activation.
@@ -35,8 +36,24 @@ ALLOWED_TRANSITIONS = {
 }
 
 
+def _row_value(row, key, default=None):
+    """Read a child row field from either a dict or a Frappe Document."""
+    getter = getattr(row, "get", None)
+    if callable(getter):
+        return getter(key, default)
+    try:
+        return row[key]
+    except (KeyError, TypeError):
+        return default
+
+
 def derive_addon_values(add_on_code, plan_code=None):
-    """Validate an add-on for a plan and derive all server-owned order values."""
+    """Validate an add-on for the active plan and derive server-owned values.
+
+    Customer orders are locked to the site's frozen plan. Higher-plan add-ons
+    stay hidden until the provider upgrades the site from Aasriva; a client
+    cannot pass a target plan to bypass this check.
+    """
     if not add_on_code:
         frappe.throw("Add-on is required", exc=frappe.ValidationError)
     plan_code = plan_code or get_plan_code()
@@ -49,13 +66,21 @@ def derive_addon_values(add_on_code, plan_code=None):
     if not add_on.is_active:
         frappe.throw("This add-on is not active", exc=frappe.ValidationError)
 
-    if not add_on.applies_to_all_plans:
-        plans = {row.get("plan") for row in (add_on.applicable_plans or [])}
-        if plan_code not in plans:
-            frappe.throw(
-                f"{add_on.add_on_name} is not available on the {plan_code} plan",
-                exc=frappe.ValidationError,
-            )
+    plan_row = next(
+        (
+            row for row in (add_on.applicable_plans or [])
+            if _row_value(row, "plan") == plan_code
+        ),
+        None,
+    )
+    if not add_on.applies_to_all_plans and plan_row is None:
+        upgrade_url = get_entitlements().get("upgrade_url") or ""
+        upgrade_hint = f" Upgrade to unlock it: {upgrade_url}" if upgrade_url else ""
+        frappe.throw(
+            f"{add_on.add_on_name} is not available on the {plan_code} plan."
+            + upgrade_hint,
+            exc=frappe.ValidationError,
+        )
 
     billing_type = add_on.billing_type
     mapping_type = None
@@ -63,7 +88,17 @@ def derive_addon_values(add_on_code, plan_code=None):
         # Price comes from the frozen plan entitlements, never from the payload.
         mapping_type, amount = next_mapping()
     elif billing_type == "Annual":
-        amount = add_on.price
+        # Plan-specific prices live in the Applicable Plans table. The master
+        # List Price remains the fallback for all-plan add-ons and legacy rows.
+        plan_price = _row_value(plan_row, "price") if plan_row is not None else None
+        amount = add_on.price if plan_price in (None, "") else plan_price
+        try:
+            amount = float(amount or 0)
+        except (TypeError, ValueError):
+            frappe.throw(
+                f"Invalid price configured for {add_on.add_on_name} on the {plan_code} plan",
+                exc=frappe.ValidationError,
+            )
     else:
         # Actual cost is settled by the provider; the site only records evidence.
         amount = 0
@@ -94,6 +129,8 @@ def get_addon_quote(add_on=None, **kwargs):
         )
     elif values["amount"] == 0 and add_on == CUSTOM_DOMAIN_ADDON:
         amount_label = "Included in your plan"
+    elif add_on == ADDITIONAL_USER_ADDON:
+        amount_label = "Estimated annual price for one additional user"
     else:
         amount_label = "Estimated annual amount"
 

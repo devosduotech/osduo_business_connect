@@ -1146,6 +1146,7 @@ class TestFinalHardening(unittest.TestCase):
             with self.assertRaises(env.frappe.ValidationError) as ctx:
                 order.validate()
             self.assertIn("not available on the PROFESSIONAL plan", str(ctx.exception))
+            self.assertIn("https://example.com/upgrade", str(ctx.exception))
 
     def test_addon_quote_is_server_derived_and_type_specific(self):
         with StubEnvironment() as env:
@@ -1406,7 +1407,13 @@ class TestFinalHardening(unittest.TestCase):
             self.assertIn("Select at least one Applicable Plan", str(ctx.exception))
 
             master.applicable_plans = [{"plan": "BUSINESS"}]
+            with self.assertRaises(env.frappe.ValidationError) as price_ctx:
+                master.validate()
+            self.assertIn("Set an Annual Price for BUSINESS", str(price_ctx.exception))
+
+            master.applicable_plans = [{"plan": "BUSINESS", "price": 12000}]
             master.validate()
+            self.assertEqual(master.applicable_plans[0]["price"], 12000.0)
 
     def test_addon_master_all_plans_clears_applicable_rows(self):
         with StubEnvironment() as env:
@@ -1418,6 +1425,107 @@ class TestFinalHardening(unittest.TestCase):
             })
             master.validate()
             self.assertEqual(master.applicable_plans, [])
+
+    def test_additional_user_uses_the_active_plan_price(self):
+        with StubEnvironment() as env:
+            env.set_plan("BUSINESS")
+            env.frappe.db.single[("Subscription", "plan")] = "BUSINESS"
+            add_on = FakeDocument({
+                "name": "ADDITIONAL_USER",
+                "add_on_name": "Additional User",
+                "billing_type": "Annual",
+                "price": 0,
+                "is_active": 1,
+                "applies_to_all_plans": 0,
+                "applicable_plans": [
+                    {"plan": "PROFESSIONAL", "price": 595},
+                    {"plan": "BUSINESS", "price": 895},
+                    {"plan": "ENTERPRISE", "price": 1295},
+                ],
+            })
+            original_get_doc = env.frappe.get_doc
+
+            def get_doc(*args, **kwargs):
+                if args and args[0] == "Add-on Master":
+                    return add_on
+                return original_get_doc(*args, **kwargs)
+
+            env.frappe.get_doc = get_doc
+            quote = env.addon_order.get_addon_quote("ADDITIONAL_USER")
+            self.assertEqual(quote["amount"], 895)
+            self.assertEqual(
+                quote["amount_label"],
+                "Estimated annual price for one additional user",
+            )
+
+            order = env.addon_order.AddonOrder({"add_on": "ADDITIONAL_USER"})
+            order.validate()
+            self.assertEqual(order.plan_snapshot, "BUSINESS")
+            self.assertEqual(order.amount, 895)
+
+    def test_higher_plan_addons_require_an_external_plan_upgrade(self):
+        with StubEnvironment() as env:
+            masters = [
+                {
+                    "name": "ENTERPRISE_ONLY",
+                    "add_on_name": "Enterprise Only",
+                    "applies_to_all_plans": 0,
+                    "is_active": 1,
+                },
+            ]
+            children = [{"parent": "ENTERPRISE_ONLY", "plan": "ENTERPRISE"}]
+
+            def get_all(doctype, filters=None, **kwargs):
+                if doctype == "Add-on Master":
+                    return [dict(row) for row in masters]
+                if doctype == "Add-on Applicable Plan":
+                    parents = set(((filters or {}).get("parent") or [None, []])[1])
+                    return [dict(row) for row in children if row["parent"] in parents]
+                return []
+
+            env.frappe.get_all = get_all
+            env.set_plan("BUSINESS")
+            self.assertEqual(env.addon_master.get_orderable_addons(txt=""), [])
+            # A client-supplied target plan must never bypass the frozen plan.
+            self.assertEqual(
+                env.addon_master.get_orderable_addons(
+                    txt="", filters={"plan": "ENTERPRISE", "plan_snapshot": "ENTERPRISE"}
+                ),
+                [],
+            )
+
+            env.set_plan("ENTERPRISE")
+            self.assertEqual(
+                env.addon_master.get_orderable_addons(txt=""),
+                [("ENTERPRISE_ONLY", "Enterprise Only")],
+            )
+
+    def test_seed_backfills_missing_plan_prices_without_overwriting(self):
+        with StubEnvironment() as env:
+            master = FakeDocument({
+                "name": "PRIORITY_SUPPORT",
+                "billing_type": "Annual",
+                "price": 12000,
+                "applies_to_all_plans": 0,
+                "applicable_plans": [
+                    {"plan": "BUSINESS"},
+                    {"plan": "ENTERPRISE", "price": 15000},
+                ],
+            })
+            saved = []
+
+            def save(**kwargs):
+                saved.append(True)
+                return master
+
+            master.save = save
+            env.frappe.get_all = lambda *a, **k: ["PRIORITY_SUPPORT"]
+            env.frappe.get_doc = lambda *a, **k: master
+
+            self.assertEqual(env.seed.backfill_addon_plan_prices(), 1)
+            self.assertEqual(master.applicable_plans[0]["price"], 12000)
+            self.assertEqual(master.applicable_plans[1]["price"], 15000)
+            self.assertEqual(len(saved), 1)
 
     def test_addon_link_query_returns_only_plan_eligible_masters(self):
         with StubEnvironment() as env:

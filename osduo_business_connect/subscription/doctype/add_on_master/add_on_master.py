@@ -13,20 +13,74 @@ except ImportError:  # isolated local test stub
         return fn
 
 
+def _row_value(row, key, default=None):
+    """Read a child row field from either a dict or a Frappe Document."""
+    getter = getattr(row, "get", None)
+    if callable(getter):
+        return getter(key, default)
+    try:
+        return row[key]
+    except (KeyError, TypeError):
+        return default
+
+
+def _set_row_value(row, key, value):
+    """Write a child row field without assuming dict vs Document."""
+    if isinstance(row, dict):
+        row[key] = value
+    else:
+        setattr(row, key, value)
+
+
 class AddonMaster(Document):
     def validate(self):
+        rows = self.applicable_plans or []
         if self.billing_type == "Actual Cost":
             self.price = 0
+            for row in rows:
+                _set_row_value(row, "price", 0)
         if self.applies_to_all_plans:
             # A master that applies to every plan must not keep stale per-plan
             # rows. The table is also read-only in the form for this state.
             self.applicable_plans = []
-        elif not (self.applicable_plans or []):
+            return
+        if not rows:
             frappe.throw(
                 "Select at least one Applicable Plan when 'Applies to All Plans' "
                 "is unchecked",
                 exc=frappe.ValidationError,
             )
+
+        seen = set()
+        for row in rows:
+            plan = _row_value(row, "plan")
+            if plan in seen:
+                frappe.throw(
+                    f"Plan {plan} is listed more than once in Applicable Plans",
+                    exc=frappe.ValidationError,
+                )
+            seen.add(plan)
+            if self.billing_type != "Annual":
+                continue
+            price = _row_value(row, "price")
+            if price in (None, ""):
+                frappe.throw(
+                    f"Set an Annual Price for {plan} in the Applicable Plans table",
+                    exc=frappe.ValidationError,
+                )
+            try:
+                price = float(price)
+            except (TypeError, ValueError):
+                frappe.throw(
+                    f"Invalid Annual Price for {plan} in the Applicable Plans table",
+                    exc=frappe.ValidationError,
+                )
+            if price < 0:
+                frappe.throw(
+                    f"Annual Price for {plan} cannot be negative",
+                    exc=frappe.ValidationError,
+                )
+            _set_row_value(row, "price", price)
 
 
 @frappe.whitelist()
