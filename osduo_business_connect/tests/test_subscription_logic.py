@@ -44,6 +44,9 @@ class FakeDB:
     def get_value(self, dt, dn, field):
         return self.values.get((dt, dn, field))
 
+    def set_value(self, dt, dn, field, value, **kwargs):
+        self.values[(dt, dn, field)] = value
+
     def sql(self, *args, **kwargs):
         return [(0,)]
 
@@ -141,6 +144,7 @@ class StubEnvironment:
         frappe.throw = throw
         frappe._ = lambda value: value
         frappe.get_doc = lambda *a, **k: FakeDocument(*a, **k)
+        frappe.whitelist = lambda *a, **k: (lambda fn: fn)
         frappe.logger = lambda name=None: types.SimpleNamespace(
             info=lambda *a, **k: None
         )
@@ -212,6 +216,20 @@ class StubEnvironment:
         self.limits = _load(
             "osduo_business_connect.subscription.limits",
             os.path.join(SUB_DIR, "limits.py"),
+        )
+        self.domains = _load(
+            "osduo_business_connect.subscription.domains",
+            os.path.join(SUB_DIR, "domains.py"),
+        )
+        self.subscription_page = _load(
+            "osduo_business_connect.subscription.subscription_page",
+            os.path.join(SUB_DIR, "subscription_page.py"),
+        )
+        self.addon_order = _load(
+            "osduo_business_connect.subscription.doctype.add_on_order.add_on_order",
+            os.path.join(
+                SUB_DIR, "doctype", "add_on_order", "add_on_order.py"
+            ),
         )
         self.frappe = frappe
         return self
@@ -887,6 +905,134 @@ class TestPlanQuotas(unittest.TestCase):
             env.frappe.db.count_calls[-1],
             ("Business", {"docstatus": ["<", 2]}),
         )
+
+
+class TestAddOnsAndDomains(unittest.TestCase):
+    """Phase 3/4: add-on ordering, custom domains and expiry."""
+
+    def setUp_env(self, plan="ENTERPRISE", period_end="2027-11-21"):
+        env = StubEnvironment().__enter__()
+        self.addCleanup(env.__exit__, None, None, None)
+        env.set_plan(plan)
+        env.frappe.db.single[("Subscription", "plan")] = plan
+        subscription = FakeDocument({
+            "doctype": "Subscription",
+            "name": "Subscription",
+            "plan": plan,
+            "status": "Active",
+            "current_period_end": period_end,
+            "domain_mappings": [],
+        })
+        env.frappe.get_doc = lambda *a, **k: (
+            subscription if a == ("Subscription",) else FakeDocument(*a, **k)
+        )
+        env.frappe.conf["host_name"] = "original.example.com"
+        return env, subscription
+
+    def test_enterprise_first_domain_is_included(self):
+        env, subscription = self.setUp_env()
+        row = env.domains.add_domain_mapping(" Cards.Example.com ")
+        self.assertEqual(row["hostname"], "cards.example.com")
+        self.assertEqual(row["mapping_type"], "Included")
+        self.assertEqual(row["price"], 0)
+        self.assertEqual(row["expires_on"], "2027-11-21")
+        self.assertEqual(len(subscription.domain_mappings), 1)
+        self.assertEqual(env.frappe.conf["host_name"], "original.example.com")
+
+    def test_second_domain_is_paid_at_plan_price(self):
+        env, _ = self.setUp_env()
+        env.domains.add_domain_mapping("one.example.com")
+        row = env.domains.add_domain_mapping("two.example.com")
+        self.assertEqual(row["mapping_type"], "Paid Custom Domain")
+        self.assertEqual(row["price"], 5999)
+        self.assertEqual(row["expires_on"], "2027-11-21")
+
+    def test_caller_cannot_mark_a_paid_domain_as_included(self):
+        env, _ = self.setUp_env()
+        env.domains.add_domain_mapping("one.example.com")
+        row = env.domains.add_domain_mapping(
+            "two.example.com", mapping_type="Included"
+        )
+        self.assertEqual(row["mapping_type"], "Paid Custom Domain")
+        self.assertEqual(row["price"], 5999)
+
+    def test_business_has_no_included_domain(self):
+        env, _ = self.setUp_env("BUSINESS")
+        row = env.domains.add_domain_mapping("cards.example.com")
+        self.assertEqual(row["mapping_type"], "Paid Custom Domain")
+        self.assertEqual(row["price"], 5999)
+
+    def test_duplicate_open_hostname_is_rejected(self):
+        env, _ = self.setUp_env()
+        env.domains.add_domain_mapping("cards.example.com")
+        with self.assertRaises(env.frappe.ValidationError) as ctx:
+            env.domains.add_domain_mapping("cards.example.com")
+        self.assertIn("already has an open domain mapping", str(ctx.exception))
+
+    def test_expiry_marks_domain_and_order_without_touching_host_name(self):
+        env, subscription = self.setUp_env(period_end="2025-01-01")
+        env.domains.add_domain_mapping("old.example.com", add_on_order="ADDON-1")
+        self.assertEqual(env.domains.expire_domains(), 1)
+        self.assertEqual(subscription.domain_mappings[0].status, "Expired")
+        self.assertEqual(
+            env.frappe.db.values[("Add-on Order", "ADDON-1", "status")], "Expired"
+        )
+        self.assertEqual(env.frappe.conf["host_name"], "original.example.com")
+        self.assertEqual(env.domains.expire_domains(), 0)
+
+    def test_addon_order_status_workflow(self):
+        env, _ = self.setUp_env()
+        env.frappe.get_roles = lambda: ["BC Subscription Manager"]
+        order = env.addon_order.AddonOrder({"name": "ADDON-1", "status": "Active"})
+        order.get_doc_before_save = lambda: FakeDocument({"status": "Requested"})
+        with self.assertRaises(env.frappe.ValidationError) as ctx:
+            order.validate_status_transition()
+        self.assertIn("Cannot change", str(ctx.exception))
+
+        env.frappe.get_roles = lambda: ["BC Subscription Manager"]
+        order.status = "Approved"
+        order.validate_status_transition()  # Requested -> Approved is allowed
+
+        order.get_doc_before_save = lambda: FakeDocument({"status": "Approved"})
+        order.status = "Configured"
+        env.frappe.get_roles = lambda: ["BC Business Owner"]
+        with self.assertRaises(env.frappe.PermissionError):
+            order.validate_status_transition()
+
+    def test_subscription_page_is_read_only_and_has_upgrade_url(self):
+        env, _ = self.setUp_env()
+        data = env.subscription_page.get_my_subscription()
+        self.assertEqual(data["plan_code"], "ENTERPRISE")
+        self.assertEqual(data["billing_source"], "Aasriva")
+        self.assertEqual(data["upgrade_url"], "https://example.com/upgrade")
+        self.assertEqual(data["seats"], {"used": 0, "billed": 10})
+        self.assertEqual(
+            {key for key in data if "api_key" in key or "secret" in key or "snapshot" in key},
+            set(),
+        )
+        for forbidden in ("checkout", "payment", "invoice"):
+            self.assertNotIn(forbidden, str(data).lower())
+
+        env.frappe.session.user = "Guest"
+        with self.assertRaises(env.frappe.PermissionError):
+            env.subscription_page.get_my_subscription()
+
+    def test_expiry_is_wired_into_daily_scheduler(self):
+        with open(os.path.join(APP_DIR, "services", "scheduler.py")) as handle:
+            scheduler = handle.read()
+        self.assertIn("expire_subscription_domains()", scheduler)
+
+    def test_desk_page_files_exist_and_are_read_only(self):
+        base = os.path.join(APP_DIR, "subscription", "page", "my_subscription")
+        with open(os.path.join(base, "my_subscription.json")) as handle:
+            page = json.load(handle)
+        self.assertEqual(page["name"], "my-subscription")
+        self.assertEqual(page["doctype"], "Page")
+        with open(os.path.join(base, "my_subscription.js")) as handle:
+            script = handle.read()
+        self.assertIn("get_my_subscription", script)
+        self.assertIn('frappe.new_doc("Add-on Order")', script)
+        self.assertIn("upgrade_url", script)
 
 
 if __name__ == "__main__":

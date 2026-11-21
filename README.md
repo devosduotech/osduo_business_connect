@@ -203,7 +203,7 @@ website-cache clear.
 
 | Document | Audience | Contents |
 |---|---|---|
-| [User Manual](docs/USER_MANUAL.md) | End users & admins | Businesses, cards, products, services, theming, publishing, enquiries, analytics, roles, mobile app |
+| [User Manual](docs/USER_MANUAL.md) | End users & admins | Businesses, cards, products, services, theming, publishing, enquiries, analytics, roles, mobile app, subscriptions & add-ons |
 | [Installation Guide](docs/INSTALLATION_GUIDE.md) | Operators | Fresh install, SaaS multi-site setup, BYOD domains, updates, troubleshooting |
 | [Release Notes](RELEASE_NOTES.md) / [Changelog](CHANGELOG.md) | Everyone | What shipped in each version |
 
@@ -280,7 +280,9 @@ repository).
       with no backdrop (v1.3.3)
 - [x] Analytics patch — one view per visit, event/meeting used as Campaign
       (v1.3.4)
-- [ ] SaaS tiers & quotas (`BC Subscription`)
+- [x] SaaS tiers & quotas — plan gates, frozen snapshots, seat/business caps,
+      add-on orders, custom domains and read-only My Subscription (v1.3.4;
+      the release UAT matrix is maintained locally with the planning docs)
 - [ ] Web push notifications for installed PWAs
 - [ ] Play Store listing via TWA wrappers
 - [ ] Multi-language support
