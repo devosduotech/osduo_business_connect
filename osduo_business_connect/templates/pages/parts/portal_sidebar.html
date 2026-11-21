@@ -21,6 +21,12 @@
     .bc-portal-sidebar {
         width: 246px;
         flex: 0 0 246px;
+        align-self: flex-start;
+        height: 100vh;
+        position: sticky;
+        top: 0;
+        overflow-y: auto;
+        box-sizing: border-box;
         background: #1e293b;
         color: #e2e8f0;
         padding: 1.5rem 0;
@@ -42,7 +48,7 @@
     .bc-portal-main { flex: 1; min-width: 0; padding: 2rem; }
     @media (max-width: 860px) {
         .bc-portal-shell { display: block; }
-        .bc-portal-sidebar { width: 100%; flex: none; padding: 0.9rem 0; }
+        .bc-portal-sidebar { width: 100%; flex: none; align-self: auto; height: auto; position: static; overflow-y: visible; padding: 0.9rem 0; }
         .bc-portal-brand { padding-bottom: 0.8rem; }
         .bc-portal-nav { display: flex; overflow-x: auto; gap: 0.25rem; padding: 0 0.75rem; }
         .bc-portal-nav-title { display: none; }

@@ -2477,6 +2477,14 @@ class TestPortalTeamInvitations(unittest.TestCase):
             "{{ nav_link('/app/business-connect', 'admin', 'Advanced admin', '⚙') }}",
             sidebar_source,
         )
+        # The portal rail must stay viewport-height and sticky while long
+        # content (for example /analytics) scrolls in the main column.
+        self.assertIn("height: 100vh", sidebar_source)
+        self.assertIn("position: sticky", sidebar_source)
+        self.assertIn("top: 0", sidebar_source)
+        self.assertIn("overflow-y: auto", sidebar_source)
+        self.assertIn("align-self: flex-start", sidebar_source)
+        self.assertIn("height: auto; position: static", sidebar_source)
         self.assertNotIn('href="/app/workspace"', sidebar_source)
         self.assertNotIn('href="/app/business"', sidebar_source)
         self.assertNotIn('href="/desk/build"', sidebar_source)
