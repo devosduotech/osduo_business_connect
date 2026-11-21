@@ -24,10 +24,13 @@
     {"fieldname": "site", "fieldtype": "Data", "label": "Site", "read_only": 1},
     {"fieldname": "section_details", "fieldtype": "Section Break", "label": "Request Details"},
     {"fieldname": "hostname", "fieldtype": "Data", "label": "Hostname"},
+    {"fieldname": "mapping_type", "fieldtype": "Select", "label": "Mapping Type", "options": "Included\nPaid Custom Domain", "default": "Paid Custom Domain", "in_list_view": 1},
+    {"fieldname": "billing_type", "fieldtype": "Data", "label": "Billing Type", "read_only": 1},
     {"fieldname": "registration_details", "fieldtype": "Small Text", "label": "Registration Details"},
     {"fieldname": "customer_email", "fieldtype": "Data", "label": "Customer Email", "options": "Email"},
     {"fieldname": "column_break_details", "fieldtype": "Column Break"},
     {"fieldname": "amount", "fieldtype": "Currency", "label": "Amount", "read_only": 1},
+    {"fieldname": "expires_on", "fieldtype": "Date", "label": "Expires On", "read_only": 1},
     {"fieldname": "approved_by", "fieldtype": "Link", "label": "Approved By", "options": "User", "read_only": 1},
     {"fieldname": "external_ref", "fieldtype": "Data", "label": "External Reference", "read_only": 1},
     {"fieldname": "section_attachments", "fieldtype": "Section Break", "label": "Documents"},
@@ -45,6 +48,16 @@
       "role": "BC System Manager",
       "read": 1, "write": 1, "create": 1,
       "report": 1, "print": 1, "email": 1, "share": 1
+    },
+    {
+      "role": "BC Business Owner",
+      "read": 1, "write": 1, "create": 1, "is_owner": 1,
+      "report": 1, "print": 1
+    },
+    {
+      "role": "BC Business Manager",
+      "read": 1, "write": 1, "create": 1, "is_owner": 1,
+      "report": 1, "print": 1
     }
   ]
 }

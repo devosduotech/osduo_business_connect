@@ -1146,6 +1146,25 @@ A: Events are classified from the live session for people who are logged in. You
 
 ---
 
+## 14. Subscription & Add-ons
+
+**My Subscription** (Desk → *My Subscription*) is a read-only summary of the site's plan, billed seats, business-profile usage and custom domains. It never shows payment or checkout controls — billing is handled by Aasriva. The **View plans on Aasriva** link opens the configured upgrade URL.
+
+- Billed seats and business profiles are shown as *used of cap*. Cancelled businesses are listed separately and are not counted.
+- Each Business Member can have exactly one Digital Card. Changing a card's display name does not create another card.
+- Custom domains expire with the subscription period end. Adding a domain never changes printed QR/NFC URLs or the site's existing hostname.
+
+**Request add-on** opens the native **Add-on Order** form. Available add-ons:
+
+| Add-on | Price | Notes |
+|--------|-------|-------|
+| Custom Domain Service | ₹5,999 / year | First Enterprise mapping is included at ₹0; every other mapping is paid. |
+| Domain Registration / Renewal | Actual cost | Attach a quote or vendor invoice; the provider bills at cost. |
+
+An order moves through **Requested → Approved → Configured → Verified → Active**. An Active custom-domain order creates a domain mapping automatically; expired mappings and orders are handled by the daily scheduler.
+
+---
+
 ## Support
 
 - **User Manual:** https://www.osduotech.com/business-connect-manual

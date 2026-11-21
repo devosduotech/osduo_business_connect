@@ -1,0 +1,19 @@
+{
+ "content": null,
+ "doctype": "Page",
+ "icon": "octicon octicon-credit-card",
+ "idx": 0,
+ "module": "Subscription",
+ "name": "my-subscription",
+ "page_name": "my-subscription",
+ "roles": [
+  {
+   "role": "All"
+  }
+ ],
+ "script": null,
+ "standard": "Yes",
+ "style": null,
+ "system_page": 0,
+ "title": "My Subscription"
+}

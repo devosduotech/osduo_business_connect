@@ -25,6 +25,26 @@
   {
    "hidden": 0,
    "is_query_report": 0,
+   "label": "My Subscription",
+   "link_count": 0,
+   "link_to": "my-subscription",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Add-on Order",
+   "link_count": 0,
+   "link_to": "Add-on Order",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
    "label": "Business",
    "link_count": 0,
    "link_to": "Business",

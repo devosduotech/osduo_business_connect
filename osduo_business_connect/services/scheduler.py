@@ -15,6 +15,24 @@ def daily_tasks():
     """Run daily tasks."""
     # Retry failed CRM sync
     retry_pending_enquiries()
+    # Expire custom-domain mappings at the subscription period end. This only
+    # changes mapping/order status; public QR/NFC URLs stay stable.
+    expire_subscription_domains()
+
+
+def expire_subscription_domains():
+    """Daily domain-expiry task (provider-controlled status stays untouched)."""
+    try:
+        from osduo_business_connect.subscription.domains import expire_domains
+
+        expired = expire_domains()
+        if expired:
+            frappe.logger().info(f"Expired {expired} custom domain mapping(s)")
+    except Exception as e:
+        frappe.log_error(
+            message=f"Failed to expire domains: {str(e)}",
+            title="Domain Expiry Failed",
+        )
 
 
 def hourly_tasks():
