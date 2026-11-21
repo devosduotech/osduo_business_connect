@@ -25,6 +25,7 @@ class BusinessMember(Document):
         self.validate_business()
         self.validate_role()
         self.validate_unique_membership()
+        self.validate_seat_limit()
         self.set_defaults()
 
     def before_save(self):
@@ -111,6 +112,12 @@ class BusinessMember(Document):
             )
             if existing:
                 frappe.throw("This user already has an active membership in this business")
+
+    def validate_seat_limit(self):
+        """Block creation of a billable seat beyond the plan's seat cap."""
+        from osduo_business_connect.subscription.limits import enforce_seat_limit
+
+        enforce_seat_limit(self)
 
     def set_defaults(self):
         """Set default values."""

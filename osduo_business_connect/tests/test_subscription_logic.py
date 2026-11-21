@@ -206,6 +206,10 @@ class StubEnvironment:
             "osduo_business_connect.subscription.plan_gates",
             os.path.join(SUB_DIR, "plan_gates.py"),
         )
+        self.limits = _load(
+            "osduo_business_connect.subscription.limits",
+            os.path.join(SUB_DIR, "limits.py"),
+        )
         self.frappe = frappe
         return self
 
@@ -749,6 +753,97 @@ class TestPlanGates(unittest.TestCase):
                 request=types.SimpleNamespace(path="/api/method/frappe.ping"),
             )
             self.assertEqual(api_response.data, "")
+
+
+class TestPlanQuotas(unittest.TestCase):
+    """Creation-time quota checks wired into the DocType controllers."""
+
+    def setUp_env(self, plan, seats=0, businesses=0, existing_user=False):
+        env = StubEnvironment().__enter__()
+        self.addCleanup(env.__exit__, None, None, None)
+        env.set_plan(plan)
+        env.frappe.db.sql = lambda *args, **kwargs: [(seats,)]
+        env.frappe.db.counts["Business"] = businesses
+        env.frappe.db.exists = lambda dt, filters=None: (
+            existing_user if dt == "Business Member" else False
+        )
+        return env
+
+    def member(self, **kwargs):
+        data = {
+            "doctype": "Business Member",
+            "business": "BIZ-1",
+            "user": "new@example.com",
+            "status": "Active",
+        }
+        data.update(kwargs)
+        return FakeDocument(data)
+
+    def test_professional_blocks_second_seat(self):
+        env = self.setUp_env("PROFESSIONAL", seats=1)
+        with self.assertRaises(env.entitlements.PlanRestrictionError) as ctx:
+            env.limits.enforce_seat_limit(self.member())
+        self.assertIn("Seats limit reached (1 of 1)", str(ctx.exception))
+        self.assertIn("https://example.com/upgrade", str(ctx.exception))
+
+    def test_professional_allows_first_seat_and_business_plan_more(self):
+        env = self.setUp_env("PROFESSIONAL", seats=0)
+        env.limits.enforce_seat_limit(self.member())
+
+        env.set_plan("BUSINESS")
+        env.frappe.db.sql = lambda *a, **k: [(4,)]
+        env.limits.enforce_seat_limit(self.member())
+
+    def test_user_with_existing_seat_does_not_consume_another(self):
+        env = self.setUp_env("PROFESSIONAL", seats=1, existing_user=True)
+        env.limits.enforce_seat_limit(self.member())
+
+    def test_inactive_member_is_not_a_seat(self):
+        env = self.setUp_env("PROFESSIONAL", seats=1)
+        env.limits.enforce_seat_limit(self.member(status="Inactive"))
+
+    def test_unchanged_active_member_can_be_edited_at_cap(self):
+        env = self.setUp_env("PROFESSIONAL", seats=1)
+        env.frappe.db.values[("Business Member", "BM-1", "status")] = "Active"
+        env.frappe.db.values[("Business Member", "BM-1", "user")] = "new@example.com"
+        env.limits.enforce_seat_limit(self.member(name="BM-1"))
+
+    def test_reassigning_seat_to_another_user_stays_within_cap(self):
+        env = self.setUp_env("PROFESSIONAL", seats=1)
+        env.frappe.db.values[("Business Member", "BM-1", "status")] = "Active"
+        env.frappe.db.values[("Business Member", "BM-1", "user")] = "old@example.com"
+        env.limits.enforce_seat_limit(
+            self.member(name="BM-1", user="new@example.com")
+        )
+
+    def test_controllers_wire_quota_checks(self):
+        with open(os.path.join(APP_DIR, "business", "core.py")) as handle:
+            business_controller = handle.read()
+        self.assertIn("enforce_business_limit()", business_controller)
+
+        member_path = os.path.join(
+            APP_DIR, "business", "doctype", "business_member", "business_member.py"
+        )
+        with open(member_path) as handle:
+            member_controller = handle.read()
+        self.assertIn("enforce_seat_limit(self)", member_controller)
+
+    def test_business_cap_counts_drafts_and_blocks_creation(self):
+        env = self.setUp_env("PROFESSIONAL", businesses=1)
+        with self.assertRaises(env.entitlements.PlanRestrictionError) as ctx:
+            env.limits.enforce_business_limit()
+        self.assertIn("Business profiles limit reached (1 of 1)", str(ctx.exception))
+
+        env.set_plan("BUSINESS")
+        env.frappe.db.counts["Business"] = 2
+        env.limits.enforce_business_limit()
+
+        # Cancelled records are excluded by the usage query, not by a filter
+        # here; confirm the filter is the expected docstatus range.
+        self.assertEqual(
+            env.frappe.db.count_calls[-1],
+            ("Business", {"docstatus": ["<", 2]}),
+        )
 
 
 if __name__ == "__main__":

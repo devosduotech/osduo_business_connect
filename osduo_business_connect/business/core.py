@@ -28,6 +28,10 @@ class Business(Document):
 
     def validate(self):
         publish_on_submit(self)
+        if self.is_new():
+            from osduo_business_connect.subscription.limits import enforce_business_limit
+
+            enforce_business_limit()
         self.validate_slug_immutable()
         self.validate_slug()
         self.validate_owner_user()
