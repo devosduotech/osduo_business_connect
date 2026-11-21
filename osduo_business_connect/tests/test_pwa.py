@@ -50,6 +50,17 @@ class TestPWAWiring(unittest.TestCase):
         self.assertIn('const STATIC_CACHE = "bc-static-" + VERSION;', template)
         self.assertIn('const PAGE_CACHE = "bc-pages-" + VERSION;', template)
 
+    def test_service_worker_updates_even_in_firefox(self):
+        # Firefox keeps the active worker until all its tabs close, so the
+        # bootstrap must poll for updates and ask a waiting worker to activate.
+        js = read("public", "js", "pwa.js")
+        self.assertIn("registration.update()", js)
+        self.assertIn('addEventListener("updatefound"', js)
+        self.assertIn('type: "BC_SKIP_WAITING"', js)
+        sw = read("www", "sw.js")
+        self.assertIn('event.data.type === "BC_SKIP_WAITING"', sw)
+        self.assertIn("self.skipWaiting()", sw)
+
     def test_manifest_required_fields(self):
         manifest = read("www", "manifest.json")
         for key in ('"name"', '"start_url"', '"scope"', '"display"', '"icons"', '"theme_color"'):

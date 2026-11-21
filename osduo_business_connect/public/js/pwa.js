@@ -36,6 +36,28 @@
 		window.addEventListener("load", () => {
 			navigator.serviceWorker
 				.register(SW_URL, { scope: "/" })
+				.then((registration) => {
+					// Firefox keeps the active worker until every tab using it is
+					// closed. Check for a new version on each navigation and ask
+					// an installed worker to take over immediately so the new
+					// theme cache is used.
+					registration.update().catch(() => {});
+					registration.addEventListener("updatefound", () => {
+						const worker = registration.installing;
+						if (!worker) return;
+						worker.addEventListener("statechange", () => {
+							if (
+								worker.state === "installed" &&
+								navigator.serviceWorker.controller
+							) {
+								worker.postMessage({ type: "BC_SKIP_WAITING" });
+							}
+						});
+					});
+					if (registration.waiting) {
+						registration.waiting.postMessage({ type: "BC_SKIP_WAITING" });
+					}
+				})
 				.catch((err) => console.warn("BC SW registration failed:", err));
 		});
 	}
