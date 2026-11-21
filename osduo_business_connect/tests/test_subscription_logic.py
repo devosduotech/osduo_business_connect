@@ -24,6 +24,7 @@ class FakeDB:
         self.counts = {}
         self.count_calls = []
         self.created = []
+        self.values = {}
 
     def exists(self, dt, dn=None):
         # Frappe v16 short-circuits dt == dn for Singles: they always "exist".
@@ -39,6 +40,9 @@ class FakeDB:
     def count(self, dt, filters=None):
         self.count_calls.append((dt, filters))
         return self.counts.get(dt, 0)
+
+    def get_value(self, dt, dn, field):
+        return self.values.get((dt, dn, field))
 
     def sql(self, *args, **kwargs):
         return [(0,)]
@@ -114,6 +118,17 @@ class StubEnvironment:
         }
         frappe.db = FakeDB()
         frappe.session = types.SimpleNamespace(user="provider@example.com")
+        cache_values = {}
+
+        def cache_get(key):
+            return cache_values.get(key)
+
+        def cache_set(key, value, expires_in_sec=None):
+            cache_values[key] = value
+
+        frappe.cache = types.SimpleNamespace(
+            get_value=cache_get, set_value=cache_set
+        )
         frappe.form_dict = {}
         frappe.local.request = types.SimpleNamespace(
             path="/", method="GET", get_json=lambda silent=True: {}
@@ -332,6 +347,25 @@ class TestDomainExpiry(unittest.TestCase):
 
 
 class TestPlanGates(unittest.TestCase):
+    def suspend_site(self, env):
+        snapshot = env.constants.snapshot_defaults("PROFESSIONAL")
+        subscription = FakeDocument({
+            "plan": "PROFESSIONAL",
+            "status": "Suspended",
+            "seats_cap": 1,
+            "entitlement_snapshot": json.dumps(snapshot),
+        })
+        env.frappe.db.single[("Subscription", "plan")] = "PROFESSIONAL"
+        original_get_doc = env.frappe.get_doc
+
+        def get_doc(*args, **kwargs):
+            if args == ("Subscription",):
+                return subscription
+            return original_get_doc(*args, **kwargs)
+
+        env.frappe.get_doc = get_doc
+        env.entitlements.clear_entitlement_cache()
+
     def assert_blocked(self, env, path, **kwargs):
         env.set_request(path, **kwargs)
         with self.assertRaises(env.frappe.PermissionError) as ctx:
@@ -454,25 +488,124 @@ class TestPlanGates(unittest.TestCase):
 
     def test_suspended_site_keeps_public_pages_live(self):
         with StubEnvironment() as env:
-            snapshot = env.constants.snapshot_defaults("PROFESSIONAL")
-            subscription = FakeDocument({
-                "plan": "PROFESSIONAL",
-                "status": "Suspended",
-                "seats_cap": 1,
-                "entitlement_snapshot": json.dumps(snapshot),
-            })
-            env.frappe.db.single[("Subscription", "plan")] = "PROFESSIONAL"
-            original_get_doc = env.frappe.get_doc
-
-            def get_doc(*args, **kwargs):
-                if args == ("Subscription",):
-                    return subscription
-                return original_get_doc(*args, **kwargs)
-
-            env.frappe.get_doc = get_doc
+            self.suspend_site(env)
             self.assert_allowed(env, "/b/acme")
             self.assert_allowed(env, "/")
             self.assert_blocked(env, "/app/business")
+
+    def test_suspended_site_blocks_token_style_api_requests(self):
+        with StubEnvironment() as env:
+            self.suspend_site(env)
+            # before_request runs before token auth, so session.user may still
+            # be Guest even for a request carrying a valid API key.
+            env.frappe.session.user = "Guest"
+            self.assert_allowed(env,
+                "/api/method/osduo_business_connect.enquiry.public_enquiry_api.submit_enquiry"
+            )
+            self.assert_blocked(
+                env, "/api/method/frappe.client.get_list", form={"doctype": "Business"}
+            )
+            self.assert_blocked(env, "/api/v2/document/Business")
+
+    def test_rpc_cmd_cannot_smuggle_a_gated_method(self):
+        with StubEnvironment() as env:
+            env.set_plan("PROFESSIONAL")
+            self.assert_blocked(
+                env, "/api/method/frappe.ping", form={"cmd": "crm.api.doc.get_data"}
+            )
+            env.set_plan("ENTERPRISE")
+            self.assert_blocked(
+                env,
+                "/api/method/frappe.ping",
+                form={"cmd": "frappe.core.doctype.user.user.generate_keys"},
+            )
+            self.assert_allowed(env, "/api/method/frappe.ping", form={"cmd": "frappe.ping"})
+
+    def test_versioned_api_routes_are_gated(self):
+        with StubEnvironment() as env:
+            env.set_plan("PROFESSIONAL")
+            for path in (
+                "/api/v1/method/crm.api.doc.get_data",
+                "/api/v2/method/crm.api.doc.get_data",
+                "/api/v1/resource/CRM Lead",
+                "/api/v2/document/Engagement Event",
+                "/api/v2/doctype/Data Import/meta",
+                "/api/v2/document/Facebook Page",
+            ):
+                with self.subTest(path=path):
+                    self.assert_blocked(env, path)
+
+            env.set_plan("BUSINESS")
+            for path in (
+                "/api/v2/document/Email Account",
+                "/api/v2/method/FCRM Settings/restore_defaults",
+                "/api/v2/document/FCRM Settings/FCRM Settings/method/restore_defaults/",
+                "/api/v2/mcp",
+            ):
+                with self.subTest(path=path):
+                    self.assert_blocked(env, path)
+
+            env.set_plan("ENTERPRISE")
+            self.assert_allowed(env, "/api/v2/mcp")
+
+    def test_desk_save_runner_carries_doctype_into_gate(self):
+        with StubEnvironment() as env:
+            env.set_plan("BUSINESS")
+            self.assert_blocked(
+                env,
+                "/api/method/frappe.desk.form.save.savedocs",
+                method="POST",
+                payload={"doc": json.dumps({"doctype": "Email Account", "email_id": "x"})},
+            )
+            self.assert_allowed(
+                env,
+                "/api/method/frappe.desk.form.save.savedocs",
+                method="POST",
+                payload={"doc": json.dumps({"doctype": "Business", "business_name": "Acme"})},
+            )
+
+    def test_indirect_api_key_writes_are_blocked(self):
+        with StubEnvironment() as env:
+            env.set_plan("ENTERPRISE")
+            self.assert_blocked(
+                env,
+                "/api/method/frappe.client.set_value",
+                form={
+                    "doctype": "User",
+                    "name": "admin@example.com",
+                    "fieldname": "api_secret",
+                    "value": "leaked",
+                },
+            )
+            self.assert_blocked(
+                env,
+                "/api/method/frappe.client.insert",
+                payload={"doc": json.dumps({"doctype": "User", "api_key": "leaked"})},
+            )
+
+            # A Desk save that only echoes the existing credential is allowed.
+            env.frappe.db.values[("User", "admin@example.com", "api_key")] = "existing"
+            self.assert_allowed(
+                env,
+                "/api/method/frappe.desk.form.save.savedocs",
+                method="POST",
+                payload={
+                    "doc": json.dumps({
+                        "doctype": "User",
+                        "name": "admin@example.com",
+                        "api_key": "existing",
+                    })
+                },
+            )
+
+    def test_upgrade_url_html_is_escaped(self):
+        with StubEnvironment() as env:
+            env.frappe.conf["bc_upgrade_url"] = "https://example.com/up?a=1&b=2"
+            env.entitlements.clear_entitlement_cache()
+            env.set_plan("PROFESSIONAL")
+            message = self.assert_blocked(env, "/crm")
+            self.assertIn("View plans", message)
+            self.assertIn("&amp;", message)
 
     def test_doctype_hook_never_returns_none(self):
         with StubEnvironment() as env:
@@ -488,6 +621,10 @@ class TestPlanGates(unittest.TestCase):
             )
             self.assertIs(
                 gate(FakeDocument({"doctype": "Email Account"}), user="x", ptype="read"),
+                False,
+            )
+            self.assertIs(
+                gate(FakeDocument({"doctype": "CRM Fields Layout"}), user="x", ptype="read"),
                 True,
             )
             self.assertEqual(env.plan_gates.import_export_query_conditions("x"), "1=0")

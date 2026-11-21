@@ -102,6 +102,61 @@ PLAN_SEEDS = {
     },
 }
 
+# DocType inventories used by the Phase 2 HTTP gate and its DocType-level
+# fallback. Kept here (no frappe import) so hooks.py can build registrations
+# from the same source instead of duplicating a partial list.
+IMPORT_EXPORT_DOCTYPES = frozenset({"Data Import", "Data Export"})
+
+ANALYTICS_DOCTYPES = frozenset({"Engagement Event"})
+
+CRM_EXTRA_DOCTYPES = frozenset({
+    "FCRM Note",
+    "Lead Sync Source",
+    "Failed Lead Sync Log",
+    "Facebook Page",
+    "Facebook Lead Form",
+    "Facebook Lead Form Question",
+})
+
+# Writes to any of these require Enterprise. Reads are restricted for the
+# credentials/configuration subset only; CRM layout DocTypes stay readable on
+# Business so the CRM UI can render.
+ADVANCED_ADMIN_DOCTYPES = frozenset({
+    "Email Account",
+    "Email Domain",
+    "WhatsApp Settings",
+    "WhatsApp Account",
+    "WhatsApp Template",
+    "FCRM Settings",
+    "ERPNext CRM Settings",
+    "CRM Global Settings",
+    "CRM Fields Layout",
+    "CRM Form Script",
+    "CRM View Settings",
+    "CRM Sales Hierarchy",
+    "CRM Notification",
+    "CRM Telephony Agent",
+    "CRM Twilio Settings",
+    "CRM Exotel Settings",
+    "CRM Enrichment Settings",
+})
+
+ADVANCED_ADMIN_READ_DOCTYPES = frozenset({
+    "Email Account",
+    "Email Domain",
+    "WhatsApp Settings",
+    "WhatsApp Account",
+    "WhatsApp Template",
+    "FCRM Settings",
+    "ERPNext CRM Settings",
+})
+
+PLAN_GATE_HAS_PERMISSION_DOCTYPES = (
+    IMPORT_EXPORT_DOCTYPES | ADVANCED_ADMIN_DOCTYPES | frozenset({"User"})
+)
+PLAN_GATE_QUERY_DOCTYPES = IMPORT_EXPORT_DOCTYPES | ADVANCED_ADMIN_DOCTYPES
+
+
 ADDON_SEEDS = (
     {
         "code": "CUSTOM_DOMAIN_SERVICE",

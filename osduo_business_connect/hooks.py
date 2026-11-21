@@ -5,6 +5,12 @@ app_description = "Digital business identity, product/service showcase, lead gen
 app_email = "info@osduo.com"
 app_license = "MIT"
 
+from osduo_business_connect.subscription.constants import (
+    IMPORT_EXPORT_DOCTYPES,
+    PLAN_GATE_HAS_PERMISSION_DOCTYPES,
+    PLAN_GATE_QUERY_DOCTYPES,
+)
+
 # Branding Configuration — single source of truth
 # ------------------------------------------------
 # Change these values to white-label the application.
@@ -238,15 +244,14 @@ has_permission = {
     "Plan Restriction Log": "osduo_business_connect.permissions.has_permission",
     "Webhook Event Log": "osduo_business_connect.permissions.has_permission",
     # Plan-gated DocTypes (defence in depth). Never returns None: v16 treats a
-    # falsy controller-permission result as a deny.
-    "Data Import": "osduo_business_connect.subscription.plan_gates.has_permission_for_doctype",
-    "Data Export": "osduo_business_connect.subscription.plan_gates.has_permission_for_doctype",
-    "User": "osduo_business_connect.subscription.plan_gates.has_permission_for_doctype",
-    "Email Account": "osduo_business_connect.subscription.plan_gates.has_permission_for_doctype",
-    "Email Domain": "osduo_business_connect.subscription.plan_gates.has_permission_for_doctype",
-    "WhatsApp Settings": "osduo_business_connect.subscription.plan_gates.has_permission_for_doctype",
-    "WhatsApp Account": "osduo_business_connect.subscription.plan_gates.has_permission_for_doctype",
+    # falsy controller-permission result as a deny. Generated from the same
+    # inventory the HTTP gate uses so new gated DocTypes cannot be missed.
 }
+
+has_permission.update({
+    doctype: "osduo_business_connect.subscription.plan_gates.has_permission_for_doctype"
+    for doctype in sorted(PLAN_GATE_HAS_PERMISSION_DOCTYPES)
+})
 
 permission_query_conditions = {
     "Business": "osduo_business_connect.business.core.get_permission_query_conditions",
@@ -260,11 +265,16 @@ permission_query_conditions = {
     "Engagement Event": "osduo_business_connect.analytics.doctype.engagement_event.engagement_event.get_permission_query_conditions",
     # CRM Lead: OSDuo business isolation
     "CRM Lead": "osduo_business_connect.crm_integration.crm_permissions.get_permission_query_conditions",
-    "Data Import": "osduo_business_connect.subscription.plan_gates.import_export_query_conditions",
-    "Data Export": "osduo_business_connect.subscription.plan_gates.import_export_query_conditions",
-    "Email Account": "osduo_business_connect.subscription.plan_gates.advanced_admin_query_conditions",
-    "WhatsApp Settings": "osduo_business_connect.subscription.plan_gates.advanced_admin_query_conditions",
 }
+
+permission_query_conditions.update({
+    doctype: (
+        "osduo_business_connect.subscription.plan_gates."
+        + ("import_export_query_conditions" if doctype in IMPORT_EXPORT_DOCTYPES
+           else "advanced_admin_query_conditions")
+    )
+    for doctype in sorted(PLAN_GATE_QUERY_DOCTYPES)
+})
 
 # DocType Class
 # ---------------

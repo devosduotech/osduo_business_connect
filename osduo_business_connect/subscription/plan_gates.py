@@ -12,16 +12,34 @@ returns True immediately for Administrator and never calls DocType hooks for
 that user. The DocType hooks and query conditions at the bottom of this module
 are defence in depth for ordinary users, not the security boundary.
 
-Public pages (/, /b/*, /c/*, lead capture APIs called as Guest) are never
-blocked by the subscription-status check so a Suspended site stays reachable.
+Request normalisation deliberately fails closed:
+
+* ``frappe.form_dict.cmd`` is what Frappe actually executes, so it is evaluated
+  alongside (not instead of) the method in the URL.
+* Unversioned, v1 and v2 API routes all map to the same method/DocType checks.
+* Any API request that is not on the explicit guest-safe allowlist is private
+  for the subscription-status check. Token authentication happens *after*
+  ``before_request``, so ``frappe.session.user`` alone cannot classify it.
+
+Public pages (/, /b/*, /c/*) and the explicit guest-safe APIs stay reachable on
+a Suspended site so printed QR/NFC links and lead capture keep working.
 """
 
 import json
-from urllib.parse import unquote
+import re
+from urllib.parse import unquote, urlparse
+from xml.sax.saxutils import quoteattr
 
 import frappe
 from frappe import _
 
+from osduo_business_connect.subscription.constants import (
+    ADVANCED_ADMIN_DOCTYPES,
+    ADVANCED_ADMIN_READ_DOCTYPES,
+    ANALYTICS_DOCTYPES,
+    CRM_EXTRA_DOCTYPES,
+    IMPORT_EXPORT_DOCTYPES,
+)
 from osduo_business_connect.subscription.entitlements import (
     get_entitlements,
     has_feature,
@@ -38,13 +56,13 @@ CRM_DESK_PREFIXES = (
     "/app/fcrm-note",
     "/app/lead-sync-",
     "/app/failed-lead-sync-log",
+    "/app/facebook-page",
+    "/app/facebook-lead-form",
 )
 CRM_METHOD_PREFIX = "crm."
 CRM_DOCTYPE_PREFIX = "CRM "
-CRM_EXTRA_DOCTYPES = frozenset({"FCRM Note", "Lead Sync Source", "Failed Lead Sync Log"})
 
 ANALYTICS_PAGES = ("/analytics", "/app/analytics", "/app/engagement-event")
-ANALYTICS_DOCTYPES = frozenset({"Engagement Event"})
 ANALYTICS_METHODS = frozenset({
     "osduo_business_connect.pages.analytics.get_analytics",
     "osduo_business_connect.pages.analytics.get_business_list",
@@ -74,7 +92,6 @@ GRID_IMPORT_METHODS = frozenset({
     "validate_rows",
 })
 IMPORT_EXPORT_PAGES = ("/app/data-import", "/app/data-export")
-IMPORT_EXPORT_DOCTYPES = frozenset({"Data Import", "Data Export"})
 
 ADVANCED_ADMIN_DESK_PREFIXES = (
     "/app/email-account",
@@ -93,8 +110,13 @@ ADVANCED_ADMIN_DESK_PREFIXES = (
     "/app/crm-enrichment-settings",
     "/app/erpnext-crm-settings",
 )
+# MCP is an integration/admin surface with an open-ended tool inventory; fail
+# closed to Enterprise rather than trying to enumerate every tool.
+ADVANCED_ADMIN_PATH_PREFIXES = ADVANCED_ADMIN_DESK_PREFIXES + ("/api/v2/mcp",)
 
-# Configuration surfaces of "Advanced Administration" (Enterprise only).
+# ERP / Enterprise-only configuration surfaces. The list is intentionally
+# broader than the Desk routes: v1/v2 REST and RPC calls are normalised to the
+# same method names before being checked.
 ADVANCED_ADMIN_METHODS = frozenset({
     "crm.api.settings.create_email_account",
     "crm.api.user.add_existing_users",
@@ -106,32 +128,23 @@ ADVANCED_ADMIN_METHODS = frozenset({
     "crm.api.form.delete_form",
     "crm.api.form.grant_guest_link_access",
     "crm.api.dashboard.reset_to_default",
-})
-ADVANCED_ADMIN_DOCTYPES = frozenset({
-    "Email Account",
-    "Email Domain",
-    "WhatsApp Settings",
-    "WhatsApp Account",
-    "WhatsApp Template",
-    "FCRM Settings",
-    "CRM Global Settings",
-    "CRM Fields Layout",
-    "CRM Form Script",
-    "CRM View Settings",
-    "CRM Sales Hierarchy",
-    "CRM Notification",
-    "CRM Telephony Agent",
-    "CRM Twilio Settings",
-    "CRM Exotel Settings",
-    "CRM Enrichment Settings",
-    "ERPNext CRM Settings",
+    "crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.save_fields_layout",
+    "crm.fcrm.doctype.crm_view_settings.crm_view_settings.create",
+    "crm.fcrm.doctype.crm_view_settings.crm_view_settings.update",
+    "crm.fcrm.doctype.crm_view_settings.crm_view_settings.delete",
+    "crm.fcrm.doctype.crm_view_settings.crm_view_settings.set_as_default",
+    "crm.fcrm.doctype.crm_view_settings.crm_view_settings.create_or_update_standard_view",
+    "crm.fcrm.doctype.fcrm_settings.fcrm_settings.restore_defaults",
+    "crm.fcrm.doctype.fcrm_settings.fcrm_settings.restore_demo_data",
+    "crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.reset_erpnext_form_script",
+    "crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.run_product_sync",
 })
 
 API_TOKEN_METHOD = "frappe.core.doctype.user.user.generate_keys"
 API_TOKEN_FIELDS = frozenset({"api_key", "api_secret"})
 
-# Generic Frappe client methods that can write an arbitrary DocType. The target
-# DocType has to be recovered from form_dict before DocType-level gates apply.
+# Desk save runners and doc-method runners carry a doctype in their payload.
+# They must be treated as writes even when the HTTP verb is GET.
 GENERIC_WRITE_METHODS = frozenset({
     "frappe.client.insert",
     "frappe.client.insert_many",
@@ -142,9 +155,19 @@ GENERIC_WRITE_METHODS = frozenset({
     "frappe.client.cancel",
     "frappe.client.bulk_update",
     "frappe.client.rename_doc",
+    "frappe.desk.form.save.savedocs",
+    "frappe.desk.form.save.cancel",
+    "frappe.desk.form.save.discard",
+    "frappe.desk.form.run_method.run_doc_method",
+    "frappe.handler.run_doc_method",
+    "frappe.handler.runserverobj",
+    "frappe.api.v2.run_doc_method",
+    "frappe.api.v2.execute_doc_method",
+    # v2 RPC route shorthands (handle_rpc_call expands these to the module path)
+    "run_doc_method",
+    "execute_doc_method",
+    "savedocs",
 })
-# Reads too: they carry a doctype in form_dict and could otherwise reach a
-# gated DocType without using /api/resource/<Doctype>.
 GENERIC_DOCTYPE_METHODS = GENERIC_WRITE_METHODS | frozenset({
     "frappe.client.get_list",
     "frappe.client.get_count",
@@ -153,6 +176,24 @@ GENERIC_DOCTYPE_METHODS = GENERIC_WRITE_METHODS | frozenset({
     "frappe.client.has_permission",
     "frappe.client.get_doc_permissions",
     "frappe.desk.form.load.getdoc",
+    "frappe.desk.form.load.get_docinfo",
+    "frappe.desk.reportview.get",
+})
+
+# APIs deliberately reachable while a site is inaccessible. Keep this list
+# short: everything else under /api/ fails closed for the status gate.
+PUBLIC_API_METHODS = frozenset({
+    "login",
+    "logout",
+    "ping",
+    "frappe.ping",
+    "frappe.auth.login",
+    "frappe.api.v2.login",
+    "frappe.api.v2.logout",
+    "osduo_business_connect.enquiry.public_enquiry_api.submit_enquiry",
+    "osduo_business_connect.card.public_api.get_public_card",
+    "osduo_business_connect.card.public_api.download_vcard",
+    "osduo_business_connect.analytics.analytics_service.log_event",
 })
 
 FEATURE_MESSAGES = {
@@ -163,10 +204,22 @@ FEATURE_MESSAGES = {
 }
 
 WRITE_METHODS = frozenset({"POST", "PUT", "PATCH", "DELETE"})
+API_PREFIXES = ("/api/method/", "/api/v1/method/", "/api/v2/method/")
+RESOURCE_PREFIXES = (
+    "/api/resource/",
+    "/api/v1/resource/",
+    "/api/v2/document/",
+    "/api/v2/doctype/",
+    "/api/v2/discovery/doctype/",
+)
+V2_METHOD_ROUTE = re.compile(r"^/api/v\d+/method/([^/]+)/([^/]+)$")
+DOC_METHOD_ROUTE = re.compile(
+    r"^/api/(?:v\d+/)?(?:resource|document)/([^/]+)/[^/]+/(?:method|copy)/(.*)$"
+)
 
 
 # ---------------------------------------------------------------------------
-# Small helpers
+# Request normalisation helpers
 # ---------------------------------------------------------------------------
 
 def _path():
@@ -179,69 +232,184 @@ def _request_method():
     return str(getattr(request, "method", "GET") or "GET").upper()
 
 
-def _method_name(path):
-    if path.startswith("/api/method/"):
-        return unquote(path[len("/api/method/"):]).replace("/", ".")
-    cmd = frappe.form_dict.get("cmd") if hasattr(frappe.form_dict, "get") else None
-    return str(cmd) if cmd else ""
-
-
-def _resource_doctype(path):
-    if not path.startswith("/api/resource/"):
-        return ""
-    value = unquote(path[len("/api/resource/"):]).split("/", 1)[0]
-    return value.strip()
-
-
-def _payload():
-    request = getattr(frappe.local, "request", None)
-    if request is None:
-        return {}
+def _request_sources():
+    """Return every request parameter source Frappe may read from."""
+    sources = []
     try:
-        data = request.get_json(silent=True)
+        sources.append(dict(frappe.form_dict or {}))
     except Exception:
-        data = None
-    return data if isinstance(data, dict) else {}
+        pass
+    request = getattr(frappe.local, "request", None)
+    if request is not None:
+        try:
+            payload = request.get_json(silent=True)
+        except Exception:
+            payload = None
+        if isinstance(payload, dict):
+            sources.append(payload)
+    return sources
 
 
-def _target_doctype(path):
-    """Recover the DocType a request will write, from route or generic payload."""
-    direct = _resource_doctype(path)
-    if direct:
-        return direct
-
-    data = dict(frappe.form_dict or {})
-    payload = _payload()
-    for source in (payload, data):
-        doctype = source.get("doctype")
-        if doctype:
-            return str(doctype)
-        for key in ("doc", "docs"):
-            raw = source.get(key)
-            if not raw:
-                continue
-            try:
-                parsed = json.loads(raw) if isinstance(raw, str) else raw
-            except (TypeError, ValueError):
-                continue
-            if isinstance(parsed, dict) and parsed.get("doctype"):
-                return str(parsed["doctype"])
-            if isinstance(parsed, list):
-                for item in parsed:
-                    if isinstance(item, dict) and item.get("doctype"):
-                        return str(item["doctype"])
-    return ""
+def _parse_json(value):
+    if not isinstance(value, str) or len(value) > 200_000:
+        return value
+    try:
+        parser = getattr(frappe, "parse_json", json.loads)
+        return parser(value)
+    except Exception:
+        return value
 
 
-def _payload_has_api_key_fields():
-    data = dict(frappe.form_dict or {})
-    data.update(_payload())
-    return bool(API_TOKEN_FIELDS & {str(key) for key in data.keys()})
+def _walk_payload(value, depth=0):
+    """Yield dicts from form values, JSON strings and nested doc structures."""
+    if depth > 8:
+        return
+    if isinstance(value, str):
+        parsed = _parse_json(value)
+        if parsed is not value and isinstance(parsed, (dict, list)):
+            yield from _walk_payload(parsed, depth + 1)
+        return
+    if isinstance(value, dict):
+        yield value
+        for key, nested in value.items():
+            if key in ("doc", "docs", "data", "args", "fields", "value", "kwargs"):
+                yield from _walk_payload(nested, depth + 1)
+        return
+    if isinstance(value, (list, tuple)):
+        for nested in value[:200]:
+            yield from _walk_payload(nested, depth + 1)
+
+
+def _request_methods(path):
+    """All method names that could execute for this request.
+
+    Frappe's handler executes ``form_dict.cmd`` before it looks at the URL, so
+    evaluating only the URL would let a harmless path smuggle a gated cmd.
+    """
+    methods = set()
+    for source in _request_sources():
+        for key in ("cmd", "method", "run_method"):
+            value = source.get(key)
+            if isinstance(value, str) and value.strip():
+                methods.add(value.strip())
+
+    for prefix in API_PREFIXES:
+        if path.startswith(prefix):
+            methods.add(unquote(path[len(prefix):]).replace("/", "."))
+
+    match = V2_METHOD_ROUTE.match(path)
+    if match:
+        # v2 also supports /method/<doctype>/<method>, which is expanded by
+        # handle_rpc_call before dispatch.
+        first, second = (unquote(group) for group in match.groups())
+        methods.update({second, f"{first}.{second}"})
+
+    match = DOC_METHOD_ROUTE.match(path)
+    if match:
+        methods.update({"execute_doc_method", "frappe.api.v2.execute_doc_method"})
+        tail = unquote(match.group(2)).strip("/")
+        if tail.startswith("method/"):
+            methods.add(tail[len("method/"):])
+
+    return methods
+
+
+def _request_doctypes(path):
+    """All DocTypes this request can address, from route and payload."""
+    doctypes = set()
+    for prefix in RESOURCE_PREFIXES:
+        if path.startswith(prefix):
+            value = unquote(path[len(prefix):]).split("/", 1)[0].strip()
+            if value:
+                doctypes.add(value)
+
+    match = DOC_METHOD_ROUTE.match(path)
+    if match:
+        doctypes.add(unquote(match.group(1)).strip())
+
+    match = V2_METHOD_ROUTE.match(path)
+    if match:
+        doctypes.add(unquote(match.group(1)).strip())
+
+    for source in _request_sources():
+        for payload in _walk_payload(source):
+            value = payload.get("doctype")
+            if isinstance(value, str) and value.strip():
+                doctypes.add(value.strip())
+    return doctypes
+
+
+def _method_matches(methods, prefix, names):
+    return any(
+        method.startswith(prefix) and method[len(prefix):] in names
+        for method in methods
+    )
+
+
+def _path_user_name(path):
+    for prefix in (
+        "/api/resource/User/",
+        "/api/v1/resource/User/",
+        "/api/v2/document/User/",
+    ):
+        if path.startswith(prefix):
+            return unquote(path[len(prefix):]).split("/", 1)[0]
+    return None
+
+
+def _unchanged_user_token(name, field, value):
+    """True when a payload only echoes an already-stored API credential."""
+    if not name:
+        return False
+    try:
+        old = frappe.db.get_value("User", name, field)
+    except Exception:
+        return False
+    return bool(old) and str(old) == str(value)
+
+
+def _api_token_attempt(path, methods, doctypes):
+    """Detect direct or indirect writes to User.api_key / api_secret."""
+    if API_TOKEN_METHOD in methods:
+        return True
+
+    path_user = _path_user_name(path)
+    for source in _request_sources():
+        for payload in _walk_payload(source):
+            keys = {str(key) for key in payload}
+
+            # frappe.client.set_value(..., fieldname="api_secret", value=...)
+            if str(payload.get("fieldname")) in API_TOKEN_FIELDS and payload.get("value"):
+                return True
+
+            fields = payload.get("fields")
+            if isinstance(fields, dict):
+                if keys_from_fields := ({str(k) for k in fields} & API_TOKEN_FIELDS):
+                    if any(fields.get(key) for key in keys_from_fields):
+                        return True
+            if isinstance(fields, (list, tuple)) and any(
+                str(field) in API_TOKEN_FIELDS for field in fields
+            ):
+                return True
+
+            for field in keys & API_TOKEN_FIELDS:
+                value = payload.get(field)
+                if not value:
+                    continue
+                if "User" in doctypes and _unchanged_user_token(
+                    payload.get("name") or path_user, field, value
+                ):
+                    continue
+                return True
+    return False
 
 
 def _upgrade_link(entitlements):
     url = entitlements.get("upgrade_url") or ""
-    return f" <a href='{url}'>View plans</a>" if url else ""
+    parsed = urlparse(url)
+    if parsed.scheme not in ("http", "https") or not parsed.netloc:
+        return ""
+    return f" <a href={quoteattr(url)}>View plans</a>"
 
 
 def _deny(feature_key, message, path):
@@ -253,21 +421,36 @@ def _deny(feature_key, message, path):
 def _log_restriction(feature_key, path, message):
     if getattr(frappe.flags, "in_install", False) or getattr(frappe.flags, "in_migrate", False):
         return
+    user = getattr(frappe.session, "user", "Guest")
+    if user == "Guest":
+        return
+
+    # Do not let repeated automated requests grow the log without bound.
+    cache_key = f"bc:plan-gate-log:{frappe.local.site}:{user}:{feature_key}:{path[:80]}"
+    try:
+        cache = frappe.cache
+        count = int(cache.get_value(cache_key) or 0)
+        if count >= 20:
+            return
+        cache.set_value(cache_key, count + 1, expires_in_sec=3600)
+    except Exception:
+        pass
+
     try:
         frappe.get_doc({
             "doctype": "Plan Restriction Log",
             "timestamp": frappe.utils.now_datetime(),
             "site": frappe.local.site,
-            "user": frappe.session.user,
+            "user": user,
             "feature_key": feature_key,
-            "attempted_route": path,
-            "message": str(message)[:500],
+            "attempted_route": path[:140],
+            "message": str(message)[:300],
         }).insert(ignore_permissions=True)
     except Exception:
         pass
 
 
-def _private_surface(path):
+def _private_surface(path, methods):
     """Surfaces that must not be usable while the subscription is inaccessible."""
     public_prefixes = ("/assets/", "/files/", "/favicon", "/robots", "/b/", "/c/")
     if path.startswith(public_prefixes):
@@ -275,22 +458,25 @@ def _private_surface(path):
     if path.startswith(("/app", "/crm", "/crm-form", "/desk", "/analytics")):
         return True
     if path.startswith("/api/"):
-        return frappe.session.user != "Guest"
+        # Token auth runs after before_request, so session.user is unreliable
+        # here. Only the explicit guest-safe allowlist stays public.
+        return not methods or any(method not in PUBLIC_API_METHODS for method in methods)
     return False
 
 
-def _doctype_plan_gate(entitlements, doctype, path, write=False):
-    """Apply plan gates to a DocType reached by resource or generic API routes."""
-    if not doctype:
-        return
-    if doctype.startswith(CRM_DOCTYPE_PREFIX) or doctype in CRM_EXTRA_DOCTYPES:
-        _require_feature(entitlements, "crm_access", path)
-    if doctype in ANALYTICS_DOCTYPES:
-        _require_feature(entitlements, "analytics", path)
-    if doctype in IMPORT_EXPORT_DOCTYPES:
-        _require_feature(entitlements, "import_export", path)
-    if write and doctype in ADVANCED_ADMIN_DOCTYPES:
-        _require_feature(entitlements, "advanced_admin", path)
+def _doctype_plan_gate(entitlements, doctypes, path, write=False):
+    """Apply plan gates to every DocType this request can address."""
+    for doctype in doctypes:
+        if doctype.startswith(CRM_DOCTYPE_PREFIX) or doctype in CRM_EXTRA_DOCTYPES:
+            _require_feature(entitlements, "crm_access", path)
+        if doctype in ANALYTICS_DOCTYPES:
+            _require_feature(entitlements, "analytics", path)
+        if doctype in IMPORT_EXPORT_DOCTYPES:
+            _require_feature(entitlements, "import_export", path)
+        if doctype in ADVANCED_ADMIN_DOCTYPES and (
+            write or doctype in ADVANCED_ADMIN_READ_DOCTYPES
+        ):
+            _require_feature(entitlements, "advanced_admin", path)
 
 
 def _require_feature(entitlements, feature_key, path):
@@ -313,11 +499,12 @@ def enforce_plan_gates():
         return
 
     path = _path()
-    method = _method_name(path)
+    methods = _request_methods(path)
+    doctypes = _request_doctypes(path)
     ent = get_entitlements()
 
-    # Subscription status — never applied to the public website.
-    if not ent.get("accessible") and _private_surface(path):
+    # Subscription status — never applied to public website/guest-safe APIs.
+    if not ent.get("accessible") and _private_surface(path, methods):
         status = ent.get("status") or "Inactive"
         _deny(
             "site_access",
@@ -325,72 +512,51 @@ def enforce_plan_gates():
             path,
         )
 
-    # External CRM kill switch: block both the whitelisted generator and direct
-    # writes to User.api_key / User.api_secret on every plan.
-    if not ent.get("external_crm_enabled"):
-        is_token_method = method == API_TOKEN_METHOD
-        is_user_write = (
-            path.startswith("/api/resource/User")
-            and _request_method() in WRITE_METHODS
-            and _payload_has_api_key_fields()
+    # External CRM kill switch: block the generator and every way of writing
+    # User.api_key / User.api_secret, including nested doc/payload structures.
+    if not ent.get("external_crm_enabled") and _api_token_attempt(path, methods, doctypes):
+        _deny(
+            "external_crm_disabled",
+            _("API key and token generation is disabled on this site.") + _upgrade_link(ent),
+            path,
         )
-        if is_token_method or is_user_write:
-            _deny(
-                "external_crm_disabled",
-                _("API key and token generation is disabled on this site.") + _upgrade_link(ent),
-                path,
-            )
 
-    is_write = _request_method() in WRITE_METHODS
+    is_write = _request_method() in WRITE_METHODS or bool(
+        methods & (GENERIC_WRITE_METHODS | {"execute_doc_method", "frappe.api.v2.execute_doc_method"})
+    )
 
     # CRM (Business and above)
     if (
         path in CRM_PAGES
         or path.startswith(CRM_PAGE_PREFIXES + CRM_DESK_PREFIXES)
-        or method.startswith(CRM_METHOD_PREFIX)
+        or any(method.startswith(CRM_METHOD_PREFIX) for method in methods)
     ):
         _require_feature(ent, "crm_access", path)
 
     # Analytics (Business and above)
-    if path.startswith(ANALYTICS_PAGES) or method in ANALYTICS_METHODS:
+    if (
+        path.startswith(ANALYTICS_PAGES)
+        or bool(methods & ANALYTICS_METHODS)
+    ):
         _require_feature(ent, "analytics", path)
 
     # Import / Export (Business and above)
-    import_export = (
+    if (
         path.startswith(IMPORT_EXPORT_PAGES)
-        or (
-            method.startswith(DATA_IMPORT_METHOD_PREFIX)
-            and method[len(DATA_IMPORT_METHOD_PREFIX):] in DATA_IMPORT_METHODS
-        )
-        or (
-            method.startswith(GRID_IMPORT_METHOD_PREFIX)
-            and method[len(GRID_IMPORT_METHOD_PREFIX):] in GRID_IMPORT_METHODS
-        )
-    )
-    if import_export:
+        or _method_matches(methods, DATA_IMPORT_METHOD_PREFIX, DATA_IMPORT_METHODS)
+        or _method_matches(methods, GRID_IMPORT_METHOD_PREFIX, GRID_IMPORT_METHODS)
+    ):
         _require_feature(ent, "import_export", path)
 
-    # DocType-level gates for direct resource access and generic client methods.
-    resource_type = _resource_doctype(path)
-    _doctype_plan_gate(ent, resource_type, path, write=is_write)
-    if method in GENERIC_DOCTYPE_METHODS:
-        _doctype_plan_gate(
-            ent,
-            _target_doctype(path),
-            path,
-            write=is_write or method in GENERIC_WRITE_METHODS,
-        )
+    # DocType-level gates for resource routes, versioned routes and generic
+    # client/Desk methods carrying a doctype in their payload.
+    _doctype_plan_gate(ent, doctypes, path, write=is_write)
 
     # Advanced Administration (Enterprise only)
-    advanced_target = (
-        _target_doctype(path) if method in GENERIC_DOCTYPE_METHODS else resource_type
-    )
     if (
-        method in ADVANCED_ADMIN_METHODS
-        or path.startswith(ADVANCED_ADMIN_DESK_PREFIXES)
+        bool(methods & ADVANCED_ADMIN_METHODS)
+        or path.startswith(ADVANCED_ADMIN_PATH_PREFIXES)
     ):
-        _require_feature(ent, "advanced_admin", path)
-    elif advanced_target in ADVANCED_ADMIN_DOCTYPES and is_write:
         _require_feature(ent, "advanced_admin", path)
 
 
@@ -414,7 +580,9 @@ def has_permission_for_doctype(doc, user=None, ptype=None):
     if doctype in IMPORT_EXPORT_DOCTYPES and not has_feature("import_export"):
         return False
 
-    if doctype in ADVANCED_ADMIN_DOCTYPES and ptype in ("write", "create", "delete"):
+    if doctype in ADVANCED_ADMIN_DOCTYPES and (
+        doctype in ADVANCED_ADMIN_READ_DOCTYPES or ptype in ("write", "create", "delete")
+    ):
         if not has_feature("advanced_admin"):
             return False
 
