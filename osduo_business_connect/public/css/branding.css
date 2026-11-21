@@ -334,6 +334,20 @@ body.bc-customer-workspace .sidebar-menu .sidebar-link.active {
   color: #fff !important;
 }
 
+/* v16 keeps the visible text in a nested .sidebar-item-label. The muted rule
+   above uses !important, so inheritance cannot turn that label white when its
+   row becomes active. Match .bc-portal-link.active explicitly: white, semibold. */
+body.bc-customer-workspace .body-sidebar .standard-sidebar-item.active-sidebar .sidebar-item-label {
+  color: #fff !important;
+  font-weight: 600 !important;
+}
+
+/* The same label needs an explicit hover colour for the same reason. */
+body.bc-customer-workspace .body-sidebar .item-anchor:hover .sidebar-item-label,
+body.bc-customer-workspace .body-sidebar .item-anchor:focus-visible .sidebar-item-label {
+  color: #fff !important;
+}
+
 body.bc-customer-workspace .body-sidebar .item-anchor:hover,
 body.bc-customer-workspace .sidebar-menu .sidebar-link:hover,
 body.bc-customer-workspace .sidebar-menu .sidebar-label:hover {

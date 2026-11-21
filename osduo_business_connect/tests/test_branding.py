@@ -132,7 +132,7 @@ class TestBundledBranding(unittest.TestCase):
         # its plain disk cache would otherwise keep serving the old desk JS/CSS.
         # Every app asset URL must carry the shared revision query string.
         hooks = read("hooks.py")
-        self.assertIn('BC_ASSET_REVISION = "2026-11-21-firefox-cache"', hooks)
+        self.assertIn('BC_ASSET_REVISION = "2026-11-21-selected-menu"', hooks)
         for asset in (
             "css/login.css",
             "js/login-layout.js",
@@ -145,7 +145,7 @@ class TestBundledBranding(unittest.TestCase):
                 hooks,
             )
         self.assertEqual(
-            read("www", "sw.py").count('"2026-11-21-firefox-cache"'), 1
+            read("www", "sw.py").count('"2026-11-21-selected-menu"'), 1
         )
 
     def test_no_site_files_brand_references(self):
@@ -344,6 +344,32 @@ class TestDeskSupportMenu(unittest.TestCase):
         css = read("public", "css", "branding.css")
         self.assertIn("display: none", css)
         self.assertNotIn("opacity: 0.5", css)
+
+    def test_desk_sidebar_selected_text_matches_portal(self):
+        portal = read("templates", "pages", "parts", "portal_sidebar.html")
+        css = read("public", "css", "branding.css")
+
+        # /portal/team's selected link is white and semibold.
+        self.assertIn(".bc-portal-link.active", portal)
+        self.assertIn("color: #fff; font-weight: 600; }", portal)
+
+        # v16 renders the visible label in a nested span. The muted
+        # !important rule above would otherwise keep a selected label grey,
+        # so the active label needs the portal values set explicitly.
+        active_selector = (
+            "body.bc-customer-workspace .body-sidebar "
+            ".standard-sidebar-item.active-sidebar .sidebar-item-label {"
+        )
+        self.assertIn(active_selector, css)
+        active_block = css.split(active_selector, 1)[1].split("}", 1)[0]
+        self.assertIn("color: #fff !important;", active_block)
+        self.assertIn("font-weight: 600 !important;", active_block)
+
+        # Hover has the same nested-label inheritance trap.
+        self.assertIn(
+            "body.bc-customer-workspace .body-sidebar .item-anchor:hover .sidebar-item-label",
+            css,
+        )
 
 
 class TestFrappeHelpRowSweeper(unittest.TestCase):
