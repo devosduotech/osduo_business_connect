@@ -196,6 +196,53 @@ every public URL, QR code and NFC tag. Alternatively pass `--hostname` to the
 provision command in step 3 (only accepted when the value is unset or identical;
 `--force` is required to change an existing value and re-derives printed URLs).
 
+### Step 2b — configure outgoing email / SMTP
+
+Outgoing mail is **per site**. Frappe v16 can read SMTP settings directly from
+`sites/<site>/site_config.json`, which is convenient when creating many sites
+from the same template. Add these keys:
+
+```json
+{
+  "mail_server": "smtp.example.com",
+  "mail_port": 587,
+  "mail_login": "no-reply@example.com",
+  "mail_password": "app-password",
+  "use_tls": 1,
+  "use_ssl": 0,
+  "auto_email_id": "no-reply@example.com",
+  "email_sender_name": "OSDuo Business Connect"
+}
+```
+
+- `mail_server` is the key that enables the site-config fallback. Without it,
+  Frappe will not build an outgoing account from these values.
+- Use `use_tls: 1` with port `587`, or `use_ssl: 1` with port `465` — not both.
+- `auto_email_id` is the From address; it falls back to `mail_login` and then
+  `notifications@example.com`. `email_sender_name` defaults to `Frappe`.
+- An **Email Account** record in the site database with `Enable Outgoing = 1`
+  and `Default Outgoing = 1` takes precedence over site config. Site config is
+  the fallback used when no such record exists.
+- Keep `site_config.json` permissions tight: the SMTP password is stored in
+  plain text.
+
+Restart after changing site config:
+
+```bash
+bench restart
+```
+
+Verify delivery from the bench:
+
+```bash
+bench --site customer.example.com execute frappe.email.sendmail \
+  --kwargs "{'recipients':['you@example.com'],'subject':'SMTP test','message':'SMTP test'}"
+```
+
+Frappe queues outgoing mail, so the scheduler/worker must be running. A failed
+`frappe.sendmail()` call is logged by Business Connect and never rolls back an
+Add-on Order.
+
 ### Step 3 — provision the plan
 
 Run from the bench root, using the bench Python environment:
@@ -461,10 +508,11 @@ semicolon-separated):
 bench --site customer.example.com set-config bc_addon_order_notification_email "ops@example.com,info@osduotech.com"
 ```
 
-The site must have outgoing email configured (Email Account/SMTP). Mail failures
-are logged but never roll back the customer's Requested order. The email includes
-the order number, add-on, frozen plan, estimated amount, customer email and
-hostname.
+The site must have outgoing email configured (Email Account/SMTP); see
+**Step 2b — configure outgoing email / SMTP** earlier in this SOP for the
+per-site `site_config.json` keys. Mail failures are logged but never roll back
+the customer's Requested order. The email includes the order number, add-on,
+frozen plan, estimated amount, customer email and hostname.
 
 **Plan links:** all “View plans”/upgrade links use
 `https://www.osduotech.com/solutions/business-connect#section_business-connect-pricing`.
