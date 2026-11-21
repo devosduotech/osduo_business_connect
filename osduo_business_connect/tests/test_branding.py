@@ -90,6 +90,43 @@ class TestBundledBranding(unittest.TestCase):
         )
         self.assertNotIn("/files/", css)
 
+    def test_v16_login_override_is_wired(self):
+        # Frappe v16 serves /login from www/login.html. The app override must
+        # re-use the core controller and extend the repo template, which in
+        # turn extends Frappe's v16 login template so stock forms/2FA survive.
+        self.assertEqual(
+            read("www", "login.html").strip(),
+            '{%- extends "osduo_business_connect/templates/login.html" -%}',
+        )
+        controller = read("www", "login.py")
+        self.assertIn("from frappe.www.login import *", controller)
+
+        template = read("templates", "login.html")
+        self.assertIn('extends "frappe/www/login.html"', template)
+        self.assertIn("{% block page_content %}", template)
+        self.assertIn("{{ super() }}", template)
+        self.assertIn("bc-login-layout", template)
+        self.assertIn("bc-brand-panel", template)
+        self.assertIn("bc-login-forms", template)
+
+    def test_login_layout_fallback_and_root_forward(self):
+        js = read("public", "js", "login-layout.js")
+        # Guests landing on / must be forwarded to the canonical /login route.
+        self.assertIn('path === ""', js)
+        self.assertIn('getAttribute("frappe-session-status") === "logged-out"', js)
+        self.assertIn('window.location.replace("/login")', js)
+        # insertBefore needs a real sibling: the card is nested in v16.
+        self.assertNotIn("section.insertBefore(panel, card)", js)
+        self.assertIn("card.closest(\".page_content\")", js)
+        self.assertIn("container.insertBefore(panel, forms)", js)
+        self.assertIn("document.querySelector(\".bc-brand-panel\")", js)
+
+    def test_login_css_targets_template_and_fallback_layout(self):
+        css = read("public", "css", "login.css")
+        self.assertIn("body[data-path=\"login\"] .bc-login-layout {", css)
+        self.assertIn("> .bc-login-forms", css)
+        self.assertNotIn("section.for-login.bc-login-layout", css)
+
     def test_no_site_files_brand_references(self):
         for rel in (
             ("public", "js", "branding.js"),

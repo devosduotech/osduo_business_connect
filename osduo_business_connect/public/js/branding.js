@@ -304,64 +304,47 @@ function add_my_card_link() {
     return Array.isArray(value) && value.length ? value : fallback;
   }
 
+  function bc_roles_ready() {
+    return (
+      typeof frappe !== "undefined" &&
+      !!frappe.user &&
+      typeof frappe.user.has_role === "function" &&
+      Array.isArray(frappe.user_roles)
+    );
+  }
+
   function has_any_role(roles) {
-    if (typeof frappe === "undefined" || !frappe.user || typeof frappe.user.has_role !== "function") {
-      return false;
-    }
+    if (!bc_roles_ready()) return false;
     for (var i = 0; i < roles.length; i++) {
       if (frappe.user.has_role(roles[i])) return true;
     }
     return false;
   }
 
-  function workspace_slug(value) {
-    return String(value || "")
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "");
-  }
+  function is_bc_workspace_path(path) {
+    var candidate = String(path || "").replace(/\/+$/, "");
+    if (!candidate) return false;
 
-  function is_bc_workspace_child_path(path) {
-    var match = path.match(/^\/(?:app|desk)\/business-connect\/([^/]+)$/i);
-    if (!match) return false;
-    var decoded = match[1];
-    try {
-      decoded = decodeURIComponent(decoded);
-    } catch (error) {
-      // A malformed escape cannot name a Workspace; fail closed.
-      return false;
+    // All accepted BC workspace spellings, including the v16 shell-qualified
+    // form and child workspaces such as /desk/business-connect/business and
+    // /desk/business/business-connect/member.
+    //
+    // This is cosmetic only: the server plan gate decides which of these URLs
+    // may actually load, so the theme must not depend on the shape or load
+    // timing of frappe.boot.workspaces.pages (which differs between v16 builds).
+    if (/^\/(?:app|desk)\/(?:[^/]+\/)?business-connect(?:\/[^/]+)?$/i.test(candidate)) {
+      return true;
     }
-    var slug = workspace_slug(decoded);
-    if (!slug) return false;
 
-    // Only theme real Workspace routes. This mirrors the server gate, which
-    // also accepts child workspace names and rejects DocType paths such as
-    // /desk/business-connect/user.
-    var boot = (typeof frappe !== "undefined" && frappe.boot) || {};
-    var payload = boot.workspaces || {};
-    var pages = Array.isArray(payload) ? payload : (payload.pages || []);
-    for (var i = 0; i < pages.length; i++) {
-      var page = pages[i];
-      var name = typeof page === "string" ? page : (page && (page.name || page.title)) || "";
-      if (workspace_slug(name) === slug) return true;
+    var paths = bc_config_list("paths", BC_WORKSPACE_PATHS);
+    for (var i = 0; i < paths.length; i++) {
+      if (candidate === String(paths[i]).replace(/\/+$/, "")) return true;
     }
     return false;
   }
 
-  function is_bc_workspace_path() {
-    var path = (window.location.pathname || "").replace(/\/+$/, "") || "/";
-    var paths = bc_config_list("paths", BC_WORKSPACE_PATHS);
-    for (var i = 0; i < paths.length; i++) {
-      if (path === String(paths[i]).replace(/\/+$/, "")) return true;
-    }
-    // Frappe v16 writes the module shell into the address bar, so accept any
-    // /desk/<shell>/business-connect spelling. The exact allowlist above still
-    // governs the HTTP request gate.
-    if (/^\/desk\/[^/]+\/business-connect$/i.test(path)) return true;
-
-    // Child workspaces such as /desk/business-connect/business and
-    // /desk/business-connect/member are part of the same themed Desk surface.
-    if (is_bc_workspace_child_path(path)) return true;
+  function is_current_bc_workspace_path() {
+    if (is_bc_workspace_path(window.location.pathname)) return true;
 
     // Client-side Desk navigation often changes current_route before the URL is
     // rewritten. current_route is ["Workspaces", "Business Connect"] here.
@@ -478,9 +461,12 @@ function add_my_card_link() {
 
   function apply_bc_workspace_theme() {
     if (typeof document === "undefined" || !document.body) return false;
+    // Keep polling until Frappe has published the session roles. Applying the
+    // class before this point made direct loads of child workspaces miss it.
+    if (!bc_roles_ready()) return false;
     var privileged = bc_config_list("privileged_roles", BC_PRIVILEGED_ROLES);
     var customers = bc_config_list("roles", BC_WORKSPACE_ROLES);
-    var active = !has_any_role(privileged) && has_any_role(customers) && is_bc_workspace_path();
+    var active = !has_any_role(privileged) && has_any_role(customers) && is_current_bc_workspace_path();
     set_bc_workspace_class(active);
     if (active) {
       apply_bc_workspace_colors();
@@ -509,7 +495,9 @@ function add_my_card_link() {
       // v16 changes Desk routes with history.pushState/replaceState. The router
       // event is the reliable moment to re-evaluate the workspace class.
       frappe.router.on("change", function () {
-        setTimeout(apply_bc_workspace_theme, 0);
+        // Re-evaluate after the router finishes parsing. Polling also covers a
+        // route event that arrives before the session roles are available.
+        apply_patch_with_polling(apply_bc_workspace_theme);
       });
     }
     if (document.readyState === "loading") {

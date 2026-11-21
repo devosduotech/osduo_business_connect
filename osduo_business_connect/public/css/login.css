@@ -31,7 +31,7 @@ body[data-path="login"] #page-login .page-breadcrumbs {
 }
 
 /* 2. Split-screen layout */
-body[data-path="login"] section.for-login.bc-login-layout {
+body[data-path="login"] .bc-login-layout {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
     width: 100%;
@@ -42,8 +42,23 @@ body[data-path="login"] section.for-login.bc-login-layout {
     box-sizing: border-box;
 }
 
+/* The branded panel is a direct grid sibling of Frappe's login sections.
+   .bc-login-forms is added by the template; the JS fallback adds it to the
+   wrapper it inserts before when an older/cached login template is served. */
+body[data-path="login"] .bc-login-layout > .bc-login-forms {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+body[data-path="login"] .bc-login-layout > .bc-login-forms > div {
+    width: 100%;
+}
+
 /* 3. Image-led left branding panel */
-body[data-path="login"] section.for-login.bc-login-layout
+body[data-path="login"] .bc-login-layout
 .bc-brand-panel {
     position: relative;
     display: block;
@@ -238,7 +253,7 @@ body[data-path="login"] .bc-brand-footer {
    9. Native Frappe login card
    ========================================================= */
 
-body[data-path="login"] section.for-login.bc-login-layout
+body[data-path="login"] .bc-login-layout
 .login-content.page-card {
     align-self: center;
     justify-self: center;
@@ -410,7 +425,7 @@ body[data-path="login"] .login-content .form-control {
         max-width: none;
     }
 
-    body[data-path="login"] section.for-login.bc-login-layout {
+    body[data-path="login"] .bc-login-layout {
         display: grid;
         grid-template-columns: 58% 42%;
         align-items: stretch;
@@ -431,7 +446,7 @@ body[data-path="login"] .login-content .form-control {
         gap: clamp(18px, 2.6vh, 30px);
     }
 
-    body[data-path="login"] section.for-login.bc-login-layout
+    body[data-path="login"] .bc-login-layout
     .login-content.page-card {
         width: calc(100% - 40px);
         max-width: 420px;
@@ -532,7 +547,7 @@ body[data-path="login"] .login-content .form-control {
    ========================================================= */
 
 @media (min-width: 641px) and (max-width: 900px) {
-    body[data-path="login"] section.for-login.bc-login-layout {
+    body[data-path="login"] .bc-login-layout {
         grid-template-columns: minmax(0, 1fr) minmax(320px, 0.9fr);
     }
 
@@ -591,7 +606,7 @@ body[data-path="login"] .login-content .form-control {
         font-size: 11px;
     }
 
-    body[data-path="login"] section.for-login.bc-login-layout
+    body[data-path="login"] .bc-login-layout
     .login-content.page-card {
         width: calc(100% - 32px);
         padding: 24px;
@@ -611,7 +626,7 @@ body[data-path="login"] .login-content .form-control {
         min-height: 100vh;
     }
 
-    body[data-path="login"] section.for-login.bc-login-layout {
+    body[data-path="login"] .bc-login-layout {
         display: flex;
         flex-direction: column;
         width: 100%;
@@ -706,7 +721,7 @@ body[data-path="login"] .login-content .form-control {
         display: none;
     }
 
-    body[data-path="login"] section.for-login.bc-login-layout
+    body[data-path="login"] .bc-login-layout
     .login-content.page-card {
         align-self: center;
         width: calc(100% - 32px);

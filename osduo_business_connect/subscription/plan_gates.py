@@ -574,14 +574,17 @@ def _workspace_route_slug(name):
 def _is_customer_workspace_child_path(path):
     """True for a public Workspace route nested under the BC workspace shell.
 
-    Frappe v16 routes child workspaces as ``/desk/business-connect/<slug>``.
+    Frappe v16 routes child workspaces as ``/desk/business-connect/<slug>`` or,
+    when the router writes the module shell, ``/desk/<shell>/business-connect/<slug>``.
     They are part of the same single Desk surface, but arbitrary DocType routes
     that happen to share the prefix (for example ``.../user``) must stay
     blocked. Only public Workspace names are accepted, and a lookup failure
     fails closed.
     """
     normalized = (path or "").rstrip("/") or "/"
-    match = re.match(r"^/(?:app|desk)/business-connect/([^/]+)$", normalized)
+    match = re.match(
+        r"^/(?:app|desk)/(?:[^/]+/)?business-connect/([^/]+)$", normalized
+    )
     if not match:
         return False
     slug = unquote(match.group(1)).lower()

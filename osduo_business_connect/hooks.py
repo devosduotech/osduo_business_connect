@@ -398,7 +398,11 @@ jinja = {
 # Template Overrides
 # ------------------
 # Override Frappe's login page with Business Connect branding.
-# This does NOT modify Frappe core files — it uses the template override hook.
+# Frappe v16 resolves /login from www/login.html, so the app override lives at
+# osduo_business_connect/www/login.html and extends
+# osduo_business_connect/templates/login.html (which in turn extends Frappe's
+# v16 login template). The old template_overrides hook is intentionally unused:
+# it targeted the pre-v16 template path and would bypass the stock login forms.
 
 #template_overrides = {
 #    "login.html": "osduo_business_connect.templates.login",

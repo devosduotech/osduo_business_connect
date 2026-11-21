@@ -1871,6 +1871,7 @@ class TestPortalTeamInvitations(unittest.TestCase):
             "/desk/business-connect/member",
             "/desk/business-connect/business/",
             "/app/business-connect/member",
+            "/desk/business/business-connect/business",
         ):
             with self.subTest(path=path):
                 self.assert_allowed(env, path)
@@ -2510,9 +2511,13 @@ class TestPortalTeamInvitations(unittest.TestCase):
         self.assertIn("frappe.boot.osduo_branding", desk_js)
         self.assertIn("frappe.boot.bc_workspace_theme", desk_js)
         self.assertIn("frappe.router.current_route", desk_js)
-        self.assertIn("is_bc_workspace_child_path", desk_js)
-        self.assertIn("boot.workspaces || {}", desk_js)
-        self.assertIn("payload.pages", desk_js)
+        self.assertIn("function is_bc_workspace_path", desk_js)
+        self.assertIn("/(?:[^/]+\\/)?business-connect(?:\\/[^/]+)?$/i", desk_js)
+        self.assertIn("bc_roles_ready", desk_js)
+        self.assertIn("Array.isArray(frappe.user_roles)", desk_js)
+        self.assertIn("apply_patch_with_polling(apply_bc_workspace_theme)", desk_js)
+        self.assertNotIn("var payload = boot.workspaces", desk_js)
+        self.assertNotIn("payload.pages", desk_js)
         self.assertIn('frappe.router.on("change"', desk_js)
         self.assertIn("document.documentElement.classList.toggle", desk_js)
         self.assertIn("--desk-sidebar-bg", desk_js)

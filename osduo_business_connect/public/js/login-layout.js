@@ -10,11 +10,18 @@
     const BRAND_LOGO = "/assets/osduo_business_connect/images/logo-mark-128.png";
     const BRAND_LOGO_ALT = "OSDuo Business Connect logo";
 
-/*    // Redirect the root URL to the branded login page.
+    // The app's home_page hook renders the login template at "/", but guests
+    // are forwarded to the canonical /login URL so bookmarks and analytics use
+    // one route. Logged-in users keep their role/plan-specific landing page.
     if (path === "") {
-        window.location.replace("/login");
+        const loggedOut =
+            document.body &&
+            document.body.getAttribute("frappe-session-status") === "logged-out";
+        if (loggedOut) {
+            window.location.replace("/login");
+        }
         return;
-    } */
+    }
 
     if (window.location.pathname.replace(/\/+$/, "") !== "/login") {
        return;
@@ -34,7 +41,10 @@
 
         const card = section.querySelector(".login-content.page-card");
 
-        if (!card || section.querySelector(".bc-brand-panel")) {
+        // The app's www/login.html override renders the panel server-side.
+        // This fallback only runs on a site still serving a cached/older login
+        // template, so never duplicate the panel.
+        if (!card || document.querySelector(".bc-brand-panel")) {
             return;
         }
 
@@ -132,8 +142,19 @@
             </div>
         `;
 
-        section.classList.add("bc-login-layout");
-        section.insertBefore(panel, card);
+        // Frappe v16 nests the login card inside a wrapper <div> under
+        // .page_content. insertBefore() requires a real sibling, so insert
+        // relative to that wrapper rather than the card. This is what made the
+        // old patch throw and leave the stock login UI untouched.
+        const pageContent = card.closest(".page_content");
+        const container = pageContent || card.parentElement.parentElement;
+        const forms = (pageContent && pageContent.firstElementChild) || card.parentElement;
+        if (!container || !forms) {
+            return;
+        }
+        forms.classList.add("bc-login-forms");
+        container.classList.add("bc-login-layout");
+        container.insertBefore(panel, forms);
     }
 
     if (document.readyState === "loading") {

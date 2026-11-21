@@ -355,6 +355,9 @@ then on; they never need the Desk for team setup.
 7. Sign out and back in. A Business customer must land on
    `/desk/business-connect`; opening `/login` or `/` while signed in must not
    produce a 403. A Professional customer must land on `/my-card` instead.
+8. Sign out completely. `/` must forward a guest to `/login`, and `/login` must
+   show the OSDuo split-screen branded page (dark image panel plus the stock
+   Frappe sign-in form), not the unbranded Frappe login.
 
 ### Change the plan on an existing instance
 
