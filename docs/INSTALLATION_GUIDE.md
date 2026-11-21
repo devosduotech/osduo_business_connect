@@ -3,7 +3,7 @@
 Step-by-step instructions to install, operate, and update **OSDuo Business Connect**
 — from a single-site demo to a multi-tenant SaaS bench serving many customer domains.
 
-Current release: **v1.2.8** (see [RELEASE_NOTES.md](../RELEASE_NOTES.md)).
+Current release: **v1.3.4** (see [RELEASE_NOTES.md](../RELEASE_NOTES.md)).
 
 ---
 
@@ -144,6 +144,171 @@ only while the previously-printed subdomain stays served — otherwise earlier c
 > canonical/OG/sitemap origin, so "permanent printed URL" and "preferred SEO domain" are
 > the *same* value here. Choose the origin you want indexed and printed, and keep every
 > host already printed for still serving.
+
+---
+
+## 🧾 Site Provisioning SOP (new customer site)
+
+One site = one customer = one Subscription = one plan. Plan selection is manual:
+there is no checkout/payment/webhook in this platform. Billing happens in Aasriva;
+the CLI below only mirrors the agreed sale locally.
+
+### Plans and minimums
+
+| Plan | Price / user / year | Minimum billed seats | Business profiles | Included custom domains |
+|---|---:|---:|---:|---:|
+| Professional | ₹595 | 1 | 1 | 0 |
+| Business | ₹895 | 5 | 3 | 0 |
+| Enterprise | ₹1,295 | 10 | 5 | 1 |
+
+`seats_cap = max(minimum, seats_ordered)`. A seat is a distinct enabled
+`Business Member.user` (owner included). Minimum seats are always billed. The
+`entitlement_snapshot` is frozen at provisioning; later plan-master edits do not
+change an existing site.
+
+### Step 1 — create the site
+
+```bash
+cd ~/frappe-bench
+bench new-site customer.example.com \
+  --mariadb-root-password '<db-root-password>' \
+  --admin-password '<administrator-password>'
+
+bench --site customer.example.com install-app crm osduo_business_connect
+bench --site customer.example.com pip install "qrcode[pil]"
+```
+
+`crm` must be installed before Business Connect. Do **not** provision yet: a
+fresh site intentionally fails closed to Professional until step 3.
+
+### Step 2 — set the canonical hostname (before any cards are printed)
+
+Edit `sites/customer.example.com/site_config.json`:
+
+```json
+{
+  "host_name": "https://customer.example.com"
+}
+```
+
+Include the scheme, no trailing slash, no port. This is the origin used for
+every public URL, QR code and NFC tag. Alternatively pass `--hostname` to the
+provision command in step 3 (only accepted when the value is unset or identical;
+`--force` is required to change an existing value and re-derives printed URLs).
+
+### Step 3 — provision the plan
+
+Run from the bench root, using the bench Python environment:
+
+```bash
+# Preview first
+env/bin/python apps/osduo_business_connect/scripts/provision_customer_site.py \
+  --site customer.example.com provision \
+  --plan BUSINESS --seats 5 --dry-run
+
+# Apply
+env/bin/python apps/osduo_business_connect/scripts/provision_customer_site.py \
+  --site customer.example.com provision \
+  --plan BUSINESS --seats 5 \
+  --external-ref AASRIVA-ORDER-12345 \
+  --notes "Annual plan, paid through Aasriva"
+```
+
+Options:
+
+- `--plan PROFESSIONAL|BUSINESS|ENTERPRISE` (required).
+- `--seats N` — defaults to the plan minimum; values below the minimum are rejected.
+- `--status Active` (default) or `--status Trial`.
+- `--hostname https://…` — optional; sets `host_name` at provisioning time.
+- `--start-date YYYY-MM-DD` — defaults to today; period end is start + 365 days.
+- `--external-ref` — reserved Aasriva reference (no payment data stored).
+- `--notes` — operator note.
+- `--dry-run` — preview without writing.
+- `--force` — required only when reprovisioning a site that already has a
+  Subscription. It overwrites in place and never purges data.
+
+Leave `--external-crm` **unset** — external CRM applications are off for every
+plan at present. Provisioning writes `bc_plan_code`, `bc_seats`,
+`bc_external_crm_enabled` and the frozen snapshot to the site.
+
+### Step 4 — finish and verify
+
+```bash
+bench --site customer.example.com migrate
+bench --site customer.example.com clear-cache
+bench --site customer.example.com clear-website-cache
+```
+
+In the Desk, open **My Subscription** (`/desk/my-subscription`, legacy
+`/app/my-subscription`) and confirm the plan, billed seats, business cap and
+period end. Or from the console:
+
+```bash
+bench --site customer.example.com console
+>>> from osduo_business_connect.subscription.entitlements import get_entitlements
+>>> get_entitlements()["plan_code"], get_entitlements()["limits"]["seat_cap"]
+```
+
+Then create the first **Business** from its native Desk form. The owner's
+**Business Member** row is created automatically. Create one **Digital Card**
+per member (extra cards with a different display name are blocked).
+
+### Step 5 — access setup
+
+- Give each user a `BC *` role **and** an active Business Member row for the business.
+- Frappe CRM users additionally need a standard CRM role (`Sales User`,
+  `Sales Manager` or `System Manager`) and access via `/crm` — BC roles alone
+  are not enough.
+- Professional blocks CRM, Analytics, import/export, multiple businesses and
+  team management. Business adds CRM, Analytics, import/export, up to 3
+  businesses and team management. Enterprise adds CRM admin, Email/WhatsApp
+  configuration, up to 5 businesses and one included custom domain.
+
+### Status changes (provider only)
+
+```bash
+# Billing missed: public pages stay live, Desk/API blocked after grace
+env/bin/python apps/osduo_business_connect/scripts/provision_customer_site.py \
+  --site customer.example.com status "Past Due" --grace-until 2027-01-15
+
+# Full suspension: public pages and guest-safe APIs stay live
+env/bin/python apps/osduo_business_connect/scripts/provision_customer_site.py \
+  --site customer.example.com status Suspended
+
+# Reactivation
+env/bin/python apps/osduo_business_connect/scripts/provision_customer_site.py \
+  --site customer.example.com status Active
+```
+
+Allowed transitions: `Trial → Active/Past Due/Suspended/Cancelled`,
+`Active → Past Due/Suspended/Cancelled`, `Past Due → Active/Suspended/Cancelled`,
+`Suspended → Active/Cancelled`. `Cancelled` is terminal. The scheduler only
+enforces a provider-set status; it never changes status by itself.
+
+### Add-ons and custom domains
+
+Business owner/manager creates an **Add-on Order** from its native Desk form:
+
+- **Custom Domain Service** — ₹5,999/year; the first Enterprise mapping is
+  included at ₹0, every other mapping is paid. Mapping status flows
+  `Requested → Approved → Configured → Verified → Active`; only the provider
+  advances it. An Active order creates the domain mapping on the Subscription.
+- **Domain Registration / Renewal** — actual vendor cost; attach a quote or
+  invoice. No payment is collected in this platform.
+- Mapping and order expiry follow `Subscription.current_period_end`. Adding a
+  domain never changes `host_name` or printed QR/NFC URLs.
+
+### Troubleshooting
+
+- `Permission Error: Insufficient Permission for Add-on Master` — pull the
+  latest `develop` (read-only DocPerms were added for `BC Business Owner` and
+  `BC Business Manager`) and run `bench --site <site> migrate` to sync DocPerms.
+- `LinkValidationError: Could not find Primary Color / Text Color / Page
+  Background Color` during migrate — pull latest `develop`; the `before_migrate`
+  hook repairs legacy Website Theme colour links.
+- `This site already has a Subscription` — re-run `provision` with `--force`.
+- Public URLs still `http://` behind a TLS proxy — set `host_name` with the
+  `https://` scheme and migrate.
 
 ---
 
