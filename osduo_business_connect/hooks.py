@@ -11,6 +11,12 @@ from osduo_business_connect.subscription.constants import (
     PLAN_GATE_QUERY_DOCTYPES,
 )
 
+# Cache-busting suffix for every app asset. Frappe serves /assets/... with long
+# cache lifetimes; a plain path means Firefox can keep an old desk JS/CSS even
+# after a deploy when service workers are unavailable (e.g. plain HTTP). Bump
+# this string with each asset change so every browser requests a fresh URL.
+BC_ASSET_REVISION = "2026-11-21-firefox-cache"
+
 # Branding Configuration — single source of truth
 # ------------------------------------------------
 # Change these values to white-label the application.
@@ -74,17 +80,21 @@ add_to_apps_screen = [
 # ------------------
 home_page = "login"
 web_include_css = [
-    "/assets/osduo_business_connect/css/login.css"
+    f"/assets/osduo_business_connect/css/login.css?v={BC_ASSET_REVISION}"
 ]
 
 web_include_js = [
-    "/assets/osduo_business_connect/js/login-layout.js",
-    "/assets/osduo_business_connect/js/pwa.js",
+    f"/assets/osduo_business_connect/js/login-layout.js?v={BC_ASSET_REVISION}",
+    f"/assets/osduo_business_connect/js/pwa.js?v={BC_ASSET_REVISION}",
 ]
 
 # Desk branding CSS (sidebar logo, app title, browser title)
-app_include_css = "/assets/osduo_business_connect/css/branding.css"
-app_include_js = "/assets/osduo_business_connect/js/branding.js"
+app_include_css = (
+    f"/assets/osduo_business_connect/css/branding.css?v={BC_ASSET_REVISION}"
+)
+app_include_js = (
+    f"/assets/osduo_business_connect/js/branding.js?v={BC_ASSET_REVISION}"
+)
 
 # Desk support menu: publishes the OSDuo support rows the avatar-menu patch in
 # public/js/branding.js reads. The module-header menu and the hiding of Frappe's

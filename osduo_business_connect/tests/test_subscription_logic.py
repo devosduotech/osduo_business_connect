@@ -2516,6 +2516,8 @@ class TestPortalTeamInvitations(unittest.TestCase):
         self.assertIn("bc_roles_ready", desk_js)
         self.assertIn("Array.isArray(frappe.user_roles)", desk_js)
         self.assertIn("apply_patch_with_polling(apply_bc_workspace_theme)", desk_js)
+        self.assertIn('if (typeof frappe !== "undefined" && frappe.ui && frappe.ui.form)', desk_js)
+        self.assertIn("BC workspace theme patch failed", desk_js)
         self.assertNotIn("var payload = boot.workspaces", desk_js)
         self.assertNotIn("payload.pages", desk_js)
         self.assertIn('frappe.router.on("change"', desk_js)

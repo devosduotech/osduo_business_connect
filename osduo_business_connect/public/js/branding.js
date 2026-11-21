@@ -59,19 +59,22 @@
 
   // ── Business Social Links ─────────────────────────────────
 
-  frappe.ui.form.on("Business Social Link", {
-    platform: function (frm, cdt, cdn) {
-      set_icon(frm, cdt, cdn, "platform");
-    },
-  });
+  // Guard the form API: if it is not ready, an uncaught exception here would
+  // abort this whole file and skip the workspace-theme installer below.
+  if (typeof frappe !== "undefined" && frappe.ui && frappe.ui.form) {
+    frappe.ui.form.on("Business Social Link", {
+      platform: function (frm, cdt, cdn) {
+        set_icon(frm, cdt, cdn, "platform");
+      },
+    });
 
-  // ── Digital Card Links ────────────────────────────────────
-
-  frappe.ui.form.on("Digital Card Link", {
-    link_type: function (frm, cdt, cdn) {
-      set_icon(frm, cdt, cdn, "link_type");
-    },
-  });
+    // ── Digital Card Links ────────────────────────────────────
+    frappe.ui.form.on("Digital Card Link", {
+      link_type: function (frm, cdt, cdn) {
+        set_icon(frm, cdt, cdn, "link_type");
+      },
+    });
+  }
 
 var BC_MY_CARD_SVG =
     '<svg class="bc-my-card-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="11.5" r="2.2"/><path d="M13 10h5.5M13 13h4"/><path d="M5.4 16.5c.9-1.5 4.3-1.5 5.2 0"/></svg>';
@@ -484,8 +487,19 @@ function add_my_card_link() {
   }
 
   if (typeof frappe !== "undefined") {
-    install_support_patch();
-    apply_patch_with_polling(apply_bc_workspace_theme);
+    // The theme is the critical patch — install it first and isolate every
+    // other patch so a Frappe timing difference in one browser can never stop
+    // the workspace colours from being applied.
+    try {
+      apply_patch_with_polling(apply_bc_workspace_theme);
+    } catch (err) {
+      console.warn("BC workspace theme patch failed:", err);
+    }
+    try {
+      install_support_patch();
+    } catch (err) {
+      console.warn("BC support menu patch failed:", err);
+    }
     if (window.jQuery) {
       $(document).on("page-change", function () {
         setTimeout(apply_bc_workspace_theme, 50);

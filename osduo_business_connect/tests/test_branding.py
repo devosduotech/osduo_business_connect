@@ -127,6 +127,27 @@ class TestBundledBranding(unittest.TestCase):
         self.assertIn("> .bc-login-forms", css)
         self.assertNotIn("section.for-login.bc-login-layout", css)
 
+    def test_assets_are_cache_busted(self):
+        # Firefox can have no service worker (plain HTTP / privacy settings), so
+        # its plain disk cache would otherwise keep serving the old desk JS/CSS.
+        # Every app asset URL must carry the shared revision query string.
+        hooks = read("hooks.py")
+        self.assertIn('BC_ASSET_REVISION = "2026-11-21-firefox-cache"', hooks)
+        for asset in (
+            "css/login.css",
+            "js/login-layout.js",
+            "js/pwa.js",
+            "css/branding.css",
+            "js/branding.js",
+        ):
+            self.assertIn(
+                f"/assets/osduo_business_connect/{asset}?v={{BC_ASSET_REVISION}}",
+                hooks,
+            )
+        self.assertEqual(
+            read("www", "sw.py").count('"2026-11-21-firefox-cache"'), 1
+        )
+
     def test_no_site_files_brand_references(self):
         for rel in (
             ("public", "js", "branding.js"),
