@@ -178,6 +178,10 @@ class TestDeskSupportMenu(unittest.TestCase):
         self.assertIn('"secondary_color": OSDUO_BRANDING["secondary_color"]', branding)
         self.assertIn('"background_color": OSDUO_BRANDING["background_color"]', branding)
         self.assertIn('"text_color": OSDUO_BRANDING["text_color"]', branding)
+        self.assertIn("bootinfo.bc_workspace_theme", branding)
+        self.assertIn('"roles": sorted(CUSTOMER_ROLES)', branding)
+        self.assertIn('"privileged_roles": sorted(PRIVILEGED_ROLES)', branding)
+        self.assertIn('"paths": sorted(CUSTOMER_WORKSPACE_PATHS)', branding)
         self.assertIn("def support_menu_items", branding)
         # The boot payload must not try to rewrite navbar_settings: Frappe's
         # sessions.get() replaces it from the stored record after every
@@ -193,6 +197,24 @@ class TestDeskSupportMenu(unittest.TestCase):
                 self.assertEqual(
                     bootinfo.osduo_branding[key], branding.OSDUO_BRANDING[key]
                 )
+
+    def test_boot_session_publishes_workspace_theme_policy(self):
+        from osduo_business_connect.subscription.constants import (
+            CUSTOMER_ROLES,
+            CUSTOMER_WORKSPACE_PATHS,
+            PRIVILEGED_ROLES,
+        )
+
+        branding = _load_branding()
+        bootinfo = types.SimpleNamespace()
+        branding.boot_session(bootinfo)
+
+        config = bootinfo.bc_workspace_theme
+        self.assertEqual(config["roles"], sorted(CUSTOMER_ROLES))
+        self.assertEqual(config["privileged_roles"], sorted(PRIVILEGED_ROLES))
+        self.assertEqual(config["paths"], sorted(CUSTOMER_WORKSPACE_PATHS))
+        self.assertIn("/desk/business-connect", config["paths"])
+        self.assertIn("/desk/business/business-connect", config["paths"])
 
     def test_navbar_support_hides_frappe_help_rows(self):
         branding = read("branding.py")

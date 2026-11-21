@@ -262,6 +262,10 @@ function add_my_card_link() {
   // Business-plan customer roles may open only the BC workspace. Mirroring the
   // /portal/team palette here keeps that single Desk surface visually
   // consistent. The workspace's links and sidebar content are NOT touched.
+  //
+  // Roles and accepted paths come from boot_session so this patch cannot drift
+  // away from the server-side plan gate. The hardcoded lists are fallbacks for
+  // a boot payload cached before the theme configuration was published.
   var BC_WORKSPACE_ROLES = [
     "BC Business Owner",
     "BC Business Manager",
@@ -286,6 +290,19 @@ function add_my_card_link() {
     background_color: "--bc-portal-bg",
     text_color: "--bc-portal-text",
   };
+  var BC_PORTAL_RAIL = "#1e293b";
+  var BC_PORTAL_SURFACE = "#ffffff";
+  var BC_PORTAL_BORDER = "#e2e8f0";
+
+  function bc_workspace_config() {
+    if (typeof frappe === "undefined" || !frappe.boot) return {};
+    return frappe.boot.bc_workspace_theme || {};
+  }
+
+  function bc_config_list(key, fallback) {
+    var value = bc_workspace_config()[key];
+    return Array.isArray(value) && value.length ? value : fallback;
+  }
 
   function has_any_role(roles) {
     if (typeof frappe === "undefined" || !frappe.user || typeof frappe.user.has_role !== "function") {
@@ -297,29 +314,142 @@ function add_my_card_link() {
     return false;
   }
 
-  function apply_bc_workspace_colors() {
-    if (typeof document === "undefined" || !document.body) return;
-    var colors = (frappe.boot && frappe.boot.osduo_branding) || {};
+  function is_bc_workspace_path() {
+    var path = (window.location.pathname || "").replace(/\/+$/, "") || "/";
+    var paths = bc_config_list("paths", BC_WORKSPACE_PATHS);
+    for (var i = 0; i < paths.length; i++) {
+      if (path === String(paths[i]).replace(/\/+$/, "")) return true;
+    }
+    // Frappe v16 writes the module shell into the address bar, so accept any
+    // /desk/<shell>/business-connect spelling. The exact allowlist above still
+    // governs the HTTP request gate.
+    if (/^\/desk\/[^/]+\/business-connect$/i.test(path)) return true;
+
+    // Client-side Desk navigation often changes current_route before the URL is
+    // rewritten. current_route is ["Workspaces", "Business Connect"] here.
+    var route = (typeof frappe !== "undefined" && frappe.router && frappe.router.current_route) || [];
+    for (var j = 0; j < route.length; j++) {
+      var part = String(route[j] || "");
+      if (/^(business-connect|business[ _-]?connect)$/i.test(part)) return true;
+    }
+    return false;
+  }
+
+  function hex_to_rgba(value, alpha) {
+    var hex = String(value || "").replace("#", "");
+    if (hex.length === 3) {
+      hex = hex.split("").map(function (digit) {
+        return digit + digit;
+      }).join("");
+    }
+    if (!/^[0-9a-fA-F]{6}$/.test(hex)) return "";
+    var red = parseInt(hex.slice(0, 2), 16);
+    var green = parseInt(hex.slice(2, 4), 16);
+    var blue = parseInt(hex.slice(4, 6), 16);
+    return "rgba(" + red + ", " + green + ", " + blue + ", " + alpha + ")";
+  }
+
+  function set_bc_theme_properties(target) {
+    if (!target || !target.style || !target.style.setProperty) return;
+    var colors = (typeof frappe !== "undefined" && frappe.boot && frappe.boot.osduo_branding) || {};
+    var primary = String(colors.primary_color || "");
+    var accent = String(colors.secondary_color || "");
+    var background = String(colors.background_color || "");
+    var text = String(colors.text_color || "");
+    var color_re = /^#[0-9a-fA-F]{3,8}$/;
+
     Object.keys(BC_THEME_VARS).forEach(function (key) {
       var value = String(colors[key] || "");
-      if (/^#[0-9a-fA-F]{3,8}$/.test(value)) {
-        document.body.style.setProperty(BC_THEME_VARS[key], value);
+      if (color_re.test(value)) {
+        target.style.setProperty(BC_THEME_VARS[key], value);
       }
     });
+
+    // Frappe v16 renders widgets from Espresso/legacy aliases rather than the
+    // BC-only variables, so override the aliases on the same element too.
+    if (color_re.test(primary)) {
+      target.style.setProperty("--primary", primary);
+      target.style.setProperty("--bc-portal-primary", primary);
+    }
+    if (color_re.test(accent)) {
+      target.style.setProperty("--bc-portal-accent", accent);
+      var accent_soft = hex_to_rgba(accent, "0.08");
+      if (accent_soft) target.style.setProperty("--bc-portal-accent-soft", accent_soft);
+    }
+    if (color_re.test(background)) {
+      target.style.setProperty("--bg-color", background);
+      target.style.setProperty("--bc-portal-bg", background);
+    }
+    if (color_re.test(text)) {
+      target.style.setProperty("--heading-color", text);
+      target.style.setProperty("--text-color", text);
+      target.style.setProperty("--bc-portal-text", text);
+    }
+    target.style.setProperty("--card-bg", BC_PORTAL_SURFACE);
+    target.style.setProperty("--navbar-bg", BC_PORTAL_RAIL);
+    target.style.setProperty("--desk-sidebar-bg", BC_PORTAL_RAIL);
+    target.style.setProperty("--surface-sidebar", BC_PORTAL_RAIL);
+    target.style.setProperty("--border-color", BC_PORTAL_BORDER);
+    target.style.setProperty("--sidebar-select-color", "rgba(255, 255, 255, 0.10)");
+  }
+
+  function apply_bc_workspace_colors() {
+    if (typeof document === "undefined") return;
+    set_bc_theme_properties(document.documentElement);
+    set_bc_theme_properties(document.body);
+  }
+
+  function clear_bc_theme_properties(target) {
+    if (!target || !target.style || !target.style.removeProperty) return;
+    var props = Object.keys(BC_THEME_VARS).map(function (key) {
+      return BC_THEME_VARS[key];
+    });
+    props = props.concat([
+      "--primary",
+      "--bg-color",
+      "--heading-color",
+      "--text-color",
+      "--card-bg",
+      "--navbar-bg",
+      "--desk-sidebar-bg",
+      "--surface-sidebar",
+      "--border-color",
+      "--sidebar-select-color",
+      "--bc-portal-accent-soft",
+    ]);
+    props.forEach(function (prop) {
+      target.style.removeProperty(prop);
+    });
+  }
+
+  function clear_bc_workspace_colors() {
+    if (typeof document === "undefined") return;
+    clear_bc_theme_properties(document.documentElement);
+    clear_bc_theme_properties(document.body);
+  }
+
+  function set_bc_workspace_class(active) {
+    if (typeof document === "undefined") return;
+    if (document.documentElement) {
+      document.documentElement.classList.toggle("bc-customer-workspace", active);
+    }
+    if (document.body) {
+      document.body.classList.toggle("bc-customer-workspace", active);
+    }
   }
 
   function apply_bc_workspace_theme() {
     if (typeof document === "undefined" || !document.body) return false;
-    if (has_any_role(BC_PRIVILEGED_ROLES) || !has_any_role(BC_WORKSPACE_ROLES)) {
-      document.body.classList.remove("bc-customer-workspace");
-      return true;
-    }
-    var path = (window.location.pathname || "").replace(/\/+$/, "");
-    if (BC_WORKSPACE_PATHS.indexOf(path) !== -1) {
+    var privileged = bc_config_list("privileged_roles", BC_PRIVILEGED_ROLES);
+    var customers = bc_config_list("roles", BC_WORKSPACE_ROLES);
+    var active = !has_any_role(privileged) && has_any_role(customers) && is_bc_workspace_path();
+    set_bc_workspace_class(active);
+    if (active) {
       apply_bc_workspace_colors();
-      document.body.classList.add("bc-customer-workspace");
     } else {
-      document.body.classList.remove("bc-customer-workspace");
+      // Removing the class is not enough: the inline aliases would keep
+      // colouring any other Desk page the customer navigates to client-side.
+      clear_bc_workspace_colors();
     }
     return true;
   }
@@ -336,6 +466,16 @@ function add_my_card_link() {
       $(document).on("page-change", function () {
         setTimeout(apply_bc_workspace_theme, 50);
       });
+    }
+    if (frappe.router && typeof frappe.router.on === "function") {
+      // v16 changes Desk routes with history.pushState/replaceState. The router
+      // event is the reliable moment to re-evaluate the workspace class.
+      frappe.router.on("change", function () {
+        setTimeout(apply_bc_workspace_theme, 0);
+      });
+    }
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", apply_bc_workspace_theme);
     }
   }
 })();

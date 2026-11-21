@@ -41,6 +41,8 @@ from osduo_business_connect.subscription.constants import (
     CUSTOMER_DESK_LOCKDOWN_PLANS,
     CUSTOMER_ROLES,
     CUSTOMER_USER_ADMIN_DOCTYPES,
+    CUSTOMER_WORKSPACE_HOME,
+    CUSTOMER_WORKSPACE_PATHS,
     IMPORT_EXPORT_DOCTYPES,
     MULTI_BUSINESS_DOCTYPES,
     PRIVILEGED_ROLES,
@@ -269,19 +271,10 @@ PUBLIC_API_METHODS = frozenset({
 # Business customer needs outside the CRM product UI and the analytics page.
 CUSTOMER_PORTAL_PAGES = frozenset({"/portal/team", "/portal/subscription"})
 
-# Business-plan customer roles may open the BC workspace itself, but never the
-# generic Desk or native User administration. Professional stays portal-only.
-# Frappe v16 serves the workspace at /desk/business-connect, later v16 builds
-# can rewrite it to /desk/<shell>/business-connect, and the older
-# /app/business-connect alias remains valid. All three spellings are accepted
-# so a refresh after the Desk router edits the address bar never returns 403.
+# Customer landing and workspace routes are shared with the desk theme hook
+# through subscription.constants. Professional stays portal-only; Business may
+# open the BC workspace itself, but never the generic Desk or native User admin.
 CUSTOMER_PORTAL_HOME = "/my-card"
-CUSTOMER_WORKSPACE_HOME = "/desk/business-connect"
-CUSTOMER_WORKSPACE_PATHS = frozenset({
-    "/app/business-connect",
-    "/desk/business-connect",
-    "/desk/business/business-connect",
-})
 DESK_PATHS = frozenset({"/app", "/desk"})
 
 

@@ -160,20 +160,43 @@
    OSDUO_BRANDING values in frappe.boot.osduo_branding, so the
    workspace follows the same white-label palette as /portal/team.
    The workspace's own links and sidebar items are left unchanged.
+
+   Frappe v16 does not render the old .workspace-section markup. It draws
+   EditorJS blocks made of .widget-group / .widget / .links-widget-box, so both
+   the legacy and v16 selectors are themed here. The legacy colour aliases
+   (--bg-color, --card-bg, --navbar-bg, ...) are overridden as well as the BC
+   variables because the Desk bundle styles widgets from those aliases.
    ============================================================ */
 
 body.bc-customer-workspace {
   --bc-portal-primary: #0b3d91;
   --bc-portal-accent: #1677ff;
+  --bc-portal-accent-soft: rgba(22, 119, 255, 0.08);
   --bc-portal-bg: #f4f6f8;
+  --bc-portal-surface: #ffffff;
+  --bc-portal-rail: #1e293b;
   --bc-portal-border: #e2e8f0;
   --bc-portal-text: #1e293b;
   --bc-portal-muted: #64748b;
+
+  --sidebar-width: 246px;
+  --bg-color: var(--bc-portal-bg);
+  --card-bg: var(--bc-portal-surface);
+  --navbar-bg: var(--bc-portal-rail);
+  --desk-sidebar-bg: var(--bc-portal-rail);
+  --border-color: var(--bc-portal-border);
+  --heading-color: var(--bc-portal-text);
+  --text-color: var(--bc-portal-text);
+  --sidebar-select-color: rgba(255, 255, 255, 0.1);
 }
 
+/* Canvas: the portal uses a slate rail and a pale page behind white cards. */
+html.bc-customer-workspace body,
 body.bc-customer-workspace .page-container,
 body.bc-customer-workspace .main-section,
-body.bc-customer-workspace .layout-main-section {
+body.bc-customer-workspace .layout-main,
+body.bc-customer-workspace .layout-main-section,
+body.bc-customer-workspace .editor-js-container {
   background: var(--bc-portal-bg) !important;
 }
 
@@ -181,42 +204,89 @@ body.bc-customer-workspace .layout-main-section {
   padding: 1.5rem;
 }
 
+body.bc-customer-workspace #editorjs,
+body.bc-customer-workspace .desk-page {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 1.5rem 0;
+}
+
+/* Top bar and page header. */
+body.bc-customer-workspace .navbar {
+  background: var(--bc-portal-rail) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #e2e8f0 !important;
+}
+
+body.bc-customer-workspace .navbar .nav-link,
+body.bc-customer-workspace .navbar .navbar-brand,
+body.bc-customer-workspace .navbar .search-icon,
+body.bc-customer-workspace .navbar .search-bar input {
+  color: #e2e8f0 !important;
+}
+
+body.bc-customer-workspace .navbar .search-bar input::placeholder {
+  color: #94a3b8 !important;
+}
+
 body.bc-customer-workspace .page-head,
 body.bc-customer-workspace .page-title,
 body.bc-customer-workspace .workspace-header {
-  background: #fff !important;
+  background: var(--bc-portal-surface) !important;
   color: var(--bc-portal-text) !important;
   border-bottom: 1px solid var(--bc-portal-border) !important;
 }
 
 body.bc-customer-workspace .page-title,
-body.bc-customer-workspace .workspace-header .title-text {
+body.bc-customer-workspace .workspace-header .title-text,
+body.bc-customer-workspace .widget-group-title,
+body.bc-customer-workspace .workspace-section-head,
+body.bc-customer-workspace .section-head {
   font-weight: 700 !important;
   color: var(--bc-portal-primary) !important;
 }
 
+/* v16 workspace cards (EditorJS blocks). */
+body.bc-customer-workspace .widget,
+body.bc-customer-workspace .widget.links-widget-box,
+body.bc-customer-workspace .widget.shortcut-widget-box,
+body.bc-customer-workspace .widget.number-widget-box,
+body.bc-customer-workspace .widget.quick-list-widget-box,
+body.bc-customer-workspace .widget.dashboard-widget-box,
 body.bc-customer-workspace .workspace-section,
 body.bc-customer-workspace .frappe-card,
 body.bc-customer-workspace .number-card-container,
 body.bc-customer-workspace .shortcut-container,
 body.bc-customer-workspace .chart-container,
 body.bc-customer-workspace .quick-list {
-  background: #fff !important;
+  background: var(--bc-portal-surface) !important;
   border: 1px solid var(--bc-portal-border) !important;
   border-radius: 12px !important;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04) !important;
   padding: 1.15rem 1.25rem !important;
 }
 
-body.bc-customer-workspace .workspace-section-head,
-body.bc-customer-workspace .section-head {
+body.bc-customer-workspace .widget-group {
+  margin-bottom: 1.25rem;
+}
+
+body.bc-customer-workspace .widget-title,
+body.bc-customer-workspace .widget-label .widget-title {
   color: var(--bc-portal-primary) !important;
   font-weight: 700 !important;
 }
 
+body.bc-customer-workspace .widget-content .number {
+  color: var(--bc-portal-primary) !important;
+}
+
+/* Navigation links keep their destinations; only their skin changes. */
 body.bc-customer-workspace .workspace-link,
 body.bc-customer-workspace .workspace-link-container a,
-body.bc-customer-workspace .shortcut-container a {
+body.bc-customer-workspace .shortcut-container a,
+body.bc-customer-workspace .link-item,
+body.bc-customer-workspace .list-item,
+body.bc-customer-workspace .item-anchor {
   border-radius: 8px !important;
   color: var(--bc-portal-text) !important;
   transition: background 0.15s, color 0.15s;
@@ -224,24 +294,49 @@ body.bc-customer-workspace .shortcut-container a {
 
 body.bc-customer-workspace .workspace-link:hover,
 body.bc-customer-workspace .workspace-link-container a:hover,
-body.bc-customer-workspace .shortcut-container a:hover {
-  background: rgba(22, 119, 255, 0.08) !important;
+body.bc-customer-workspace .shortcut-container a:hover,
+body.bc-customer-workspace .link-item:hover,
+body.bc-customer-workspace .list-item:hover {
+  background: var(--bc-portal-accent-soft) !important;
   color: var(--bc-portal-primary) !important;
   text-decoration: none !important;
 }
 
-/* Same dark navigation rail as the portal, without changing its links. */
-body.bc-customer-workspace .sidebar-menu {
-  background-color: #1e293b !important;
+body.bc-customer-workspace .btn-primary,
+body.bc-customer-workspace .es-button[data-variant="solid"] {
+  background: var(--bc-portal-primary) !important;
+  border-color: var(--bc-portal-primary) !important;
+  color: #fff !important;
 }
 
+/* Same dark navigation rail as the portal, without changing its links. */
+body.bc-customer-workspace .body-sidebar,
+body.bc-customer-workspace .sidebar-panel,
+body.bc-customer-workspace .sidebar-menu {
+  background-color: var(--bc-portal-rail) !important;
+  border-right-color: rgba(255, 255, 255, 0.08) !important;
+  color: #cbd5e1 !important;
+}
+
+body.bc-customer-workspace .body-sidebar .item-anchor,
+body.bc-customer-workspace .body-sidebar .sidebar-item-label,
+body.bc-customer-workspace .sidebar-menu .sidebar-link,
+body.bc-customer-workspace .sidebar-menu .sidebar-label {
+  color: #cbd5e1 !important;
+}
+
+body.bc-customer-workspace .standard-sidebar-item.active-sidebar .item-anchor,
 body.bc-customer-workspace .sidebar-menu .sidebar-label.active,
 body.bc-customer-workspace .sidebar-menu .sidebar-link.active {
   background-color: rgba(255, 255, 255, 0.1) !important;
-  border-left-color: var(--bc-portal-accent) !important;
+  border-left: 3px solid var(--bc-portal-accent) !important;
+  border-radius: 8px !important;
+  color: #fff !important;
 }
 
+body.bc-customer-workspace .body-sidebar .item-anchor:hover,
 body.bc-customer-workspace .sidebar-menu .sidebar-link:hover,
 body.bc-customer-workspace .sidebar-menu .sidebar-label:hover {
   background-color: rgba(255, 255, 255, 0.06) !important;
+  color: #fff !important;
 }

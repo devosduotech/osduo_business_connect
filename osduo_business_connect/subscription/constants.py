@@ -196,6 +196,18 @@ PRIVILEGED_ROLES = frozenset({
 })
 CUSTOMER_DESK_LOCKDOWN_PLANS = frozenset({"PROFESSIONAL", "BUSINESS"})
 
+# Business customers get one Desk surface: the BC workspace. Frappe v16 serves
+# it at /desk/business-connect, later v16 builds can write the module shell into
+# the URL as /desk/<shell>/business-connect, and /app/business-connect is the
+# legacy alias. The request gate and the desk theme share this allowlist so a
+# router rewrite or refresh cannot produce a 403 or lose the portal styling.
+CUSTOMER_WORKSPACE_HOME = "/desk/business-connect"
+CUSTOMER_WORKSPACE_PATHS = frozenset({
+    "/app/business-connect",
+    "/desk/business-connect",
+    "/desk/business/business-connect",
+})
+
 # Native User / Role DocTypes are never exposed to portal customers. BC keeps
 # its own Business Member DocType as the authorization bridge; invitations are
 # created only through the BC wrapper and Frappe's User Invitation flow.

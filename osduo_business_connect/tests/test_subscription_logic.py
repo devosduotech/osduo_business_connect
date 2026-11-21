@@ -2458,16 +2458,29 @@ class TestPortalTeamInvitations(unittest.TestCase):
         with open(os.path.join(APP_DIR, "public", "css", "branding.css")) as handle:
             desk_css = handle.read()
         self.assertIn("body.bc-customer-workspace", desk_css)
+        self.assertIn("html.bc-customer-workspace", desk_css)
         self.assertIn("#f4f6f8", desk_css)
         self.assertIn("border-radius: 12px", desk_css)
         self.assertIn("frappe.boot.osduo_branding", desk_css)
+        # v16 workspace blocks must be themed, not just the legacy section classes.
+        self.assertIn(".widget.links-widget-box", desk_css)
+        self.assertIn(".widget.shortcut-widget-box", desk_css)
+        self.assertIn(".body-sidebar", desk_css)
+        self.assertIn("--bg-color", desk_css)
+        self.assertIn("--navbar-bg", desk_css)
 
         with open(os.path.join(APP_DIR, "public", "js", "branding.js")) as handle:
             desk_js = handle.read()
         self.assertIn("bc-customer-workspace", desk_js)
         self.assertIn("/desk/business/business-connect", desk_js)
         self.assertIn("frappe.boot.osduo_branding", desk_js)
+        self.assertIn("frappe.boot.bc_workspace_theme", desk_js)
+        self.assertIn("frappe.router.current_route", desk_js)
+        self.assertIn('frappe.router.on("change"', desk_js)
+        self.assertIn("document.documentElement.classList.toggle", desk_js)
+        self.assertIn("--desk-sidebar-bg", desk_js)
         self.assertIn("setProperty", desk_js)
+        self.assertIn("removeProperty", desk_js)
         for role in (
             "BC Business Owner",
             "BC Business Manager",

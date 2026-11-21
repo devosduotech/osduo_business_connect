@@ -498,18 +498,32 @@ def apply_navbar_support():
 
 
 def boot_session(bootinfo):
-    """Publish desk support links and the white-label palette for the theme patch.
+    """Publish desk support links and the workspace theme configuration.
 
     Registered as the ``boot_session`` hook. ``bootinfo.navbar_settings`` is
     overwritten by ``frappe.sessions.get`` after every ``boot_session`` hook has
     run, so the header menu is driven by the stored Navbar Settings record
-    instead (see :func:`apply_navbar_support`). The branding colours let
-    ``branding.js`` theme the BC workspace from the same source as the portal.
+    instead (see :func:`apply_navbar_support`). The branding colours and the BC
+    workspace route/role policy let ``branding.js`` theme the workspace from the
+    same sources as the portal and the request-level plan gates.
     """
+    # Imported lazily: branding.py is loaded by hooks.py at boot, while the plan
+    # gate module pulls in entitlements. boot_session runs after both are ready.
+    from osduo_business_connect.subscription.constants import (
+        CUSTOMER_ROLES,
+        PRIVILEGED_ROLES,
+        CUSTOMER_WORKSPACE_PATHS,
+    )
+
     bootinfo.osduo_support = {"items": support_menu_items()}
     bootinfo.osduo_branding = {
         "primary_color": OSDUO_BRANDING["primary_color"],
         "secondary_color": OSDUO_BRANDING["secondary_color"],
         "background_color": OSDUO_BRANDING["background_color"],
         "text_color": OSDUO_BRANDING["text_color"],
+    }
+    bootinfo.bc_workspace_theme = {
+        "roles": sorted(CUSTOMER_ROLES),
+        "privileged_roles": sorted(PRIVILEGED_ROLES),
+        "paths": sorted(CUSTOMER_WORKSPACE_PATHS),
     }
