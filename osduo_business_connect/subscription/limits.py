@@ -14,6 +14,27 @@ import frappe
 from osduo_business_connect.subscription.entitlements import enforce_limit, get_usage
 
 
+def enforce_member_card_limit(doc):
+    """Allow exactly one Digital Card per Business Member.
+
+    Drafts and submitted cards count; cancelled cards do not, so amendments
+    may reuse the member. Because a site's members are already capped by
+    ``seat_cap``, this also keeps active cards within the purchased seat cap —
+    changing ``display_name`` cannot create an extra card for the same member.
+    """
+    if not doc.member:
+        return  # the DocType's mandatory rule reports this field error
+    filters = {"member": doc.member, "docstatus": ["<", 2]}
+    if not doc.is_new() and doc.name:
+        filters["name"] = ["!=", doc.name]
+    if frappe.db.exists("Digital Card", filters):
+        frappe.throw(
+            "This Business Member already has a Digital Card. "
+            "Cancel the existing card before creating another one.",
+            exc=frappe.ValidationError,
+        )
+
+
 def enforce_business_limit():
     """Block a new Business profile beyond the plan's ``max_businesses``.
 

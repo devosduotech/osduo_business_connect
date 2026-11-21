@@ -37,6 +37,12 @@ class TestDigitalCardDocType(unittest.TestCase):
         path = os.path.join(CARD_DIR, "doctype", "digital_card", "digital_card.py")
         self.assertTrue(os.path.exists(path))
 
+    def test_one_card_per_member_is_enforced(self):
+        path = os.path.join(CARD_DIR, "doctype", "digital_card", "digital_card.py")
+        with open(path) as f:
+            controller = f.read()
+        self.assertIn("enforce_member_card_limit(self)", controller)
+
 
 class TestDigitalCardLink(unittest.TestCase):
     """Verify Digital Card Link child table."""

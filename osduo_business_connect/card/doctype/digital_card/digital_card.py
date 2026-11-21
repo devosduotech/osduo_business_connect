@@ -26,9 +26,16 @@ class DigitalCard(Document):
 
     def validate(self):
         publish_on_submit(self)
+        self.validate_member_card_limit()
         self.validate_slug_immutable()
         self.validate_slug()
         self.set_public_url()
+
+    def validate_member_card_limit(self):
+        """One card per member — display name must not create a second card."""
+        from osduo_business_connect.subscription.limits import enforce_member_card_limit
+
+        enforce_member_card_limit(self)
 
     def on_update(self):
         self.ensure_qr_image()

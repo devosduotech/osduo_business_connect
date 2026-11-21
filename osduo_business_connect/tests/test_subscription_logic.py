@@ -819,6 +819,22 @@ class TestPlanQuotas(unittest.TestCase):
             self.member(name="BM-1", user="new@example.com")
         )
 
+    def test_one_digital_card_per_member(self):
+        env = self.setUp_env("PROFESSIONAL")
+        env.frappe.db.exists = lambda dt, filters=None: dt == "Digital Card"
+        card = self.member(member="BM-1", display_name="A")
+        with self.assertRaises(env.frappe.ValidationError) as ctx:
+            env.limits.enforce_member_card_limit(card)
+        self.assertIn("already has a Digital Card", str(ctx.exception))
+
+        seen = []
+        env.frappe.db.exists = lambda dt, filters=None: seen.append(filters) or False
+        existing = self.member(name="CARD-1", member="BM-1", display_name="B")
+        env.limits.enforce_member_card_limit(existing)
+        self.assertEqual(seen[-1]["member"], "BM-1")
+        self.assertEqual(seen[-1]["docstatus"], ["<", 2])
+        self.assertEqual(seen[-1]["name"], ["!=", "CARD-1"])
+
     def test_quota_and_gate_errors_publish_message_to_client(self):
         # v16 API v2 only shows __server_messages from frappe.throw; a bare
         # `raise` leaves the user with a save that silently fails.
