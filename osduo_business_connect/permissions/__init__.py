@@ -10,7 +10,7 @@ It acts as a dispatcher to the appropriate DocType-specific permission logic.
 Frappe's has_permission hook receives: doc, user, ptype
 - True → do not deny
 - False → deny
-- None → fall back to normal permission behaviour
+- None → treated as deny by Frappe v16, so return True to defer to DocPerms
 """
 
 import frappe
@@ -80,5 +80,20 @@ def has_permission(doc, user=None, ptype=None):
             has_permission as theme_has_permission,
         )
         return theme_has_permission(doc, user=user, ptype=ptype)
+
+    # Subscription DocTypes rely on standard DocPerm/role permissions. A has_permission
+    # hook can only DENY: Frappe v16 returns bool(controller_permission), so None would
+    # lock everyone out. Return True to register no OSDuo objection.
+    # Administrator is bypassed by Frappe before hooks run; the plan gate in
+    # subscription/plan_gates.py (phase 2) is the authoritative boundary.
+    elif doctype in (
+        "SaaS Plan",
+        "Add-on Master",
+        "Subscription",
+        "Add-on Order",
+        "Plan Restriction Log",
+        "Webhook Event Log",
+    ):
+        return True
 
     return False

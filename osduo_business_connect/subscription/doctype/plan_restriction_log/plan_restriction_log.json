@@ -1,0 +1,28 @@
+{
+  "name": "Plan Restriction Log",
+  "module": "Subscription",
+  "doctype": "DocType",
+  "document_type": "Document",
+  "engine": "InnoDB",
+  "naming_rule": "By \"Naming Series\" field",
+  "autoname": "naming_series:",
+  "issingle": 0,
+  "istable": 0,
+  "is_submittable": 0,
+  "track_changes": 0,
+  "allow_rename": 0,
+  "sort_field": "timestamp",
+  "sort_order": "DESC",
+  "fields": [
+    {"fieldname": "naming_series", "fieldtype": "Select", "label": "Naming Series", "options": "PRLOG-.YYYY.-", "default": "PRLOG-.YYYY.-", "reqd": 1, "set_only_once": 1, "hidden": 1},
+    {"fieldname": "timestamp", "fieldtype": "Datetime", "label": "Timestamp", "default": "Now", "read_only": 1, "in_list_view": 1},
+    {"fieldname": "site", "fieldtype": "Data", "label": "Site", "read_only": 1, "in_list_view": 1},
+    {"fieldname": "user", "fieldtype": "Data", "label": "User", "read_only": 1, "in_list_view": 1},
+    {"fieldname": "feature_key", "fieldtype": "Data", "label": "Feature / Limit", "read_only": 1, "in_list_view": 1},
+    {"fieldname": "attempted_route", "fieldtype": "Data", "label": "Attempted Route", "read_only": 1},
+    {"fieldname": "message", "fieldtype": "Small Text", "label": "Message", "read_only": 1}
+  ],
+  "permissions": [
+    {"role": "BC Subscription Manager", "read": 1, "report": 1, "export": 1}
+  ]
+}

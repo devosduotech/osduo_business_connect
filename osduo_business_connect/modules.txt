@@ -4,3 +4,4 @@ Showcase
 Analytics
 CRM Integration
 Enquiry
+Subscription

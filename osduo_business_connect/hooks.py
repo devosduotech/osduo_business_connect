@@ -205,6 +205,14 @@ scheduler_events = {
 #     "frappe.desk.doctype.event.event.get_events": "osduo_business_connect.event.get_events"
 # }
 
+# Plan gates
+# ----------
+# v16 calls before_request hooks but ignores their return values; the gate
+# raises PermissionError (403). DocType hooks below are defence in depth only.
+before_request = [
+    "osduo_business_connect.subscription.plan_gates.enforce_plan_gates",
+]
+
 # Permissions
 # -----------
 
@@ -220,6 +228,24 @@ has_permission = {
     "Engagement Event": "osduo_business_connect.permissions.has_permission",
     # CRM Lead: OSDuo permission layer on top of CRM's native model
     "CRM Lead": "osduo_business_connect.crm_integration.crm_permissions.has_permission",
+    # Subscription module: standard DocPerms apply (the dispatcher returns True
+    # for these DocTypes, since v16 treats None as a deny). The authoritative
+    # plan gates are the before_request hook added in phase 2.
+    "SaaS Plan": "osduo_business_connect.permissions.has_permission",
+    "Add-on Master": "osduo_business_connect.permissions.has_permission",
+    "Subscription": "osduo_business_connect.permissions.has_permission",
+    "Add-on Order": "osduo_business_connect.permissions.has_permission",
+    "Plan Restriction Log": "osduo_business_connect.permissions.has_permission",
+    "Webhook Event Log": "osduo_business_connect.permissions.has_permission",
+    # Plan-gated DocTypes (defence in depth). Never returns None: v16 treats a
+    # falsy controller-permission result as a deny.
+    "Data Import": "osduo_business_connect.subscription.plan_gates.has_permission_for_doctype",
+    "Data Export": "osduo_business_connect.subscription.plan_gates.has_permission_for_doctype",
+    "User": "osduo_business_connect.subscription.plan_gates.has_permission_for_doctype",
+    "Email Account": "osduo_business_connect.subscription.plan_gates.has_permission_for_doctype",
+    "Email Domain": "osduo_business_connect.subscription.plan_gates.has_permission_for_doctype",
+    "WhatsApp Settings": "osduo_business_connect.subscription.plan_gates.has_permission_for_doctype",
+    "WhatsApp Account": "osduo_business_connect.subscription.plan_gates.has_permission_for_doctype",
 }
 
 permission_query_conditions = {
@@ -234,6 +260,10 @@ permission_query_conditions = {
     "Engagement Event": "osduo_business_connect.analytics.doctype.engagement_event.engagement_event.get_permission_query_conditions",
     # CRM Lead: OSDuo business isolation
     "CRM Lead": "osduo_business_connect.crm_integration.crm_permissions.get_permission_query_conditions",
+    "Data Import": "osduo_business_connect.subscription.plan_gates.import_export_query_conditions",
+    "Data Export": "osduo_business_connect.subscription.plan_gates.import_export_query_conditions",
+    "Email Account": "osduo_business_connect.subscription.plan_gates.advanced_admin_query_conditions",
+    "WhatsApp Settings": "osduo_business_connect.subscription.plan_gates.advanced_admin_query_conditions",
 }
 
 # DocType Class

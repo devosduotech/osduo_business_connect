@@ -1,0 +1,46 @@
+{
+  "name": "Subscription",
+  "module": "Subscription",
+  "doctype": "DocType",
+  "document_type": "Document",
+  "engine": "InnoDB",
+  "issingle": 1,
+  "istable": 0,
+  "is_submittable": 0,
+  "track_changes": 1,
+  "allow_rename": 0,
+  "fields": [
+    {"fieldname": "plan", "fieldtype": "Link", "label": "Plan", "options": "SaaS Plan", "reqd": 1, "in_standard_filter": 1},
+    {"fieldname": "status", "fieldtype": "Select", "label": "Status", "options": "Trial\nActive\nPast Due\nSuspended\nCancelled", "default": "Active", "reqd": 1, "in_list_view": 1, "in_standard_filter": 1},
+    {"fieldname": "section_billing", "fieldtype": "Section Break", "label": "Seats & Billing"},
+    {"fieldname": "seats_ordered", "fieldtype": "Int", "label": "Seats Ordered", "reqd": 1, "default": "1"},
+    {"fieldname": "min_billed_seats", "fieldtype": "Int", "label": "Minimum Billed Seats", "read_only": 1},
+    {"fieldname": "seats_cap", "fieldtype": "Int", "label": "Seat Cap", "read_only": 1},
+    {"fieldname": "column_break_billing", "fieldtype": "Column Break"},
+    {"fieldname": "start_date", "fieldtype": "Date", "label": "Start Date"},
+    {"fieldname": "current_period_end", "fieldtype": "Date", "label": "Current Period End"},
+    {"fieldname": "grace_until", "fieldtype": "Date", "label": "Grace Until"},
+    {"fieldname": "section_source", "fieldtype": "Section Break", "label": "Source & External Reference"},
+    {"fieldname": "site_plan_source", "fieldtype": "Select", "label": "Plan Source", "options": "Manual Selection\nMarketplace", "default": "Manual Selection", "read_only": 1},
+    {"fieldname": "external_ref", "fieldtype": "Data", "label": "External Reference", "read_only": 1, "description": "Reserved for the future Aasriva marketplace link."},
+    {"fieldname": "external_crm_enabled", "fieldtype": "Check", "label": "External CRM Applications Enabled", "read_only": 1, "default": "0"},
+    {"fieldname": "column_break_source", "fieldtype": "Column Break"},
+    {"fieldname": "provisioned_by", "fieldtype": "Data", "label": "Provisioned By", "read_only": 1},
+    {"fieldname": "provisioned_on", "fieldtype": "Datetime", "label": "Provisioned On", "read_only": 1},
+    {"fieldname": "grandfathered", "fieldtype": "Check", "label": "Grandfathered", "read_only": 1},
+    {"fieldname": "migrated", "fieldtype": "Check", "label": "Migrated from Existing Site", "read_only": 1},
+    {"fieldname": "section_entitlements", "fieldtype": "Section Break", "label": "Entitlements"},
+    {"fieldname": "entitlement_snapshot", "fieldtype": "Code", "label": "Entitlement Snapshot", "read_only": 1},
+    {"fieldname": "notes", "fieldtype": "Small Text", "label": "Notes"},
+    {"fieldname": "section_children", "fieldtype": "Section Break", "label": "Related Records"},
+    {"fieldname": "domain_mappings", "fieldtype": "Table", "label": "Domain Mappings", "options": "Domain Mapping"},
+    {"fieldname": "audit_log", "fieldtype": "Table", "label": "Audit Log", "options": "Subscription Audit Log"}
+  ],
+  "permissions": [
+    {
+      "role": "BC Subscription Manager",
+      "read": 1, "write": 1, "create": 1, "delete": 1,
+      "report": 1, "export": 1, "print": 1, "email": 1, "share": 1
+    }
+  ]
+}

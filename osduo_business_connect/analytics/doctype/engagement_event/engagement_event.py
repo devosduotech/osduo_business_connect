@@ -151,6 +151,11 @@ def get_permission_query_conditions(user):
     if not user:
         user = frappe.session.user
 
+    # Analytics is a Business-plan feature, even for privileged roles.
+    from osduo_business_connect.subscription.entitlements import has_feature
+    if not has_feature("analytics"):
+        return "1=0"
+
     # System Manager can see all events
     if is_system_manager(user):
         return ""
@@ -176,6 +181,11 @@ def has_permission(doc, user=None, ptype=None):
     """
     if not user:
         user = frappe.session.user
+
+    # Analytics is a Business-plan feature, even for privileged roles.
+    from osduo_business_connect.subscription.entitlements import has_feature
+    if not has_feature("analytics"):
+        return False
 
     # Guest has no access to engagement events
     if user == "Guest":

@@ -50,6 +50,11 @@ def after_install():
     # Apply bundled logo/favicon/name defaults (no manual file copies)
     apply_branding_settings()
 
+    # Seed plan masters only. Fresh sites intentionally have no Subscription so
+    # entitlements fail closed to Professional until an operator provisions.
+    from osduo_business_connect.subscription.seed import seed_plans_and_addons
+    seed_plans_and_addons()
+
 
 def create_crm_custom_fields():
     """
@@ -319,6 +324,7 @@ def create_default_roles():
         "BC Marketing Manager",
         "BC CRM User",
         "BC System Manager",
+        "BC Subscription Manager",
     ]
 
     for role_name in roles:
@@ -345,6 +351,13 @@ def after_migrate():
     apply_branding_settings()
     backfill_public_urls()
     remove_doctype_ux_customizations()
+    seed_subscription_masters()
+
+
+def seed_subscription_masters():
+    """Ensure plan/add-on masters exist after every migrate (idempotent)."""
+    from osduo_business_connect.subscription.seed import seed_plans_and_addons
+    seed_plans_and_addons()
 
 
 # DocTypes whose desk form layout is now defined in the app's doctype JSON.

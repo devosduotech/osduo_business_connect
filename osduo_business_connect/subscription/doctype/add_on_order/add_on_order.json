@@ -1,0 +1,50 @@
+{
+  "name": "Add-on Order",
+  "module": "Subscription",
+  "doctype": "DocType",
+  "document_type": "Document",
+  "engine": "InnoDB",
+  "naming_rule": "By \"Naming Series\" field",
+  "autoname": "naming_series:",
+  "title_field": "add_on",
+  "search_fields": "add_on,status,hostname",
+  "issingle": 0,
+  "istable": 0,
+  "is_submittable": 0,
+  "track_changes": 1,
+  "allow_rename": 0,
+  "allow_import": 0,
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "fields": [
+    {"fieldname": "naming_series", "fieldtype": "Select", "label": "Naming Series", "options": "ADDON-.YYYY.-", "default": "ADDON-.YYYY.-", "reqd": 1, "set_only_once": 1, "hidden": 1},
+    {"fieldname": "add_on", "fieldtype": "Link", "label": "Add-on", "options": "Add-on Master", "reqd": 1, "in_list_view": 1, "in_standard_filter": 1},
+    {"fieldname": "status", "fieldtype": "Select", "label": "Status", "options": "Requested\nApproved\nConfigured\nVerified\nActive\nExpired\nCancelled", "default": "Requested", "reqd": 1, "in_list_view": 1, "in_standard_filter": 1},
+    {"fieldname": "plan_snapshot", "fieldtype": "Data", "label": "Plan (at request)", "read_only": 1},
+    {"fieldname": "site", "fieldtype": "Data", "label": "Site", "read_only": 1},
+    {"fieldname": "section_details", "fieldtype": "Section Break", "label": "Request Details"},
+    {"fieldname": "hostname", "fieldtype": "Data", "label": "Hostname"},
+    {"fieldname": "registration_details", "fieldtype": "Small Text", "label": "Registration Details"},
+    {"fieldname": "customer_email", "fieldtype": "Data", "label": "Customer Email", "options": "Email"},
+    {"fieldname": "column_break_details", "fieldtype": "Column Break"},
+    {"fieldname": "amount", "fieldtype": "Currency", "label": "Amount", "read_only": 1},
+    {"fieldname": "approved_by", "fieldtype": "Link", "label": "Approved By", "options": "User", "read_only": 1},
+    {"fieldname": "external_ref", "fieldtype": "Data", "label": "External Reference", "read_only": 1},
+    {"fieldname": "section_attachments", "fieldtype": "Section Break", "label": "Documents"},
+    {"fieldname": "quote_attachment", "fieldtype": "Attach", "label": "Quote / Attachment"},
+    {"fieldname": "vendor_invoice", "fieldtype": "Attach", "label": "Vendor Invoice"},
+    {"fieldname": "notes", "fieldtype": "Small Text", "label": "Notes"}
+  ],
+  "permissions": [
+    {
+      "role": "BC Subscription Manager",
+      "read": 1, "write": 1, "create": 1, "delete": 1,
+      "report": 1, "export": 1, "print": 1, "email": 1, "share": 1
+    },
+    {
+      "role": "BC System Manager",
+      "read": 1, "write": 1, "create": 1,
+      "report": 1, "print": 1, "email": 1, "share": 1
+    }
+  ]
+}

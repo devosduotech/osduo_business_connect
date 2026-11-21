@@ -26,10 +26,16 @@ def has_permission(doc, user=None, ptype=None):
     Document-level permission for CRM Lead.
 
     Adds OSDuo business isolation on top of CRM's native permissions.
-    True → do not deny | False → deny | None → fall back to CRM's normal permissions
+    True → do not deny | False → deny (v16 treats None as deny too)
     """
     if not user:
         user = frappe.session.user
+
+    # CRM is a Business-plan feature, even for Administrator/System Manager.
+    # The before_request gate is authoritative; this is defence in depth.
+    from osduo_business_connect.subscription.entitlements import has_feature
+    if not has_feature("crm_access"):
+        return False
 
     # Guest: no access
     if user == "Guest":
@@ -40,10 +46,10 @@ def has_permission(doc, user=None, ptype=None):
         return True
 
     # If the lead has no osduo_business, let CRM's native permissions decide.
-    # Return None = "no OSDuo decision" → Frappe falls back to normal permissions.
+    # v16 turns a falsy hook result (including None) into a deny, so return True.
     osduo_business = doc.osduo_business if hasattr(doc, "osduo_business") else None
     if not osduo_business:
-        return None
+        return True
 
     # Lead has osduo_business: check if user is a member of that business
     from osduo_business_connect.business.core import get_user_businesses
@@ -65,6 +71,11 @@ def get_permission_query_conditions(user):
     """
     if not user:
         user = frappe.session.user
+
+    # CRM is a Business-plan feature, even for privileged roles.
+    from osduo_business_connect.subscription.entitlements import has_feature
+    if not has_feature("crm_access"):
+        return "`tabCRM Lead`.name IN (SELECT name FROM `tabCRM Lead` WHERE 1=0)"
 
     # Guest: no access
     if user == "Guest":
