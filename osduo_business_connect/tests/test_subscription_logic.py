@@ -2157,6 +2157,115 @@ class TestPortalTeamInvitations(unittest.TestCase):
         self.assertFalse(nav["can_team"])
         self.assertTrue(nav["can_admin"])
 
+    def test_login_home_page_points_customers_to_portal(self):
+        for plan in ("PROFESSIONAL", "BUSINESS"):
+            with self.subTest(plan=plan):
+                env = self.setUp_env(plan)
+                env.frappe.flags.home_page = None
+                env.plan_gates.set_customer_login_home(
+                    types.SimpleNamespace(user="owner@example.com")
+                )
+                self.assertEqual(env.frappe.flags.home_page, "/my-card")
+
+        # Frappe calls on_login before make_session(), so the session may still
+        # be Guest; the login_manager's user must win.
+        env = self.setUp_env("BUSINESS")
+        env.frappe.session.user = "Guest"
+        env.frappe.flags.home_page = None
+        env.plan_gates.set_customer_login_home(
+            types.SimpleNamespace(user="owner@example.com")
+        )
+        self.assertEqual(env.frappe.flags.home_page, "/my-card")
+
+        # Provider roles and Enterprise keep their Desk home page.
+        env = self.setUp_env("BUSINESS")
+        env.set_roles("BC Business Owner", "System Manager")
+        env.frappe.flags.home_page = None
+        env.plan_gates.set_customer_login_home(
+            types.SimpleNamespace(user="owner@example.com")
+        )
+        self.assertIsNone(env.frappe.flags.home_page)
+
+        env = self.setUp_env("ENTERPRISE")
+        env.frappe.flags.home_page = None
+        env.plan_gates.set_customer_login_home(
+            types.SimpleNamespace(user="owner@example.com")
+        )
+        self.assertIsNone(env.frappe.flags.home_page)
+
+    def test_request_gate_sets_portal_home_flag(self):
+        env = self.setUp_env("BUSINESS")
+        for path in ("/", "/login", "/portal/team"):
+            with self.subTest(path=path):
+                env.set_request(path)
+                env.frappe.flags.home_page = None
+                env.plan_gates.enforce_plan_gates()
+                self.assertEqual(env.frappe.flags.home_page, "/my-card")
+
+        env.set_roles("BC Business Owner", "BC System Manager")
+        env.frappe.flags.home_page = None
+        env.plan_gates.enforce_plan_gates()
+        self.assertIsNone(env.frappe.flags.home_page)
+
+    def test_automatic_desk_redirect_is_rewritten_to_portal(self):
+        class FakeResponse:
+            def __init__(self, status, location=None):
+                self.status_code = status
+                self.headers = {"Location": location} if location else {}
+                self.data = ""
+
+            def set_data(self, value):
+                self.data = value
+
+        env = self.setUp_env("BUSINESS")
+        for location in (
+            "/app/business-connect",
+            "/desk/business-connect",
+            "app/business-connect",
+            "https://phase2.uat/app/business-connect",
+        ):
+            with self.subTest(location=location):
+                response = FakeResponse(301, location)
+                env.plan_gates.rewrite_customer_desk_redirect(
+                    response=response,
+                    request=types.SimpleNamespace(path="/login"),
+                )
+                self.assertEqual(response.headers["Location"], "/my-card")
+
+        # Enterprise/provider redirects must be left alone.
+        env.set_roles("BC Business Owner", "System Manager")
+        response = FakeResponse(301, "/app/business-connect")
+        env.plan_gates.rewrite_customer_desk_redirect(response=response)
+        self.assertEqual(response.headers["Location"], "/app/business-connect")
+
+        # Non-redirect responses and non-Desk locations are untouched.
+        env.set_roles("BC Business Owner")
+        response = FakeResponse(403, "/app/business-connect")
+        env.plan_gates.rewrite_customer_desk_redirect(response=response)
+        self.assertEqual(response.headers["Location"], "/app/business-connect")
+        response = FakeResponse(302, "/my-card")
+        env.plan_gates.rewrite_customer_desk_redirect(response=response)
+        self.assertEqual(response.headers["Location"], "/my-card")
+
+    def test_403_page_links_back_to_portal_for_customers(self):
+        class FakeResponse:
+            def __init__(self):
+                self.status_code = 403
+                self.headers = {}
+                self.data = ""
+
+            def set_data(self, value):
+                self.data = value
+
+        env = self.setUp_env("BUSINESS")
+        self.assert_blocked(env, "/app")
+        response = FakeResponse()
+        env.plan_gates.render_plan_gate_message(
+            response=response, request=types.SimpleNamespace(path="/app")
+        )
+        self.assertIn('href="/my-card"', response.data)
+        self.assertIn("Back to portal", response.data)
+
     def test_hooks_fields_and_portal_pages_are_wired(self):
         with open(os.path.join(APP_DIR, "hooks.py")) as handle:
             hooks = handle.read()
@@ -2165,6 +2274,9 @@ class TestPortalTeamInvitations(unittest.TestCase):
         self.assertIn('"extra_invite_params"', hooks)
         self.assertIn("after_accept_create_member", hooks)
         self.assertIn("validate_invitation_context", hooks)
+        self.assertIn("on_login = [", hooks)
+        self.assertIn("set_customer_login_home", hooks)
+        self.assertIn("rewrite_customer_desk_redirect", hooks)
         self.assertIn('"from_route": "/portal/team"', hooks)
         self.assertIn('"to_route": "portal/team"', hooks)
         self.assertIn('"from_route": "/portal/subscription"', hooks)
@@ -2216,7 +2328,11 @@ class TestPortalTeamInvitations(unittest.TestCase):
         self.assertIn(
             "invite_team_member", template
         )
+        self.assertIn("access to OSDuo Business Connect", template)
+        self.assertNotIn("access to the Frappe Desk", template)
         self.assertNotIn('frappe.new_doc("User")', template)
+        for native_admin_link in ('href="/app/user"', 'href="/desk/user"', "User Invitation", "Role Editor"):
+            self.assertNotIn(native_admin_link, template)
 
         sidebar = os.path.join(
             APP_DIR, "templates", "pages", "parts", "portal_sidebar.html"

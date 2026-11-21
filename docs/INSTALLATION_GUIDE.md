@@ -344,6 +344,9 @@ then on; they never need the Desk for team setup.
 6. Open `/my-card`, `/portal/subscription` and `/analytics`. All three must show
    the same shared sidebar; the active page is highlighted and no native Desk
    links appear for the Business Owner.
+7. Sign out and back in, then open `/login` and `/` while signed in. Each must
+   land on `/my-card` without a 403. A direct request to `/app/business-connect`
+   must still return **Not Permitted**.
 
 ### Change the plan on an existing instance
 

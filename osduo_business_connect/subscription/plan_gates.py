@@ -268,6 +268,15 @@ PUBLIC_API_METHODS = frozenset({
 # Customer-safe pages and APIs. These are the only surfaces a Professional or
 # Business customer needs outside the CRM product UI and the analytics page.
 CUSTOMER_PORTAL_PAGES = frozenset({"/portal/team", "/portal/subscription"})
+
+# Logged-in Professional/Business users land here, never on the Desk. Frappe
+# v16's /login page sends an already-signed-in System User to
+# get_default_path() -- our single add_to_apps_screen entry resolves to
+# /app/business-connect -- so that automatic redirect is rewritten below.
+# Direct requests to /app or /desk are still blocked with 403 by this module.
+CUSTOMER_PORTAL_HOME = "/my-card"
+DESK_PATHS = frozenset({"/app", "/desk"})
+
 CUSTOMER_PORTAL_API_METHODS = frozenset({
     "osduo_business_connect.subscription.team_invite.get_team_page_data",
     "osduo_business_connect.subscription.team_invite.invite_team_member",
@@ -528,6 +537,26 @@ def _is_locked_down_customer(entitlements, user=None):
     return bool(roles & CUSTOMER_ROLES)
 
 
+def set_customer_login_home(login_manager=None):
+    """Frappe ``on_login`` hook: send customer logins to the private portal.
+
+    ``LoginManager.set_user_info`` runs after this hook and reads
+    ``frappe.local.flags.home_page`` before Role, Website Settings or the
+    user's default workspace. Setting it here changes the ``home_page`` in the
+    login API response, which Frappe's login JavaScript navigates to. Keeping
+    the session check in ``_is_locked_down_customer`` means provider logins and
+    Enterprise are unaffected.
+    """
+    try:
+        user = getattr(login_manager, "user", None) or getattr(frappe.session, "user", None)
+        if _is_locked_down_customer(get_entitlements(), user):
+            frappe.flags.home_page = CUSTOMER_PORTAL_HOME
+    except Exception:
+        # A failed nav preference lookup must never fail the login itself. The
+        # request-level gate remains the authoritative security boundary.
+        pass
+
+
 def _customer_user_admin_attempt(path, methods, doctypes):
     """Return True for any native User/Role/User Invitation surface.
 
@@ -739,6 +768,12 @@ def enforce_plan_gates():
     doctypes = _request_doctypes(path)
     ent = get_entitlements()
 
+    # Highest-priority home page in Frappe v16. Covers any get_home_page()
+    # caller in this request (boot data, error pages, website routing) so a
+    # customer never picks up a Desk default workspace.
+    if _is_locked_down_customer(ent):
+        frappe.flags.home_page = CUSTOMER_PORTAL_HOME
+
     # Subscription status — never applied to public website/guest-safe APIs.
     if not ent.get("accessible") and _private_surface(path, methods):
         status = ent.get("status") or "Inactive"
@@ -907,8 +942,51 @@ def advanced_admin_query_conditions(user=None):
 
 
 # ---------------------------------------------------------------------------
-# after_request hook — keep the actionable denial visible on HTML 403 pages
+# after_request hooks — landing redirects and actionable 403 pages
 # ---------------------------------------------------------------------------
+def _is_desk_path(location):
+    """True for a Desk URL, including an absolute same-site redirect."""
+    try:
+        path = (urlparse(location).path or "").rstrip("/") or "/"
+    except Exception:
+        return False
+    if not path.startswith("/"):
+        path = "/" + path
+    if path in DESK_PATHS:
+        return True
+    return any(path.startswith(prefix + "/") for prefix in DESK_PATHS)
+
+
+def rewrite_customer_desk_redirect(response=None, request=None):
+    """Keep automatic login/root redirects off the Desk for customers.
+
+    An already-signed-in System User who opens ``/login`` (or the site root)
+    is redirected by Frappe v16 to ``get_default_path()``. Our single
+    ``add_to_apps_screen`` entry makes that ``/app/business-connect``, which the
+    request gate correctly answers with 403, producing a redirect loop. The
+    redirect is raised inside the website renderer, so ``before_request``
+    cannot rewrite it. This hook replaces only automatic redirects to Desk
+    paths; direct Desk requests still get their 403.
+    """
+    if response is None or getattr(response, "status_code", None) not in (301, 302, 303, 307, 308):
+        return
+    headers = getattr(response, "headers", None)
+    if headers is None:
+        return
+    location = headers.get("Location") or ""
+    if not location or not _is_desk_path(location):
+        return
+    try:
+        ent = get_entitlements()
+    except Exception:
+        return
+    if not _is_locked_down_customer(ent):
+        return
+
+    headers["Location"] = CUSTOMER_PORTAL_HOME
+    frappe.flags.redirect_location = CUSTOMER_PORTAL_HOME
+
+
 def render_plan_gate_message(response=None, request=None):
     """Replace Frappe's generic 403 page with the actual plan restriction.
 
@@ -923,6 +1001,15 @@ def render_plan_gate_message(response=None, request=None):
     if request is not None and (getattr(request, "path", "") or "").startswith("/api/"):
         return
 
+    back_label = "Back to login"
+    back_url = "/login"
+    try:
+        if _is_locked_down_customer(get_entitlements()):
+            back_label = "Back to portal"
+            back_url = CUSTOMER_PORTAL_HOME
+    except Exception:
+        pass
+
     html = (
         '<!doctype html><html><head><meta charset="utf-8">'
         "<title>Not Permitted</title></head>"
@@ -930,7 +1017,7 @@ def render_plan_gate_message(response=None, request=None):
         'margin:10vh auto;padding:24px;line-height:1.6">'
         "<h1>Not Permitted</h1>"
         f"<p>{message}</p>"
-        '<p><a href="/login">Back to login</a></p>'
+        f'<p><a href="{back_url}">{back_label}</a></p>'
         "</body></html>"
     )
     try:

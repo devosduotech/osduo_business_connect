@@ -267,9 +267,18 @@ before_request = [
     "osduo_business_connect.subscription.plan_gates.enforce_plan_gates",
 ]
 
+# Frappe v16 builds the login response's home_page before the login JavaScript
+# navigates. Customer roles must land in the private portal, not the Desk.
+on_login = [
+    "osduo_business_connect.subscription.plan_gates.set_customer_login_home",
+]
+
 # The before_request gate raises a 403, but v16's HTML error page uses a fixed
 # generic message. This hook puts the plan name and upgrade link back on it.
+# The rewrite hook fixes the automatic /login -> /app/business-connect redirect
+# (get_default_path) that would otherwise bounce locked-down customers to a 403.
 after_request = [
+    "osduo_business_connect.subscription.plan_gates.rewrite_customer_desk_redirect",
     "osduo_business_connect.subscription.plan_gates.render_plan_gate_message",
 ]
 

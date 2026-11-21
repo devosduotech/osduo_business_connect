@@ -1026,6 +1026,10 @@ forms and lists are blocked for these customers. Frappe creates the login only
 after an invitation is accepted; no `User` DocPerms are granted to customers.
 Enterprise sites keep their existing Desk-based advanced administration.
 
+After sign-in, and when an already-signed-in customer opens `/login` or the site
+root, the browser lands on `/my-card`. This is only a landing redirect: direct
+`/app`, `/desk` and `/app/business-connect` requests still show **Not Permitted**.
+
 ---
 
 ## 11. Mobile App (PWA)
