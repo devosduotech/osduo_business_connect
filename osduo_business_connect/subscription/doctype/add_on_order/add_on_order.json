@@ -40,16 +40,6 @@
   ],
   "permissions": [
     {
-      "role": "BC Subscription Manager",
-      "read": 1, "write": 1, "create": 1, "delete": 1,
-      "report": 1, "export": 1, "print": 1, "email": 1, "share": 1
-    },
-    {
-      "role": "BC System Manager",
-      "read": 1, "write": 1, "create": 1,
-      "report": 1, "print": 1, "email": 1, "share": 1
-    },
-    {
       "role": "BC Business Owner",
       "read": 1, "write": 1, "create": 1, "is_owner": 1,
       "report": 1, "print": 1

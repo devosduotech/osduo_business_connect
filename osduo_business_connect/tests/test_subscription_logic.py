@@ -236,6 +236,12 @@ class StubEnvironment:
                 SUB_DIR, "doctype", "add_on_order", "add_on_order.py"
             ),
         )
+        self.addon_master = _load(
+            "osduo_business_connect.subscription.doctype.add_on_master.add_on_master",
+            os.path.join(
+                SUB_DIR, "doctype", "add_on_master", "add_on_master.py"
+            ),
+        )
         self.frappe = frappe
         return self
 
@@ -987,20 +993,23 @@ class TestAddOnsAndDomains(unittest.TestCase):
 
     def test_addon_order_status_workflow(self):
         env, _ = self.setUp_env()
-        env.frappe.get_roles = lambda: ["BC Subscription Manager"]
+        env.frappe.session.user = "Administrator"
         order = env.addon_order.AddonOrder({"name": "ADDON-1", "status": "Active"})
         order.get_doc_before_save = lambda: FakeDocument({"status": "Requested"})
         with self.assertRaises(env.frappe.ValidationError) as ctx:
             order.validate_status_transition()
         self.assertIn("Cannot change", str(ctx.exception))
 
-        env.frappe.get_roles = lambda: ["BC Subscription Manager"]
         order.status = "Approved"
         order.validate_status_transition()  # Requested -> Approved is allowed
 
         order.get_doc_before_save = lambda: FakeDocument({"status": "Approved"})
         order.status = "Configured"
-        env.frappe.get_roles = lambda: ["BC Business Owner"]
+        env.frappe.session.user = "owner@example.com"
+        with self.assertRaises(env.frappe.PermissionError):
+            order.validate_status_transition()
+
+        env.frappe.session.user = "subscription-manager@example.com"
         with self.assertRaises(env.frappe.PermissionError):
             order.validate_status_transition()
 
@@ -1316,6 +1325,79 @@ class TestFinalHardening(unittest.TestCase):
                 env.frappe.db.values,
             )
             self.assertEqual(len(created), 2)
+
+    def test_addon_master_requires_plans_when_not_all_plans(self):
+        with StubEnvironment() as env:
+            master = env.addon_master.AddonMaster({
+                "billing_type": "Annual",
+                "applies_to_all_plans": 0,
+                "applicable_plans": [],
+                "price": 12000,
+            })
+            with self.assertRaises(env.frappe.ValidationError) as ctx:
+                master.validate()
+            self.assertIn("Select at least one Applicable Plan", str(ctx.exception))
+
+            master.applicable_plans = [{"plan": "BUSINESS"}]
+            master.validate()
+
+    def test_addon_link_query_returns_only_plan_eligible_masters(self):
+        with StubEnvironment() as env:
+            env.set_plan("BUSINESS")
+            masters = [
+                {
+                    "name": "CUSTOM_DOMAIN_SERVICE",
+                    "add_on_name": "Custom Domain Service",
+                    "applies_to_all_plans": 1,
+                    "is_active": 1,
+                },
+                {
+                    "name": "PRIORITY_SUPPORT",
+                    "add_on_name": "Priority Support",
+                    "applies_to_all_plans": 0,
+                    "is_active": 1,
+                },
+                {
+                    "name": "ENTERPRISE_ONLY",
+                    "add_on_name": "Enterprise Only",
+                    "applies_to_all_plans": 0,
+                    "is_active": 1,
+                },
+                {
+                    "name": "INACTIVE_ADDON",
+                    "add_on_name": "Inactive Add-on",
+                    "applies_to_all_plans": 1,
+                    "is_active": 0,
+                },
+            ]
+            children = [
+                {"parent": "PRIORITY_SUPPORT", "plan": "BUSINESS"},
+                {"parent": "ENTERPRISE_ONLY", "plan": "ENTERPRISE"},
+            ]
+
+            def get_all(doctype, filters=None, **kwargs):
+                if doctype == "Add-on Master":
+                    return [
+                        dict(row) for row in masters
+                        if (filters or {}).get("is_active", 1) == row["is_active"]
+                    ]
+                if doctype == "Add-on Applicable Plan":
+                    parents = set(((filters or {}).get("parent") or [None, []])[1])
+                    return [dict(row) for row in children if row["parent"] in parents]
+                return []
+
+            env.frappe.get_all = get_all
+            self.assertEqual(
+                env.addon_master.get_orderable_addons(txt=""),
+                [
+                    ("CUSTOM_DOMAIN_SERVICE", "Custom Domain Service"),
+                    ("PRIORITY_SUPPORT", "Priority Support"),
+                ],
+            )
+            self.assertEqual(
+                env.addon_master.get_orderable_addons(txt="priority"),
+                [("PRIORITY_SUPPORT", "Priority Support")],
+            )
 
 
 if __name__ == "__main__":

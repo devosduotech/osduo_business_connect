@@ -7,6 +7,7 @@
   "naming_rule": "By \"Field\" value",
   "autoname": "field:code",
   "title_field": "add_on_name",
+  "show_title_field_in_link": 1,
   "search_fields": "code,add_on_name",
   "issingle": 0,
   "istable": 0,
@@ -22,27 +23,9 @@
     {"fieldname": "is_active", "fieldtype": "Check", "label": "Active", "default": "1"},
     {"fieldname": "section_applicability", "fieldtype": "Section Break", "label": "Applicability"},
     {"fieldname": "applies_to_all_plans", "fieldtype": "Check", "label": "Applies to All Plans", "default": "1"},
-    {"fieldname": "applicable_plans", "fieldtype": "Table", "label": "Applicable Plans", "options": "Add-on Applicable Plan", "depends_on": "!applies_to_all_plans"},
+    {"fieldname": "applicable_plans", "fieldtype": "Table", "label": "Applicable Plans", "options": "Add-on Applicable Plan", "description": "Used only when 'Applies to All Plans' is unchecked. Add one row per allowed SaaS Plan."},
     {"fieldname": "section_details", "fieldtype": "Section Break", "label": "Details"},
     {"fieldname": "description", "fieldtype": "Small Text", "label": "Description"}
   ],
-  "permissions": [
-    {
-      "role": "BC Subscription Manager",
-      "read": 1, "write": 1, "create": 1, "delete": 1,
-      "report": 1, "export": 1, "import": 1, "print": 1, "email": 1, "share": 1
-    },
-    {
-      "role": "BC System Manager",
-      "read": 1
-    },
-    {
-      "role": "BC Business Owner",
-      "read": 1
-    },
-    {
-      "role": "BC Business Manager",
-      "read": 1
-    }
-  ]
+  "permissions": []
 }

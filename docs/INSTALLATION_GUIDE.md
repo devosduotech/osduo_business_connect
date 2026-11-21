@@ -264,6 +264,36 @@ per member (extra cards with a different display name are blocked).
   businesses and team management. Enterprise adds CRM admin, Email/WhatsApp
   configuration, up to 5 businesses and one included custom domain.
 
+### Change the plan on an existing instance
+
+The provision CLI is the only supported way to change a site's plan. It uses the
+`Administrator` session internally, so no Desk role is needed. Re-run `provision`
+with `--force`; it updates the Subscription and frozen entitlement snapshot in
+place and never purges data.
+
+```bash
+env/bin/python apps/osduo_business_connect/scripts/provision_customer_site.py \
+  --site customer.example.com provision \
+  --plan ENTERPRISE --seats 10 \
+  --external-ref AASRIVA-UPGRADE-12345 \
+  --notes "Upgraded from Business" \
+  --force
+
+bench --site customer.example.com clear-cache
+```
+
+For a downgrade, use the lower plan code and its minimum seat count:
+
+```bash
+env/bin/python apps/osduo_business_connect/scripts/provision_customer_site.py \
+  --site customer.example.com provision \
+  --plan PROFESSIONAL --seats 1 \
+  --force
+```
+
+No CRM/public data is deleted. Existing access is immediately gated by the new
+snapshot; CRM/public records remain intact for a later upgrade.
+
 ### Status changes (provider only)
 
 ```bash
@@ -291,8 +321,9 @@ Business owner/manager creates an **Add-on Order** from its native Desk form:
 
 - **Custom Domain Service** — ₹5,999/year; the first Enterprise mapping is
   included at ₹0, every other mapping is paid. Mapping status flows
-  `Requested → Approved → Configured → Verified → Active`; only the provider
-  advances it. An Active order creates the domain mapping on the Subscription.
+  `Requested → Approved → Configured → Verified → Active`; only the site
+  `Administrator` advances it. An Active order creates the domain mapping on
+  the Subscription.
 - **Domain Registration / Renewal** — actual vendor cost; attach a quote or
   invoice. No payment is collected in this platform.
 - Mapping and order expiry follow `Subscription.current_period_end`. Adding a
@@ -303,7 +334,10 @@ Business owner/manager creates an **Add-on Order** from its native Desk form:
 #### Create an Add-on Master (provider)
 
 Every site has its own database, so create the master on each customer site where
-it should be orderable. Use `Administrator` or `BC Subscription Manager`.
+it should be orderable. Use `Administrator` only. The `SaaS Plan`, `Add-on Master`
+and `Subscription` DocTypes have no DocPerms for other roles, so non-Administrators
+cannot create, change or even list subscription masters. The Add-on Order link field
+uses a restricted custom query; it does not expose the master list.
 
 1. Desk → **Subscription** → **Add-on Master** → **Add Add-on Master**.
 2. Fill:
@@ -315,12 +349,13 @@ it should be orderable. Use `Administrator` or `BC Subscription Manager`.
      - `Actual Cost` — set price to `0`; the customer must attach a quote/invoice
        and the order amount records `0` because payment is handled in Aasriva.
    - **Active** — keep checked to allow ordering.
-3. Choose applicability:
-   - For every plan: leave **Applies to All Plans** checked.
-   - For selected plans: **uncheck** it. The **Applicable Plans** table appears;
-     add one row per allowed plan using the SaaS Plan names `PROFESSIONAL`,
-     `BUSINESS`, `ENTERPRISE`. An empty table makes the add-on available to no
-     plan.
+3. Choose applicability. The **Applicable Plans** table is always visible:
+   - For every plan: leave **Applies to All Plans** checked. The table is ignored
+     but can be left empty.
+   - For selected plans: **uncheck** it and add one row per allowed plan using
+     the SaaS Plan names `PROFESSIONAL`, `BUSINESS`, `ENTERPRISE`. Saving with an
+     empty table is blocked, so a restricted add-on cannot accidentally become
+     available to no plan.
 4. Save. Existing sites pick it up immediately; no reprovision is required.
 
 `SaaS Plan` and the two seeded domain add-ons are created by install/migrate.
@@ -351,11 +386,12 @@ bench --site customer.example.com console
 
 #### How customers order it
 
-A `BC Business Owner` or `BC Business Manager` creates an **Add-on Order** and
-selects the master. The controller fills `plan_snapshot` from the site's frozen
-subscription entitlements, re-derives `billing_type`/`amount`, and rejects the
-order if the site's plan is absent from **Applicable Plans**. The provider then
-advances the order:
+A `BC Business Owner` or `BC Business Manager` creates an **Add-on Order**. The
+Add-on dropdown shows only active masters allowed by the site's frozen plan, so
+the Add-on Master list stays Administrator-only. The controller fills
+`plan_snapshot` from the frozen subscription entitlements, re-derives
+`billing_type`/`amount`, and rejects the order if the site's plan is absent from
+**Applicable Plans**. The `Administrator` then advances the order:
 
 ```text
 Requested → Approved → Configured → Verified → Active
@@ -369,8 +405,12 @@ revalidated only when saved.
 ### Troubleshooting
 
 - `Permission Error: Insufficient Permission for Add-on Master` — pull the
-  latest `develop` (read-only DocPerms were added for `BC Business Owner` and
-  `BC Business Manager`) and run `bench --site <site> migrate` to sync DocPerms.
+  latest `develop` and run `bench --site <site> migrate`. Customer roles no longer
+  need read access to Add-on Master; the Add-on Order form uses a restricted
+  custom query instead.
+- Add-on dropdown is empty — as Administrator, confirm the master is **Active**
+  and that the site's plan is listed under **Applicable Plans** when
+  **Applies to All Plans** is unchecked.
 - `X is not available on the Y plan` — the master has **Applies to All Plans**
   unchecked and the site's plan is missing from **Applicable Plans**. Add the
   correct plan, or reprovision the site with the correct plan if the sale was

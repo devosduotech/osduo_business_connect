@@ -148,10 +148,10 @@ class AddonOrder(Document):
         return self.add_on in (CUSTOM_DOMAIN_ADDON, DOMAIN_REGISTRATION_ADDON)
 
     def _is_provider(self):
-        roles = set(frappe.get_roles() if hasattr(frappe, "get_roles") else [])
-        return bool(
-            roles.intersection({"Administrator", "System Manager", "BC Subscription Manager"})
-        )
+        # Only the site Administrator advances provider-controlled records.
+        # Standard System Manager is reserved for Frappe CRM, and BC roles are
+        # for Business Connect data entry only.
+        return getattr(frappe.session, "user", None) == "Administrator"
 
     def _previous(self):
         getter = getattr(self, "get_doc_before_save", None)

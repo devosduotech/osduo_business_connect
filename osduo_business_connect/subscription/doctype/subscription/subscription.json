@@ -36,11 +36,5 @@
     {"fieldname": "domain_mappings", "fieldtype": "Table", "label": "Domain Mappings", "options": "Domain Mapping"},
     {"fieldname": "audit_log", "fieldtype": "Table", "label": "Audit Log", "options": "Subscription Audit Log"}
   ],
-  "permissions": [
-    {
-      "role": "BC Subscription Manager",
-      "read": 1, "write": 1, "create": 1, "delete": 1,
-      "report": 1, "export": 1, "print": 1, "email": 1, "share": 1
-    }
-  ]
+  "permissions": []
 }

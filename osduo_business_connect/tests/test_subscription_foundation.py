@@ -84,18 +84,43 @@ class TestSubscriptionModuleStructure(unittest.TestCase):
                 % (doctype_name, expected, sorted(classes)),
             )
 
-    def test_customers_can_read_add_on_master_for_link_validation(self):
-        path = os.path.join(SUB_DIR, "doctype", "add_on_master", "add_on_master.json")
-        with open(path) as handle:
+    def test_subscription_masters_are_administrator_only(self):
+        # Empty DocPerms means only Administrator (which Frappe bypasses before
+        # permission hooks) can create or change these records.
+        for name in ("saas_plan", "add_on_master", "subscription"):
+            path = os.path.join(SUB_DIR, "doctype", name, "%s.json" % name)
+            with open(path) as handle:
+                data = json.load(handle)
+            self.assertEqual(data.get("permissions", []), [], name)
+
+    def test_add_on_master_exposes_plan_table_and_custom_link_query(self):
+        base = os.path.join(SUB_DIR, "doctype", "add_on_master")
+        with open(os.path.join(base, "add_on_master.json")) as handle:
             data = json.load(handle)
-        roles = {
-            permission["role"]: permission
-            for permission in data.get("permissions", [])
-        }
-        for role in ("BC Business Owner", "BC Business Manager", "BC System Manager"):
-            self.assertEqual(roles.get(role, {}).get("read"), 1, role)
-            self.assertNotEqual(roles.get(role, {}).get("write"), 1, role)
-            self.assertNotEqual(roles.get(role, {}).get("create"), 1, role)
+        fields = {field["fieldname"]: field for field in data["fields"]}
+        self.assertNotIn("depends_on", fields["applicable_plans"])
+        self.assertEqual(data.get("show_title_field_in_link"), 1)
+
+        with open(os.path.join(base, "add_on_master.py")) as handle:
+            source = handle.read()
+        self.assertIn("@frappe.whitelist()", source)
+        self.assertIn("def get_orderable_addons(", source)
+        self.assertIn("frappe.get_all(", source)
+
+    def test_add_on_order_uses_custom_link_query_and_is_customer_only(self):
+        base = os.path.join(SUB_DIR, "doctype", "add_on_order")
+        with open(os.path.join(base, "add_on_order.js")) as handle:
+            script = handle.read()
+        self.assertIn('set_query("add_on"', script)
+        self.assertIn("get_orderable_addons", script)
+
+        with open(os.path.join(base, "add_on_order.json")) as handle:
+            data = json.load(handle)
+        roles = {permission["role"] for permission in data.get("permissions", [])}
+        for role in ("Administrator", "System Manager", "BC Subscription Manager"):
+            self.assertNotIn(role, roles)
+        for role in ("BC Business Owner", "BC Business Manager"):
+            self.assertIn(role, roles)
 
     def test_subscription_is_single(self):
         path = os.path.join(SUB_DIR, "doctype", "subscription", "subscription.json")
