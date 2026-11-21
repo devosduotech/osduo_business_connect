@@ -44,8 +44,13 @@ class FakeDB:
     def get_value(self, dt, dn, field):
         return self.values.get((dt, dn, field))
 
-    def set_value(self, dt, dn, field, value, **kwargs):
-        self.values[(dt, dn, field)] = value
+    def set_value(self, dt, dn, field, value=None, **kwargs):
+        updates = field if isinstance(field, dict) else {field: value}
+        for key, item in updates.items():
+            self.values[(dt, dn, key)] = item
+
+    def set_single_value(self, dt, field, value, **kwargs):
+        self.single[(dt, field)] = value
 
     def sql(self, *args, **kwargs):
         return [(0,)]
@@ -1033,6 +1038,210 @@ class TestAddOnsAndDomains(unittest.TestCase):
         self.assertIn("get_my_subscription", script)
         self.assertIn('frappe.new_doc("Add-on Order")', script)
         self.assertIn("upgrade_url", script)
+
+
+class TestFinalHardening(unittest.TestCase):
+    """Phase 4 regressions: direct-insert, route and snapshot bypasses."""
+
+    def test_addon_order_insert_cannot_bypass_workflow(self):
+        with StubEnvironment() as env:
+            env.set_plan("ENTERPRISE")
+            order = env.addon_order.AddonOrder({
+                "status": "Active",
+                "approved_by": "attacker@example.com",
+                "external_ref": "fake-ref",
+                "hostname": "cards.example.com",
+            })
+            order.before_insert()
+            self.assertEqual(order.status, "Requested")
+            self.assertIsNone(order.approved_by)
+            self.assertIsNone(order.external_ref)
+
+    def test_addon_order_amount_and_plan_are_server_derived(self):
+        with StubEnvironment() as env:
+            env.set_plan("ENTERPRISE")
+            env.frappe.db.single[("Subscription", "plan")] = "ENTERPRISE"
+            add_on = FakeDocument({
+                "name": "CUSTOM_DOMAIN_SERVICE",
+                "billing_type": "Annual",
+                "price": 5999,
+                "is_active": 1,
+                "applies_to_all_plans": 1,
+                "applicable_plans": [],
+                "add_on_name": "Custom Domain Service",
+            })
+            env.frappe.get_doc = lambda *a, **k: add_on
+            order = env.addon_order.AddonOrder({
+                "add_on": "CUSTOM_DOMAIN_SERVICE",
+                "hostname": "cards.example.com",
+                "plan_snapshot": "PROFESSIONAL",
+                "amount": 0,
+            })
+            order.validate()
+            self.assertEqual(order.plan_snapshot, "ENTERPRISE")
+            self.assertEqual(order.amount, 0)  # first Enterprise mapping included
+            self.assertEqual(order.mapping_type, "Included")
+
+    def test_professional_blocks_multi_business_and_team_surfaces(self):
+        with StubEnvironment() as env:
+            env.set_plan("PROFESSIONAL")
+            for path in (
+                "/app/business/new",
+                "/desk/business/new",
+                "/app/business/view/new",
+                "/app/business-member",
+                "/desk/business-member",
+                "/api/resource/Business Member",
+            ):
+                with self.subTest(path=path):
+                    env.set_request(path, method="POST")
+                    with self.assertRaises(env.frappe.PermissionError):
+                        env.plan_gates.enforce_plan_gates()
+
+            env.set_request(
+                "/api/method/frappe.client.insert",
+                method="POST",
+                form={"cmd": "frappe.client.insert", "doctype": "Business"},
+            )
+            with self.assertRaises(env.frappe.PermissionError):
+                env.plan_gates.enforce_plan_gates()
+
+            # Editing the single Business stays usable on Professional.
+            env.set_request("/app/business/BUS-1", method="GET")
+            env.plan_gates.enforce_plan_gates()
+            env.set_request(
+                "/api/resource/Business/BUS-1",
+                method="PUT",
+                form={"doctype": "Business", "name": "BUS-1"},
+            )
+            env.plan_gates.enforce_plan_gates()
+
+    def test_business_plan_allows_profile_and_team_creation(self):
+        with StubEnvironment() as env:
+            env.set_plan("BUSINESS")
+            for path in ("/app/business/new", "/app/business-member"):
+                with self.subTest(path=path):
+                    env.set_request(path, method="GET")
+                    env.plan_gates.enforce_plan_gates()
+            env.set_request("/api/resource/Business Member", method="POST")
+            env.plan_gates.enforce_plan_gates()
+
+    def test_v2_admin_method_shorthand_is_gated_for_business(self):
+        with StubEnvironment() as env:
+            env.set_plan("BUSINESS")
+            for method in ("save_fields_layout", "set_as_default", "dismiss_sync_issue"):
+                with self.subTest(method=method):
+                    path = f"/api/v2/method/CRM%20Fields%20Layout/{method}"
+                    env.set_request(path, method="GET")
+                    with self.assertRaises(env.frappe.PermissionError):
+                        env.plan_gates.enforce_plan_gates()
+            # Ordinary layout reads stay available so the CRM UI renders.
+            env.set_request(
+                "/api/v2/method/CRM%20Fields%20Layout/get_fields_layout",
+                method="GET",
+            )
+            env.plan_gates.enforce_plan_gates()
+
+    def test_subscription_provider_fields_are_immutable(self):
+        with StubEnvironment() as env:
+            snapshot = json.dumps(env.constants.snapshot_defaults("PROFESSIONAL"))
+            old = env.controller.Subscription({
+                "name": "Subscription",
+                "plan": "PROFESSIONAL",
+                "status": "Active",
+                "seats_ordered": 1,
+                "min_billed_seats": 1,
+                "seats_cap": 1,
+                "entitlement_snapshot": snapshot,
+            })
+            new = env.controller.Subscription({
+                "name": "Subscription",
+                "plan": "ENTERPRISE",
+                "status": "Active",
+                "seats_ordered": 1,
+                "min_billed_seats": 1,
+                "seats_cap": 1,
+                "entitlement_snapshot": snapshot,
+            })
+            new.get_doc_before_save = lambda: old
+            with self.assertRaises(env.frappe.ValidationError) as ctx:
+                new.validate()
+            self.assertIn("managed by the subscription provider", str(ctx.exception))
+
+            env.frappe.flags.bc_provisioning = True
+            new.validate()  # CLI path is trusted
+
+    def test_snapshot_plan_code_is_authoritative(self):
+        with StubEnvironment() as env:
+            business = env.constants.snapshot_defaults("BUSINESS")
+            business["plan_code"] = "BUSINESS"
+            subscription = env.controller.Subscription({
+                "name": "Subscription",
+                "plan": "ENTERPRISE",  # tampered field
+                "status": "Active",
+                "seats_cap": 5,
+                "entitlement_snapshot": json.dumps(business),
+            })
+            env.frappe.db.single[("Subscription", "plan")] = "ENTERPRISE"
+            env.frappe.get_doc = lambda *a, **k: (
+                subscription if a == ("Subscription",) else FakeDocument(*a, **k)
+            )
+            env.entitlements.clear_entitlement_cache()
+            ent = env.entitlements.get_entitlements()
+            self.assertEqual(ent["plan_code"], "BUSINESS")
+            self.assertFalse(ent["features"]["advanced_admin"])
+
+    def test_legacy_website_theme_colours_are_repaired_before_migrate(self):
+        with StubEnvironment() as env:
+            install = _load(
+                "osduo_business_connect.install",
+                os.path.join(APP_DIR, "install.py"),
+            )
+            colors = {"#333333"}
+            theme = FakeDocument({
+                "name": "Legacy Theme",
+                "primary_color": "Primary Color",
+                "text_color": "#333333",
+                "background_color": "Page Background Color",
+            })
+
+            def exists(dt, dn=None):
+                if dt == "DocType":
+                    return True
+                if dt == "Color":
+                    return dn in colors
+                return False
+
+            created = []
+
+            def get_doc(*args, **kwargs):
+                data = args[0] if args and isinstance(args[0], dict) else None
+                if isinstance(data, dict) and data.get("doctype") == "Color":
+                    created.append(data)
+                    colors.add(data["__newname"])
+                    return FakeDocument(data)
+                if args == ("Website Theme", "Legacy Theme"):
+                    return theme
+                return FakeDocument(*args, **kwargs)
+
+            env.frappe.get_all = lambda *a, **k: ["Legacy Theme"]
+            env.frappe.db.exists = exists
+            env.frappe.get_doc = get_doc
+
+            self.assertEqual(install.repair_website_theme_colors(), 2)
+            self.assertEqual(
+                env.frappe.db.values[("Website Theme", "Legacy Theme", "primary_color")],
+                "#0B3D91",
+            )
+            self.assertEqual(
+                env.frappe.db.values[("Website Theme", "Legacy Theme", "background_color")],
+                "#F4F6F8",
+            )
+            self.assertNotIn(
+                ("Website Theme", "Legacy Theme", "text_color"),
+                env.frappe.db.values,
+            )
+            self.assertEqual(len(created), 2)
 
 
 if __name__ == "__main__":

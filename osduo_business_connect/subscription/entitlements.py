@@ -181,7 +181,11 @@ def get_entitlements():
         })
     elif subscription:
         snapshot = _parse_snapshot(getattr(subscription, "entitlement_snapshot", None))
-        result = _normalise_snapshot(snapshot, getattr(subscription, "plan", None))
+        # The frozen snapshot decides the plan once provisioning has run. The
+        # Subscription.plan field is only a legacy fallback for sites that have
+        # no snapshot yet, so editing that field can never escalate entitlements.
+        plan_code = (snapshot or {}).get("plan_code") or getattr(subscription, "plan", None)
+        result = _normalise_snapshot(snapshot, plan_code)
         result["status"] = subscription.status or "Active"
         result["source"] = "subscription_snapshot" if snapshot else "subscription_defaults"
         # Seats actually purchased are live Subscription state, not plan-master data.

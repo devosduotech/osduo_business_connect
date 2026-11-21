@@ -36,6 +36,13 @@ ALLOWED_TRANSITIONS = {
 
 
 class AddonOrder(Document):
+    def before_insert(self):
+        # A customer can create a request, never a pre-approved/active order.
+        # The status default in the DocType JSON is UI-only and is not trusted.
+        self.status = "Requested"
+        self.approved_by = None
+        self.external_ref = None
+
     def before_validate(self):
         if self.hostname:
             self.hostname = str(self.hostname).strip().lower()
@@ -58,8 +65,9 @@ class AddonOrder(Document):
     def set_request_snapshot(self):
         if not self.site:
             self.site = frappe.local.site
-        if not self.plan_snapshot:
-            self.plan_snapshot = get_plan_code()
+        # Always server-derived: a client must not spoof a higher plan to pass
+        # an add-on's applicability check.
+        self.plan_snapshot = get_plan_code()
 
     def validate_add_on(self):
         if not self.add_on:
@@ -83,10 +91,15 @@ class AddonOrder(Document):
                 )
 
         if self.add_on == CUSTOM_DOMAIN_ADDON and self.billing_type == "Annual":
-            if not self.amount:
-                self.amount = add_on.price
-            if not self.mapping_type or self.mapping_type == "Auto":
-                self.mapping_type, _ = next_mapping()
+            # Price comes from the frozen plan entitlements, never the payload.
+            mapping_type, price = next_mapping()
+            self.mapping_type = mapping_type
+            self.amount = price
+        elif self.billing_type == "Annual":
+            self.amount = add_on.price
+        else:
+            # Actual cost is settled by the provider; the site only records evidence.
+            self.amount = 0
 
     def validate_hostname(self):
         if not self.hostname:

@@ -8,6 +8,7 @@ Handles creation of CRM Custom Fields and initial setup.
 """
 
 import json
+import re
 
 import frappe
 
@@ -337,6 +338,91 @@ def create_default_roles():
             })
             role.insert(ignore_permissions=True)
             frappe.db.commit()
+
+
+# Frappe v16 re-saves the active Website Theme at the end of every migrate.
+# Old sites can carry legacy label values ("Primary Color", "Page Background
+# Color", etc.) in Color link fields after an upgrade; the linked Color rows no
+# longer exist, so Frappe's LinkValidationError aborts the whole migrate.
+# Repair only broken links, before Frappe's after_migrate hook runs.
+THEME_COLOR_FIELDS = (
+    "primary_color",
+    "text_color",
+    "dark_color",
+    "light_color",
+    "background_color",
+)
+THEME_COLOR_FALLBACKS = {
+    "primary_color": "#0B3D91",
+    "text_color": "#333333",
+    "dark_color": "#062653",
+    "light_color": "#F4F6F8",
+    "background_color": "#F4F6F8",
+}
+LEGACY_THEME_COLOR_VALUES = {
+    "Primary Color": "#0B3D91",
+    "Text Color": "#333333",
+    "Dark Color": "#062653",
+    "Light Color": "#F4F6F8",
+    "Background Color": "#F4F6F8",
+    "Page Background Color": "#F4F6F8",
+}
+HEX_COLOR = re.compile(r"^#[0-9A-Fa-f]{3,8}$")
+
+
+def repair_website_theme_colors():
+    """Before-migrate hook: replace invalid Website Theme Color links.
+
+    Valid links (including per-site custom colours) are left untouched. Broken
+    links are pointed at a Color record with a safe hex value, created once,
+    so Frappe's ``after_migrate`` theme re-save cannot fail link validation.
+    Uses ``db.set_value`` to avoid recompiling SCSS during migrate.
+    """
+    try:
+        themes = frappe.get_all("Website Theme", pluck="name")
+    except Exception:
+        return 0
+
+    repaired = 0
+    for name in themes or []:
+        try:
+            doc = frappe.get_doc("Website Theme", name)
+        except Exception:
+            continue
+        updates = {}
+        for field in THEME_COLOR_FIELDS:
+            value = doc.get(field)
+            if not value:
+                continue
+            try:
+                if frappe.db.exists("Color", value):
+                    continue
+            except Exception:
+                continue
+            colour = str(value)
+            if not HEX_COLOR.match(colour):
+                colour = LEGACY_THEME_COLOR_VALUES.get(colour) or THEME_COLOR_FALLBACKS[field]
+            try:
+                if not frappe.db.exists("Color", colour):
+                    frappe.get_doc({
+                        "doctype": "Color",
+                        "__newname": colour,
+                        "color": colour,
+                    }).insert(ignore_permissions=True)
+            except Exception:
+                continue
+            updates[field] = colour
+        if updates:
+            frappe.db.set_value("Website Theme", name, updates, update_modified=False)
+            repaired += len(updates)
+
+    try:
+        active = frappe.db.get_single_value("Website Settings", "website_theme")
+        if active and active != "Standard" and not frappe.db.exists("Website Theme", active):
+            frappe.db.set_single_value("Website Settings", "website_theme", "Standard")
+    except Exception:
+        pass
+    return repaired
 
 
 def after_migrate():

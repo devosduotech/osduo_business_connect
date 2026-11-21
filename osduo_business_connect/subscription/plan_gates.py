@@ -39,6 +39,8 @@ from osduo_business_connect.subscription.constants import (
     ANALYTICS_DOCTYPES,
     CRM_EXTRA_DOCTYPES,
     IMPORT_EXPORT_DOCTYPES,
+    MULTI_BUSINESS_DOCTYPES,
+    TEAM_MANAGEMENT_DOCTYPES,
 )
 from osduo_business_connect.subscription.entitlements import (
     get_entitlements,
@@ -68,6 +70,19 @@ CRM_DESK_PREFIXES = _desk_routes(
 )
 CRM_METHOD_PREFIX = "crm."
 CRM_DOCTYPE_PREFIX = "CRM "
+
+# Professional keeps one Business and its owner member, but cannot create
+# additional profiles or manage a team. Edit routes for the single Business
+# remain available.
+MULTI_BUSINESS_CREATE_PAGES = frozenset(
+    path + "/new"
+    for path in _desk_routes("business")
+) | frozenset(
+    f"{base}/{slug}/new"
+    for base in _desk_routes("business")
+    for slug in ("view", "form")
+)
+TEAM_MANAGEMENT_PAGES = _desk_routes("business-member")
 
 ANALYTICS_PAGES = ("/analytics",) + _desk_routes("analytics", "engagement-event")
 ANALYTICS_METHODS = frozenset({
@@ -153,6 +168,35 @@ ADVANCED_ADMIN_METHODS = frozenset({
     "crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.run_product_sync",
 })
 
+# Short names used by v2's /method/<doctype>/<method> shorthand. These are all
+# Enterprise-only writes; the full controller paths above are still checked.
+ADVANCED_ADMIN_METHOD_SHORT_NAMES = frozenset({
+    "create_email_account",
+    "add_existing_users",
+    "update_user_role",
+    "remove_crm_roles_from_user",
+    "duplicate_assignment_rule",
+    "save_form",
+    "set_published",
+    "delete_form",
+    "grant_guest_link_access",
+    "reset_to_default",
+    "save_fields_layout",
+    "create",
+    "update",
+    "delete",
+    "set_as_default",
+    "create_or_update_standard_view",
+    "pin",
+    "public",
+    "fetch_and_update_kanban_columns",
+    "dismiss_sync_issue",
+    "restore_defaults",
+    "restore_demo_data",
+    "reset_erpnext_form_script",
+    "run_product_sync",
+})
+
 API_TOKEN_METHOD = "frappe.core.doctype.user.user.generate_keys"
 API_TOKEN_FIELDS = frozenset({"api_key", "api_secret"})
 
@@ -214,6 +258,8 @@ FEATURE_MESSAGES = {
     "crm_access": ("CRM", "Business"),
     "analytics": ("Analytics", "Business"),
     "import_export": ("Import and export", "Business"),
+    "multiple_business_profiles": ("Multiple business profiles", "Business"),
+    "team_management": ("Team management", "Business"),
     "advanced_admin": ("Advanced administration", "Enterprise"),
 }
 
@@ -227,6 +273,9 @@ RESOURCE_PREFIXES = (
     "/api/v2/discovery/doctype/",
 )
 V2_METHOD_ROUTE = re.compile(r"^/api/v\d+/method/([^/]+)/([^/]+)$")
+RESOURCE_COLLECTION_ROUTE = re.compile(
+    r"^/api/(?:v\d+/)?(?:resource|document)/([^/]+)/?$"
+)
 DOC_METHOD_ROUTE = re.compile(
     r"^/api/(?:v\d+/)?(?:resource|document)/([^/]+)/[^/]+/(?:method|copy)/(.*)$"
 )
@@ -316,9 +365,19 @@ def _request_methods(path):
     match = V2_METHOD_ROUTE.match(path)
     if match:
         # v2 also supports /method/<doctype>/<method>, which is expanded by
-        # handle_rpc_call before dispatch.
+        # handle_rpc_call before dispatch. Expand it here too: checking only
+        # the short method name misses controller writes such as
+        # /method/CRM%20Fields%20Layout/save_fields_layout.
         first, second = (unquote(group) for group in match.groups())
         methods.update({second, f"{first}.{second}"})
+        try:
+            from frappe.modules.utils import load_doctype_module
+
+            methods.add(f"{load_doctype_module(first).__name__}.{second}")
+        except Exception:
+            # During install/migrate or in isolated tests the module may not
+            # be importable; the short-name fallback below still applies.
+            pass
 
     match = DOC_METHOD_ROUTE.match(path)
     if match:
@@ -353,6 +412,32 @@ def _request_doctypes(path):
             if isinstance(value, str) and value.strip():
                 doctypes.add(value.strip())
     return doctypes
+
+
+def _created_doctypes(path, methods, is_write):
+    """DocTypes this request creates (as opposed to edits an existing row)."""
+    if not is_write:
+        return set()
+    created = set()
+    if methods & {"frappe.client.insert", "frappe.client.insert_many"}:
+        for source in _request_sources():
+            for payload in _walk_payload(source):
+                value = payload.get("doctype")
+                if isinstance(value, str) and value.strip():
+                    created.add(value.strip())
+
+    match = RESOURCE_COLLECTION_ROUTE.match(path)
+    if match:
+        created.add(unquote(match.group(1)).strip())
+
+    for source in _request_sources():
+        for payload in _walk_payload(source):
+            value = payload.get("doctype")
+            if isinstance(value, str) and value.strip() and (
+                payload.get("is_new") or payload.get("__islocal")
+            ):
+                created.add(value.strip())
+    return created
 
 
 def _method_matches(methods, prefix, names):
@@ -500,6 +585,7 @@ def _private_surface(path, methods):
 
 def _doctype_plan_gate(entitlements, doctypes, path, write=False):
     """Apply plan gates to every DocType this request can address."""
+    created = _created_doctypes(path, _request_methods(path), write)
     for doctype in doctypes:
         if doctype.startswith(CRM_DOCTYPE_PREFIX) or doctype in CRM_EXTRA_DOCTYPES:
             _require_feature(entitlements, "crm_access", path)
@@ -507,6 +593,10 @@ def _doctype_plan_gate(entitlements, doctypes, path, write=False):
             _require_feature(entitlements, "analytics", path)
         if doctype in IMPORT_EXPORT_DOCTYPES:
             _require_feature(entitlements, "import_export", path)
+        if doctype in MULTI_BUSINESS_DOCTYPES and doctype in created:
+            _require_feature(entitlements, "multiple_business_profiles", path)
+        if doctype in TEAM_MANAGEMENT_DOCTYPES and write:
+            _require_feature(entitlements, "team_management", path)
         if doctype in ADVANCED_ADMIN_DOCTYPES and (
             write or doctype in ADVANCED_ADMIN_READ_DOCTYPES
         ):
@@ -569,6 +659,12 @@ def enforce_plan_gates():
     ):
         _require_feature(ent, "crm_access", path)
 
+    # Multiple Business profiles and Team management (Business and above).
+    if path in MULTI_BUSINESS_CREATE_PAGES:
+        _require_feature(ent, "multiple_business_profiles", path)
+    if path.startswith(TEAM_MANAGEMENT_PAGES):
+        _require_feature(ent, "team_management", path)
+
     # Analytics (Business and above)
     if (
         path.startswith(ANALYTICS_PAGES)
@@ -589,10 +685,20 @@ def enforce_plan_gates():
     # client/Desk methods carrying a doctype in their payload.
     _doctype_plan_gate(ent, doctypes, path, write=is_write)
 
-    # Advanced Administration (Enterprise only)
+    # Advanced Administration (Enterprise only). v2's
+    # /method/<doctype>/<method> shorthand is expanded above, and short admin
+    # write names are checked explicitly so a failed module import cannot
+    # turn an Enterprise-only write into a Business-plan GET.
+    v2_match = V2_METHOD_ROUTE.match(path)
+    v2_admin_write = bool(
+        v2_match
+        and unquote(v2_match.group(1)).strip() in ADVANCED_ADMIN_DOCTYPES
+        and unquote(v2_match.group(2)).strip() in ADVANCED_ADMIN_METHOD_SHORT_NAMES
+    )
     if (
         bool(methods & ADVANCED_ADMIN_METHODS)
         or path.startswith(ADVANCED_ADMIN_PATH_PREFIXES)
+        or v2_admin_write
     ):
         _require_feature(ent, "advanced_admin", path)
 
@@ -616,6 +722,17 @@ def has_permission_for_doctype(doc, user=None, ptype=None):
 
     if doctype in IMPORT_EXPORT_DOCTYPES and not has_feature("import_export"):
         return False
+
+    if doctype in MULTI_BUSINESS_DOCTYPES and ptype in ("create", "delete"):
+        if not has_feature("multiple_business_profiles"):
+            return False
+
+    if doctype in TEAM_MANAGEMENT_DOCTYPES and ptype in ("write", "create", "delete"):
+        flags = getattr(doc, "flags", None)
+        if getattr(flags, "bc_bootstrap_owner", False):
+            return True  # automatic owner row created with the first Business
+        if not has_feature("team_management"):
+            return False
 
     if doctype in ADVANCED_ADMIN_DOCTYPES and (
         doctype in ADVANCED_ADMIN_READ_DOCTYPES or ptype in ("write", "create", "delete")

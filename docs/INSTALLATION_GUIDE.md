@@ -267,6 +267,7 @@ osduo_business_connect` (then `clear-website-cache`). Schema (SEO fields) needs
 | Logo/favicon missing after upgrade | `bench migrate` (applies bundled branding), then `bench clear-cache`; do **not** upload logo files to `public/files` |
 | PWA not installable | Needs HTTPS (or `localhost`); check `/manifest.json` & `/sw.js` return 200; DevTools → Application → Manifest errors |
 | `migrate` fails on CRM custom fields | Ensure the `crm` app is installed on the same site before Business Connect |
+| `migrate` fails with `LinkValidationError: Could not find Primary Color / Text Color / Page Background Color` | An older Website Theme still links to legacy `Color` labels after a Frappe upgrade. Business Connect repairs broken theme colour links in a `before_migrate` hook; pull the latest `develop` and re-run `bench --site <site> migrate`. Valid custom colours are untouched |
 | Permission oddities (submit/cancel greyed out) | User needs the role bit **and** an active Business Member row (Owner/Manager/Marketing for submit; Owner for cancel/amend) |
 
 ---

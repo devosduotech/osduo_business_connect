@@ -92,7 +92,6 @@ def has_permission(doc, user=None, ptype=None):
         "Subscription",
         "Add-on Order",
         "Plan Restriction Log",
-        "Webhook Event Log",
     ):
         return True
 

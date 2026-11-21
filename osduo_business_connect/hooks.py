@@ -248,7 +248,6 @@ has_permission = {
     "Subscription": "osduo_business_connect.permissions.has_permission",
     "Add-on Order": "osduo_business_connect.permissions.has_permission",
     "Plan Restriction Log": "osduo_business_connect.permissions.has_permission",
-    "Webhook Event Log": "osduo_business_connect.permissions.has_permission",
     # Plan-gated DocTypes (defence in depth). Never returns None: v16 treats a
     # falsy controller-permission result as a deny. Generated from the same
     # inventory the HTTP gate uses so new gated DocTypes cannot be missed.
@@ -295,6 +294,9 @@ permission_query_conditions.update({
 
 before_install = "osduo_business_connect.install.before_install"
 after_install = "osduo_business_connect.install.after_install"
+# Runs before schema updates, so legacy Website Theme colour links are repaired
+# before Frappe's own after_migrate hook re-saves the active theme.
+before_migrate = "osduo_business_connect.install.repair_website_theme_colors"
 after_migrate = "osduo_business_connect.install.after_migrate"
 
 # Uninstallation

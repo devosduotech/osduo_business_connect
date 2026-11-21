@@ -35,7 +35,6 @@ class TestSubscriptionModuleStructure(unittest.TestCase):
             "subscription_audit_log",
             "add_on_order",
             "plan_restriction_log",
-            "webhook_event_log",
         )
         for name in expected:
             base = os.path.join(SUB_DIR, "doctype", name)
@@ -215,7 +214,6 @@ class TestSubscriptionPermissionHook(unittest.TestCase):
             "Subscription",
             "Add-on Order",
             "Plan Restriction Log",
-            "Webhook Event Log",
         ):
             doc = types.SimpleNamespace(doctype=doctype)
             result = self.permissions.has_permission(

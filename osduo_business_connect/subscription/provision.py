@@ -203,10 +203,17 @@ def provision_site(
         "action": action,
         "details": f"plan={plan_code}, seats={seats}, cap={seats_cap}, external_crm={bool(external_crm)}",
     })
-    if subscription.is_new():
-        subscription.insert(ignore_permissions=True)
-    else:
-        subscription.save(ignore_permissions=True)
+    # The controller locks provider-managed fields; the CLI is the trusted path
+    # that is allowed to write them.
+    previous_flag = getattr(frappe.flags, "bc_provisioning", False)
+    frappe.flags.bc_provisioning = True
+    try:
+        if subscription.is_new():
+            subscription.insert(ignore_permissions=True)
+        else:
+            subscription.save(ignore_permissions=True)
+    finally:
+        frappe.flags.bc_provisioning = previous_flag
 
     # Commit the Subscription first: a failed config write then fails closed
     # (external CRM off) instead of advertising a plan the site does not hold.
@@ -260,7 +267,12 @@ def set_status(status, grace_until=None, note=None, user=None):
         "action": f"Status: {current} -> {status}",
         "details": note or (f"grace_until={grace_until}" if grace_until else ""),
     })
-    subscription.save(ignore_permissions=True)
+    previous_flag = getattr(frappe.flags, "bc_provisioning", False)
+    frappe.flags.bc_provisioning = True
+    try:
+        subscription.save(ignore_permissions=True)
+    finally:
+        frappe.flags.bc_provisioning = previous_flag
     frappe.db.commit()
     clear_entitlement_cache()
 

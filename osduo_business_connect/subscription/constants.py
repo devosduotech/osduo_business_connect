@@ -111,6 +111,11 @@ IMPORT_EXPORT_DOCTYPES = frozenset({"Data Import", "Data Export"})
 
 ANALYTICS_DOCTYPES = frozenset({"Engagement Event"})
 
+# Team/multi-profile surfaces are Business-and-above. Reads stay allowed so a
+# Professional site can still use its own Business and owner membership row.
+MULTI_BUSINESS_DOCTYPES = frozenset({"Business"})
+TEAM_MANAGEMENT_DOCTYPES = frozenset({"Business Member"})
+
 CRM_EXTRA_DOCTYPES = frozenset({
     "FCRM Note",
     "Lead Sync Source",
@@ -155,7 +160,11 @@ ADVANCED_ADMIN_READ_DOCTYPES = frozenset({
 })
 
 PLAN_GATE_HAS_PERMISSION_DOCTYPES = (
-    IMPORT_EXPORT_DOCTYPES | ADVANCED_ADMIN_DOCTYPES | frozenset({"User"})
+    IMPORT_EXPORT_DOCTYPES
+    | ADVANCED_ADMIN_DOCTYPES
+    | MULTI_BUSINESS_DOCTYPES
+    | TEAM_MANAGEMENT_DOCTYPES
+    | frozenset({"User"})
 )
 # Query conditions implement the read-deny half of the policy; layout DocTypes
 # stay readable on Business so the CRM UI can render.
