@@ -297,12 +297,84 @@ Business owner/manager creates an **Add-on Order** from its native Desk form:
   invoice. No payment is collected in this platform.
 - Mapping and order expiry follow `Subscription.current_period_end`. Adding a
   domain never changes `host_name` or printed QR/NFC URLs.
+- A hostname is required only for the two domain add-ons. Other add-ons are
+  billing/fulfilment records and do not need one.
+
+#### Create an Add-on Master (provider)
+
+Every site has its own database, so create the master on each customer site where
+it should be orderable. Use `Administrator` or `BC Subscription Manager`.
+
+1. Desk → **Subscription** → **Add-on Master** → **Add Add-on Master**.
+2. Fill:
+   - **Code** — unique machine code, e.g. `PRIORITY_SUPPORT`. It cannot be renamed
+     later.
+   - **Add-on Name** — customer-facing label.
+   - **Billing Type**:
+     - `Annual` — fixed **List Price**; the order records that amount.
+     - `Actual Cost` — set price to `0`; the customer must attach a quote/invoice
+       and the order amount records `0` because payment is handled in Aasriva.
+   - **Active** — keep checked to allow ordering.
+3. Choose applicability:
+   - For every plan: leave **Applies to All Plans** checked.
+   - For selected plans: **uncheck** it. The **Applicable Plans** table appears;
+     add one row per allowed plan using the SaaS Plan names `PROFESSIONAL`,
+     `BUSINESS`, `ENTERPRISE`. An empty table makes the add-on available to no
+     plan.
+4. Save. Existing sites pick it up immediately; no reprovision is required.
+
+`SaaS Plan` and the two seeded domain add-ons are created by install/migrate.
+Seeding is idempotent: it only creates missing records and never overwrites your
+Applicable Plans selections or prices.
+
+Console equivalent for a selected-plan add-on:
+
+```bash
+bench --site customer.example.com console
+>>> import frappe
+>>> frappe.get_doc({
+...   "doctype": "Add-on Master",
+...   "code": "PRIORITY_SUPPORT",
+...   "add_on_name": "Priority Support",
+...   "billing_type": "Annual",
+...   "price": 12000,
+...   "is_active": 1,
+...   "applies_to_all_plans": 0,
+...   "applicable_plans": [
+...     {"doctype": "Add-on Applicable Plan", "plan": "BUSINESS"},
+...     {"doctype": "Add-on Applicable Plan", "plan": "ENTERPRISE"},
+...   ],
+...   "description": "Annual priority support add-on",
+... }).insert()
+>>> frappe.db.commit()
+```
+
+#### How customers order it
+
+A `BC Business Owner` or `BC Business Manager` creates an **Add-on Order** and
+selects the master. The controller fills `plan_snapshot` from the site's frozen
+subscription entitlements, re-derives `billing_type`/`amount`, and rejects the
+order if the site's plan is absent from **Applicable Plans**. The provider then
+advances the order:
+
+```text
+Requested → Approved → Configured → Verified → Active
+```
+
+Only `Active` custom-domain orders create/update a Domain Mapping on the
+Subscription. Changing an Add-on Master does not remove or alter existing
+Subscriptions, mappings, printed QR codes or NFC URLs; existing orders are
+revalidated only when saved.
 
 ### Troubleshooting
 
 - `Permission Error: Insufficient Permission for Add-on Master` — pull the
   latest `develop` (read-only DocPerms were added for `BC Business Owner` and
   `BC Business Manager`) and run `bench --site <site> migrate` to sync DocPerms.
+- `X is not available on the Y plan` — the master has **Applies to All Plans**
+  unchecked and the site's plan is missing from **Applicable Plans**. Add the
+  correct plan, or reprovision the site with the correct plan if the sale was
+  recorded incorrectly.
 - `LinkValidationError: Could not find Primary Color / Text Color / Page
   Background Color` during migrate — pull latest `develop`; the `before_migrate`
   hook repairs legacy Website Theme colour links.

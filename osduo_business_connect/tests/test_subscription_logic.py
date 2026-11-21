@@ -1082,6 +1082,80 @@ class TestFinalHardening(unittest.TestCase):
             self.assertEqual(order.amount, 0)  # first Enterprise mapping included
             self.assertEqual(order.mapping_type, "Included")
 
+    def test_generic_annual_addon_uses_master_price_without_hostname(self):
+        with StubEnvironment() as env:
+            env.set_plan("BUSINESS")
+            env.frappe.db.single[("Subscription", "plan")] = "BUSINESS"
+            add_on = FakeDocument({
+                "name": "PRIORITY_SUPPORT",
+                "billing_type": "Annual",
+                "price": 12000,
+                "is_active": 1,
+                "applies_to_all_plans": 0,
+                "applicable_plans": [
+                    {"plan": "BUSINESS"}, {"plan": "ENTERPRISE"}
+                ],
+                "add_on_name": "Priority Support",
+            })
+            original_get_doc = env.frappe.get_doc
+
+            def get_doc(*args, **kwargs):
+                if args and args[0] == "Add-on Master":
+                    return add_on
+                return original_get_doc(*args, **kwargs)
+
+            env.frappe.get_doc = get_doc
+            order = env.addon_order.AddonOrder({"add_on": "PRIORITY_SUPPORT"})
+            order.validate()
+            self.assertEqual(order.plan_snapshot, "BUSINESS")
+            self.assertEqual(order.billing_type, "Annual")
+            self.assertEqual(order.amount, 12000)
+            self.assertFalse(order.expires_on)
+
+    def test_plan_specific_addon_blocks_other_plans(self):
+        with StubEnvironment() as env:
+            env.set_plan("PROFESSIONAL")
+            env.frappe.db.single[("Subscription", "plan")] = "PROFESSIONAL"
+            add_on = FakeDocument({
+                "name": "PRIORITY_SUPPORT",
+                "billing_type": "Annual",
+                "price": 12000,
+                "is_active": 1,
+                "applies_to_all_plans": 0,
+                "applicable_plans": [{"plan": "ENTERPRISE"}],
+                "add_on_name": "Priority Support",
+            })
+            original_get_doc = env.frappe.get_doc
+
+            def get_doc(*args, **kwargs):
+                if args and args[0] == "Add-on Master":
+                    return add_on
+                return original_get_doc(*args, **kwargs)
+
+            env.frappe.get_doc = get_doc
+            order = env.addon_order.AddonOrder({"add_on": "PRIORITY_SUPPORT"})
+            with self.assertRaises(env.frappe.ValidationError) as ctx:
+                order.validate()
+            self.assertIn("not available on the PROFESSIONAL plan", str(ctx.exception))
+
+    def test_domain_addon_still_requires_hostname(self):
+        with StubEnvironment() as env:
+            env.set_plan("BUSINESS")
+            add_on = FakeDocument({
+                "name": "CUSTOM_DOMAIN_SERVICE",
+                "billing_type": "Annual",
+                "price": 5999,
+                "is_active": 1,
+                "applies_to_all_plans": 1,
+                "applicable_plans": [],
+                "add_on_name": "Custom Domain Service",
+            })
+            env.frappe.get_doc = lambda *a, **k: add_on
+            order = env.addon_order.AddonOrder({"add_on": "CUSTOM_DOMAIN_SERVICE"})
+            with self.assertRaises(env.frappe.ValidationError) as ctx:
+                order.validate()
+            self.assertIn("Hostname is required", str(ctx.exception))
+
     def test_professional_blocks_multi_business_and_team_surfaces(self):
         with StubEnvironment() as env:
             env.set_plan("PROFESSIONAL")

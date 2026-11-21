@@ -102,6 +102,11 @@ class AddonOrder(Document):
             self.amount = 0
 
     def validate_hostname(self):
+        # Only domain-related add-ons need a hostname. Generic add-ons (for
+        # example priority support) are fulfilment/billing records and must not
+        # be forced to carry a fake domain.
+        if not self._is_domain_add_on():
+            return
         if not self.hostname:
             frappe.throw("Hostname is required", exc=frappe.ValidationError)
 
@@ -136,8 +141,11 @@ class AddonOrder(Document):
             self.approved_by = frappe.session.user
 
     def set_expiry(self):
-        if self.add_on in (CUSTOM_DOMAIN_ADDON, DOMAIN_REGISTRATION_ADDON):
+        if self._is_domain_add_on():
             self.expires_on = get_period_end()
+
+    def _is_domain_add_on(self):
+        return self.add_on in (CUSTOM_DOMAIN_ADDON, DOMAIN_REGISTRATION_ADDON)
 
     def _is_provider(self):
         roles = set(frappe.get_roles() if hasattr(frappe, "get_roles") else [])
