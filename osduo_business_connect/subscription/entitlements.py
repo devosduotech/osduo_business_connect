@@ -25,6 +25,7 @@ from frappe.utils import cint
 from osduo_business_connect.subscription.constants import (
     DEFAULT_UPGRADE_URL,
     FEATURE_KEYS,
+    LEGACY_UPGRADE_URLS,
     LIMIT_KEYS,
     PLAN_SEEDS,
     feature_defaults,
@@ -200,7 +201,12 @@ def get_entitlements():
 
     # Live site-level state always wins over anything frozen in the snapshot.
     result["external_crm_enabled"] = bool(cint(frappe.conf.get("bc_external_crm_enabled")))
-    result["upgrade_url"] = frappe.conf.get("bc_upgrade_url") or DEFAULT_UPGRADE_URL
+    configured_url = frappe.conf.get("bc_upgrade_url")
+    if not configured_url or configured_url in LEGACY_UPGRADE_URLS:
+        # Existing sites configured before the pricing anchor was added must
+        # still send customers straight to the plan/pricing section.
+        configured_url = DEFAULT_UPGRADE_URL
+    result["upgrade_url"] = configured_url
     result["accessible"] = _is_accessible(result["status"], subscription)
 
     frappe.local.bc_entitlements = result

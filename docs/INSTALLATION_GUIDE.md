@@ -412,7 +412,10 @@ provider must reprovision the site first. After the upgrade, the new plan's
 add-ons appear automatically. The controller always sets `plan_snapshot` from
 the frozen subscription entitlements — a client-supplied plan is ignored — and
 re-derives `billing_type`/`amount` from the matching **Applicable Plans** row.
-The `Administrator` then advances the order:
+Customers can only create or keep an order in **Requested**. The status field is
+read-only for customer roles, and the server rejects any other value from a
+non-Administrator. The `Administrator` may select any workflow status when
+creating an order and can advance existing orders:
 
 ```text
 Requested → Approved → Configured → Verified → Active
@@ -422,16 +425,18 @@ Requested → Approved → Configured → Verified → Active
 
 The Add-on Order form adapts to the selected add-on:
 
-| Add-on type | Hostname | Mapping Type | Registration Details | Quote / Invoice |
-|---|---|---|---|---|
-| Custom Domain Service | Shown, required | Shown, derived/read-only | Hidden | Hidden unless Actual Cost |
-| Domain Registration / Renewal | Shown, required | Hidden | Shown | Shown, required |
-| Generic annual add-on | Hidden | Hidden | Hidden | Hidden |
-| Generic actual-cost add-on | Hidden | Hidden | Hidden | Shown, required |
+| Add-on type | Hostname | Mapping Type | Registration Details | Supporting Documents | Quote / Vendor Invoice |
+|---|---|---|---|---|---|
+| Custom Domain Service | Shown, required | Shown, derived/read-only | Hidden | Hidden | Hidden unless Actual Cost |
+| Domain Registration / Renewal | Shown, required | Hidden | Shown | Shown, optional | Shown, required |
+| Generic annual add-on | Hidden | Hidden | Hidden | Hidden | Hidden |
+| Generic actual-cost add-on | Hidden | Hidden | Hidden | Hidden | Shown, required |
 
-`Vendor Invoice` is visible only to `Administrator`. Hidden fields are also
-cleared when the add-on is changed, and the controller re-derives the same
-values on save, so hiding a field in the browser is not a security boundary.
+`Invoice` is a separate field on every Add-on Order and is visible/editable only
+to `Administrator`. A customer who bypasses the UI and submits an `invoice` value
+is rejected by the controller. Hidden fields are also cleared when the add-on is
+changed, and the controller re-derives the same values on save, so hiding a field
+in the browser is not a security boundary.
 
 **Yes, show the price to the customer.** The form calls a server-only quote
 method when an add-on is selected and fills the read-only **Estimated Amount**:
@@ -445,6 +450,26 @@ method when an add-on is selected and fills the read-only **Estimated Amount**:
   `0`; the final amount is confirmed by the provider in Aasriva.
 
 The customer cannot edit the amount. No payment is collected in this app.
+
+#### New-order email notification
+
+Every new Add-on Order sends an email to `info@osduotech.com` by default. To use
+a different inbox or several recipients, set the site config key (comma- or
+semicolon-separated):
+
+```bash
+bench --site customer.example.com set-config bc_addon_order_notification_email "ops@example.com,info@osduotech.com"
+```
+
+The site must have outgoing email configured (Email Account/SMTP). Mail failures
+are logged but never roll back the customer's Requested order. The email includes
+the order number, add-on, frozen plan, estimated amount, customer email and
+hostname.
+
+**Plan links:** all “View plans”/upgrade links use
+`https://www.osduotech.com/solutions/business-connect#section_business-connect-pricing`.
+A legacy `bc_upgrade_url` pointing at the old unanchored product URL is
+normalised to this pricing link automatically.
 
 Only `Active` custom-domain orders create/update a Domain Mapping on the
 Subscription. Changing an Add-on Master does not remove or alter existing

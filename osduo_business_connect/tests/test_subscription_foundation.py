@@ -159,6 +159,23 @@ class TestSubscriptionModuleStructure(unittest.TestCase):
             },
         )
 
+    def test_all_plan_links_use_the_pricing_anchor(self):
+        constants = _load_constants()
+        pricing_url = (
+            "https://www.osduotech.com/solutions/business-connect"
+            "#section_business-connect-pricing"
+        )
+        self.assertEqual(constants.DEFAULT_UPGRADE_URL, pricing_url)
+        self.assertIn(
+            "https://www.osduotech.com/solutions/business-connect",
+            constants.LEGACY_UPGRADE_URLS,
+        )
+        self.assertEqual(constants.ADDON_ORDER_NOTIFICATION_EMAIL, "info@osduotech.com")
+
+        with open(os.path.join(APP_DIR, "hooks.py")) as handle:
+            hooks = handle.read()
+        self.assertIn(f'"product_url": "{pricing_url}"', hooks)
+
     def test_add_on_order_uses_custom_link_query_and_is_customer_only(self):
         base = os.path.join(SUB_DIR, "doctype", "add_on_order")
         with open(os.path.join(base, "add_on_order.js")) as handle:
@@ -170,11 +187,17 @@ class TestSubscriptionModuleStructure(unittest.TestCase):
             self.assertIn('"%s"' % field, script)
         self.assertIn('"quote_attachment", "reqd"', script)
         self.assertIn('"section_attachments",', script)
+        self.assertIn('"documents", "hidden"', script)
+        self.assertIn('"invoice", "hidden"', script)
+        self.assertIn('"status", "read_only", 1', script)
+        self.assertIn('"options", "Requested"', script)
 
         with open(os.path.join(base, "add_on_order.py")) as handle:
             source = handle.read()
         self.assertIn("def get_addon_quote(", source)
         self.assertIn("@frappe.whitelist()", source)
+        self.assertIn("def send_new_order_notification(", source)
+        self.assertIn("def after_insert(self):", source)
 
         with open(os.path.join(base, "add_on_order.json")) as handle:
             data = json.load(handle)
@@ -183,6 +206,17 @@ class TestSubscriptionModuleStructure(unittest.TestCase):
         self.assertNotIn("default", fields["mapping_type"])
         self.assertEqual(fields["amount"]["label"], "Estimated Amount")
         self.assertTrue(fields["amount"].get("description"))
+        self.assertEqual(
+            fields["status"].get("read_only_depends_on"),
+            "eval:frappe.session.user !== 'Administrator'",
+        )
+        self.assertEqual(fields["invoice"]["fieldtype"], "Attach")
+        self.assertEqual(
+            fields["invoice"].get("read_only_depends_on"),
+            "eval:frappe.session.user !== 'Administrator'",
+        )
+        self.assertNotIn("vendor_invoice", fields)
+        self.assertEqual(fields["documents"]["fieldtype"], "Attach")
 
         roles = {permission["role"] for permission in data.get("permissions", [])}
         for role in ("Administrator", "System Manager", "BC Subscription Manager"):

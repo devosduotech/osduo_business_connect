@@ -53,11 +53,18 @@ SUBSCRIPTION_STATUSES = (
 
 PLAN_SOURCES = ("Manual Selection", "Marketplace")
 
-DEFAULT_UPGRADE_URL = "https://www.osduotech.com/solutions/business-connect"
+DEFAULT_UPGRADE_URL = (
+    "https://www.osduotech.com/solutions/business-connect#section_business-connect-pricing"
+)
+LEGACY_UPGRADE_URLS = frozenset({
+    "https://www.osduotech.com/solutions/business-connect",
+})
 DOMAIN_MAPPING_PRICE = 5999
 CUSTOM_DOMAIN_ADDON = "CUSTOM_DOMAIN_SERVICE"
 DOMAIN_REGISTRATION_ADDON = "DOMAIN_REGISTRATION_RENEWAL"
 ADDITIONAL_USER_ADDON = "ADDITIONAL_USER"
+ADDON_ORDER_NOTIFICATION_CONFIG_KEY = "bc_addon_order_notification_email"
+ADDON_ORDER_NOTIFICATION_EMAIL = "info@osduotech.com"
 
 PLAN_SEEDS = {
     "PROFESSIONAL": {

@@ -43,7 +43,7 @@ OSDUO_BRANDING = {
     "vendor_name": "OSDuo Tech LLP",
     "vendor_url": "https://www.osduotech.com",
     "product_name": "OSDuo Business Connect",
-    "product_url": "https://www.osduotech.com/solutions/business-connect",
+    "product_url": "https://www.osduotech.com/solutions/business-connect#section_business-connect-pricing",
     "product_url_live": True,
     "show_vendor_credit": True,
     "vendor_credit_text": "Powered by OSDuo Business Connect \u2014 A Product of OSDuo Tech LLP",

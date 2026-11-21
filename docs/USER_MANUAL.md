@@ -1127,7 +1127,7 @@ A: Yes. Choose from the professional theme templates (BC Theme: layout, color sc
 A: Yes. Every public page is designed for smartphones, tablets and desktops — and the whole site installs as your branded PWA (see [Mobile App (PWA)](#11-mobile-app-pwa)).
 
 **Q: How much does OSDuo Business Connect cost?**  
-A: Refer to https://www.osduotech.com/solutions/business-connect for more details.
+A: Refer to https://www.osduotech.com/solutions/business-connect#section_business-connect-pricing for plan and pricing details.
 
 **Q: How is the subscription billed?**  
 A: Annually, based on the plan's minimum user commitment.
@@ -1164,7 +1164,7 @@ A: Events are classified from the live session for people who are logged in. You
 
 Only add-ons available for your **current active plan** are shown. Higher-plan add-ons appear after the provider upgrades the site through Aasriva; you cannot choose another plan in an Add-on Order.
 
-An order moves through **Requested → Approved → Configured → Verified → Active**. An Active custom-domain order creates a domain mapping automatically; expired mappings and orders are handled by the daily scheduler.
+You can only submit an order as **Requested**. The Administrator reviews it and moves it through **Requested → Approved → Configured → Verified → Active**. Domain Registration orders let you attach supporting documents and require a quote; the **Invoice** attachment is Administrator-only. An Active custom-domain order creates a domain mapping automatically; expired mappings and orders are handled by the daily scheduler.
 
 ---
 

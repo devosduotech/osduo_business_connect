@@ -522,6 +522,28 @@ class TestPlanGates(unittest.TestCase):
             self.assertIn("https://example.com/upgrade", message)
             self.assertIn("Business", message)
 
+    def test_legacy_upgrade_url_is_normalised_to_pricing_anchor(self):
+        with StubEnvironment() as env:
+            env.frappe.conf.pop("bc_upgrade_url", None)
+            env.entitlements.clear_entitlement_cache()
+            default = env.entitlements.get_entitlements()["upgrade_url"]
+            self.assertIn("#section_business-connect-pricing", default)
+
+            env.frappe.conf["bc_upgrade_url"] = next(
+                iter(env.constants.LEGACY_UPGRADE_URLS)
+            )
+            env.entitlements.clear_entitlement_cache()
+            self.assertEqual(
+                env.entitlements.get_entitlements()["upgrade_url"], default
+            )
+
+            env.frappe.conf["bc_upgrade_url"] = "https://example.com/custom-plans"
+            env.entitlements.clear_entitlement_cache()
+            self.assertEqual(
+                env.entitlements.get_entitlements()["upgrade_url"],
+                "https://example.com/custom-plans",
+            )
+
     def test_api_key_generation_blocked_when_external_crm_off(self):
         with StubEnvironment() as env:
             env.set_plan("ENTERPRISE")
@@ -1066,6 +1088,107 @@ class TestFinalHardening(unittest.TestCase):
             self.assertIsNone(order.approved_by)
             self.assertIsNone(order.external_ref)
 
+    def test_customer_cannot_choose_or_change_addon_order_status(self):
+        with StubEnvironment() as env:
+            env.set_plan("BUSINESS")
+            env.frappe.session.user = "owner@example.com"
+            add_on = FakeDocument({
+                "name": "CUSTOM_DOMAIN_SERVICE",
+                "add_on_name": "Custom Domain Service",
+                "billing_type": "Annual",
+                "price": 5999,
+                "is_active": 1,
+                "applies_to_all_plans": 1,
+                "applicable_plans": [],
+            })
+            env.frappe.get_doc = lambda *a, **k: add_on
+            order = env.addon_order.AddonOrder({
+                "add_on": "CUSTOM_DOMAIN_SERVICE",
+                "hostname": "cards.example.com",
+            })
+            order.before_insert()
+            order.status = "Approved"
+            with self.assertRaises(env.frappe.PermissionError) as ctx:
+                order.validate()
+            self.assertIn("Customers can only request add-ons", str(ctx.exception))
+
+            order.status = "Requested"
+            order.validate()
+            self.assertEqual(order.status, "Requested")
+
+    def test_administrator_can_create_an_advanced_status(self):
+        with StubEnvironment() as env:
+            env.set_plan("BUSINESS")
+            env.frappe.session.user = "Administrator"
+            add_on = FakeDocument({
+                "name": "PRIORITY_SUPPORT",
+                "add_on_name": "Priority Support",
+                "billing_type": "Annual",
+                "price": 12000,
+                "is_active": 1,
+                "applies_to_all_plans": 1,
+                "applicable_plans": [],
+            })
+            env.frappe.get_doc = lambda *a, **k: add_on
+            order = env.addon_order.AddonOrder({
+                "add_on": "PRIORITY_SUPPORT",
+                "status": "Approved",
+            })
+            order.before_insert()
+            order.validate()
+            self.assertEqual(order.status, "Approved")
+            self.assertEqual(order.approved_by, "Administrator")
+
+    def test_customer_cannot_attach_invoice(self):
+        with StubEnvironment() as env:
+            env.set_plan("BUSINESS")
+            env.frappe.session.user = "owner@example.com"
+            add_on = FakeDocument({
+                "name": "PRIORITY_SUPPORT",
+                "add_on_name": "Priority Support",
+                "billing_type": "Annual",
+                "price": 12000,
+                "is_active": 1,
+                "applies_to_all_plans": 1,
+                "applicable_plans": [],
+            })
+            env.frappe.get_doc = lambda *a, **k: add_on
+            order = env.addon_order.AddonOrder({
+                "add_on": "PRIORITY_SUPPORT",
+                "invoice": "/files/invoice.pdf",
+            })
+            with self.assertRaises(env.frappe.PermissionError) as ctx:
+                order.validate()
+            self.assertIn("Only the Administrator can attach an Invoice", str(ctx.exception))
+
+            env.frappe.session.user = "Administrator"
+            order.validate()
+
+    def test_new_order_notification_uses_configured_recipients(self):
+        with StubEnvironment() as env:
+            sent = {}
+            env.frappe.sendmail = lambda **kwargs: sent.update(kwargs)
+            env.frappe.conf[env.constants.ADDON_ORDER_NOTIFICATION_CONFIG_KEY] = (
+                "ops@example.com; info@osduotech.com"
+            )
+            order = FakeDocument({
+                "doctype": "Add-on Order",
+                "name": "ADDON-2026-00001",
+                "add_on": "ADDITIONAL_USER",
+                "plan_snapshot": "BUSINESS",
+                "amount": 895,
+                "customer_email": "owner@example.com",
+                "hostname": "",
+            })
+            env.addon_order.send_new_order_notification(order)
+            self.assertEqual(
+                sent["recipients"],
+                ["ops@example.com", "info@osduotech.com"],
+            )
+            self.assertIn("ADDON-2026-00001", sent["subject"])
+            self.assertIn("BUSINESS", sent["message"])
+            self.assertEqual(sent["reference_doctype"], "Add-on Order")
+
     def test_addon_order_amount_and_plan_are_server_derived(self):
         with StubEnvironment() as env:
             env.set_plan("ENTERPRISE")
@@ -1211,6 +1334,7 @@ class TestFinalHardening(unittest.TestCase):
             self.assertTrue(actual["requires_hostname"])
             self.assertFalse(actual["requires_mapping_type"])
             self.assertTrue(actual["requires_registration_details"])
+            self.assertTrue(actual["requires_documents"])
             self.assertTrue(actual["requires_attachment"])
             self.assertEqual(actual["amount"], 0)
             self.assertIn("Actual vendor cost", actual["amount_label"])

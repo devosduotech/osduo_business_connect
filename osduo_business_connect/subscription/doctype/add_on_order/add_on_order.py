@@ -8,11 +8,15 @@ its provider-controlled status transitions; activation of a custom domain
 creates the Subscription child row through :mod:`subscription.domains`.
 """
 
+from html import escape
+
 import frappe
 from frappe.model.document import Document
 
 from osduo_business_connect.subscription.constants import (
     ADDITIONAL_USER_ADDON,
+    ADDON_ORDER_NOTIFICATION_CONFIG_KEY,
+    ADDON_ORDER_NOTIFICATION_EMAIL,
     CUSTOM_DOMAIN_ADDON,
     DOMAIN_REGISTRATION_ADDON,
 )
@@ -146,15 +150,69 @@ def get_addon_quote(add_on=None, **kwargs):
         "requires_hostname": is_domain_addon,
         "requires_mapping_type": add_on == CUSTOM_DOMAIN_ADDON,
         "requires_registration_details": add_on == DOMAIN_REGISTRATION_ADDON,
+        "requires_documents": add_on == DOMAIN_REGISTRATION_ADDON,
         "requires_attachment": requires_attachment,
     }
 
 
+def get_notification_recipients():
+    """Configured notification recipients, defaulting to the OSDuo inbox."""
+    configured = frappe.conf.get(ADDON_ORDER_NOTIFICATION_CONFIG_KEY)
+    if not configured:
+        configured = ADDON_ORDER_NOTIFICATION_EMAIL
+    return [
+        address.strip()
+        for address in str(configured).replace(";", ",").split(",")
+        if address.strip()
+    ]
+
+
+def send_new_order_notification(doc):
+    """Notify the provider when a new Add-on Order is created.
+
+    The recipient is configurable per site. A mail failure must never roll back
+    the customer's request, so errors are logged and swallowed.
+    """
+    recipients = get_notification_recipients()
+    if not recipients:
+        return
+    message = (
+        "<p>A new Add-on Order has been requested.</p>"
+        "<ul>"
+        f"<li><strong>Order:</strong> {escape(str(doc.name or ''))}</li>"
+        f"<li><strong>Add-on:</strong> {escape(str(doc.add_on or ''))}</li>"
+        f"<li><strong>Plan:</strong> {escape(str(doc.plan_snapshot or ''))}</li>"
+        f"<li><strong>Estimated amount:</strong> {escape(str(doc.amount or 0))}</li>"
+        f"<li><strong>Customer email:</strong> {escape(str(doc.customer_email or ''))}</li>"
+        f"<li><strong>Hostname:</strong> {escape(str(doc.hostname or ''))}</li>"
+        f"<li><strong>Requested by:</strong> {escape(str(frappe.session.user or ''))}</li>"
+        "</ul>"
+    )
+    try:
+        frappe.sendmail(
+            recipients=recipients,
+            subject=f"New Add-on Order {doc.name} — {doc.add_on}",
+            message=message,
+            reference_doctype=doc.doctype,
+            reference_name=doc.name,
+        )
+    except Exception:
+        log_error = getattr(frappe, "log_error", None)
+        traceback = getattr(frappe, "get_traceback", lambda: "")
+        if callable(log_error):
+            log_error(
+                title="BC Add-on Order notification failed",
+                message=traceback(),
+            )
+
+
 class AddonOrder(Document):
     def before_insert(self):
-        # A customer can create a request, never a pre-approved/active order.
-        # The status default in the DocType JSON is UI-only and is not trusted.
-        self.status = "Requested"
+        # Customers can only create Requested records. The Administrator is the
+        # provider and may select any workflow status when creating an order.
+        # The JSON default is UI-only and is never trusted for customers.
+        if not self._is_provider():
+            self.status = "Requested"
         self.approved_by = None
         self.external_ref = None
 
@@ -166,12 +224,17 @@ class AddonOrder(Document):
 
     def validate(self):
         self.set_request_snapshot()
+        self.validate_customer_status()
         self.validate_add_on()
         self.validate_hostname()
         self.validate_evidence()
+        self.validate_invoice_permission()
         self.validate_status_transition()
         self.set_approved_by()
         self.set_expiry()
+
+    def after_insert(self):
+        send_new_order_notification(self)
 
     def on_update(self):
         if self.status == "Active":
@@ -204,6 +267,29 @@ class AddonOrder(Document):
             frappe.throw(
                 "A quote or vendor invoice is required for actual-cost add-ons",
                 exc=frappe.ValidationError,
+            )
+
+    def validate_customer_status(self):
+        if not self.status:
+            self.status = "Requested"
+        if self._is_provider():
+            return
+        if self.status != "Requested":
+            frappe.throw(
+                "Customers can only request add-ons. Status changes are made by "
+                "the Administrator after the order is reviewed.",
+                exc=frappe.PermissionError,
+            )
+
+    def validate_invoice_permission(self):
+        if self._is_provider():
+            return
+        previous = self._previous() or {}
+        previous_invoice = previous.get("invoice")
+        if self.invoice and self.invoice != previous_invoice:
+            frappe.throw(
+                "Only the Administrator can attach an Invoice",
+                exc=frappe.PermissionError,
             )
 
     def validate_status_transition(self):
