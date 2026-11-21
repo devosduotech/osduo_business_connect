@@ -271,11 +271,17 @@ CUSTOMER_PORTAL_PAGES = frozenset({"/portal/team", "/portal/subscription"})
 
 # Business-plan customer roles may open the BC workspace itself, but never the
 # generic Desk or native User administration. Professional stays portal-only.
-# Frappe v16 serves the workspace at /desk/business-connect and still accepts
-# the older /app/business-connect alias; both are normalised below.
+# Frappe v16 serves the workspace at /desk/business-connect, later v16 builds
+# can rewrite it to /desk/<shell>/business-connect, and the older
+# /app/business-connect alias remains valid. All three spellings are accepted
+# so a refresh after the Desk router edits the address bar never returns 403.
 CUSTOMER_PORTAL_HOME = "/my-card"
 CUSTOMER_WORKSPACE_HOME = "/desk/business-connect"
-CUSTOMER_WORKSPACE_PATHS = frozenset({"/app/business-connect", "/desk/business-connect"})
+CUSTOMER_WORKSPACE_PATHS = frozenset({
+    "/app/business-connect",
+    "/desk/business-connect",
+    "/desk/business/business-connect",
+})
 DESK_PATHS = frozenset({"/app", "/desk"})
 
 
@@ -800,9 +806,11 @@ def enforce_plan_gates():
         )
 
     # Customer Desk policy. Professional stays portal-only. Business customer
-    # roles may open only the BC workspace; the generic Desk, framework routes
-    # and native User/Role administration stay blocked. Enterprise keeps its
-    # existing Desk-based advanced administration.
+    # roles may open the BC workspace routes; direct HTTP requests to generic
+    # Desk paths, framework routes and native User/Role administration stay
+    # blocked. Frappe's Desk SPA may change routes client-side without a new
+    # before_request call, so the API/DocType gates below remain the authority
+    # for protected data. Enterprise keeps its existing Desk administration.
     if _is_locked_down_customer(ent) and _customer_user_admin_attempt(
         path, methods, doctypes, ent
     ):
@@ -991,9 +999,10 @@ def rewrite_customer_desk_redirect(response=None, request=None):
     Frappe v16 redirects an already-signed-in System User from ``/login`` to
     ``get_default_path()``. Our single ``add_to_apps_screen`` entry makes that
     ``/app/business-connect``. Business customer roles are allowed to use the
-    BC workspace, so that target is normalised to the v16 route instead of
-    being bounced to the portal; every other Desk target is rewritten to the
-    plan's private landing page. Direct Desk requests still get their 403.
+    BC workspace, so any accepted workspace spelling is normalised to the
+    stable ``/desk/business-connect`` route instead of being bounced to the
+    portal; every other Desk target is rewritten to the plan's private landing
+    page. Direct requests to generic Desk routes still get their 403.
     """
     if response is None or getattr(response, "status_code", None) not in (301, 302, 303, 307, 308):
         return

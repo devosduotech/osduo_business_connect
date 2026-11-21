@@ -324,9 +324,11 @@ then on; they never need the Desk for team setup.
   `Sales Manager` or `System Manager`) and access via `/crm` — BC roles alone
   are not enough.
 - Professional has no Desk, team management, CRM, Analytics or import/export
-  for customers. Business customer roles may open only `/desk/business-connect`
-  (themed like the portal); the generic Desk, `/desk/build` and native User/Role
-  administration stay blocked. Business also adds the portal Team page,
+  for customers. Business customer roles may open only the BC workspace spellings
+  (`/desk/business-connect`, `/desk/business/business-connect` and the legacy
+  `/app/business-connect`), themed like the portal. Direct requests to the
+  generic Desk, `/desk/build` and native User/Role administration stay blocked.
+  Business also adds the portal Team page,
   `/crm`, `/crm-form/*` and `/analytics`, up to 3 businesses and team
   invitations. Enterprise keeps its existing Desk-based advanced administration,
   Email/WhatsApp configuration, up to 5 businesses and one included custom

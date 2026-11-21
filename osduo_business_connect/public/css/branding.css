@@ -156,8 +156,10 @@
    8. BUSINESS CUSTOMER WORKSPACE (/desk/business-connect)
    ============================================================
    Applied by branding.js only for Business-plan customer roles.
-   Colours mirror the private /portal/team cards; the workspace's
-   own links and sidebar items are deliberately left unchanged.
+   branding.js overrides these fallback colours from the site's
+   OSDUO_BRANDING values in frappe.boot.osduo_branding, so the
+   workspace follows the same white-label palette as /portal/team.
+   The workspace's own links and sidebar items are left unchanged.
    ============================================================ */
 
 body.bc-customer-workspace {

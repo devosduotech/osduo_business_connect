@@ -275,6 +275,17 @@ function add_my_card_link() {
     "BC System Manager",
     "BC Subscription Manager",
   ];
+  var BC_WORKSPACE_PATHS = [
+    "/app/business-connect",
+    "/desk/business-connect",
+    "/desk/business/business-connect",
+  ];
+  var BC_THEME_VARS = {
+    primary_color: "--bc-portal-primary",
+    secondary_color: "--bc-portal-accent",
+    background_color: "--bc-portal-bg",
+    text_color: "--bc-portal-text",
+  };
 
   function has_any_role(roles) {
     if (typeof frappe === "undefined" || !frappe.user || typeof frappe.user.has_role !== "function") {
@@ -286,6 +297,17 @@ function add_my_card_link() {
     return false;
   }
 
+  function apply_bc_workspace_colors() {
+    if (typeof document === "undefined" || !document.body) return;
+    var colors = (frappe.boot && frappe.boot.osduo_branding) || {};
+    Object.keys(BC_THEME_VARS).forEach(function (key) {
+      var value = String(colors[key] || "");
+      if (/^#[0-9a-fA-F]{3,8}$/.test(value)) {
+        document.body.style.setProperty(BC_THEME_VARS[key], value);
+      }
+    });
+  }
+
   function apply_bc_workspace_theme() {
     if (typeof document === "undefined" || !document.body) return false;
     if (has_any_role(BC_PRIVILEGED_ROLES) || !has_any_role(BC_WORKSPACE_ROLES)) {
@@ -293,7 +315,8 @@ function add_my_card_link() {
       return true;
     }
     var path = (window.location.pathname || "").replace(/\/+$/, "");
-    if (path === "/app/business-connect" || path === "/desk/business-connect") {
+    if (BC_WORKSPACE_PATHS.indexOf(path) !== -1) {
+      apply_bc_workspace_colors();
       document.body.classList.add("bc-customer-workspace");
     } else {
       document.body.classList.remove("bc-customer-workspace");

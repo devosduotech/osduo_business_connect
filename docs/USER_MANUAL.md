@@ -1009,8 +1009,13 @@ Actions apply within a business the user is an active member of (plus the global
 customer roles (`BC Business Owner`, `BC Business Manager`, `BC Business Member`,
 `BC CRM User` and `BC Marketing Manager`) may also open the Business Connect
 workspace at `/desk/business-connect`. That one Desk page is themed to match the
-portal and keeps its existing workspace menu and sidebar links. Every other
-Desk route, including `/desk/build`, remains blocked.
+portal and keeps its existing workspace menu and sidebar links. Direct requests
+to other Desk routes, including `/desk/build`, return **Not Permitted**. The
+legacy `/app/business-connect` alias and the module-qualified
+`/desk/business/business-connect` spelling are also accepted so a Desk router
+rewrite or refresh does not produce a 403. Because the Desk can change routes
+client-side, protected data remains protected by the API and DocType plan gates
+rather than by the URL alone.
 
 | Page | Purpose |
 |------|---------|

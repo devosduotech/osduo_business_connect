@@ -169,15 +169,30 @@ class TestDeskSupportMenu(unittest.TestCase):
             'boot_session = "osduo_business_connect.branding.boot_session"', hooks
         )
 
-    def test_boot_session_publishes_avatar_rows(self):
+    def test_boot_session_publishes_avatar_rows_and_theme_colors(self):
         branding = read("branding.py")
         self.assertIn("def boot_session(bootinfo)", branding)
         self.assertIn("bootinfo.osduo_support", branding)
+        self.assertIn("bootinfo.osduo_branding", branding)
+        self.assertIn('"primary_color": OSDUO_BRANDING["primary_color"]', branding)
+        self.assertIn('"secondary_color": OSDUO_BRANDING["secondary_color"]', branding)
+        self.assertIn('"background_color": OSDUO_BRANDING["background_color"]', branding)
+        self.assertIn('"text_color": OSDUO_BRANDING["text_color"]', branding)
         self.assertIn("def support_menu_items", branding)
         # The boot payload must not try to rewrite navbar_settings: Frappe's
         # sessions.get() replaces it from the stored record after every
         # boot_session hook has run, so such a rewrite never reaches the desk.
         self.assertNotIn("bootinfo.navbar_settings =", branding)
+
+    def test_boot_session_publishes_current_brand_palette(self):
+        branding = _load_branding()
+        bootinfo = types.SimpleNamespace()
+        branding.boot_session(bootinfo)
+        for key in ("primary_color", "secondary_color", "background_color", "text_color"):
+            with self.subTest(key=key):
+                self.assertEqual(
+                    bootinfo.osduo_branding[key], branding.OSDUO_BRANDING[key]
+                )
 
     def test_navbar_support_hides_frappe_help_rows(self):
         branding = read("branding.py")

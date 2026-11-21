@@ -498,11 +498,18 @@ def apply_navbar_support():
 
 
 def boot_session(bootinfo):
-    """Publish the desk support links for the avatar-menu patch.
+    """Publish desk support links and the white-label palette for the theme patch.
 
-    Registered as the ``boot_session`` hook. Only ``osduo_support`` is set
-    here: ``bootinfo.navbar_settings`` is overwritten by ``frappe.sessions.get``
-    after every ``boot_session`` hook has run, so the header menu is driven by
-    the stored Navbar Settings record instead (see :func:`apply_navbar_support`).
+    Registered as the ``boot_session`` hook. ``bootinfo.navbar_settings`` is
+    overwritten by ``frappe.sessions.get`` after every ``boot_session`` hook has
+    run, so the header menu is driven by the stored Navbar Settings record
+    instead (see :func:`apply_navbar_support`). The branding colours let
+    ``branding.js`` theme the BC workspace from the same source as the portal.
     """
     bootinfo.osduo_support = {"items": support_menu_items()}
+    bootinfo.osduo_branding = {
+        "primary_color": OSDUO_BRANDING["primary_color"],
+        "secondary_color": OSDUO_BRANDING["secondary_color"],
+        "background_color": OSDUO_BRANDING["background_color"],
+        "text_color": OSDUO_BRANDING["text_color"],
+    }

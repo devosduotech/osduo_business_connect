@@ -1817,6 +1817,7 @@ class TestPortalTeamInvitations(unittest.TestCase):
                     for path in (
                         "/app/business-connect",
                         "/desk/business-connect",
+                        "/desk/business/business-connect",
                         "/crm",
                         "/crm-form/crm-lead",
                         "/analytics",
@@ -1830,6 +1831,7 @@ class TestPortalTeamInvitations(unittest.TestCase):
                     for path in (
                         "/app/business-connect",
                         "/desk/business-connect",
+                        "/desk/business/business-connect",
                         "/crm",
                         "/analytics",
                         "/portal/team",
@@ -1852,7 +1854,10 @@ class TestPortalTeamInvitations(unittest.TestCase):
                 env.set_roles(role)
                 self.assert_allowed(env, "/app/business-connect")
                 self.assert_allowed(env, "/desk/business-connect")
-                # The workspace is the only Desk surface granted to them.
+                # Frappe v16 can add the module shell to the URL; a refresh of
+                # that address must not turn into a 403.
+                self.assert_allowed(env, "/desk/business/business-connect")
+                # Direct requests to generic Desk routes stay blocked.
                 for blocked in ("/desk", "/desk/build", "/api/resource/User"):
                     with self.subTest(role=role, blocked=blocked):
                         self.assert_blocked(env, blocked)
@@ -2175,6 +2180,20 @@ class TestPortalTeamInvitations(unittest.TestCase):
                 )
                 self.assertEqual(nav["upgrade_url"], env.frappe.conf["bc_upgrade_url"])
 
+        env.set_plan("BUSINESS")
+        for role in (
+            "BC Business Owner",
+            "BC Business Manager",
+            "BC Business Member",
+            "BC CRM User",
+            "BC Marketing Manager",
+        ):
+            with self.subTest(role=role):
+                env.set_roles(role)
+                nav = env.portal_nav.get_portal_nav("card")
+                self.assertTrue(nav["can_bc_workspace"])
+                self.assertEqual(nav["workspace_url"], "/desk/business-connect")
+
         env.set_plan("PROFESSIONAL")
         env.set_roles("BC Business Owner", "System Manager")
         nav = env.portal_nav.get_portal_nav("card")
@@ -2265,6 +2284,7 @@ class TestPortalTeamInvitations(unittest.TestCase):
             "/app/business-connect",
             "app/business-connect",
             "https://phase2.uat/app/business-connect",
+            "/desk/business/business-connect",
         ):
             with self.subTest(location=location):
                 self.assertEqual(rewritten(env, location), "/desk/business-connect")
@@ -2276,6 +2296,7 @@ class TestPortalTeamInvitations(unittest.TestCase):
         for location in (
             "/app/business-connect",
             "/desk/business-connect",
+            "/desk/business/business-connect",
             "/desk/build",
         ):
             with self.subTest(plan="PROFESSIONAL", location=location):
@@ -2419,9 +2440,17 @@ class TestPortalTeamInvitations(unittest.TestCase):
         with open(sidebar) as handle:
             sidebar_source = handle.read()
         self.assertIn("{% if nav.can_admin %}", sidebar_source)
-        self.assertIn("{% if nav.can_bc_workspace %}", sidebar_source)
-        self.assertIn("/app/business-connect", sidebar_source)
-        self.assertIn("/desk/business-connect", sidebar_source)
+        self.assertIn(
+            "{% if nav.can_bc_workspace %}{{ nav_link(nav.workspace_url or "
+            "'/desk/business-connect', 'workspace', 'Business Connect', '◆') "
+            "}}{% endif %}",
+            sidebar_source,
+        )
+        # The legacy URL is reserved for provider advanced admin, not customers.
+        self.assertIn(
+            "{{ nav_link('/app/business-connect', 'admin', 'Advanced admin', '⚙') }}",
+            sidebar_source,
+        )
         self.assertNotIn('href="/app/workspace"', sidebar_source)
         self.assertNotIn('href="/app/business"', sidebar_source)
         self.assertNotIn('href="/desk/build"', sidebar_source)
@@ -2431,10 +2460,14 @@ class TestPortalTeamInvitations(unittest.TestCase):
         self.assertIn("body.bc-customer-workspace", desk_css)
         self.assertIn("#f4f6f8", desk_css)
         self.assertIn("border-radius: 12px", desk_css)
+        self.assertIn("frappe.boot.osduo_branding", desk_css)
 
         with open(os.path.join(APP_DIR, "public", "js", "branding.js")) as handle:
             desk_js = handle.read()
         self.assertIn("bc-customer-workspace", desk_js)
+        self.assertIn("/desk/business/business-connect", desk_js)
+        self.assertIn("frappe.boot.osduo_branding", desk_js)
+        self.assertIn("setProperty", desk_js)
         for role in (
             "BC Business Owner",
             "BC Business Manager",
