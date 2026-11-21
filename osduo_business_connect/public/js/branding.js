@@ -314,6 +314,40 @@ function add_my_card_link() {
     return false;
   }
 
+  function workspace_slug(value) {
+    return String(value || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+  }
+
+  function is_bc_workspace_child_path(path) {
+    var match = path.match(/^\/(?:app|desk)\/business-connect\/([^/]+)$/i);
+    if (!match) return false;
+    var decoded = match[1];
+    try {
+      decoded = decodeURIComponent(decoded);
+    } catch (error) {
+      // A malformed escape cannot name a Workspace; fail closed.
+      return false;
+    }
+    var slug = workspace_slug(decoded);
+    if (!slug) return false;
+
+    // Only theme real Workspace routes. This mirrors the server gate, which
+    // also accepts child workspace names and rejects DocType paths such as
+    // /desk/business-connect/user.
+    var boot = (typeof frappe !== "undefined" && frappe.boot) || {};
+    var payload = boot.workspaces || {};
+    var pages = Array.isArray(payload) ? payload : (payload.pages || []);
+    for (var i = 0; i < pages.length; i++) {
+      var page = pages[i];
+      var name = typeof page === "string" ? page : (page && (page.name || page.title)) || "";
+      if (workspace_slug(name) === slug) return true;
+    }
+    return false;
+  }
+
   function is_bc_workspace_path() {
     var path = (window.location.pathname || "").replace(/\/+$/, "") || "/";
     var paths = bc_config_list("paths", BC_WORKSPACE_PATHS);
@@ -324,6 +358,10 @@ function add_my_card_link() {
     // /desk/<shell>/business-connect spelling. The exact allowlist above still
     // governs the HTTP request gate.
     if (/^\/desk\/[^/]+\/business-connect$/i.test(path)) return true;
+
+    // Child workspaces such as /desk/business-connect/business and
+    // /desk/business-connect/member are part of the same themed Desk surface.
+    if (is_bc_workspace_child_path(path)) return true;
 
     // Client-side Desk navigation often changes current_route before the URL is
     // rewritten. current_route is ["Workspaces", "Business Connect"] here.

@@ -1862,6 +1862,32 @@ class TestPortalTeamInvitations(unittest.TestCase):
                     with self.subTest(role=role, blocked=blocked):
                         self.assert_blocked(env, blocked)
 
+    def test_public_bc_child_workspaces_are_allowed_but_doctypes_are_not(self):
+        env = self.setUp_env("BUSINESS")
+        env.get_all_rows["Workspace"] = ["Business", "Member"]
+
+        for path in (
+            "/desk/business-connect/business",
+            "/desk/business-connect/member",
+            "/desk/business-connect/business/",
+            "/app/business-connect/member",
+        ):
+            with self.subTest(path=path):
+                self.assert_allowed(env, path)
+
+        # A DocType route under the same prefix is not a Workspace and must
+        # stay blocked even though the Desk SPA can reach it client-side.
+        for path in (
+            "/desk/business-connect/user",
+            "/desk/business-connect/build",
+            "/desk/business-connect/business/user",
+        ):
+            with self.subTest(path=path):
+                self.assert_blocked(env, path)
+
+        env.set_plan("PROFESSIONAL")
+        self.assert_blocked(env, "/desk/business-connect/business")
+
     def test_rpc_form_cannot_smuggle_core_invite(self):
         env = self.setUp_env()
         self.assert_blocked(
@@ -2476,6 +2502,9 @@ class TestPortalTeamInvitations(unittest.TestCase):
         self.assertIn("frappe.boot.osduo_branding", desk_js)
         self.assertIn("frappe.boot.bc_workspace_theme", desk_js)
         self.assertIn("frappe.router.current_route", desk_js)
+        self.assertIn("is_bc_workspace_child_path", desk_js)
+        self.assertIn("boot.workspaces || {}", desk_js)
+        self.assertIn("payload.pages", desk_js)
         self.assertIn('frappe.router.on("change"', desk_js)
         self.assertIn("document.documentElement.classList.toggle", desk_js)
         self.assertIn("--desk-sidebar-bg", desk_js)

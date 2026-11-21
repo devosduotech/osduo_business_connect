@@ -566,6 +566,37 @@ def set_customer_login_home(login_manager=None):
         pass
 
 
+def _workspace_route_slug(name):
+    """Match the slug Frappe's Desk router writes for a Workspace name."""
+    return re.sub(r"[^a-z0-9]+", "-", str(name or "").lower()).strip("-")
+
+
+def _is_customer_workspace_child_path(path):
+    """True for a public Workspace route nested under the BC workspace shell.
+
+    Frappe v16 routes child workspaces as ``/desk/business-connect/<slug>``.
+    They are part of the same single Desk surface, but arbitrary DocType routes
+    that happen to share the prefix (for example ``.../user``) must stay
+    blocked. Only public Workspace names are accepted, and a lookup failure
+    fails closed.
+    """
+    normalized = (path or "").rstrip("/") or "/"
+    match = re.match(r"^/(?:app|desk)/business-connect/([^/]+)$", normalized)
+    if not match:
+        return False
+    slug = unquote(match.group(1)).lower()
+    try:
+        names = frappe.get_all(
+            "Workspace",
+            filters={"public": 1},
+            pluck="name",
+            ignore_permissions=True,
+        ) or []
+    except Exception:
+        return False
+    return any(_workspace_route_slug(name) == slug for name in names)
+
+
 def _customer_user_admin_attempt(path, methods, doctypes, entitlements=None):
     """Return True for any native User/Role/User Invitation surface.
 
@@ -582,9 +613,10 @@ def _customer_user_admin_attempt(path, methods, doctypes, entitlements=None):
         entitlements and entitlements.get("plan_code") == "BUSINESS"
     )
     is_desk_path = path in ("/app", "/desk") or path.startswith(("/app/", "/desk/"))
-    if is_desk_path and not (
-        workspace_allowed and path in CUSTOMER_WORKSPACE_PATHS
-    ):
+    allowed_workspace_route = path in CUSTOMER_WORKSPACE_PATHS or (
+        workspace_allowed and _is_customer_workspace_child_path(path)
+    )
+    if is_desk_path and not (workspace_allowed and allowed_workspace_route):
         return True
     if doctypes & CUSTOMER_USER_ADMIN_DOCTYPES:
         return True
@@ -1013,7 +1045,8 @@ def rewrite_customer_desk_redirect(response=None, request=None):
         return
 
     target_path = _redirect_path(location)
-    if target_path in CUSTOMER_WORKSPACE_PATHS and ent.get("plan_code") == "BUSINESS":
+    workspace_redirect = target_path in CUSTOMER_WORKSPACE_PATHS or _is_customer_workspace_child_path(target_path)
+    if workspace_redirect and ent.get("plan_code") == "BUSINESS":
         target = CUSTOMER_WORKSPACE_HOME
     elif _is_desk_path(location):
         target = _customer_landing(ent)
