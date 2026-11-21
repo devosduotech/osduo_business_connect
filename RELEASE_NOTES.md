@@ -1,3 +1,68 @@
+# Release Notes - business_connect (v1.4.2)
+
+**Release Date:** 22 November 2026
+**Version:** v1.4.2 (patch)
+
+A migration fix for sites upgrading to the v1.4.0 subscription schema. The
+first `bench migrate` on an already-installed site could skip the new
+`Subscription` module's DocTypes because Frappe v16 cached the app-to-module map
+before the Module Def was registered. This release makes that first migrate
+import the DocTypes correctly.
+
+## What changed (v1.4.2)
+
+### Fixed
+
+- Added `before_migrate` hook
+  `osduo_business_connect.install.refresh_module_map_for_migrate`, which clears
+  the cached `app_modules` map and calls `frappe.setup_module_map()` before
+  DocTypes are synced.
+- The hook runs after Frappe registers new Module Defs and before `sync_all`, so
+  modules added by a later release are visible in the same migrate run.
+- Added a regression test asserting the hook and its module-map refresh calls.
+
+### Symptoms this resolves
+
+- `ImportError: Module import failed for SaaS Plan ... No module named
+  'frappe.core.doctype.saas_plan'` during `after_migrate`.
+- `ImportError: Module import failed for Subscription ... No module named
+  'frappe.core.doctype.subscription'` from the provisioning CLI.
+- Subscription DocType rows missing from `tabDocType` after the first migrate.
+
+### Known issue
+
+- The Business Connect workspace sidebar/menu item text colour is still pending
+  final visual verification, as noted in v1.4.1.
+
+## Upgrade
+
+No schema, API or bundled asset changes. From v1.4.0 or v1.4.1:
+
+```bash
+cd ~/frappe-bench/apps/osduo_business_connect
+git fetch upstream --tags && git pull --ff-only upstream main
+
+cd ~/frappe-bench
+bench --site <site> clear-cache
+bench --site <site> clear-website-cache
+bench restart
+```
+
+`bench build` is not required. Sites still on a pre-v1.4.0 version must run
+`bench --site <site> migrate` once to create the subscription schema.
+
+If a migrate already failed with the errors above, re-run it after clearing the
+cache; the failed run left the subscription DocType rows uncreated:
+
+```bash
+bench --site <site> clear-cache
+bench --site <site> migrate
+bench --site <site> clear-cache
+bench restart
+```
+
+---
+
 # Release Notes - business_connect (v1.4.1)
 
 **Release Date:** 21 November 2026

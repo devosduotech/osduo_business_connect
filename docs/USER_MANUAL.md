@@ -1,7 +1,7 @@
 # OSDuo Business Connect — User Manual
 
-**Version:** 1.4.1
-**Last Updated:** 21 November 2026
+**Version:** 1.4.2
+**Last Updated:** 22 November 2026
 
 ---
 

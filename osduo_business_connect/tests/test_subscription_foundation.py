@@ -366,5 +366,22 @@ class TestSubscriptionPermissionHook(unittest.TestCase):
             )
 
 
+class TestFirstMigrateModuleMap(unittest.TestCase):
+    """A newly declared module must be visible to the migrate that registers it."""
+
+    def test_before_migrate_rebuilds_module_map(self):
+        with open(os.path.join(APP_DIR, "hooks.py")) as handle:
+            hooks = handle.read()
+        self.assertIn(
+            "osduo_business_connect.install.refresh_module_map_for_migrate", hooks
+        )
+
+        with open(os.path.join(APP_DIR, "install.py")) as handle:
+            installer = handle.read()
+        self.assertIn("def refresh_module_map_for_migrate():", installer)
+        self.assertIn('frappe.cache.delete_value("app_modules")', installer)
+        self.assertIn("frappe.setup_module_map(include_all_apps=True)", installer)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.4.2 - 22 November 2026
+
+### Migration fix
+
+- Fixed the first `bench migrate` on sites upgrading to a release that adds a
+  new module (the `Subscription` module introduced in v1.4.0). Frappe v16
+  registers the new Module Def but kept a stale cached `app_modules` map, so
+  `sync_for` skipped that module's DocType JSONs. `after_migrate` then failed
+  with `Module import failed for SaaS Plan ... No module named
+  'frappe.core.doctype.saas_plan'`, and provisioning failed for `Subscription`
+  for the same reason.
+- Added a `before_migrate` hook that clears and rebuilds the module map after
+  Module Defs are registered and before DocTypes are synced. The first migrate
+  now imports the new DocTypes in the same run.
+
+### Notes
+
+- No schema, API or asset changes. Upgrading from v1.4.0/v1.4.1 needs only a
+  cache clear and restart; sites still on a pre-v1.4.0 version must run
+  `bench --site <site> migrate` once.
+- If a migrate already failed with this error, clear the cache and re-run it —
+  the failed run left the subscription DocType rows uncreated.
+- The workspace sidebar/menu item text colour remains pending final visual
+  verification (tracked in v1.4.1).
+
 ## v1.4.1 - 21 November 2026
 
 ### Documentation

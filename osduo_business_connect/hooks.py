@@ -363,9 +363,13 @@ permission_query_conditions.update({
 
 before_install = "osduo_business_connect.install.before_install"
 after_install = "osduo_business_connect.install.after_install"
-# Runs before schema updates, so legacy Website Theme colour links are repaired
-# before Frappe's own after_migrate hook re-saves the active theme.
-before_migrate = "osduo_business_connect.install.repair_website_theme_colors"
+# Runs before schema updates: rebuild the module map so DocTypes in modules added
+# after install are synced on the first migrate, then repair legacy Website Theme
+# colour links before Frappe's own after_migrate hook re-saves the active theme.
+before_migrate = [
+    "osduo_business_connect.install.refresh_module_map_for_migrate",
+    "osduo_business_connect.install.repair_website_theme_colors",
+]
 after_migrate = "osduo_business_connect.install.after_migrate"
 
 # Uninstallation

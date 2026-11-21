@@ -3,7 +3,7 @@
 Step-by-step instructions to install, operate, and update **OSDuo Business Connect**
 — from a single-site demo to a multi-tenant SaaS bench serving many customer domains.
 
-Current release: **v1.4.1** (see [RELEASE_NOTES.md](../RELEASE_NOTES.md)).
+Current release: **v1.4.2** (see [RELEASE_NOTES.md](../RELEASE_NOTES.md)).
 
 ---
 
@@ -650,6 +650,11 @@ revalidated only when saved.
 - `LinkValidationError: Could not find Primary Color / Text Color / Page
   Background Color` during migrate — pull latest `develop`; the `before_migrate`
   hook repairs legacy Website Theme colour links.
+- `Module import failed for SaaS Plan / Subscription ... No module named
+  'frappe.core.doctype...'` on the first migrate after upgrading from a
+  pre-v1.4.0 version — v1.4.2 rebuilds the module map before DocTypes are
+  synced. Pull the latest `main`, then run `bench --site <site> clear-cache`
+  and re-run `bench --site <site> migrate`.
 - `This site already has a Subscription` — re-run `provision` with `--force`.
 - Public URLs still `http://` behind a TLS proxy — set `host_name` with the
   `https://` scheme and migrate.

@@ -483,6 +483,24 @@ def repair_website_theme_colors():
     return repaired
 
 
+def refresh_module_map_for_migrate():
+    """Expose modules added after install to the same migrate run.
+
+    Frappe v16 registers missing Module Def rows at the start of migrate but
+    leaves the cached ``app_modules`` map untouched until the end. A module
+    added to an already-installed app (``Subscription`` in v1.4.0) is therefore
+    skipped by ``sync_for`` on the first migrate: its DocTypes never reach the
+    site, and every controller lookup falls back to ``frappe.core``.
+
+    This hook runs after the Module Defs are registered and before ``sync_all``,
+    so rebuilding the map here lets the first migrate import the new DocTypes.
+    Rebuilding on every migrate is safe: the source of truth is each installed
+    app's ``modules.txt``.
+    """
+    frappe.cache.delete_value("app_modules")
+    frappe.setup_module_map(include_all_apps=True)
+
+
 def after_migrate():
     """Run after bench migrate to ensure CRM custom fields are created."""
     create_crm_custom_fields()
