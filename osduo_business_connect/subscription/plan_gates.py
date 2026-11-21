@@ -49,20 +49,27 @@ from osduo_business_connect.subscription.entitlements import (
 # Route / method inventory (verified against Frappe v16 and Frappe CRM)
 # ---------------------------------------------------------------------------
 
+# Frappe v16 serves the Desk at /desk/<slug> (v15 used /app/<slug>, still
+# redirected). Gate both spellings: an ungated Desk route would otherwise
+# bypass the request-level plan check on the exact URL a v16 user visits.
+def _desk_routes(*slugs):
+    return tuple(f"/{prefix}/{slug}" for prefix in ("app", "desk") for slug in slugs)
+
+
 CRM_PAGE_PREFIXES = ("/crm/", "/crm-form/")
-CRM_PAGES = frozenset({"/crm"})
-CRM_DESK_PREFIXES = (
-    "/app/crm-",
-    "/app/fcrm-note",
-    "/app/lead-sync-",
-    "/app/failed-lead-sync-log",
-    "/app/facebook-page",
-    "/app/facebook-lead-form",
+CRM_PAGES = frozenset({"/crm", "/app/crm", "/desk/crm"})
+CRM_DESK_PREFIXES = _desk_routes(
+    "crm-",
+    "fcrm-note",
+    "lead-sync-",
+    "failed-lead-sync-log",
+    "facebook-page",
+    "facebook-lead-form",
 )
 CRM_METHOD_PREFIX = "crm."
 CRM_DOCTYPE_PREFIX = "CRM "
 
-ANALYTICS_PAGES = ("/analytics", "/app/analytics", "/app/engagement-event")
+ANALYTICS_PAGES = ("/analytics",) + _desk_routes("analytics", "engagement-event")
 ANALYTICS_METHODS = frozenset({
     "osduo_business_connect.pages.analytics.get_analytics",
     "osduo_business_connect.pages.analytics.get_business_list",
@@ -91,26 +98,26 @@ GRID_IMPORT_METHODS = frozenset({
     "get_column_map",
     "validate_rows",
 })
-IMPORT_EXPORT_PAGES = ("/app/data-import", "/app/data-export")
+IMPORT_EXPORT_PAGES = _desk_routes("data-import", "data-export")
 # Report View can export any DocType to CSV/XLSX outside the Data Export form.
 IMPORT_EXPORT_METHODS = frozenset({"frappe.desk.reportview.export_query"})
 
-ADVANCED_ADMIN_DESK_PREFIXES = (
-    "/app/email-account",
-    "/app/email-domain",
-    "/app/whatsapp-",
-    "/app/fcrm-settings",
-    "/app/crm-global-settings",
-    "/app/crm-fields-layout",
-    "/app/crm-form-script",
-    "/app/crm-view-settings",
-    "/app/crm-sales-hierarchy",
-    "/app/crm-notification",
-    "/app/crm-telephony-agent",
-    "/app/crm-twilio-settings",
-    "/app/crm-exotel-settings",
-    "/app/crm-enrichment-settings",
-    "/app/erpnext-crm-settings",
+ADVANCED_ADMIN_DESK_PREFIXES = _desk_routes(
+    "email-account",
+    "email-domain",
+    "whatsapp-",
+    "fcrm-settings",
+    "crm-global-settings",
+    "crm-fields-layout",
+    "crm-form-script",
+    "crm-view-settings",
+    "crm-sales-hierarchy",
+    "crm-notification",
+    "crm-telephony-agent",
+    "crm-twilio-settings",
+    "crm-exotel-settings",
+    "crm-enrichment-settings",
+    "erpnext-crm-settings",
 )
 # MCP is an integration/admin surface with an open-ended tool inventory; fail
 # closed to Enterprise rather than trying to enumerate every tool.

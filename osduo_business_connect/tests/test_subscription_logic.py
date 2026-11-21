@@ -400,6 +400,34 @@ class TestPlanGates(unittest.TestCase):
                 with self.subTest(path=path):
                     self.assert_blocked(env, path)
 
+    def test_v16_desk_routes_are_gated(self):
+        # Frappe v16 serves the Desk at /desk/<slug>; /app/<slug> is only a
+        # redirect. Both spellings must reach the same plan gates.
+        with StubEnvironment() as env:
+            env.set_plan("PROFESSIONAL")
+            for path in (
+                "/desk/crm",
+                "/desk/crm-lead",
+                "/desk/engagement-event",
+                "/desk/data-import",
+                "/desk/email-account",
+                "/desk/facebook-page",
+            ):
+                with self.subTest(path=path):
+                    self.assert_blocked(env, path)
+
+            env.set_plan("BUSINESS")
+            for path in (
+                "/desk/crm",
+                "/desk/crm-lead",
+                "/desk/engagement-event",
+                "/desk/data-import",
+                "/desk/facebook-page",
+            ):
+                with self.subTest(path=path):
+                    self.assert_allowed(env, path)
+            self.assert_blocked(env, "/desk/email-account")
+
     def test_generic_client_methods_cannot_bypass_doctype_gates(self):
         with StubEnvironment() as env:
             env.set_plan("PROFESSIONAL")
