@@ -178,6 +178,38 @@ PLAN_GATE_HAS_PERMISSION_DOCTYPES = (
 # stay readable on Business so the CRM UI can render.
 PLAN_GATE_QUERY_DOCTYPES = IMPORT_EXPORT_DOCTYPES | ADVANCED_ADMIN_READ_DOCTYPES
 
+# Portal-only customer policy. A "customer" is an active BC business role; the
+# provider roles below always win when both sets are present. Enterprise keeps
+# its existing Desk-based administration, so only these two plans are locked.
+CUSTOMER_ROLES = frozenset({
+    "BC Business Owner",
+    "BC Business Manager",
+    "BC Business Member",
+    "BC CRM User",
+    "BC Marketing Manager",
+})
+PRIVILEGED_ROLES = frozenset({
+    "Administrator",
+    "System Manager",
+    "BC System Manager",
+    "BC Subscription Manager",
+})
+CUSTOMER_DESK_LOCKDOWN_PLANS = frozenset({"PROFESSIONAL", "BUSINESS"})
+
+# Native User / Role DocTypes are never exposed to portal customers. BC keeps
+# its own Business Member DocType as the authorization bridge; invitations are
+# created only through the BC wrapper and Frappe's User Invitation flow.
+CUSTOMER_USER_ADMIN_DOCTYPES = frozenset({
+    "User",
+    "User Invitation",
+    "Role",
+    "Role Profile",
+    "Role Permission",
+    "Role Permission for Page and Report",
+    "User Role",
+    "Has Role",
+})
+
 
 ADDITIONAL_USER_PRICES = {
     plan_code: PLAN_SEEDS[plan_code]["price_per_seat_per_year"]

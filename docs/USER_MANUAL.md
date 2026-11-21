@@ -59,13 +59,12 @@ Customer scans QR code or clicks link
 
 ### 1.4 Importing Existing Data
 
-Business Connect now supports the standard **Data Import** tool. You can bulk
-load Businesses, Business Members, Digital Cards, Product Categories and
-Showcase Products / Services from CSV or XLSX:
-
-1. Go to `/app/data-import`
-2. Pick the doctype, upload your file, match the columns and start the import
-3. Naming series is pre-filled automatically, so you never need to touch it
+The underlying platform supports the standard **Data Import** tool for
+Businesses, Business Members, Digital Cards, Product Categories and Showcase
+Products / Services from CSV or XLSX. This is a Desk tool, so it is available
+to **Enterprise** users and to the provider during onboarding — not to
+Professional or Business customers in their day-to-day portal. Ask the provider
+to load an initial CSV if you need bulk setup.
 
 ---
 
@@ -75,7 +74,8 @@ Showcase Products / Services from CSV or XLSX:
 
 ![Business Creation Form](./images/mockup/02_create_business_form.html)
 
-1. Go to **Business Connect > Business** from the desk
+1. The provider creates the first Business during onboarding. Enterprise users
+   can also use **Business Connect > Business** in the Desk.
 2. Click **Create New Business**
 3. Fill in the required fields:
 
@@ -127,32 +127,40 @@ Businesses, Digital Cards, Products and Services are *submittable* records:
 
 ### 2.2 Adding Team Members
 
-![Add Team Member](./images/mockup/05_add_member.html)
+Team members are invited from the private portal at **`/portal/team`**. The
+Frappe Desk and the native **User** list/form are never used for this — the
+invitation is created and validated entirely inside Business Connect.
 
-1. Open your business record
-2. Go to the **Members** tab
-3. Click **Add Row**
-4. Fill in:
+1. Sign in and open `/portal/team`
+2. Choose the Business and enter the teammate's **Email**, **First Name**,
+   optional **Last Name**, and one Business Connect role
+3. Click **Send invitation**
 
 | Field | Description | Required |
 |-------|-------------|----------|
-| User | User account (email) | Yes |
-| Person Name | Display name | Yes |
-| Designation | Job title (e.g., "Sales Manager") | No |
-| Role | Owner / Manager / Member / Marketing / CRM User | Yes |
-| Phone | Contact number | No |
+| Business | The business the teammate will join | Yes |
+| Email | Their login/email address | Yes |
+| First Name | Used on their user account and digital card | Yes |
+| Last Name | Used on their user account and digital card | No |
+| Business Connect role | `BC Business Member`, `BC Business Manager`, `BC CRM User` or `BC Marketing Manager` | Yes |
 
-5. Click **Save**
+The invitation email contains a one-time acceptance link. The teammate opens
+it, sets a password, and is then added as an active **Business Member** with
+the role you chose. Until then the invite reserves one billable seat and
+appears as a pending reservation in the portal.
 
 **Role descriptions:**
 
-| Role | Can Do |
-|------|--------|
-| **Owner** | Full control — create, edit, delete everything |
-| **Manager** | Manage business content, team members, products, services |
-| **Member** | Manage own card and content allowed by role |
-| **Marketing** | Manage products, services, themes, analytics |
-| **CRM User** | View and manage enquiries and CRM leads |
+| Portal role | Business Member role | Can Do |
+|-------------|----------------------|--------|
+| **BC Business Member** | Member | Manage own card and content allowed by role |
+| **BC Business Manager** | Manager | Manage business content, team members, products, services |
+| **BC Marketing Manager** | Marketing | Manage products, services, themes, analytics |
+| **BC CRM User** | CRM User | View and manage enquiries and CRM leads |
+
+> The per-business **Owner** role, **Administrator**, **System Manager**,
+> **BC System Manager** and **BC Subscription Manager** are never offered in
+> the team invite form. Only the Business Owner can invite teammates.
 
 ### 2.5 Page Visibility Settings
 
@@ -995,6 +1003,24 @@ Actions apply within a business the user is an active member of (plus the global
   drafts and cancelled documents are never public
 - CRM Leads are scoped to business members
 
+### 10.4 Portal-only access
+
+On **Professional** and **Business** sites, customers never open the Frappe
+Desk. Their private pages are:
+
+| Page | Purpose |
+|------|---------|
+| `/portal/team` | Invite teammates, see members and seat usage |
+| `/portal/subscription` | Read-only plan, usage and upgrade information |
+| `/my-card` | Own digital cards |
+| `/crm`, `/crm-form/*` | Frappe CRM (Business only) |
+| `/analytics` | Analytics dashboard (Business only) |
+
+The native **User**, **User Invitation**, **Role** and **Role Permission**
+forms and lists are blocked for these customers. Frappe creates the login only
+after an invitation is accepted; no `User` DocPerms are granted to customers.
+Enterprise sites keep their existing Desk-based advanced administration.
+
 ---
 
 ## 11. Mobile App (PWA)
@@ -1045,7 +1071,9 @@ visit — no reinstall. (Bump of the app version rotates the offline cache.)
 |-------|----------|
 | Theme not applying | Check the Business record has a **Default Theme** selected |
 | PWA does not install | The site must be served over HTTPS; see §11.5 |
-| Desk **Open** button missing beside Public URL | Hard-refresh the page (Ctrl/Cmd + Shift + R) |
+| Desk **Open** button missing beside Public URL | Enterprise/Desk users: hard-refresh (Ctrl/Cmd + Shift + R). Professional/Business customers should open the public `/c/<slug>` URL directly — the Desk is intentionally unavailable |
+| `/app` or `/desk` shows **Not Permitted** | Expected on Professional/Business sites. Use `/portal/team`, `/portal/subscription`, `/my-card` and (on Business) `/crm` and `/analytics` |
+| Invitation email not received | Ask the provider/support to confirm outgoing SMTP is configured for the site and resend the invitation |
 | Video does not play on a product or service page | Check the link is a supported share link — YouTube, Vimeo, Google Drive, Dailymotion, a Nextcloud **single-file** public share (`/s/…`). A Nextcloud **folder** share returns a zip and cannot play, and unsupported or unsafe links are skipped quietly — the page renders no video box rather than a broken one |
 
 Anything not listed here — a QR code that won't generate, a public page that won't
@@ -1136,10 +1164,10 @@ A: Annually, based on the plan's minimum user commitment.
 A: Online at the AASRIVA marketplace (**https://www.aasriva.in**) or by contacting OSDuo Tech LLP (https://www.osduotech.com/contact).
 
 **Q: Which plan is right for me?**  
-A: All plans include the digital card, business profile, QR/NFC sharing, product & service showcase, lead capture, contact management and the mobile PWA. Higher plans add **Multiple Business Profiles** and **Team Management** (Business), and **Advanced Administration** (Enterprise). As always, feature availability is subject to the final plan configuration — confirm the entitlements for your site when you order.
+A: All plans include the digital card, business profile, QR/NFC sharing, product & service showcase, lead capture, contact management and the mobile PWA. Higher plans add **Multiple Business Profiles**, **Team Management**, **CRM** and **Analytics** (Business), and **Advanced Administration** (Enterprise). Professional and Business customers use private portal pages; only Enterprise keeps Desk-based advanced administration. As always, feature availability is subject to the final plan configuration — confirm the entitlements for your site when you order.
 
 **Q: How do I open my profile page without typing its URL?**  
-A: In the desk, open any Digital Card record and click the **Open** button next to **Public URL** — it launches the live page in a new tab.
+A: Open `/my-card` in the portal and use the public card link shown there. Enterprise/Desk users can also open a Digital Card record and click **Open** beside **Public URL**.
 
 **Q: Why do my own visits show up as "Owner"/"Member"?**  
 A: Events are classified from the live session for people who are logged in. You can hide those from the dashboard with the **Exclude owner/member views** checkbox (see the Analytics Dashboard section).
@@ -1148,13 +1176,20 @@ A: Events are classified from the live session for people who are logged in. You
 
 ## 14. Subscription & Add-ons
 
-**My Subscription** (Desk → *My Subscription*) is a read-only summary of the site's plan, billed seats, business-profile usage and custom domains. It never shows payment or checkout controls — billing is handled by Aasriva. The **View plans on Aasriva** link opens the configured upgrade URL.
+**My Subscription** (`/portal/subscription`; the legacy Desk page is still
+available to provider/Enterprise users) is a read-only summary of the site's
+plan, billed seats, business-profile usage and custom domains. It never shows
+payment or checkout controls — billing is handled by Aasriva. The **View plans
+on Aasriva** link opens the configured upgrade URL.
 
-- Billed seats and business profiles are shown as *used of cap*. Cancelled businesses are listed separately and are not counted.
+- Billed seats and business profiles are shown as *used of cap*. Cancelled businesses are not counted.
 - Each Business Member can have exactly one Digital Card. Changing a card's display name does not create another card.
 - Custom domains expire with the subscription period end. Adding a domain never changes printed QR/NFC URLs or the site's existing hostname.
 
-**Request add-on** opens the native **Add-on Order** form. Available add-ons:
+**Request add-on** is a Desk workflow. Enterprise users can open the native
+**Add-on Order** form; Professional/Business customers should contact the
+provider/support with the add-on they need after confirming payment in Aasriva.
+Available add-ons:
 
 | Add-on | Price | Notes |
 |--------|-------|-------|

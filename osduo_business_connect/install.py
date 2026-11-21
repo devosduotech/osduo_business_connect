@@ -38,6 +38,7 @@ def after_install():
     # Create CRM Custom Fields
     create_crm_custom_fields()
     ensure_crm_fields_layout()
+    create_user_invitation_custom_fields()
 
     # Create default roles
     create_default_roles()
@@ -164,6 +165,16 @@ def create_custom_field_if_not_exists(dt, field):
     )
 
     if exists:
+        # Keep the internal flag in sync on sites that migrated while an
+        # earlier draft of this field set was present. Only fields that pass
+        # these keys are affected (currently the User Invitation fields).
+        updates = {
+            key: field[key]
+            for key in ("hidden", "reqd")
+            if key in field
+        }
+        if updates:
+            frappe.db.set_value("Custom Field", exists, updates, update_modified=False)
         return
 
     # If the field has a Link option, verify the target DocType exists
@@ -187,11 +198,58 @@ def create_custom_field_if_not_exists(dt, field):
         "description": field.get("description"),
         "unique": field.get("unique", 0),
         "read_only": field.get("read_only", 0),
+        "hidden": field.get("hidden", 0),
+        "reqd": field.get("reqd", 0),
         "in_list_view": 0,
         "in_standard_filter": 0,
     })
     custom_field.insert(ignore_permissions=True)
     frappe.db.commit()
+
+
+def create_user_invitation_custom_fields():
+    """Carry BC business context through Frappe's native User Invitation.
+
+    All four fields are internal: customers set them through the BC wrapper,
+    never through the User Invitation Desk form. They are intentionally not
+    globally mandatory: Frappe core's own invitations (``app_name="frappe"``)
+    do not carry them. :func:`validate_invitation_context` enforces them for BC
+    invitations only.
+    """
+    fields = (
+        {
+            "fieldname": "bc_business",
+            "fieldtype": "Link",
+            "label": "BC Business",
+            "options": "Business",
+            "insert_after": "app_name",
+            "hidden": 1,
+        },
+        {
+            "fieldname": "bc_member_role",
+            "fieldtype": "Select",
+            "label": "BC Member Role",
+            "options": "Member\nManager\nCRM User\nMarketing",
+            "insert_after": "bc_business",
+            "hidden": 1,
+        },
+        {
+            "fieldname": "bc_first_name",
+            "fieldtype": "Data",
+            "label": "BC First Name",
+            "insert_after": "bc_member_role",
+            "hidden": 1,
+        },
+        {
+            "fieldname": "bc_last_name",
+            "fieldtype": "Data",
+            "label": "BC Last Name",
+            "insert_after": "bc_first_name",
+            "hidden": 1,
+        },
+    )
+    for field in fields:
+        create_custom_field_if_not_exists("User Invitation", field)
 
 
 def ensure_crm_fields_layout():
@@ -430,6 +488,7 @@ def after_migrate():
     create_crm_custom_fields()
     ensure_crm_fields_layout()
     migrate_crm_custom_fields()
+    create_user_invitation_custom_fields()
     create_default_roles()
     create_builtin_themes()
     sync_theme_colors()

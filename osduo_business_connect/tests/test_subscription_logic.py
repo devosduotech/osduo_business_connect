@@ -116,6 +116,9 @@ class StubEnvironment:
     def __enter__(self):
         self.original = dict(sys.modules)
         self.tmpdir = tempfile.mkdtemp(prefix="bc-subscription-test-")
+        self.roles_by_user = {}
+        self.memberships = {}
+        self.get_all_rows = {}
 
         frappe = types.ModuleType("frappe")
         frappe.local = types.SimpleNamespace(site="test.local")
@@ -150,6 +153,16 @@ class StubEnvironment:
         frappe._ = lambda value: value
         frappe.get_doc = lambda *a, **k: FakeDocument(*a, **k)
         frappe.whitelist = lambda *a, **k: (lambda fn: fn)
+
+        def get_roles(user=None):
+            user = user or frappe.session.user
+            return list(self.roles_by_user.get(user, []))
+
+        def get_all(doctype, filters=None, fields=None, **kwargs):
+            return list(self.get_all_rows.get(doctype, []))
+
+        frappe.get_roles = get_roles
+        frappe.get_all = get_all
         frappe.logger = lambda name=None: types.SimpleNamespace(
             info=lambda *a, **k: None
         )
@@ -189,6 +202,25 @@ class StubEnvironment:
             package = types.ModuleType(name)
             package.__path__ = [path]
             sys.modules[name] = package
+
+        # Minimal stand-in for business.core: invitation tests only need these
+        # two scope helpers, and loading the real controller would pull in the
+        # whole publishing/sanitisation stack.
+        business_core = types.ModuleType("osduo_business_connect.business.core")
+
+        def get_user_role_in_business(user, business):
+            return self.memberships.get((user, business))
+
+        def get_user_businesses(user):
+            return [
+                {"name": business, "role": role}
+                for (member, business), role in self.memberships.items()
+                if member == user
+            ]
+
+        business_core.get_user_role_in_business = get_user_role_in_business
+        business_core.get_user_businesses = get_user_businesses
+        sys.modules["osduo_business_connect.business.core"] = business_core
 
         self.constants = _load(
             "osduo_business_connect.subscription.constants",
@@ -230,6 +262,10 @@ class StubEnvironment:
             "osduo_business_connect.subscription.subscription_page",
             os.path.join(SUB_DIR, "subscription_page.py"),
         )
+        self.team_invite = _load(
+            "osduo_business_connect.subscription.team_invite",
+            os.path.join(SUB_DIR, "team_invite.py"),
+        )
         self.addon_order = _load(
             "osduo_business_connect.subscription.doctype.add_on_order.add_on_order",
             os.path.join(
@@ -249,6 +285,9 @@ class StubEnvironment:
         self.frappe.flags.in_test = True
         self.frappe.flags.bc_plan_override = plan_code
         self.entitlements.clear_entitlement_cache()
+
+    def set_roles(self, *roles, user=None):
+        self.roles_by_user[user or self.frappe.session.user] = list(roles)
 
     def set_request(self, path, method="GET", payload=None, form=None):
         self.frappe.local.request = types.SimpleNamespace(
@@ -1708,6 +1747,454 @@ class TestFinalHardening(unittest.TestCase):
                 env.addon_master.get_orderable_addons(txt="priority"),
                 [("PRIORITY_SUPPORT", "Priority Support")],
             )
+
+
+class TestPortalTeamInvitations(unittest.TestCase):
+    """Portal-only team onboarding and the customer Desk lockdown."""
+
+    def setUp_env(self, plan="BUSINESS"):
+        env = StubEnvironment().__enter__()
+        self.addCleanup(env.__exit__, None, None, None)
+        env.set_plan(plan)
+        env.frappe.session.user = "owner@example.com"
+        env.set_roles("BC Business Owner")
+        env.memberships[("owner@example.com", "BIZ-1")] = "Owner"
+        env.frappe.db.exists = lambda dt, dn=None: dt == "Business" and dn in (None, "BIZ-1")
+        env.frappe.db.count = lambda dt, filters=None: (
+            1 if dt == "Business" else 0
+        )
+        env.frappe.db.sql = lambda *a, **k: [(0,)]
+        return env
+
+    def fake_core_invite(self, env):
+        calls = []
+        core = types.ModuleType("frappe.core.api.user_invitation")
+
+        def invite_by_email(**kwargs):
+            calls.append(kwargs)
+            return {"invited_emails": [kwargs["emails"]]}
+
+        core.invite_by_email = invite_by_email
+        sys.modules["frappe.core.api.user_invitation"] = core
+        return calls
+
+    def assert_blocked(self, env, path, **kwargs):
+        env.set_request(path, **kwargs)
+        with self.assertRaises(env.frappe.PermissionError):
+            env.plan_gates.enforce_plan_gates()
+
+    def assert_allowed(self, env, path, **kwargs):
+        env.set_request(path, **kwargs)
+        env.plan_gates.enforce_plan_gates()
+
+    def test_customer_desk_lockdown_on_business_and_professional(self):
+        for plan in ("PROFESSIONAL", "BUSINESS"):
+            with self.subTest(plan=plan):
+                env = self.setUp_env(plan)
+                for path in (
+                    "/app",
+                    "/desk",
+                    "/app/user",
+                    "/desk/role",
+                    "/app/my-subscription",
+                    "/api/method/frappe.core.api.user_invitation.invite_by_email",
+                    "/api/v2/method/User/invite_by_email",
+                    "/api/resource/User",
+                    "/api/resource/User%20Invitation",
+                    "/api/resource/Role",
+                ):
+                    with self.subTest(path=path):
+                        self.assert_blocked(env, path)
+
+                self.assert_allowed(env, "/portal/subscription")
+
+                if plan == "BUSINESS":
+                    for path in (
+                        "/crm",
+                        "/crm-form/crm-lead",
+                        "/analytics",
+                        "/portal/team",
+                        "/api/method/osduo_business_connect.subscription.team_invite.get_team_page_data",
+                        "/api/method/crm.api.doc.get_data",
+                    ):
+                        with self.subTest(path=path):
+                            self.assert_allowed(env, path)
+                else:
+                    for path in (
+                        "/crm",
+                        "/analytics",
+                        "/portal/team",
+                        "/api/method/osduo_business_connect.subscription.team_invite.get_team_page_data",
+                        "/api/method/osduo_business_connect.subscription.team_invite.invite_team_member",
+                    ):
+                        with self.subTest(path=path):
+                            self.assert_blocked(env, path)
+
+    def test_rpc_form_cannot_smuggle_core_invite(self):
+        env = self.setUp_env()
+        self.assert_blocked(
+            env,
+            "/api/method/frappe.ping",
+            form={"cmd": "frappe.core.api.user_invitation.invite_by_email"},
+        )
+        self.assert_blocked(
+            env,
+            "/api/method/frappe.ping",
+            form={"cmd": "frappe.client.insert", "doctype": "User"},
+        )
+        self.assert_blocked(
+            env,
+            "/api/method/osduo_business_connect.subscription.team_invite.invite_team_member",
+            form={"cmd": "frappe.core.api.user_invitation.invite_by_email"},
+        )
+
+    def test_privileged_roles_and_enterprise_keep_desk(self):
+        env = self.setUp_env()
+        env.set_roles("BC Business Owner", "System Manager")
+        self.assert_allowed(env, "/app/user")
+        self.assert_allowed(env, "/api/resource/User")
+
+        env.set_roles("BC Subscription Manager")
+        self.assert_allowed(env, "/desk")
+
+        env.set_plan("ENTERPRISE")
+        env.set_roles("BC Business Owner")
+        self.assert_allowed(env, "/app")
+        self.assert_allowed(env, "/api/resource/User")
+
+    def test_guest_invitation_acceptance_stays_public(self):
+        env = self.setUp_env()
+        env.frappe.flags.bc_plan_override = None
+        TestPlanGates().suspend_site(env)
+        env.frappe.session.user = "Guest"
+        self.assert_allowed(
+            env,
+            "/api/method/frappe.core.api.user_invitation.accept_invitation?key=abc",
+        )
+        self.assert_blocked(env, "/portal/team")
+
+    def test_doctype_hook_denies_native_user_admin_for_customers(self):
+        env = self.setUp_env()
+        gate = env.plan_gates.has_permission_for_doctype
+        for doctype in ("User", "User Invitation", "Role", "Role Permission"):
+            with self.subTest(doctype=doctype):
+                self.assertIs(
+                    gate(
+                        FakeDocument({"doctype": doctype}),
+                        user="owner@example.com",
+                        ptype="read",
+                    ),
+                    False,
+                )
+        self.assertIs(
+            gate(
+                FakeDocument({"doctype": "Business Member"}),
+                user="owner@example.com",
+                ptype="write",
+            ),
+            True,
+        )
+
+    def test_wrapper_validates_then_delegates_to_frappe(self):
+        env = self.setUp_env()
+        calls = self.fake_core_invite(env)
+
+        result = env.team_invite.invite_team_member(
+            email="  Teammate@Example.com ",
+            first_name="  Ada ",
+            last_name="  Lovelace ",
+            business="BIZ-1",
+            invite_role="BC CRM User",
+        )
+        self.assertEqual(result, {"invited_emails": ["teammate@example.com"]})
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(calls[0]["emails"], "teammate@example.com")
+        self.assertEqual(calls[0]["roles"], ["BC CRM User"])
+        self.assertEqual(calls[0]["app_name"], "osduo_business_connect")
+        self.assertEqual(calls[0]["bc_business"], "BIZ-1")
+        self.assertEqual(calls[0]["bc_member_role"], "CRM User")
+        self.assertEqual(calls[0]["bc_first_name"], "Ada")
+        self.assertEqual(calls[0]["bc_last_name"], "Lovelace")
+        self.assertEqual(calls[0]["redirect_to_path"], "/portal/team")
+
+        with self.assertRaises(env.frappe.PermissionError):
+            env.team_invite.invite_team_member(
+                email="x@example.com",
+                first_name="X",
+                business="BIZ-1",
+                invite_role="System Manager",
+            )
+        with self.assertRaises(env.frappe.ValidationError):
+            env.team_invite.invite_team_member(
+                email="not-an-email",
+                first_name="X",
+                business="BIZ-1",
+                invite_role="BC Business Member",
+            )
+        with self.assertRaises(env.frappe.ValidationError):
+            env.team_invite.invite_team_member(
+                email="x@example.com",
+                first_name="",
+                business="BIZ-1",
+                invite_role="BC Business Member",
+            )
+        self.assertEqual(len(calls), 1)
+
+    def test_wrapper_rejects_non_owner_wrong_business_and_professional(self):
+        env = self.setUp_env()
+        self.fake_core_invite(env)
+        env.memberships[("owner@example.com", "BIZ-1")] = "Manager"
+        with self.assertRaises(env.frappe.PermissionError):
+            env.team_invite.invite_team_member(
+                email="x@example.com",
+                first_name="X",
+                business="BIZ-1",
+                invite_role="BC Business Member",
+            )
+
+        env.memberships[("owner@example.com", "BIZ-1")] = "Owner"
+        env.frappe.db.exists = lambda dt, dn=None: False
+        with self.assertRaises(env.frappe.ValidationError):
+            env.team_invite.invite_team_member(
+                email="x@example.com",
+                first_name="X",
+                business="BIZ-2",
+                invite_role="BC Business Member",
+            )
+
+        env.frappe.db.exists = lambda dt, dn=None: dt == "Business"
+        env.set_plan("PROFESSIONAL")
+        with self.assertRaises(env.entitlements.PlanRestrictionError):
+            env.team_invite.invite_team_member(
+                email="x@example.com",
+                first_name="X",
+                business="BIZ-1",
+                invite_role="BC Business Member",
+            )
+
+    def test_invite_reserves_prospective_seat_including_pending_invites(self):
+        env = self.setUp_env()
+        self.fake_core_invite(env)
+        env.frappe.db.sql = lambda *a, **k: [(4,)]
+        env.frappe.db.count = lambda dt, filters=None: (
+            1 if dt == "User Invitation" else 0
+        )
+        with self.assertRaises(env.entitlements.PlanRestrictionError) as ctx:
+            env.team_invite.invite_team_member(
+                email="x@example.com",
+                first_name="X",
+                business="BIZ-1",
+                invite_role="BC Business Member",
+            )
+        self.assertIn("Seats limit reached (5 of 5)", str(ctx.exception))
+
+        # The pending invite for the same email is de-duplicated by Frappe, so
+        # the exclusion filter removes it and the prospective count stays
+        # within the cap.
+        env.frappe.db.count = lambda dt, filters=None: (
+            0
+            if dt == "User Invitation" and (filters or {}).get("email")
+            else 1
+            if dt == "User Invitation"
+            else 0
+        )
+        env.team_invite.invite_team_member(
+            email="x@example.com",
+            first_name="X",
+            business="BIZ-1",
+            invite_role="BC Business Member",
+        )
+
+    def test_doc_hook_blocks_direct_core_invite_without_bc_context(self):
+        env = self.setUp_env()
+        doc = FakeDocument({
+            "app_name": "osduo_business_connect",
+            "email": "x@example.com",
+            "status": "Pending",
+            "roles": [FakeDocument({"role": "BC Business Member"})],
+            "bc_business": "BIZ-1",
+            "bc_member_role": "Member",
+            "bc_first_name": "X",
+            "bc_last_name": "",
+        })
+        env.team_invite.validate_invitation_context(doc)
+
+        doc.bc_business = None
+        with self.assertRaises(env.frappe.ValidationError):
+            env.team_invite.validate_invitation_context(doc)
+
+        doc.bc_business = "BIZ-1"
+        doc.roles = [FakeDocument({"role": "Administrator"})]
+        with self.assertRaises(env.frappe.PermissionError):
+            env.team_invite.validate_invitation_context(doc)
+
+    def test_after_accept_applies_names_and_creates_member(self):
+        env = self.setUp_env()
+        created = []
+
+        def get_doc(*args, **kwargs):
+            doc = FakeDocument(kwargs or (args[0] if args else {}))
+            created.append(doc)
+            return doc
+
+        env.frappe.get_doc = get_doc
+        invitation = FakeDocument({
+            "app_name": "osduo_business_connect",
+            "email": "ada@example.com",
+            "bc_business": "BIZ-1",
+            "bc_member_role": "CRM User",
+            "bc_first_name": "Ada",
+            "bc_last_name": "Lovelace",
+        })
+        user = FakeDocument({
+            "name": "ada@example.com",
+            "email": "ada@example.com",
+            "first_name": "Ada",
+            "last_name": "",
+        })
+
+        env.team_invite.after_accept_create_member(invitation, user)
+
+        self.assertEqual(user.first_name, "Ada")
+        self.assertEqual(user.last_name, "Lovelace")
+        self.assertTrue(getattr(user, "_saved", False))
+        self.assertEqual(len(created), 1)
+        self.assertEqual(created[0].role, "CRM User")
+        self.assertEqual(created[0].person_name, "Ada Lovelace")
+        self.assertEqual(created[0].business, "BIZ-1")
+        self.assertTrue(getattr(created[0], "_inserted", False))
+
+    def test_after_accept_rechecks_plan_and_seat_cap(self):
+        env = self.setUp_env()
+        invitation = FakeDocument({
+            "app_name": "osduo_business_connect",
+            "email": "ada@example.com",
+            "bc_business": "BIZ-1",
+            "bc_member_role": "Member",
+            "bc_first_name": "Ada",
+        })
+        user = FakeDocument({
+            "name": "ada@example.com",
+            "email": "ada@example.com",
+            "first_name": "Ada",
+        })
+
+        env.set_plan("PROFESSIONAL")
+        with self.assertRaises(env.entitlements.PlanRestrictionError):
+            env.team_invite.after_accept_create_member(invitation, user)
+
+        env.set_plan("BUSINESS")
+        env.frappe.db.sql = lambda *a, **k: [(5,)]
+        with self.assertRaises(env.entitlements.PlanRestrictionError):
+            env.team_invite.after_accept_create_member(invitation, user)
+
+    def test_portal_payload_is_scoped_and_read_only(self):
+        env = self.setUp_env()
+        env.frappe.db.sql = lambda *a, **k: [(1,)]
+        env.get_all_rows["Business Member"] = [
+            types.SimpleNamespace(
+                name="BM-1",
+                business="BIZ-1",
+                person_name="Ada Lovelace",
+                email="ada@example.com",
+                role="CRM User",
+                status="Active",
+            )
+        ]
+        data = env.team_invite.get_team_page_data()
+        self.assertTrue(data["can_manage"])
+        self.assertTrue(data["is_owner"])
+        self.assertEqual(data["seats"], {"used": 1, "billed": 5})
+        self.assertEqual(data["businesses"], [{"name": "BIZ-1", "role": "Owner"}])
+        self.assertEqual(data["members"][0]["email"], "ada@example.com")
+        self.assertEqual(
+            {row["invite_role"] for row in data["roles"]},
+            {
+                "BC Business Member",
+                "BC Business Manager",
+                "BC CRM User",
+                "BC Marketing Manager",
+            },
+        )
+        self.assertNotIn("api_key", str(data).lower())
+
+        env.frappe.session.user = "Guest"
+        with self.assertRaises(env.frappe.PermissionError):
+            env.team_invite.get_team_page_data()
+
+    def test_hooks_fields_and_portal_pages_are_wired(self):
+        with open(os.path.join(APP_DIR, "hooks.py")) as handle:
+            hooks = handle.read()
+        self.assertIn("user_invitation = {", hooks)
+        self.assertIn('"allowed_roles"', hooks)
+        self.assertIn('"extra_invite_params"', hooks)
+        self.assertIn("after_accept_create_member", hooks)
+        self.assertIn("validate_invitation_context", hooks)
+        self.assertIn('"from_route": "/portal/team"', hooks)
+        self.assertIn('"to_route": "portal/team"', hooks)
+        self.assertIn('"from_route": "/portal/subscription"', hooks)
+
+        invitation_block = hooks.split("user_invitation = {", 1)[1].split("\n}\n", 1)[0]
+        invitable_block = hooks.split("_BC_INVITABLE_ROLES = [", 1)[1].split("]", 1)[0]
+        for role in (
+            "BC Business Member",
+            "BC Business Manager",
+            "BC CRM User",
+            "BC Marketing Manager",
+        ):
+            self.assertIn('"%s"' % role, invitable_block)
+        for forbidden in (
+            "Administrator",
+            "System Manager",
+            "BC System Manager",
+            "BC Subscription Manager",
+            "BC Business Owner",
+        ):
+            self.assertNotIn('"%s"' % forbidden, invitable_block)
+        for inviter in (
+            "Administrator",
+            "System Manager",
+            "BC System Manager",
+            "BC Subscription Manager",
+            "BC Business Owner",
+        ):
+            self.assertIn('"%s":' % inviter, invitation_block)
+
+        with open(os.path.join(APP_DIR, "install.py")) as handle:
+            install = handle.read()
+        self.assertIn("def create_user_invitation_custom_fields(", install)
+        for fieldname in env_fieldnames():
+            self.assertIn('"fieldname": "%s"' % fieldname, install)
+
+        for name in ("team", "subscription"):
+            base = os.path.join(APP_DIR, "templates", "pages", "portal")
+            controller = os.path.join(base, "%s.py" % name)
+            template = os.path.join(base, "%s.html" % name)
+            self.assertTrue(os.path.exists(controller), controller)
+            self.assertTrue(os.path.exists(template), template)
+            with open(controller) as handle:
+                source = handle.read()
+            self.assertIn("Guest", source)
+
+        with open(os.path.join(APP_DIR, "templates", "pages", "portal", "team.html")) as handle:
+            template = handle.read()
+        self.assertIn(
+            "invite_team_member", template
+        )
+        self.assertNotIn('frappe.new_doc("User")', template)
+
+        with open(os.path.join(APP_DIR, "__init__.py")) as handle:
+            version = handle.read()
+        self.assertIn('__version__ = "1.3.4"', version)
+
+
+def env_fieldnames():
+    return (
+        "bc_business",
+        "bc_member_role",
+        "bc_first_name",
+        "bc_last_name",
+    )
 
 
 if __name__ == "__main__":

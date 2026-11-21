@@ -1,0 +1,84 @@
+{%- extends "osduo_business_connect/templates/bc_base.html" -%}
+
+{%- block page_content -%}
+<style>
+    .bc-sub-page { min-height: 100vh; background: #f4f6f8; padding: 2.5rem 1rem; color: #1e293b; }
+    .bc-sub-inner { max-width: 960px; margin: 0 auto; }
+    .bc-sub-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .bc-sub-head h1 { margin: 0; font-size: 1.6rem; }
+    .bc-sub-head p { margin: 0.35rem 0 0; color: #64748b; font-size: 0.9rem; }
+    .bc-sub-nav { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .bc-sub-nav a { display: inline-block; padding: 0.5rem 0.85rem; border-radius: 8px; font-size: 0.82rem; text-decoration: none; background: #fff; border: 1px solid #e2e8f0; color: #334155; }
+    .bc-sub-nav a.primary { background: #0b3d91; border-color: #0b3d91; color: #fff; }
+    .bc-sub-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.9rem; margin-bottom: 1.2rem; }
+    .bc-sub-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.1rem 1.25rem; }
+    .bc-sub-card span { display: block; color: #64748b; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .bc-sub-card strong { display: block; margin-top: 0.35rem; font-size: 1.15rem; color: #0b3d91; }
+    .bc-sub-panel { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
+    .bc-sub-panel h2 { margin: 0 0 0.85rem; font-size: 1rem; }
+    .bc-sub-row { display: flex; justify-content: space-between; gap: 1rem; padding: 0.45rem 0; border-bottom: 1px solid #f1f5f9; font-size: 0.86rem; }
+    .bc-sub-row:last-child { border-bottom: 0; }
+    .bc-sub-features { display: flex; gap: 0.45rem; flex-wrap: wrap; }
+    .bc-sub-chip { padding: 0.35rem 0.65rem; border-radius: 999px; background: #ecfdf5; color: #047857; font-size: 0.76rem; }
+    .bc-sub-chip.off { background: #f1f5f9; color: #64748b; }
+    .bc-sub-note { color: #64748b; font-size: 0.82rem; line-height: 1.55; }
+</style>
+
+{% set s = subscription or {} %}
+<div class="bc-sub-page">
+    <div class="bc-sub-inner">
+        <div class="bc-sub-head">
+            <div>
+                <h1>My Subscription</h1>
+                <p>Read-only plan and usage summary. Billing is handled by Aasriva.</p>
+            </div>
+            <div class="bc-sub-nav">
+                <a href="/my-card">My Card</a>
+                <a class="primary" href="/portal/team">Team</a>
+                {% if s.plan_code != "PROFESSIONAL" %}<a href="/analytics">Analytics</a>{% endif %}
+            </div>
+        </div>
+
+        <div class="bc-sub-grid">
+            <div class="bc-sub-card"><span>Plan</span><strong>{{ (s.plan or s.plan_code or '—') | e }}</strong></div>
+            <div class="bc-sub-card"><span>Status</span><strong>{{ (s.status or '—') | e }}</strong></div>
+            <div class="bc-sub-card"><span>Seats</span><strong>{{ s.seats.used if s.seats else 0 }} / {{ s.seats.billed if s.seats else 0 }}</strong></div>
+            <div class="bc-sub-card"><span>Businesses</span><strong>{{ s.businesses.used if s.businesses else 0 }} / {{ s.businesses.cap if s.businesses else 0 }}</strong></div>
+        </div>
+
+        <div class="bc-sub-panel">
+            <h2>Plan details</h2>
+            <div class="bc-sub-row"><span>Period end</span><span>{{ (s.period_end or '—') | e }}</span></div>
+            <div class="bc-sub-row"><span>Billing source</span><span>{{ (s.billing_source or '—') | e }}</span></div>
+            <div class="bc-sub-row"><span>Seat price</span><span>₹{{ s.price_per_seat_per_year if s.price_per_seat_per_year else 0 }} / seat / year</span></div>
+            <div class="bc-sub-row"><span>External CRM</span><span>{{ 'Enabled' if s.external_crm_enabled else 'Not enabled' }}</span></div>
+        </div>
+
+        <div class="bc-sub-panel">
+            <h2>Included features</h2>
+            <div class="bc-sub-features">
+                {% for f in s.features or [] %}
+                <span class="bc-sub-chip{% if not f.enabled %} off{% endif %}">{{ f.label | e }}</span>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% if s.domains and s.domains.rows %}
+        <div class="bc-sub-panel">
+            <h2>Custom domains</h2>
+            {% for d in s.domains.rows %}
+            <div class="bc-sub-row"><span>{{ d.hostname | e }}</span><span>{{ (d.status or d.mapping_type or '') | e }}</span></div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="bc-sub-panel">
+            <h2>Upgrade</h2>
+            <p class="bc-sub-note">
+                To change plans or request additional seats, order through Aasriva and ask the provider to apply the change to this site.
+                {% if s.upgrade_url %}<a href="{{ s.upgrade_url | e }}">View plans on Aasriva</a>.{% endif %}
+            </p>
+        </div>
+    </div>
+</div>
+{%- endblock -%}

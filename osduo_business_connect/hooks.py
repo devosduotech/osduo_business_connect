@@ -121,6 +121,16 @@ website_route_rules = [
         "from_route": "/b/<business_slug>/services/<service_slug>",
         "to_route": "service/service",
     },
+    # Private customer portal pages. These are deliberately outside the Desk so
+    # Professional/Business customers never load the Frappe framework UI.
+    {
+        "from_route": "/portal/team",
+        "to_route": "portal/team",
+    },
+    {
+        "from_route": "/portal/subscription",
+        "to_route": "portal/subscription",
+    },
 ]
 
 # Document Events
@@ -132,8 +142,8 @@ website_route_rules = [
 # the controller files. No need to register them in doc_events.
 #
 # The only doc_events we register are cross-cutting concerns that must not
-# live in a single controller: the CRM Lead hook, and the cache invalidation
-# below.
+# live in a single controller: the CRM Lead hook, publication cache
+# invalidation, and the User Invitation guard below.
 _SITEMAP_INVALIDATE = "osduo_business_connect.seo.sitemap.invalidate_sitemap_cache"
 _PAGE_CACHE_INVALIDATE = "osduo_business_connect.utils.cache.on_publication_change"
 _PUBLICATION_EVENTS = [_SITEMAP_INVALIDATE, _PAGE_CACHE_INVALIDATE]
@@ -171,6 +181,44 @@ doc_events = {
         "on_cancel": _PUBLICATION_EVENTS,
         "on_trash": _PUBLICATION_EVENTS,
     },
+    # Re-validate BC context even when Frappe core's invite API is called
+    # directly: it inserts User Invitation with ignore_permissions=True.
+    "User Invitation": {
+        "before_insert": "osduo_business_connect.subscription.team_invite.validate_invitation_context",
+    },
+}
+
+# Frappe User Invitation integration
+# ----------------------------------
+# Customers never receive DocPerms on User. Frappe creates the User only after
+# the invitee accepts, and our after_accept hook creates the Business Member.
+# Invitee roles only. Administrator, System Manager, BC System Manager, BC
+# Subscription Manager and the per-business Owner role are deliberately absent.
+_BC_INVITABLE_ROLES = [
+    "BC Business Member",
+    "BC Business Manager",
+    "BC CRM User",
+    "BC Marketing Manager",
+]
+user_invitation = {
+    # Roles allowed to send an invitation. Provider roles are included so
+    # Frappe's native invite flow still works for Enterprise/provider admins.
+    "allowed_roles": {
+        "BC Business Owner": _BC_INVITABLE_ROLES,
+        "BC System Manager": _BC_INVITABLE_ROLES,
+        "BC Subscription Manager": _BC_INVITABLE_ROLES,
+        "System Manager": _BC_INVITABLE_ROLES,
+        "Administrator": _BC_INVITABLE_ROLES,
+    },
+    "extra_invite_params": [
+        "bc_business",
+        "bc_member_role",
+        "bc_first_name",
+        "bc_last_name",
+    ],
+    "after_accept": [
+        "osduo_business_connect.subscription.team_invite.after_accept_create_member",
+    ],
 }
 
 # Scheduled Tasks

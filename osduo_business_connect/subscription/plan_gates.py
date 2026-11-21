@@ -38,8 +38,12 @@ from osduo_business_connect.subscription.constants import (
     ADVANCED_ADMIN_READ_DOCTYPES,
     ANALYTICS_DOCTYPES,
     CRM_EXTRA_DOCTYPES,
+    CUSTOMER_DESK_LOCKDOWN_PLANS,
+    CUSTOMER_ROLES,
+    CUSTOMER_USER_ADMIN_DOCTYPES,
     IMPORT_EXPORT_DOCTYPES,
     MULTI_BUSINESS_DOCTYPES,
+    PRIVILEGED_ROLES,
     TEAM_MANAGEMENT_DOCTYPES,
 )
 from osduo_business_connect.subscription.entitlements import (
@@ -82,7 +86,11 @@ MULTI_BUSINESS_CREATE_PAGES = frozenset(
     for base in _desk_routes("business")
     for slug in ("view", "form")
 )
-TEAM_MANAGEMENT_PAGES = _desk_routes("business-member")
+TEAM_MANAGEMENT_PAGES = _desk_routes("business-member") + ("/portal/team",)
+TEAM_MANAGEMENT_METHODS = frozenset({
+    "osduo_business_connect.subscription.team_invite.get_team_page_data",
+    "osduo_business_connect.subscription.team_invite.invite_team_member",
+})
 
 ANALYTICS_PAGES = ("/analytics",) + _desk_routes("analytics", "engagement-event")
 ANALYTICS_METHODS = frozenset({
@@ -252,6 +260,57 @@ PUBLIC_API_METHODS = frozenset({
     "osduo_business_connect.card.public_api.download_vcard",
     "osduo_business_connect.analytics.analytics_service.log_event",
     "osduo_business_connect.pwa.get_app_icon",
+    # The invitation link is emailed to a guest; acceptance must stay reachable
+    # even while a site is Suspended so pending invites can be completed.
+    "frappe.core.api.user_invitation.accept_invitation",
+})
+
+# Customer-safe pages and APIs. These are the only surfaces a Professional or
+# Business customer needs outside the CRM product UI and the analytics page.
+CUSTOMER_PORTAL_PAGES = frozenset({"/portal/team", "/portal/subscription"})
+CUSTOMER_PORTAL_API_METHODS = frozenset({
+    "osduo_business_connect.subscription.team_invite.get_team_page_data",
+    "osduo_business_connect.subscription.team_invite.invite_team_member",
+    "osduo_business_connect.subscription.subscription_page.get_my_subscription",
+    "osduo_business_connect.card.my_card.get_my_cards",
+    "osduo_business_connect.card.contact_exchange_api.record_contact_exchange",
+    "osduo_business_connect.card.contact_exchange_api.get_contact_exchanges",
+    "osduo_business_connect.subscription.doctype.add_on_order.add_on_order.get_addon_quote",
+    "osduo_business_connect.subscription.doctype.add_on_master.add_on_master.get_orderable_addons",
+})
+
+# Direct calls to these bypass BC's owner/business/plan/seat validation. The
+# BC wrapper is the only invitation entry point allowed for customers; the
+# guest acceptance endpoint remains available for the emailed link.
+CUSTOMER_BLOCKED_INVITE_METHODS = frozenset({
+    "frappe.core.api.user_invitation.invite_by_email",
+    "frappe.core.api.user_invitation.cancel_invitation",
+    "frappe.core.api.user_invitation.resend_invitation",
+    "frappe.core.api.user_invitation.get_pending_invitations",
+    "frappe.core.doctype.user_invitation.user_invitation.cancel_invite",
+    "frappe.core.doctype.user_invitation.user_invitation.expire",
+})
+CUSTOMER_ALLOWED_INVITE_METHODS = frozenset({
+    "frappe.core.api.user_invitation.accept_invitation",
+})
+CUSTOMER_BLOCKED_METHOD_PREFIXES = (
+    "frappe.core.api.user_invitation.",
+    "frappe.core.doctype.user_invitation.user_invitation.",
+    "frappe.core.doctype.user.user.",
+    "frappe.core.doctype.role.",
+    "frappe.desk.doctype.role_",
+)
+# v2's /method/<doctype>/<method> shorthand reduces controller methods to a
+# short name, so block those too. User-admin DocType routes are caught by the
+# DocType set below even when the short name is not listed here.
+CUSTOMER_BLOCKED_METHOD_SHORT_NAMES = frozenset({
+    "invite_by_email",
+    "cancel_invitation",
+    "resend_invitation",
+    "get_pending_invitations",
+    "cancel_invite",
+    "expire",
+    "generate_keys",
 })
 
 FEATURE_MESSAGES = {
@@ -447,6 +506,57 @@ def _method_matches(methods, prefix, names):
     )
 
 
+def _session_roles(user=None):
+    if not user:
+        user = getattr(frappe.session, "user", None) or "Guest"
+    getter = getattr(frappe, "get_roles", None)
+    if not callable(getter):
+        return set()
+    try:
+        return set(getter(user) or [])
+    except Exception:
+        return set()
+
+
+def _is_locked_down_customer(entitlements, user=None):
+    """Professional/Business customers without a provider role lose the Desk."""
+    if entitlements.get("plan_code") not in CUSTOMER_DESK_LOCKDOWN_PLANS:
+        return False
+    roles = _session_roles(user)
+    if roles & PRIVILEGED_ROLES:
+        return False
+    return bool(roles & CUSTOMER_ROLES)
+
+
+def _customer_user_admin_attempt(path, methods, doctypes):
+    """Return True for any native User/Role/User Invitation surface.
+
+    The allowlist is checked before this helper so the BC wrapper and the
+    emailed guest-acceptance link are not caught by the broad prefixes.
+    """
+    if "/portal/" in path or path in CUSTOMER_PORTAL_PAGES:
+        return False
+    # Explicit BC portal APIs are safe, but only when no other command is being
+    # smuggled in the same request (form_dict.cmd wins at dispatch time).
+    if methods and methods <= (CUSTOMER_PORTAL_API_METHODS | CUSTOMER_ALLOWED_INVITE_METHODS):
+        return False
+    if path in ("/app", "/desk") or path.startswith(("/app/", "/desk/")):
+        return True
+    if doctypes & CUSTOMER_USER_ADMIN_DOCTYPES:
+        return True
+
+    for method in methods:
+        if method in CUSTOMER_ALLOWED_INVITE_METHODS:
+            continue
+        if method in CUSTOMER_BLOCKED_INVITE_METHODS:
+            return True
+        if method.startswith(CUSTOMER_BLOCKED_METHOD_PREFIXES):
+            return True
+        if method in CUSTOMER_BLOCKED_METHOD_SHORT_NAMES:
+            return True
+    return False
+
+
 def _path_user_name(path):
     for prefix in (
         "/api/resource/User/",
@@ -574,7 +684,9 @@ def _private_surface(path, methods):
     public_prefixes = ("/assets/", "/files/", "/favicon", "/robots", "/b/", "/c/")
     if path.startswith(public_prefixes):
         return False
-    if path.startswith(("/app", "/crm", "/crm-form", "/desk", "/analytics")):
+    if path.startswith(
+        ("/app", "/crm", "/crm-form", "/desk", "/analytics", "/portal")
+    ):
         return True
     if path.startswith("/api/"):
         # Token auth runs after before_request, so session.user is unreliable
@@ -636,6 +748,22 @@ def enforce_plan_gates():
             path,
         )
 
+    # Portal-only customer policy. Professional and Business customers never
+    # see the generic Desk or native User/Role administration. Enterprise keeps
+    # its existing Desk-based advanced administration.
+    if _is_locked_down_customer(ent) and _customer_user_admin_attempt(
+        path, methods, doctypes
+    ):
+        plan_name = ent.get("plan_name") or ent.get("plan_code") or "current"
+        _deny(
+            "desk_lockdown",
+            _(
+                "The Frappe Desk and native User administration are not available "
+                "on the {0} plan. Use the Business Connect portal instead."
+            ).format(plan_name),
+            path,
+        )
+
     is_write = _request_method() in WRITE_METHODS or bool(
         methods & (GENERIC_WRITE_METHODS | {"execute_doc_method", "frappe.api.v2.execute_doc_method"})
     )
@@ -662,7 +790,7 @@ def enforce_plan_gates():
     # Multiple Business profiles and Team management (Business and above).
     if path in MULTI_BUSINESS_CREATE_PAGES:
         _require_feature(ent, "multiple_business_profiles", path)
-    if path.startswith(TEAM_MANAGEMENT_PAGES):
+    if path.startswith(TEAM_MANAGEMENT_PAGES) or bool(methods & TEAM_MANAGEMENT_METHODS):
         _require_feature(ent, "team_management", path)
 
     # Analytics (Business and above)
@@ -719,6 +847,15 @@ def has_permission_for_doctype(doc, user=None, ptype=None):
     doctype = getattr(doc, "doctype", None)
     if not doctype:
         return True
+
+    # Defence in depth: a customer must never get through a DocType hook to a
+    # native User, Role or User Invitation record. The request gate above is
+    # authoritative because Administrator bypasses these hooks entirely.
+    if (
+        doctype in CUSTOMER_USER_ADMIN_DOCTYPES
+        and _is_locked_down_customer(get_entitlements(), user)
+    ):
+        return False
 
     if doctype in IMPORT_EXPORT_DOCTYPES and not has_feature("import_export"):
         return False

@@ -286,9 +286,10 @@ bench --site customer.example.com clear-cache
 bench --site customer.example.com clear-website-cache
 ```
 
-In the Desk, open **My Subscription** (`/desk/my-subscription`, legacy
-`/app/my-subscription`) and confirm the plan, billed seats, business cap and
-period end. Or from the console:
+Open **My Subscription** at `/portal/subscription` and confirm the plan, billed
+seats, business cap and period end. Provider/Enterprise Desk users can still
+use the legacy `/desk/my-subscription` page (`/app/my-subscription` on v15). Or
+from the console:
 
 ```bash
 bench --site customer.example.com console
@@ -296,20 +297,50 @@ bench --site customer.example.com console
 >>> get_entitlements()["plan_code"], get_entitlements()["limits"]["seat_cap"]
 ```
 
-Then create the first **Business** from its native Desk form. The owner's
-**Business Member** row is created automatically. Create one **Digital Card**
-per member (extra cards with a different display name are blocked).
+Then create the first **Business** from its native Desk form as the provider.
+The owner's **Business Member** row is created automatically. Create one
+**Digital Card** per member (extra cards with a different display name are
+blocked). Professional and Business customers do this through the portal from
+then on; they never need the Desk for team setup.
 
 ### Step 5 — access setup
 
+- Do **not** grant customers permissions on the native `User`, `User
+  Invitation`, `Role` or `Role Profile` DocTypes. The request gate blocks all
+  of those surfaces for Professional/Business customer roles.
 - Give each user a `BC *` role **and** an active Business Member row for the business.
+  Frappe creates the User only when the teammate accepts the invitation from
+  `/portal/team`; the `after_accept` hook then creates the Business Member row.
+- Outgoing SMTP must be configured (see Step 2b), otherwise invitation emails
+  cannot be delivered. `bench migrate` creates the hidden `bc_business`,
+  `bc_member_role`, `bc_first_name` and `bc_last_name` fields on **User
+  Invitation**; they are intentionally not globally mandatory so Frappe core
+  invitations still work.
+- Only the per-business Owner (plus provider roles) may invite. The portal
+  offers only `BC Business Member`, `BC Business Manager`, `BC CRM User` and
+  `BC Marketing Manager`; Administrator, System Manager, BC System Manager,
+  BC Subscription Manager and the Owner role are never offered.
 - Frappe CRM users additionally need a standard CRM role (`Sales User`,
   `Sales Manager` or `System Manager`) and access via `/crm` — BC roles alone
   are not enough.
-- Professional blocks CRM, Analytics, import/export, multiple businesses and
-  team management. Business adds CRM, Analytics, import/export, up to 3
-  businesses and team management. Enterprise adds CRM admin, Email/WhatsApp
-  configuration, up to 5 businesses and one included custom domain.
+- Professional has no Desk, team management, CRM, Analytics or import/export
+  for customers. Business adds the portal Team page, `/crm`, `/crm-form/*` and
+  `/analytics`, up to 3 businesses and team invitations, but still no generic
+  Desk. Enterprise keeps its existing Desk-based advanced administration,
+  Email/WhatsApp configuration, up to 5 businesses and one included custom
+  domain.
+- All plan/upgrade links must stay on
+  `https://www.osduotech.com/solutions/business-connect#section_business-connect-pricing`.
+
+### Verify portal team invitations
+
+1. Sign in as the Business Owner on a Business-plan site and open `/portal/team`.
+2. Confirm only the four allowed BC roles appear and the Owner role does not.
+3. Invite a new email and confirm the seat counter increases immediately.
+4. Open the emailed link as the invitee, set a password and confirm an active
+   **Business Member** row is created for the selected business and role.
+5. Try `/app` and `/api/method/frappe.core.api.user_invitation.invite_by_email`
+   as the Owner: both must return 403. The guest acceptance URL must still work.
 
 ### Change the plan on an existing instance
 
