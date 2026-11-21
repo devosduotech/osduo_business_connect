@@ -349,13 +349,12 @@ uses a restricted custom query; it does not expose the master list.
      - `Actual Cost` — set price to `0`; the customer must attach a quote/invoice
        and the order amount records `0` because payment is handled in Aasriva.
    - **Active** — keep checked to allow ordering.
-3. Choose applicability. The **Applicable Plans** table is always visible:
-   - For every plan: leave **Applies to All Plans** checked. The table is ignored
-     but can be left empty.
-   - For selected plans: **uncheck** it and add one row per allowed plan using
-     the SaaS Plan names `PROFESSIONAL`, `BUSINESS`, `ENTERPRISE`. Saving with an
-     empty table is blocked, so a restricted add-on cannot accidentally become
-     available to no plan.
+3. Choose applicability:
+   - For every plan: leave **Applies to All Plans** checked. The **Applicable
+     Plans** table is read-only and any rows are cleared automatically.
+   - For selected plans: **uncheck** it. The table becomes editable; add one row
+     per allowed plan using the SaaS Plan names `PROFESSIONAL`, `BUSINESS`,
+     `ENTERPRISE`. Saving with an empty table is blocked.
 4. Save. Existing sites pick it up immediately; no reprovision is required.
 
 `SaaS Plan` and the two seeded domain add-ons are created by install/migrate.

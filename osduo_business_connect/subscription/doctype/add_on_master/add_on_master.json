@@ -23,7 +23,7 @@
     {"fieldname": "is_active", "fieldtype": "Check", "label": "Active", "default": "1"},
     {"fieldname": "section_applicability", "fieldtype": "Section Break", "label": "Applicability"},
     {"fieldname": "applies_to_all_plans", "fieldtype": "Check", "label": "Applies to All Plans", "default": "1"},
-    {"fieldname": "applicable_plans", "fieldtype": "Table", "label": "Applicable Plans", "options": "Add-on Applicable Plan", "description": "Used only when 'Applies to All Plans' is unchecked. Add one row per allowed SaaS Plan."},
+    {"fieldname": "applicable_plans", "fieldtype": "Table", "label": "Applicable Plans", "options": "Add-on Applicable Plan", "read_only_depends_on": "eval:doc.applies_to_all_plans", "description": "Edit and add plans only when 'Applies to All Plans' is unchecked. Rows are cleared when it is checked."},
     {"fieldname": "section_details", "fieldtype": "Section Break", "label": "Details"},
     {"fieldname": "description", "fieldtype": "Small Text", "label": "Description"}
   ],

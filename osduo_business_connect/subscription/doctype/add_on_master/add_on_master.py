@@ -17,7 +17,11 @@ class AddonMaster(Document):
     def validate(self):
         if self.billing_type == "Actual Cost":
             self.price = 0
-        if not self.applies_to_all_plans and not (self.applicable_plans or []):
+        if self.applies_to_all_plans:
+            # A master that applies to every plan must not keep stale per-plan
+            # rows. The table is also read-only in the form for this state.
+            self.applicable_plans = []
+        elif not (self.applicable_plans or []):
             frappe.throw(
                 "Select at least one Applicable Plan when 'Applies to All Plans' "
                 "is unchecked",
@@ -48,7 +52,6 @@ def get_orderable_addons(
         filters={"is_active": 1},
         fields=["name", "add_on_name", "applies_to_all_plans"],
         order_by="add_on_name asc",
-        as_dict=True,
         limit_page_length=0,
     ) or []
 
@@ -59,7 +62,6 @@ def get_orderable_addons(
             "Add-on Applicable Plan",
             filters={"parent": ["in", names], "parenttype": "Add-on Master"},
             fields=["parent", "plan"],
-            as_dict=True,
             limit_page_length=0,
         ) or []:
             allowed_plans.setdefault(child.get("parent"), set()).add(child.get("plan"))

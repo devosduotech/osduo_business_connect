@@ -98,7 +98,10 @@ class TestSubscriptionModuleStructure(unittest.TestCase):
         with open(os.path.join(base, "add_on_master.json")) as handle:
             data = json.load(handle)
         fields = {field["fieldname"]: field for field in data["fields"]}
-        self.assertNotIn("depends_on", fields["applicable_plans"])
+        self.assertEqual(
+            fields["applicable_plans"].get("read_only_depends_on"),
+            "eval:doc.applies_to_all_plans",
+        )
         self.assertEqual(data.get("show_title_field_in_link"), 1)
 
         with open(os.path.join(base, "add_on_master.py")) as handle:
@@ -106,6 +109,12 @@ class TestSubscriptionModuleStructure(unittest.TestCase):
         self.assertIn("@frappe.whitelist()", source)
         self.assertIn("def get_orderable_addons(", source)
         self.assertIn("frappe.get_all(", source)
+        self.assertNotIn("as_dict=True", source)
+
+        with open(os.path.join(base, "add_on_master.js")) as handle:
+            script = handle.read()
+        self.assertIn("applies_to_all_plans(frm)", script)
+        self.assertIn("frm.doc.applicable_plans = []", script)
 
     def test_add_on_order_uses_custom_link_query_and_is_customer_only(self):
         base = os.path.join(SUB_DIR, "doctype", "add_on_order")

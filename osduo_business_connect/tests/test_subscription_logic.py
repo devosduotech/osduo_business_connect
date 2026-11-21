@@ -1341,6 +1341,17 @@ class TestFinalHardening(unittest.TestCase):
             master.applicable_plans = [{"plan": "BUSINESS"}]
             master.validate()
 
+    def test_addon_master_all_plans_clears_applicable_rows(self):
+        with StubEnvironment() as env:
+            master = env.addon_master.AddonMaster({
+                "billing_type": "Annual",
+                "price": 12000,
+                "applies_to_all_plans": 1,
+                "applicable_plans": [{"plan": "BUSINESS"}],
+            })
+            master.validate()
+            self.assertEqual(master.applicable_plans, [])
+
     def test_addon_link_query_returns_only_plan_eligible_masters(self):
         with StubEnvironment() as env:
             env.set_plan("BUSINESS")
