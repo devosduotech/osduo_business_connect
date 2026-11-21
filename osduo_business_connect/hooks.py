@@ -219,6 +219,12 @@ before_request = [
     "osduo_business_connect.subscription.plan_gates.enforce_plan_gates",
 ]
 
+# The before_request gate raises a 403, but v16's HTML error page uses a fixed
+# generic message. This hook puts the plan name and upgrade link back on it.
+after_request = [
+    "osduo_business_connect.subscription.plan_gates.render_plan_gate_message",
+]
+
 # Permissions
 # -----------
 

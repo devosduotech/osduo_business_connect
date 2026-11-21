@@ -718,6 +718,38 @@ class TestPlanGates(unittest.TestCase):
                 env, "/api/method/osduo_business_connect.pwa.get_app_icon"
             )
 
+    def test_html_403_shows_plan_message_and_upgrade_link(self):
+        class FakeResponse:
+            def __init__(self, status=403):
+                self.status_code = status
+                self.headers = {}
+                self.data = ""
+
+            def set_data(self, value):
+                self.data = value
+
+        with StubEnvironment() as env:
+            env.set_plan("PROFESSIONAL")
+            self.assert_blocked(env, "/desk/crm")
+
+            response = FakeResponse()
+            env.plan_gates.render_plan_gate_message(
+                response=response,
+                request=types.SimpleNamespace(path="/desk/crm"),
+            )
+            self.assertIn("available on the Business plan", response.data)
+            self.assertIn("https://example.com/upgrade", response.data)
+            self.assertIn("View plans", response.data)
+            self.assertEqual(response.headers["Content-Type"], "text/html; charset=utf-8")
+
+            # API errors already carry the message in their JSON body.
+            api_response = FakeResponse()
+            env.plan_gates.render_plan_gate_message(
+                response=api_response,
+                request=types.SimpleNamespace(path="/api/method/frappe.ping"),
+            )
+            self.assertEqual(api_response.data, "")
+
 
 if __name__ == "__main__":
     unittest.main()

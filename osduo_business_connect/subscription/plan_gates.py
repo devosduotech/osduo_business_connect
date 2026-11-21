@@ -445,6 +445,10 @@ def _upgrade_link(entitlements):
 def _deny(feature_key, message, path):
     """Log and raise a 403. Never let logging mask the real denial."""
     _log_restriction(feature_key, path, message)
+    # Frappe v16 hardcodes a generic message on HTML 403 pages and drops the
+    # PermissionError text. Stash ours so the after_request hook can render it.
+    # API responses already carry the exception message as JSON.
+    frappe.flags.bc_plan_gate_message = str(message)
     raise frappe.PermissionError(message)
 
 
@@ -646,3 +650,37 @@ def import_export_query_conditions(user=None):
 
 def advanced_admin_query_conditions(user=None):
     return "" if has_feature("advanced_admin") else "1=0"
+
+
+# ---------------------------------------------------------------------------
+# after_request hook — keep the actionable denial visible on HTML 403 pages
+# ---------------------------------------------------------------------------
+def render_plan_gate_message(response=None, request=None):
+    """Replace Frappe's generic 403 page with the actual plan restriction.
+
+    Frappe v16's ``handle_exception`` passes a fixed message to ErrorPage for
+    HTTP 403, so the PermissionError text (plan name and upgrade link) is lost
+    on page requests. API errors are unaffected: they already return the
+    exception message as JSON, so this hook deliberately skips /api/.
+    """
+    message = getattr(frappe.flags, "bc_plan_gate_message", None)
+    if not message or getattr(response, "status_code", None) != 403:
+        return
+    if request is not None and (getattr(request, "path", "") or "").startswith("/api/"):
+        return
+
+    html = (
+        '<!doctype html><html><head><meta charset="utf-8">'
+        "<title>Not Permitted</title></head>"
+        '<body style="font-family:system-ui,sans-serif;max-width:640px;'
+        'margin:10vh auto;padding:24px;line-height:1.6">'
+        "<h1>Not Permitted</h1>"
+        f"<p>{message}</p>"
+        '<p><a href="/login">Back to login</a></p>'
+        "</body></html>"
+    )
+    try:
+        response.set_data(html)
+        response.headers["Content-Type"] = "text/html; charset=utf-8"
+    except Exception:
+        pass
