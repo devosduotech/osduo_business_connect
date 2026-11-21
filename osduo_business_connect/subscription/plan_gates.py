@@ -92,6 +92,8 @@ GRID_IMPORT_METHODS = frozenset({
     "validate_rows",
 })
 IMPORT_EXPORT_PAGES = ("/app/data-import", "/app/data-export")
+# Report View can export any DocType to CSV/XLSX outside the Data Export form.
+IMPORT_EXPORT_METHODS = frozenset({"frappe.desk.reportview.export_query"})
 
 ADVANCED_ADMIN_DESK_PREFIXES = (
     "/app/email-account",
@@ -134,6 +136,10 @@ ADVANCED_ADMIN_METHODS = frozenset({
     "crm.fcrm.doctype.crm_view_settings.crm_view_settings.delete",
     "crm.fcrm.doctype.crm_view_settings.crm_view_settings.set_as_default",
     "crm.fcrm.doctype.crm_view_settings.crm_view_settings.create_or_update_standard_view",
+    "crm.fcrm.doctype.crm_view_settings.crm_view_settings.pin",
+    "crm.fcrm.doctype.crm_view_settings.crm_view_settings.public",
+    "crm.fcrm.doctype.crm_view_settings.crm_view_settings.fetch_and_update_kanban_columns",
+    "crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.dismiss_sync_issue",
     "crm.fcrm.doctype.fcrm_settings.fcrm_settings.restore_defaults",
     "crm.fcrm.doctype.fcrm_settings.fcrm_settings.restore_demo_data",
     "crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.reset_erpnext_form_script",
@@ -194,6 +200,7 @@ PUBLIC_API_METHODS = frozenset({
     "osduo_business_connect.card.public_api.get_public_card",
     "osduo_business_connect.card.public_api.download_vcard",
     "osduo_business_connect.analytics.analytics_service.log_event",
+    "osduo_business_connect.pwa.get_app_icon",
 })
 
 FEATURE_MESSAGES = {
@@ -272,7 +279,9 @@ def _walk_payload(value, depth=0):
     if isinstance(value, dict):
         yield value
         for key, nested in value.items():
-            if key in ("doc", "docs", "data", "args", "fields", "value", "kwargs"):
+            if key in (
+                "doc", "docs", "data", "args", "fields", "fieldname", "value", "kwargs"
+            ):
                 yield from _walk_payload(nested, depth + 1)
         return
     if isinstance(value, (list, tuple)):
@@ -368,25 +377,39 @@ def _unchanged_user_token(name, field, value):
     return bool(old) and str(old) == str(value)
 
 
-def _api_token_attempt(path, methods, doctypes):
+def _fieldname_targets_token(raw_fieldname):
+    """fieldname may be a plain field, a JSON string or a dict of fields."""
+    if str(raw_fieldname) in API_TOKEN_FIELDS:
+        return True
+    return any(
+        ({str(key) for key in item} & API_TOKEN_FIELDS)
+        for item in _walk_payload(raw_fieldname)
+    )
+
+
+def _api_token_attempt(path, methods, doctypes, write=False):
     """Detect direct or indirect writes to User.api_key / api_secret."""
     if API_TOKEN_METHOD in methods:
         return True
+    if not write or "User" not in doctypes:
+        return False
 
     path_user = _path_user_name(path)
     for source in _request_sources():
         for payload in _walk_payload(source):
             keys = {str(key) for key in payload}
 
-            # frappe.client.set_value(..., fieldname="api_secret", value=...)
-            if str(payload.get("fieldname")) in API_TOKEN_FIELDS and payload.get("value"):
+            # frappe.client.set_value accepts fieldname as a field, JSON string
+            # or dict; all three forms are an explicit write attempt.
+            raw_fieldname = payload.get("fieldname")
+            if raw_fieldname and _fieldname_targets_token(raw_fieldname):
                 return True
 
             fields = payload.get("fields")
-            if isinstance(fields, dict):
-                if keys_from_fields := ({str(k) for k in fields} & API_TOKEN_FIELDS):
-                    if any(fields.get(key) for key in keys_from_fields):
-                        return True
+            if isinstance(fields, dict) and (
+                {str(key) for key in fields} & API_TOKEN_FIELDS
+            ):
+                return True
             if isinstance(fields, (list, tuple)) and any(
                 str(field) in API_TOKEN_FIELDS for field in fields
             ):
@@ -396,7 +419,7 @@ def _api_token_attempt(path, methods, doctypes):
                 value = payload.get(field)
                 if not value:
                     continue
-                if "User" in doctypes and _unchanged_user_token(
+                if _unchanged_user_token(
                     payload.get("name") or path_user, field, value
                 ):
                     continue
@@ -512,18 +535,20 @@ def enforce_plan_gates():
             path,
         )
 
+    is_write = _request_method() in WRITE_METHODS or bool(
+        methods & (GENERIC_WRITE_METHODS | {"execute_doc_method", "frappe.api.v2.execute_doc_method"})
+    )
+
     # External CRM kill switch: block the generator and every way of writing
     # User.api_key / User.api_secret, including nested doc/payload structures.
-    if not ent.get("external_crm_enabled") and _api_token_attempt(path, methods, doctypes):
+    if not ent.get("external_crm_enabled") and _api_token_attempt(
+        path, methods, doctypes, write=is_write
+    ):
         _deny(
             "external_crm_disabled",
             _("API key and token generation is disabled on this site.") + _upgrade_link(ent),
             path,
         )
-
-    is_write = _request_method() in WRITE_METHODS or bool(
-        methods & (GENERIC_WRITE_METHODS | {"execute_doc_method", "frappe.api.v2.execute_doc_method"})
-    )
 
     # CRM (Business and above)
     if (
@@ -543,6 +568,7 @@ def enforce_plan_gates():
     # Import / Export (Business and above)
     if (
         path.startswith(IMPORT_EXPORT_PAGES)
+        or bool(methods & IMPORT_EXPORT_METHODS)
         or _method_matches(methods, DATA_IMPORT_METHOD_PREFIX, DATA_IMPORT_METHODS)
         or _method_matches(methods, GRID_IMPORT_METHOD_PREFIX, GRID_IMPORT_METHODS)
     ):

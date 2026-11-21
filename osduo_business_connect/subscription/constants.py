@@ -148,13 +148,16 @@ ADVANCED_ADMIN_READ_DOCTYPES = frozenset({
     "WhatsApp Account",
     "WhatsApp Template",
     "FCRM Settings",
-    "ERPNext CRM Settings",
+    # ERPNext CRM Settings is deliberately absent: CRM product/list logic reads
+    # its `enabled` flag on Business plans, so only writes are Enterprise-only.
 })
 
 PLAN_GATE_HAS_PERMISSION_DOCTYPES = (
     IMPORT_EXPORT_DOCTYPES | ADVANCED_ADMIN_DOCTYPES | frozenset({"User"})
 )
-PLAN_GATE_QUERY_DOCTYPES = IMPORT_EXPORT_DOCTYPES | ADVANCED_ADMIN_DOCTYPES
+# Query conditions implement the read-deny half of the policy; layout DocTypes
+# stay readable on Business so the CRM UI can render.
+PLAN_GATE_QUERY_DOCTYPES = IMPORT_EXPORT_DOCTYPES | ADVANCED_ADMIN_READ_DOCTYPES
 
 
 ADDON_SEEDS = (

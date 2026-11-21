@@ -4,5 +4,5 @@
 from frappe.model.document import Document
 
 
-class AddOnApplicablePlan(Document):
+class AddonApplicablePlan(Document):
     pass

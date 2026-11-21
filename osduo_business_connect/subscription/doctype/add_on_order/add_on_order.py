@@ -7,7 +7,7 @@ from frappe.model.document import Document
 from osduo_business_connect.subscription.entitlements import get_plan_code
 
 
-class AddOnOrder(Document):
+class AddonOrder(Document):
     def before_insert(self):
         self.site = frappe.local.site
         self.plan_snapshot = get_plan_code()

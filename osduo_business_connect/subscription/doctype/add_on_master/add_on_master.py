@@ -5,7 +5,7 @@ import frappe
 from frappe.model.document import Document
 
 
-class AddOnMaster(Document):
+class AddonMaster(Document):
     def validate(self):
         if self.billing_type == "Actual Cost":
             self.price = 0

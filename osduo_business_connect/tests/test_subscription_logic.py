@@ -582,6 +582,33 @@ class TestPlanGates(unittest.TestCase):
                 "/api/method/frappe.client.insert",
                 payload={"doc": json.dumps({"doctype": "User", "api_key": "leaked"})},
             )
+            # set_value accepts fieldname as a JSON string or dict.
+            self.assert_blocked(
+                env,
+                "/api/method/frappe.client.set_value",
+                method="POST",
+                payload={
+                    "doctype": "User",
+                    "name": "admin@example.com",
+                    "fieldname": json.dumps({"api_key": "leaked"}),
+                },
+            )
+            self.assert_blocked(
+                env,
+                "/api/method/frappe.client.set_value",
+                method="POST",
+                payload={
+                    "doctype": "User",
+                    "name": "admin@example.com",
+                    "fieldname": {"api_secret": "leaked"},
+                },
+            )
+            self.assert_blocked(
+                env,
+                "/api/method/frappe.client.bulk_update",
+                method="POST",
+                payload={"docs": [{"doctype": "User", "api_secret": "leaked"}]},
+            )
 
             # A Desk save that only echoes the existing credential is allowed.
             env.frappe.db.values[("User", "admin@example.com", "api_key")] = "existing"
@@ -629,6 +656,39 @@ class TestPlanGates(unittest.TestCase):
             )
             self.assertEqual(env.plan_gates.import_export_query_conditions("x"), "1=0")
             self.assertEqual(env.plan_gates.advanced_admin_query_conditions("x"), "1=0")
+
+    def test_report_view_export_is_import_export(self):
+        with StubEnvironment() as env:
+            env.set_plan("PROFESSIONAL")
+            self.assert_blocked(env, "/api/method/frappe.desk.reportview.export_query")
+
+    def test_remaining_crm_config_methods_are_enterprise_only(self):
+        with StubEnvironment() as env:
+            env.set_plan("BUSINESS")
+            for method in (
+                "crm.fcrm.doctype.crm_view_settings.crm_view_settings.pin",
+                "crm.fcrm.doctype.crm_view_settings.crm_view_settings.public",
+                "crm.fcrm.doctype.crm_view_settings.crm_view_settings.fetch_and_update_kanban_columns",
+                "crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.dismiss_sync_issue",
+            ):
+                with self.subTest(method=method):
+                    self.assert_blocked(env, "/api/method/" + method)
+
+    def test_business_can_read_settings_needed_by_crm(self):
+        with StubEnvironment() as env:
+            env.set_plan("BUSINESS")
+            self.assert_allowed(env, "/api/resource/ERPNext CRM Settings")
+            self.assertNotIn(
+                "ERPNext CRM Settings", env.constants.PLAN_GATE_QUERY_DOCTYPES
+            )
+
+    def test_pwa_icon_stays_public_on_suspended_site(self):
+        with StubEnvironment() as env:
+            self.suspend_site(env)
+            env.frappe.session.user = "Guest"
+            self.assert_allowed(
+                env, "/api/method/osduo_business_connect.pwa.get_app_icon"
+            )
 
 
 if __name__ == "__main__":

@@ -1,3 +1,4 @@
+import ast
 import importlib.util
 import json
 import os
@@ -60,6 +61,29 @@ class TestSubscriptionModuleStructure(unittest.TestCase):
             # Frappe's scrub() maps both spaces and hyphens to underscores.
             scrubbed = data["name"].replace(" ", "_").replace("-", "_").lower()
             self.assertEqual(scrubbed, name)
+
+    def test_controller_class_names_match_frappe_convention(self):
+        # Frappe v16 derives the controller class as
+        # doctype.replace(" ", "").replace("-", ""). "Add-on Master" must
+        # therefore be AddonMaster, not AddOnMaster.
+        doctype_dir = os.path.join(SUB_DIR, "doctype")
+        for name in os.listdir(doctype_dir):
+            json_path = os.path.join(doctype_dir, name, "%s.json" % name)
+            py_path = os.path.join(doctype_dir, name, "%s.py" % name)
+            if not (os.path.exists(json_path) and os.path.exists(py_path)):
+                continue
+            with open(json_path) as handle:
+                doctype_name = json.load(handle)["name"]
+            expected = doctype_name.replace(" ", "").replace("-", "")
+            with open(py_path) as handle:
+                tree = ast.parse(handle.read(), filename=py_path)
+            classes = {node.name for node in tree.body if isinstance(node, ast.ClassDef)}
+            self.assertIn(
+                expected,
+                classes,
+                "%s controller must define class %s (found %s)"
+                % (doctype_name, expected, sorted(classes)),
+            )
 
     def test_subscription_is_single(self):
         path = os.path.join(SUB_DIR, "doctype", "subscription", "subscription.json")
