@@ -14,6 +14,7 @@ code and the login gate never fired.
 
 import frappe
 
+from osduo_business_connect.subscription.portal_nav import get_portal_nav
 from osduo_business_connect.utils.seo import NOINDEX, build_seo
 
 no_cache = 1
@@ -26,4 +27,5 @@ def get_context(context):
 
     context.title = "Analytics Dashboard"
     context.no_cache = 1
+    context.portal_nav = get_portal_nav("analytics")
     context.seo = build_seo("Analytics Dashboard", "", "/analytics", robots=NOINDEX)

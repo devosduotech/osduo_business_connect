@@ -9,6 +9,7 @@ same whitelisted, read-only summary and exposes no billing credentials.
 
 import frappe
 
+from osduo_business_connect.subscription.portal_nav import get_portal_nav
 from osduo_business_connect.subscription.subscription_page import get_my_subscription
 from osduo_business_connect.utils.seo import NOINDEX, build_seo
 
@@ -22,5 +23,6 @@ def get_context(context):
     context.title = "My Subscription"
     context.no_cache = 1
     context.subscription = get_my_subscription()
+    context.portal_nav = get_portal_nav("subscription")
     context.seo = build_seo("My Subscription", "", "/portal/subscription", robots=NOINDEX)
     return context

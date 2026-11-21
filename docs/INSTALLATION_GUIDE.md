@@ -341,6 +341,9 @@ then on; they never need the Desk for team setup.
    **Business Member** row is created for the selected business and role.
 5. Try `/app` and `/api/method/frappe.core.api.user_invitation.invite_by_email`
    as the Owner: both must return 403. The guest acceptance URL must still work.
+6. Open `/my-card`, `/portal/subscription` and `/analytics`. All three must show
+   the same shared sidebar; the active page is highlighted and no native Desk
+   links appear for the Business Owner.
 
 ### Change the plan on an existing instance
 

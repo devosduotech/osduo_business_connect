@@ -1,26 +1,25 @@
 {%- extends "osduo_business_connect/templates/bc_base.html" -%}
 
 {%- block page_content -%}
+<div class="bc-portal-shell">
+{% include "osduo_business_connect/templates/pages/parts/portal_sidebar.html" %}
+<div class="bc-portal-main">
 <style>
-    .bc-team-page { min-height: 100vh; background: #f4f6f8; padding: 2.5rem 1rem; color: #1e293b; }
     .bc-team-inner { max-width: 1040px; margin: 0 auto; }
     .bc-team-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
     .bc-team-head h1 { margin: 0; font-size: 1.6rem; }
     .bc-team-head p { margin: 0.35rem 0 0; color: #64748b; font-size: 0.9rem; }
-    .bc-team-nav { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-    .bc-team-nav a { display: inline-block; padding: 0.5rem 0.85rem; border-radius: 8px; font-size: 0.82rem; text-decoration: none; background: #fff; border: 1px solid #e2e8f0; color: #334155; }
-    .bc-team-nav a.primary { background: #0b3d91; border-color: #0b3d91; color: #fff; }
     .bc-team-grid { display: grid; grid-template-columns: minmax(280px, 380px) 1fr; gap: 1.25rem; align-items: start; }
     .bc-team-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.35rem; }
     .bc-team-card h2 { margin: 0 0 1rem; font-size: 1.05rem; }
     .bc-team-kpis { display: flex; gap: 0.75rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
     .bc-team-kpi { flex: 1 1 160px; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem 1.15rem; }
     .bc-team-kpi span { display: block; color: #64748b; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
-    .bc-team-kpi strong { display: block; margin-top: 0.3rem; font-size: 1.2rem; color: #0b3d91; }
+    .bc-team-kpi strong { display: block; margin-top: 0.3rem; font-size: 1.2rem; color: var(--bc-portal-primary, #0b3d91); }
     .bc-team-field { margin-bottom: 0.85rem; }
     .bc-team-field label { display: block; margin-bottom: 0.35rem; font-size: 0.8rem; font-weight: 600; color: #475569; }
     .bc-team-field input, .bc-team-field select { width: 100%; box-sizing: border-box; padding: 0.65rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; background: #fff; }
-    .bc-team-submit { width: 100%; padding: 0.7rem 1rem; border: 0; border-radius: 8px; background: #0b3d91; color: #fff; font-weight: 600; cursor: pointer; }
+    .bc-team-submit { width: 100%; padding: 0.7rem 1rem; border: 0; border-radius: 8px; background: var(--bc-portal-primary, #0b3d91); color: #fff; font-weight: 600; cursor: pointer; }
     .bc-team-submit:disabled { opacity: 0.6; cursor: wait; }
     .bc-team-message { margin-top: 0.85rem; font-size: 0.85rem; min-height: 1.2rem; }
     .bc-team-message.error { color: #b91c1c; }
@@ -36,100 +35,93 @@
 </style>
 
 {% set t = team or {} %}
-<div class="bc-team-page">
-    <div class="bc-team-inner">
-        <div class="bc-team-head">
-            <div>
-                <h1>Team</h1>
-                <p>Invite teammates without giving them access to the Frappe Desk.</p>
-            </div>
-            <div class="bc-team-nav">
-                <a href="/my-card">My Card</a>
-                <a href="/portal/subscription">Subscription</a>
-                {% if t.plan_code != "PROFESSIONAL" %}<a href="/analytics">Analytics</a>{% endif %}
-                {% if t.plan_code == "ENTERPRISE" %}<a class="primary" href="/app/business-connect">Advanced admin</a>{% endif %}
-            </div>
-        </div>
-
-        <div class="bc-team-kpis">
-            <div class="bc-team-kpi"><span>Plan</span><strong>{{ (t.plan or t.plan_code or '—') | e }}</strong></div>
-            <div class="bc-team-kpi"><span>Seats used</span><strong>{{ t.seats.used if t.seats else 0 }} / {{ t.seats.billed if t.seats else 0 }}</strong></div>
-            <div class="bc-team-kpi"><span>Businesses</span><strong>{{ t.businesses | length if t.businesses else 0 }}</strong></div>
-        </div>
-
-        {% if not t.can_manage %}
-        <div class="bc-team-notice">
-            Team management is not available on the {{ (t.plan or t.plan_code or 'current') | e }} plan.
-            {% if t.upgrade_url %}<a href="{{ t.upgrade_url | e }}">View plans on Aasriva</a>{% endif %}
-            to add seats and unlock team invitations.
-        </div>
-        {% endif %}
-
-        <div class="bc-team-grid">
-            <div class="bc-team-card">
-                <h2>Invite a team member</h2>
-                {% if t.can_manage %}
-                <form id="bc-team-invite-form">
-                    <div class="bc-team-field">
-                        <label for="bc-team-business">Business</label>
-                        <select id="bc-team-business" name="business" required>
-                            {% for b in t.businesses or [] %}
-                            <option value="{{ b.name | e }}">{{ (b.business_name or b.name) | e }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="bc-team-field">
-                        <label for="bc-team-email">Email</label>
-                        <input id="bc-team-email" name="email" type="email" autocomplete="off" required>
-                    </div>
-                    <div class="bc-team-field">
-                        <label for="bc-team-first">First Name</label>
-                        <input id="bc-team-first" name="first_name" autocomplete="given-name" required>
-                    </div>
-                    <div class="bc-team-field">
-                        <label for="bc-team-last">Last Name <span style="font-weight:400;color:#94a3b8">(optional)</span></label>
-                        <input id="bc-team-last" name="last_name" autocomplete="family-name">
-                    </div>
-                    <div class="bc-team-field">
-                        <label for="bc-team-role">Business Connect role</label>
-                        <select id="bc-team-role" name="invite_role" required>
-                            {% for r in t.roles or [] %}
-                            <option value="{{ r.invite_role | e }}">{{ r.invite_role | e }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <button class="bc-team-submit" id="bc-team-submit" type="submit">Send invitation</button>
-                    <div class="bc-team-message" id="bc-team-message" aria-live="polite"></div>
-                </form>
-                {% else %}
-                <p class="bc-team-hint">The Business Owner can invite members once team management is included in the site's plan.</p>
-                {% endif %}
-                <p class="bc-team-hint">An invitation reserves one seat immediately. The member is added to this business after they open the emailed link and set a password. Owner, Administrator and system roles are never offered here.</p>
-            </div>
-
-            <div class="bc-team-card">
-                <h2>Members</h2>
-                {% if t.members %}
-                <table class="bc-team-table">
-                    <thead><tr><th>Name</th><th>Email</th><th>Business</th><th>Role</th><th>Status</th></tr></thead>
-                    <tbody>
-                    {% for m in t.members %}
-                        <tr>
-                            <td>{{ m.person_name | e }}</td>
-                            <td>{{ m.email | e }}</td>
-                            <td>{{ m.business | e }}</td>
-                            <td>{{ m.role | e }}</td>
-                            <td>{{ m.status | e }}</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-                {% else %}
-                <div class="bc-team-empty">No team members found for your businesses.</div>
-                {% endif %}
-            </div>
+<div class="bc-team-inner">
+    <div class="bc-team-head">
+        <div>
+            <h1>Team</h1>
+            <p>Invite teammates without giving them access to the Frappe Desk.</p>
         </div>
     </div>
+
+    <div class="bc-team-kpis">
+        <div class="bc-team-kpi"><span>Plan</span><strong>{{ (t.plan or t.plan_code or '—') | e }}</strong></div>
+        <div class="bc-team-kpi"><span>Seats used</span><strong>{{ t.seats.used if t.seats else 0 }} / {{ t.seats.billed if t.seats else 0 }}</strong></div>
+        <div class="bc-team-kpi"><span>Businesses</span><strong>{{ t.businesses | length if t.businesses else 0 }}</strong></div>
+    </div>
+
+    {% if not t.can_manage %}
+    <div class="bc-team-notice">
+        Team management is not available on the {{ (t.plan or t.plan_code or 'current') | e }} plan.
+        {% if t.upgrade_url %}<a href="{{ t.upgrade_url | e }}">View plans on Aasriva</a>{% endif %}
+        to add seats and unlock team invitations.
+    </div>
+    {% endif %}
+
+    <div class="bc-team-grid">
+        <div class="bc-team-card">
+            <h2>Invite a team member</h2>
+            {% if t.can_manage %}
+            <form id="bc-team-invite-form">
+                <div class="bc-team-field">
+                    <label for="bc-team-business">Business</label>
+                    <select id="bc-team-business" name="business" required>
+                        {% for b in t.businesses or [] %}
+                        <option value="{{ b.name | e }}">{{ (b.business_name or b.name) | e }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="bc-team-field">
+                    <label for="bc-team-email">Email</label>
+                    <input id="bc-team-email" name="email" type="email" autocomplete="off" required>
+                </div>
+                <div class="bc-team-field">
+                    <label for="bc-team-first">First Name</label>
+                    <input id="bc-team-first" name="first_name" autocomplete="given-name" required>
+                </div>
+                <div class="bc-team-field">
+                    <label for="bc-team-last">Last Name <span style="font-weight:400;color:#94a3b8">(optional)</span></label>
+                    <input id="bc-team-last" name="last_name" autocomplete="family-name">
+                </div>
+                <div class="bc-team-field">
+                    <label for="bc-team-role">Business Connect role</label>
+                    <select id="bc-team-role" name="invite_role" required>
+                        {% for r in t.roles or [] %}
+                        <option value="{{ r.invite_role | e }}">{{ r.invite_role | e }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button class="bc-team-submit" id="bc-team-submit" type="submit">Send invitation</button>
+                <div class="bc-team-message" id="bc-team-message" aria-live="polite"></div>
+            </form>
+            {% else %}
+            <p class="bc-team-hint">The Business Owner can invite members once team management is included in the site's plan.</p>
+            {% endif %}
+            <p class="bc-team-hint">An invitation reserves one seat immediately. The member is added to this business after they open the emailed link and set a password. Owner, Administrator and system roles are never offered here.</p>
+        </div>
+
+        <div class="bc-team-card">
+            <h2>Members</h2>
+            {% if t.members %}
+            <table class="bc-team-table">
+                <thead><tr><th>Name</th><th>Email</th><th>Business</th><th>Role</th><th>Status</th></tr></thead>
+                <tbody>
+                {% for m in t.members %}
+                    <tr>
+                        <td>{{ m.person_name | e }}</td>
+                        <td>{{ m.email | e }}</td>
+                        <td>{{ m.business | e }}</td>
+                        <td>{{ m.role | e }}</td>
+                        <td>{{ m.status | e }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="bc-team-empty">No team members found for your businesses.</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
 </div>
 
 <script>
@@ -188,4 +180,5 @@
     });
 })();
 </script>
+</div>
 {%- endblock -%}

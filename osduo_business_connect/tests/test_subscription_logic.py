@@ -266,6 +266,10 @@ class StubEnvironment:
             "osduo_business_connect.subscription.team_invite",
             os.path.join(SUB_DIR, "team_invite.py"),
         )
+        self.portal_nav = _load(
+            "osduo_business_connect.subscription.portal_nav",
+            os.path.join(SUB_DIR, "portal_nav.py"),
+        )
         self.addon_order = _load(
             "osduo_business_connect.subscription.doctype.add_on_order.add_on_order",
             os.path.join(
@@ -2122,6 +2126,37 @@ class TestPortalTeamInvitations(unittest.TestCase):
         with self.assertRaises(env.frappe.PermissionError):
             env.team_invite.get_team_page_data()
 
+    def test_shared_portal_sidebar_is_plan_aware_and_desk_free(self):
+        env = self.setUp_env()
+        scenarios = {
+            "PROFESSIONAL": (False, False, False, False),
+            "BUSINESS": (True, True, True, False),
+            "ENTERPRISE": (True, True, True, True),
+        }
+        for plan, expected in scenarios.items():
+            with self.subTest(plan=plan):
+                env.set_plan(plan)
+                env.set_roles("BC Business Owner")
+                nav = env.portal_nav.get_portal_nav("team")
+                self.assertEqual(nav["active"], "team")
+                self.assertEqual(nav["plan_code"], plan)
+                self.assertEqual(
+                    (
+                        nav["can_team"],
+                        nav["can_analytics"],
+                        nav["can_crm"],
+                        nav["can_admin"],
+                    ),
+                    expected,
+                )
+                self.assertEqual(nav["upgrade_url"], env.frappe.conf["bc_upgrade_url"])
+
+        env.set_plan("PROFESSIONAL")
+        env.set_roles("BC Business Owner", "System Manager")
+        nav = env.portal_nav.get_portal_nav("card")
+        self.assertFalse(nav["can_team"])
+        self.assertTrue(nav["can_admin"])
+
     def test_hooks_fields_and_portal_pages_are_wired(self):
         with open(os.path.join(APP_DIR, "hooks.py")) as handle:
             hooks = handle.read()
@@ -2182,6 +2217,37 @@ class TestPortalTeamInvitations(unittest.TestCase):
             "invite_team_member", template
         )
         self.assertNotIn('frappe.new_doc("User")', template)
+
+        sidebar = os.path.join(
+            APP_DIR, "templates", "pages", "parts", "portal_sidebar.html"
+        )
+        self.assertTrue(os.path.exists(sidebar), sidebar)
+        for controller_path in (
+            os.path.join(APP_DIR, "templates", "pages", "portal", "team.py"),
+            os.path.join(APP_DIR, "templates", "pages", "portal", "subscription.py"),
+            os.path.join(APP_DIR, "templates", "pages", "my_card.py"),
+            os.path.join(APP_DIR, "templates", "pages", "analytics.py"),
+        ):
+            with open(controller_path) as handle:
+                source = handle.read()
+            self.assertIn("get_portal_nav", source)
+        for template_path in (
+            os.path.join(APP_DIR, "templates", "pages", "portal", "team.html"),
+            os.path.join(APP_DIR, "templates", "pages", "portal", "subscription.html"),
+            os.path.join(APP_DIR, "templates", "pages", "my-card.html"),
+            os.path.join(APP_DIR, "templates", "pages", "analytics.html"),
+        ):
+            with open(template_path) as handle:
+                source = handle.read()
+            self.assertIn("portal_sidebar.html", source)
+            self.assertIn('class="bc-portal-shell"', source)
+
+        with open(sidebar) as handle:
+            sidebar_source = handle.read()
+        self.assertIn("{% if nav.can_admin %}", sidebar_source)
+        self.assertIn("/app/business-connect", sidebar_source)
+        self.assertNotIn('href="/app/workspace"', sidebar_source)
+        self.assertNotIn('href="/app/business"', sidebar_source)
 
         with open(os.path.join(APP_DIR, "__init__.py")) as handle:
             version = handle.read()

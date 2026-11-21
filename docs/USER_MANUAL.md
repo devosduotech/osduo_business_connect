@@ -1016,6 +1016,11 @@ Desk. Their private pages are:
 | `/crm`, `/crm-form/*` | Frappe CRM (Business only) |
 | `/analytics` | Analytics dashboard (Business only) |
 
+All four private portal pages share the same left sidebar. It shows only the
+sections included in your plan (Team, Analytics and CRM are Business/Enterprise),
+plus the current plan name. Provider users and Enterprise sites also see
+**Advanced admin**; Professional/Business customers never see native Desk links.
+
 The native **User**, **User Invitation**, **Role** and **Role Permission**
 forms and lists are blocked for these customers. Frappe creates the login only
 after an invitation is accepted; no `User` DocPerms are granted to customers.

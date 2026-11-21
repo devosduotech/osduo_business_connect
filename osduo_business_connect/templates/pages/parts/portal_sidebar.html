@@ -1,0 +1,86 @@
+{# Shared navigation for private, logged-in Business Connect portal pages. #}
+{%- set nav = portal_nav or {} -%}
+
+{%- macro nav_link(href, key, label, icon) -%}
+<a href="{{ href }}" class="bc-portal-link{% if nav.active == key %} active{% endif %}"{% if nav.active == key %} aria-current="page"{% endif %}>
+    <span class="bc-portal-icon" aria-hidden="true">{{ icon }}</span>
+    <span>{{ label }}</span>
+</a>
+{%- endmacro -%}
+
+<style>
+    .bc-portal-shell {
+        --bc-portal-primary: {{ bc_primary_color or '#0B3D91' }};
+        --bc-portal-accent: {{ bc_secondary_color or '#1677FF' }};
+        --bc-portal-bg: {{ bc_background_color or '#F4F6F8' }};
+        display: flex;
+        min-height: 100vh;
+        background: var(--bc-portal-bg);
+        color: #1e293b;
+    }
+    .bc-portal-sidebar {
+        width: 246px;
+        flex: 0 0 246px;
+        background: #1e293b;
+        color: #e2e8f0;
+        padding: 1.5rem 0;
+        display: flex;
+        flex-direction: column;
+    }
+    .bc-portal-brand { display: flex; align-items: center; gap: 0.7rem; padding: 0 1.25rem 1.4rem; }
+    .bc-portal-brand img { width: 34px; height: 34px; border-radius: 8px; background: #fff; padding: 3px; box-sizing: border-box; }
+    .bc-portal-brand strong { display: block; font-size: 0.92rem; color: #fff; }
+    .bc-portal-brand span { display: block; margin-top: 0.15rem; font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em; }
+    .bc-portal-nav { flex: 1; }
+    .bc-portal-nav-title { padding: 0 1.25rem; margin: 0.9rem 0 0.45rem; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; color: #64748b; }
+    .bc-portal-link { display: flex; align-items: center; gap: 0.65rem; padding: 0.62rem 1.25rem; color: #cbd5e1; text-decoration: none; font-size: 0.86rem; border-left: 3px solid transparent; transition: background 0.15s, color 0.15s; }
+    .bc-portal-link:hover { background: rgba(255,255,255,0.06); color: #fff; }
+    .bc-portal-link.active { background: rgba(255,255,255,0.1); border-left-color: var(--bc-portal-accent); color: #fff; font-weight: 600; }
+    .bc-portal-icon { width: 1.1rem; text-align: center; opacity: 0.85; }
+    .bc-portal-sidebar-foot { padding: 1rem 1.25rem 0; border-top: 1px solid rgba(255,255,255,0.08); }
+    .bc-portal-upgrade { display: block; padding: 0.55rem 0.75rem; border-radius: 8px; background: var(--bc-portal-primary); color: #fff; text-decoration: none; font-size: 0.78rem; text-align: center; }
+    .bc-portal-main { flex: 1; min-width: 0; padding: 2rem; }
+    @media (max-width: 860px) {
+        .bc-portal-shell { display: block; }
+        .bc-portal-sidebar { width: 100%; flex: none; padding: 0.9rem 0; }
+        .bc-portal-brand { padding-bottom: 0.8rem; }
+        .bc-portal-nav { display: flex; overflow-x: auto; gap: 0.25rem; padding: 0 0.75rem; }
+        .bc-portal-nav-title { display: none; }
+        .bc-portal-link { white-space: nowrap; padding: 0.5rem 0.75rem; border-left: 0; border-bottom: 3px solid transparent; border-radius: 8px 8px 0 0; }
+        .bc-portal-link.active { border-left: 0; border-bottom-color: var(--bc-portal-accent); }
+        .bc-portal-sidebar-foot { margin-top: 0.75rem; padding-top: 0.75rem; }
+        .bc-portal-main { padding: 1.25rem; }
+    }
+</style>
+
+<aside class="bc-portal-sidebar" aria-label="Business Connect portal navigation">
+    <div class="bc-portal-brand">
+        <img src="{{ bc_logo_mark_small or bc_logo_mark or bc_logo }}" alt="" decoding="async">
+        <div>
+            <strong>{{ bc_app_short_name or bc_app_name or 'Business Connect' }}</strong>
+            <span>{{ (nav.plan or nav.plan_code or 'Portal') | e }}</span>
+        </div>
+    </div>
+
+    <nav class="bc-portal-nav" aria-label="Workspace">
+        <div class="bc-portal-nav-title">Workspace</div>
+        {{ nav_link('/my-card', 'card', 'My Card', '▣') }}
+        {% if nav.can_team %}{{ nav_link('/portal/team', 'team', 'Team', '♟') }}{% endif %}
+        {{ nav_link('/portal/subscription', 'subscription', 'Subscription', '◫') }}
+        {% if nav.can_analytics %}{{ nav_link('/analytics', 'analytics', 'Analytics', '▧') }}{% endif %}
+        {% if nav.can_crm %}{{ nav_link('/crm', 'crm', 'CRM', '◈') }}{% endif %}
+    </nav>
+
+    {% if nav.can_admin %}
+    <nav class="bc-portal-nav" aria-label="Administration">
+        <div class="bc-portal-nav-title">Administration</div>
+        {{ nav_link('/app/business-connect', 'admin', 'Advanced admin', '⚙') }}
+    </nav>
+    {% endif %}
+
+    {% if nav.upgrade_url and nav.plan_code != 'ENTERPRISE' %}
+    <div class="bc-portal-sidebar-foot">
+        <a class="bc-portal-upgrade" href="{{ nav.upgrade_url | e }}">View plans on Aasriva</a>
+    </div>
+    {% endif %}
+</aside>
