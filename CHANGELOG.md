@@ -2,6 +2,44 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.4.0 - 21 November 2026
+
+### Subscriptions and customer access
+
+- Added plan entitlements, provisioning, frozen plan snapshots, request-level
+  gates, seat/business quotas, add-on ordering, custom domains and a read-only
+  My Subscription page.
+- Customer team invitations now use Frappe `User Invitation` only. Customers can
+  invite `BC Business Member`, `BC Business Manager`, `BC CRM User` and
+  `BC Marketing Manager`; provider roles and per-business Owner stay excluded.
+  Seats are reserved at invite and rechecked on acceptance.
+- Logged-in private portal pages share one sticky sidebar while the public
+  Business/Member/Product/Service pages are unchanged. Business customers land
+  on `/desk/business-connect`; Professional customers remain portal-only and
+  land on `/my-card`.
+
+### Branded workspace
+
+- `/desk/business-connect`, its accepted aliases and child routes now use the
+  portal palette (dark slate rail, white brand text, semibold selected item).
+  Original workspace links/sidebar items are untouched.
+- `/login` is overridden in-app with the branded split-screen layout, and guest
+  `/` forwards to `/login`.
+- Desk and web assets carry a revision query string so browsers without service
+  workers (for example Firefox over plain HTTP) fetch fresh CSS/JS after a
+  deploy. The service-worker cache revision is rotated with the same value.
+- Hard-refreshing a BC workspace link such as `/desk/business-connect/business`
+  no longer returns `Not Permitted`; the gate now recognises the workspace's own
+  shipped DocType shortcuts. Native User/Role/User Invitation and unknown child
+  routes stay blocked.
+
+### Notes
+
+- Upgrade requires `bench migrate` (new/changed DocTypes), `bench build --app
+  osduo_business_connect` (new assets), cache clears and a restart. Hard-refresh
+  browsers once after the restart.
+- All upgrade/pricing links remain on the canonical OSDuo pricing URL.
+
 ## v1.3.4 - 18 November 2026
 
 ### Analytics fixes

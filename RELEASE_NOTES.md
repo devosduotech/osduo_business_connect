@@ -1,3 +1,74 @@
+# Release Notes - business_connect (v1.4.0)
+
+**Release Date:** 21 November 2026
+**Version:** v1.4.0 (minor)
+
+A subscription and customer-workspace release. It introduces plan entitlements
+and add-on ordering, moves customer onboarding to Frappe's User Invitation flow,
+brings one sticky sidebar to every private portal page, and makes the Business
+Desk workspace look like `/portal/team` without changing its links.
+
+## What changed (v1.4.0)
+
+### Plans, quotas and add-ons
+
+- Plan entitlements are now frozen into snapshots and enforced at the HTTP
+  boundary as well as in DocType hooks. Seat and Business quotas apply at
+  creation time.
+- Add-on orders, custom domain mappings, plan-specific Add-on Masters and a
+  read-only My Subscription page are available to eligible plans.
+- Restriction messages include the required plan and the canonical OSDuo
+  pricing link.
+
+### Team invitations and private portal
+
+- Customer invitations go through Frappe `User Invitation` only. The selectable
+  roles are `BC Business Member`, `BC Business Manager`, `BC CRM User` and
+  `BC Marketing Manager`. Administrator, System Manager, BC System Manager,
+  BC Subscription Manager and per-business Owner are never offered.
+- Seats are reserved when the invitation is sent and checked again when it is
+  accepted.
+- All logged-in private pages share the same sticky portal sidebar. Public
+  Business, Member, Product and Service pages are unchanged.
+- Business logins land on `/desk/business-connect`; Professional logins land on
+  `/my-card`. Generic Desk, native User/Role/User Invitation administration and
+  provider routes remain blocked for customers.
+
+### Branded BC workspace and login
+
+- `/desk/business-connect`, its aliases and child routes use the portal palette:
+  slate rail, brand-blue accents, white brand text and a semibold white selected
+  item. The workspace's own links and sidebar items are not altered.
+- `/login` is overridden inside the app with the branded split-screen layout.
+  Guests visiting `/` are forwarded to `/login`.
+- Desk and web assets now include a shared revision query string, and the
+  service-worker cache revision is rotated with it. This makes Firefox refresh
+  stale CSS/JS even where service workers are unavailable.
+- Refreshing a workspace shortcut such as `/desk/business-connect/business` no
+  longer returns `Not Permitted`; only BC-owned links are accepted under that
+  shell, while `.../user`, `.../build` and unknown children remain blocked.
+
+## Upgrade
+
+```bash
+cd ~/frappe-bench/apps/osduo_business_connect
+git pull
+
+cd ~/frappe-bench
+bench build --app osduo_business_connect
+bench --site <site> migrate
+bench --site <site> clear-cache
+bench --site <site> clear-website-cache
+bench restart
+```
+
+Hard-refresh the browser once after the restart so the revisioned assets load.
+`migrate` is required for the new and changed DocTypes; `bench build` is required
+for the new CSS/JS. No canonical URLs, sitemaps, `robots.txt` or printed QR/NFC
+payloads change in this release.
+
+---
+
 # Release Notes - business_connect (v1.3.4)
 
 **Release Date:** 18 November 2026
