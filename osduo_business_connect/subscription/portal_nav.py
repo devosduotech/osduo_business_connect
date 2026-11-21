@@ -5,13 +5,17 @@
 
 The sidebar is deliberately data-driven: links are derived from the site's
 entitlement snapshot and the caller's roles, never from the requested path.
-Professional/Business customers therefore never see native Desk links, while
-provider roles and Enterprise keep their advanced-administration entry point.
+Professional customers never see Desk links. Business customer roles get the
+BC workspace entry point; provider roles and Enterprise keep their
+advanced-administration entry point instead.
 """
 
 import frappe
 
-from osduo_business_connect.subscription.constants import PRIVILEGED_ROLES
+from osduo_business_connect.subscription.constants import (
+    CUSTOMER_ROLES,
+    PRIVILEGED_ROLES,
+)
 from osduo_business_connect.subscription.entitlements import (
     get_entitlements,
     has_feature,
@@ -23,8 +27,11 @@ ACTIVE_KEYS = frozenset({
     "subscription",
     "analytics",
     "crm",
+    "workspace",
     "admin",
 })
+
+BC_WORKSPACE_URL = "/desk/business-connect"
 
 
 def get_portal_nav(active=None):
@@ -47,5 +54,11 @@ def get_portal_nav(active=None):
         "can_team": has_feature("team_management"),
         "can_analytics": has_feature("analytics"),
         "can_crm": has_feature("crm_access"),
+        "can_bc_workspace": bool(
+            ent.get("plan_code") == "BUSINESS"
+            and (roles & CUSTOMER_ROLES)
+            and not (roles & PRIVILEGED_ROLES)
+        ),
+        "workspace_url": BC_WORKSPACE_URL,
         "can_admin": bool(roles & PRIVILEGED_ROLES) or has_feature("advanced_admin"),
     }

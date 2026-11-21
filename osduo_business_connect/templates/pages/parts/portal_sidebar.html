@@ -65,6 +65,7 @@
     <nav class="bc-portal-nav" aria-label="Workspace">
         <div class="bc-portal-nav-title">Workspace</div>
         {{ nav_link('/my-card', 'card', 'My Card', '▣') }}
+        {% if nav.can_bc_workspace %}{{ nav_link(nav.workspace_url or '/desk/business-connect', 'workspace', 'Business Connect', '◆') }}{% endif %}
         {% if nav.can_team %}{{ nav_link('/portal/team', 'team', 'Team', '♟') }}{% endif %}
         {{ nav_link('/portal/subscription', 'subscription', 'Subscription', '◫') }}
         {% if nav.can_analytics %}{{ nav_link('/analytics', 'analytics', 'Analytics', '▧') }}{% endif %}

@@ -1798,6 +1798,7 @@ class TestPortalTeamInvitations(unittest.TestCase):
                 for path in (
                     "/app",
                     "/desk",
+                    "/desk/build",
                     "/app/user",
                     "/desk/role",
                     "/app/my-subscription",
@@ -1814,6 +1815,8 @@ class TestPortalTeamInvitations(unittest.TestCase):
 
                 if plan == "BUSINESS":
                     for path in (
+                        "/app/business-connect",
+                        "/desk/business-connect",
                         "/crm",
                         "/crm-form/crm-lead",
                         "/analytics",
@@ -1825,6 +1828,8 @@ class TestPortalTeamInvitations(unittest.TestCase):
                             self.assert_allowed(env, path)
                 else:
                     for path in (
+                        "/app/business-connect",
+                        "/desk/business-connect",
                         "/crm",
                         "/analytics",
                         "/portal/team",
@@ -1833,6 +1838,24 @@ class TestPortalTeamInvitations(unittest.TestCase):
                     ):
                         with self.subTest(path=path):
                             self.assert_blocked(env, path)
+
+    def test_all_business_customer_roles_can_open_bc_workspace(self):
+        for role in (
+            "BC Business Owner",
+            "BC Business Manager",
+            "BC Business Member",
+            "BC CRM User",
+            "BC Marketing Manager",
+        ):
+            with self.subTest(role=role):
+                env = self.setUp_env("BUSINESS")
+                env.set_roles(role)
+                self.assert_allowed(env, "/app/business-connect")
+                self.assert_allowed(env, "/desk/business-connect")
+                # The workspace is the only Desk surface granted to them.
+                for blocked in ("/desk", "/desk/build", "/api/resource/User"):
+                    with self.subTest(role=role, blocked=blocked):
+                        self.assert_blocked(env, blocked)
 
     def test_rpc_form_cannot_smuggle_core_invite(self):
         env = self.setUp_env()
@@ -2129,9 +2152,9 @@ class TestPortalTeamInvitations(unittest.TestCase):
     def test_shared_portal_sidebar_is_plan_aware_and_desk_free(self):
         env = self.setUp_env()
         scenarios = {
-            "PROFESSIONAL": (False, False, False, False),
-            "BUSINESS": (True, True, True, False),
-            "ENTERPRISE": (True, True, True, True),
+            "PROFESSIONAL": (False, False, False, False, False),
+            "BUSINESS": (True, True, True, False, True),
+            "ENTERPRISE": (True, True, True, True, False),
         }
         for plan, expected in scenarios.items():
             with self.subTest(plan=plan):
@@ -2146,6 +2169,7 @@ class TestPortalTeamInvitations(unittest.TestCase):
                         nav["can_analytics"],
                         nav["can_crm"],
                         nav["can_admin"],
+                        nav["can_bc_workspace"],
                     ),
                     expected,
                 )
@@ -2156,16 +2180,20 @@ class TestPortalTeamInvitations(unittest.TestCase):
         nav = env.portal_nav.get_portal_nav("card")
         self.assertFalse(nav["can_team"])
         self.assertTrue(nav["can_admin"])
+        self.assertFalse(nav["can_bc_workspace"])
 
-    def test_login_home_page_points_customers_to_portal(self):
-        for plan in ("PROFESSIONAL", "BUSINESS"):
+    def test_login_home_page_points_customers_to_private_area(self):
+        for plan, expected in (
+            ("PROFESSIONAL", "/my-card"),
+            ("BUSINESS", "/desk/business-connect"),
+        ):
             with self.subTest(plan=plan):
                 env = self.setUp_env(plan)
                 env.frappe.flags.home_page = None
                 env.plan_gates.set_customer_login_home(
                     types.SimpleNamespace(user="owner@example.com")
                 )
-                self.assertEqual(env.frappe.flags.home_page, "/my-card")
+                self.assertEqual(env.frappe.flags.home_page, expected)
 
         # Frappe calls on_login before make_session(), so the session may still
         # be Guest; the login_manager's user must win.
@@ -2175,7 +2203,7 @@ class TestPortalTeamInvitations(unittest.TestCase):
         env.plan_gates.set_customer_login_home(
             types.SimpleNamespace(user="owner@example.com")
         )
-        self.assertEqual(env.frappe.flags.home_page, "/my-card")
+        self.assertEqual(env.frappe.flags.home_page, "/desk/business-connect")
 
         # Provider roles and Enterprise keep their Desk home page.
         env = self.setUp_env("BUSINESS")
@@ -2193,21 +2221,26 @@ class TestPortalTeamInvitations(unittest.TestCase):
         )
         self.assertIsNone(env.frappe.flags.home_page)
 
-    def test_request_gate_sets_portal_home_flag(self):
-        env = self.setUp_env("BUSINESS")
-        for path in ("/", "/login", "/portal/team"):
-            with self.subTest(path=path):
-                env.set_request(path)
-                env.frappe.flags.home_page = None
-                env.plan_gates.enforce_plan_gates()
-                self.assertEqual(env.frappe.flags.home_page, "/my-card")
+    def test_request_gate_sets_plan_home_flag(self):
+        for plan, expected, private_page in (
+            ("PROFESSIONAL", "/my-card", "/my-card"),
+            ("BUSINESS", "/desk/business-connect", "/portal/team"),
+        ):
+            env = self.setUp_env(plan)
+            for path in ("/", "/login", private_page):
+                with self.subTest(plan=plan, path=path):
+                    env.set_request(path)
+                    env.frappe.flags.home_page = None
+                    env.plan_gates.enforce_plan_gates()
+                    self.assertEqual(env.frappe.flags.home_page, expected)
 
+        env = self.setUp_env("BUSINESS")
         env.set_roles("BC Business Owner", "BC System Manager")
         env.frappe.flags.home_page = None
         env.plan_gates.enforce_plan_gates()
         self.assertIsNone(env.frappe.flags.home_page)
 
-    def test_automatic_desk_redirect_is_rewritten_to_portal(self):
+    def test_automatic_desk_redirect_is_rewritten_per_plan(self):
         class FakeResponse:
             def __init__(self, status, location=None):
                 self.status_code = status
@@ -2217,37 +2250,53 @@ class TestPortalTeamInvitations(unittest.TestCase):
             def set_data(self, value):
                 self.data = value
 
+        def rewritten(env, location, status=301):
+            response = FakeResponse(status, location)
+            env.plan_gates.rewrite_customer_desk_redirect(
+                response=response,
+                request=types.SimpleNamespace(path="/login"),
+            )
+            return response.headers["Location"]
+
+        # Business customer roles keep the BC workspace, normalised to the v16
+        # route; other Desk targets go to the same private landing page.
         env = self.setUp_env("BUSINESS")
         for location in (
             "/app/business-connect",
-            "/desk/business-connect",
             "app/business-connect",
             "https://phase2.uat/app/business-connect",
         ):
             with self.subTest(location=location):
-                response = FakeResponse(301, location)
-                env.plan_gates.rewrite_customer_desk_redirect(
-                    response=response,
-                    request=types.SimpleNamespace(path="/login"),
-                )
-                self.assertEqual(response.headers["Location"], "/my-card")
+                self.assertEqual(rewritten(env, location), "/desk/business-connect")
+        self.assertEqual(rewritten(env, "/desk/business-connect"), "/desk/business-connect")
+        self.assertEqual(rewritten(env, "/desk/build"), "/desk/business-connect")
+
+        # Professional stays portal-only; even a workspace alias lands there.
+        env = self.setUp_env("PROFESSIONAL")
+        for location in (
+            "/app/business-connect",
+            "/desk/business-connect",
+            "/desk/build",
+        ):
+            with self.subTest(plan="PROFESSIONAL", location=location):
+                self.assertEqual(rewritten(env, location), "/my-card")
 
         # Enterprise/provider redirects must be left alone.
+        env = self.setUp_env("BUSINESS")
         env.set_roles("BC Business Owner", "System Manager")
-        response = FakeResponse(301, "/app/business-connect")
-        env.plan_gates.rewrite_customer_desk_redirect(response=response)
-        self.assertEqual(response.headers["Location"], "/app/business-connect")
+        self.assertEqual(
+            rewritten(env, "/app/business-connect"), "/app/business-connect"
+        )
 
         # Non-redirect responses and non-Desk locations are untouched.
         env.set_roles("BC Business Owner")
-        response = FakeResponse(403, "/app/business-connect")
-        env.plan_gates.rewrite_customer_desk_redirect(response=response)
-        self.assertEqual(response.headers["Location"], "/app/business-connect")
-        response = FakeResponse(302, "/my-card")
-        env.plan_gates.rewrite_customer_desk_redirect(response=response)
-        self.assertEqual(response.headers["Location"], "/my-card")
+        self.assertEqual(
+            rewritten(env, "/app/business-connect", status=403),
+            "/app/business-connect",
+        )
+        self.assertEqual(rewritten(env, "/portal/team"), "/portal/team")
 
-    def test_403_page_links_back_to_portal_for_customers(self):
+    def test_403_page_links_back_to_private_area_for_customers(self):
         class FakeResponse:
             def __init__(self):
                 self.status_code = 403
@@ -2257,14 +2306,23 @@ class TestPortalTeamInvitations(unittest.TestCase):
             def set_data(self, value):
                 self.data = value
 
-        env = self.setUp_env("BUSINESS")
-        self.assert_blocked(env, "/app")
-        response = FakeResponse()
-        env.plan_gates.render_plan_gate_message(
-            response=response, request=types.SimpleNamespace(path="/app")
-        )
-        self.assertIn('href="/my-card"', response.data)
-        self.assertIn("Back to portal", response.data)
+        def rendered(env, path):
+            self.assert_blocked(env, path)
+            response = FakeResponse()
+            env.plan_gates.render_plan_gate_message(
+                response=response, request=types.SimpleNamespace(path=path)
+            )
+            return response.data
+
+        business_page = rendered(self.setUp_env("BUSINESS"), "/app")
+        self.assertIn('href="/desk/business-connect"', business_page)
+        self.assertIn("Back to Business Connect", business_page)
+        self.assertIn("Business Connect workspace or portal", business_page)
+
+        professional_page = rendered(self.setUp_env("PROFESSIONAL"), "/app")
+        self.assertIn('href="/my-card"', professional_page)
+        self.assertIn("Back to portal", professional_page)
+        self.assertIn("Business Connect portal", professional_page)
 
     def test_hooks_fields_and_portal_pages_are_wired(self):
         with open(os.path.join(APP_DIR, "hooks.py")) as handle:
@@ -2361,9 +2419,31 @@ class TestPortalTeamInvitations(unittest.TestCase):
         with open(sidebar) as handle:
             sidebar_source = handle.read()
         self.assertIn("{% if nav.can_admin %}", sidebar_source)
+        self.assertIn("{% if nav.can_bc_workspace %}", sidebar_source)
         self.assertIn("/app/business-connect", sidebar_source)
+        self.assertIn("/desk/business-connect", sidebar_source)
         self.assertNotIn('href="/app/workspace"', sidebar_source)
         self.assertNotIn('href="/app/business"', sidebar_source)
+        self.assertNotIn('href="/desk/build"', sidebar_source)
+
+        with open(os.path.join(APP_DIR, "public", "css", "branding.css")) as handle:
+            desk_css = handle.read()
+        self.assertIn("body.bc-customer-workspace", desk_css)
+        self.assertIn("#f4f6f8", desk_css)
+        self.assertIn("border-radius: 12px", desk_css)
+
+        with open(os.path.join(APP_DIR, "public", "js", "branding.js")) as handle:
+            desk_js = handle.read()
+        self.assertIn("bc-customer-workspace", desk_js)
+        for role in (
+            "BC Business Owner",
+            "BC Business Manager",
+            "BC Business Member",
+            "BC CRM User",
+            "BC Marketing Manager",
+        ):
+            self.assertIn(role, desk_js)
+        self.assertIn("/desk/business-connect", desk_js)
 
         with open(os.path.join(APP_DIR, "__init__.py")) as handle:
             version = handle.read()

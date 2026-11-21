@@ -151,3 +151,95 @@
 .sidebar-menu .sidebar-label:hover {
   color: #ffffff !important;
 }
+
+/* ============================================================
+   8. BUSINESS CUSTOMER WORKSPACE (/desk/business-connect)
+   ============================================================
+   Applied by branding.js only for Business-plan customer roles.
+   Colours mirror the private /portal/team cards; the workspace's
+   own links and sidebar items are deliberately left unchanged.
+   ============================================================ */
+
+body.bc-customer-workspace {
+  --bc-portal-primary: #0b3d91;
+  --bc-portal-accent: #1677ff;
+  --bc-portal-bg: #f4f6f8;
+  --bc-portal-border: #e2e8f0;
+  --bc-portal-text: #1e293b;
+  --bc-portal-muted: #64748b;
+}
+
+body.bc-customer-workspace .page-container,
+body.bc-customer-workspace .main-section,
+body.bc-customer-workspace .layout-main-section {
+  background: var(--bc-portal-bg) !important;
+}
+
+body.bc-customer-workspace .layout-main-section {
+  padding: 1.5rem;
+}
+
+body.bc-customer-workspace .page-head,
+body.bc-customer-workspace .page-title,
+body.bc-customer-workspace .workspace-header {
+  background: #fff !important;
+  color: var(--bc-portal-text) !important;
+  border-bottom: 1px solid var(--bc-portal-border) !important;
+}
+
+body.bc-customer-workspace .page-title,
+body.bc-customer-workspace .workspace-header .title-text {
+  font-weight: 700 !important;
+  color: var(--bc-portal-primary) !important;
+}
+
+body.bc-customer-workspace .workspace-section,
+body.bc-customer-workspace .frappe-card,
+body.bc-customer-workspace .number-card-container,
+body.bc-customer-workspace .shortcut-container,
+body.bc-customer-workspace .chart-container,
+body.bc-customer-workspace .quick-list {
+  background: #fff !important;
+  border: 1px solid var(--bc-portal-border) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04) !important;
+  padding: 1.15rem 1.25rem !important;
+}
+
+body.bc-customer-workspace .workspace-section-head,
+body.bc-customer-workspace .section-head {
+  color: var(--bc-portal-primary) !important;
+  font-weight: 700 !important;
+}
+
+body.bc-customer-workspace .workspace-link,
+body.bc-customer-workspace .workspace-link-container a,
+body.bc-customer-workspace .shortcut-container a {
+  border-radius: 8px !important;
+  color: var(--bc-portal-text) !important;
+  transition: background 0.15s, color 0.15s;
+}
+
+body.bc-customer-workspace .workspace-link:hover,
+body.bc-customer-workspace .workspace-link-container a:hover,
+body.bc-customer-workspace .shortcut-container a:hover {
+  background: rgba(22, 119, 255, 0.08) !important;
+  color: var(--bc-portal-primary) !important;
+  text-decoration: none !important;
+}
+
+/* Same dark navigation rail as the portal, without changing its links. */
+body.bc-customer-workspace .sidebar-menu {
+  background-color: #1e293b !important;
+}
+
+body.bc-customer-workspace .sidebar-menu .sidebar-label.active,
+body.bc-customer-workspace .sidebar-menu .sidebar-link.active {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border-left-color: var(--bc-portal-accent) !important;
+}
+
+body.bc-customer-workspace .sidebar-menu .sidebar-link:hover,
+body.bc-customer-workspace .sidebar-menu .sidebar-label:hover {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}

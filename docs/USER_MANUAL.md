@@ -1003,32 +1003,37 @@ Actions apply within a business the user is an active member of (plus the global
   drafts and cancelled documents are never public
 - CRM Leads are scoped to business members
 
-### 10.4 Portal-only access
+### 10.4 Private pages and the BC workspace
 
-On **Professional** and **Business** sites, customers never open the Frappe
-Desk. Their private pages are:
+**Professional** customers stay entirely in the private portal. **Business**
+customer roles (`BC Business Owner`, `BC Business Manager`, `BC Business Member`,
+`BC CRM User` and `BC Marketing Manager`) may also open the Business Connect
+workspace at `/desk/business-connect`. That one Desk page is themed to match the
+portal and keeps its existing workspace menu and sidebar links. Every other
+Desk route, including `/desk/build`, remains blocked.
 
 | Page | Purpose |
 |------|---------|
+| `/desk/business-connect` | Business Connect workspace (Business customer roles, themed like the portal) |
 | `/portal/team` | Invite teammates, see members and seat usage |
 | `/portal/subscription` | Read-only plan, usage and upgrade information |
 | `/my-card` | Own digital cards |
-| `/crm`, `/crm-form/*` | Frappe CRM (Business only) |
+| `/crm`, `/crm-form/*` | Frappe CRM (Business only, plan-gated) |
 | `/analytics` | Analytics dashboard (Business only) |
 
-All four private portal pages share the same left sidebar. It shows only the
-sections included in your plan (Team, Analytics and CRM are Business/Enterprise),
-plus the current plan name. Provider users and Enterprise sites also see
-**Advanced admin**; Professional/Business customers never see native Desk links.
+All private portal pages share the same left sidebar. It shows only the
+sections included in your plan, plus a **Business Connect** entry for Business
+customer roles. Provider users and Enterprise sites also see **Advanced admin**;
+Professional customers never see Desk links.
 
 The native **User**, **User Invitation**, **Role** and **Role Permission**
 forms and lists are blocked for these customers. Frappe creates the login only
 after an invitation is accepted; no `User` DocPerms are granted to customers.
 Enterprise sites keep their existing Desk-based advanced administration.
 
-After sign-in, and when an already-signed-in customer opens `/login` or the site
-root, the browser lands on `/my-card`. This is only a landing redirect: direct
-`/app`, `/desk` and `/app/business-connect` requests still show **Not Permitted**.
+After sign-in, Professional customers land on `/my-card`; Business customer
+roles land on `/desk/business-connect`. Direct requests to generic Desk routes
+such as `/app`, `/desk` and `/desk/build` still show **Not Permitted**.
 
 ---
 
@@ -1080,8 +1085,8 @@ visit — no reinstall. (Bump of the app version rotates the offline cache.)
 |-------|----------|
 | Theme not applying | Check the Business record has a **Default Theme** selected |
 | PWA does not install | The site must be served over HTTPS; see §11.5 |
-| Desk **Open** button missing beside Public URL | Enterprise/Desk users: hard-refresh (Ctrl/Cmd + Shift + R). Professional/Business customers should open the public `/c/<slug>` URL directly — the Desk is intentionally unavailable |
-| `/app` or `/desk` shows **Not Permitted** | Expected on Professional/Business sites. Use `/portal/team`, `/portal/subscription`, `/my-card` and (on Business) `/crm` and `/analytics` |
+| Desk **Open** button missing beside Public URL | Enterprise/Desk users: hard-refresh (Ctrl/Cmd + Shift + R). Customers should open the public `/c/<slug>` URL directly; generic Desk routes are intentionally unavailable for customer roles |
+| `/app`, `/desk` or `/desk/build` shows **Not Permitted** | Expected for customer roles. Professional users stay in `/my-card`; Business users can open `/desk/business-connect` plus `/portal/team`, `/portal/subscription`, `/crm` and `/analytics` |
 | Invitation email not received | Ask the provider/support to confirm outgoing SMTP is configured for the site and resend the invitation |
 | Video does not play on a product or service page | Check the link is a supported share link — YouTube, Vimeo, Google Drive, Dailymotion, a Nextcloud **single-file** public share (`/s/…`). A Nextcloud **folder** share returns a zip and cannot play, and unsupported or unsafe links are skipped quietly — the page renders no video box rather than a broken one |
 

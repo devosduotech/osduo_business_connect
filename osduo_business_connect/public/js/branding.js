@@ -258,6 +258,49 @@ function add_my_card_link() {
     }, 10);
   }
 
+  // ── Business customer workspace theme ───────────────────
+  // Business-plan customer roles may open only the BC workspace. Mirroring the
+  // /portal/team palette here keeps that single Desk surface visually
+  // consistent. The workspace's links and sidebar content are NOT touched.
+  var BC_WORKSPACE_ROLES = [
+    "BC Business Owner",
+    "BC Business Manager",
+    "BC Business Member",
+    "BC CRM User",
+    "BC Marketing Manager",
+  ];
+  var BC_PRIVILEGED_ROLES = [
+    "Administrator",
+    "System Manager",
+    "BC System Manager",
+    "BC Subscription Manager",
+  ];
+
+  function has_any_role(roles) {
+    if (typeof frappe === "undefined" || !frappe.user || typeof frappe.user.has_role !== "function") {
+      return false;
+    }
+    for (var i = 0; i < roles.length; i++) {
+      if (frappe.user.has_role(roles[i])) return true;
+    }
+    return false;
+  }
+
+  function apply_bc_workspace_theme() {
+    if (typeof document === "undefined" || !document.body) return false;
+    if (has_any_role(BC_PRIVILEGED_ROLES) || !has_any_role(BC_WORKSPACE_ROLES)) {
+      document.body.classList.remove("bc-customer-workspace");
+      return true;
+    }
+    var path = (window.location.pathname || "").replace(/\/+$/, "");
+    if (path === "/app/business-connect" || path === "/desk/business-connect") {
+      document.body.classList.add("bc-customer-workspace");
+    } else {
+      document.body.classList.remove("bc-customer-workspace");
+    }
+    return true;
+  }
+
   function install_support_patch() {
     apply_patch_with_polling(patch_user_menu);
     apply_patch_with_polling(patch_desktop_avatar_menu);
@@ -265,5 +308,11 @@ function add_my_card_link() {
 
   if (typeof frappe !== "undefined") {
     install_support_patch();
+    apply_patch_with_polling(apply_bc_workspace_theme);
+    if (window.jQuery) {
+      $(document).on("page-change", function () {
+        setTimeout(apply_bc_workspace_theme, 50);
+      });
+    }
   }
 })();

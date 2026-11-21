@@ -324,9 +324,11 @@ then on; they never need the Desk for team setup.
   `Sales Manager` or `System Manager`) and access via `/crm` — BC roles alone
   are not enough.
 - Professional has no Desk, team management, CRM, Analytics or import/export
-  for customers. Business adds the portal Team page, `/crm`, `/crm-form/*` and
-  `/analytics`, up to 3 businesses and team invitations, but still no generic
-  Desk. Enterprise keeps its existing Desk-based advanced administration,
+  for customers. Business customer roles may open only `/desk/business-connect`
+  (themed like the portal); the generic Desk, `/desk/build` and native User/Role
+  administration stay blocked. Business also adds the portal Team page,
+  `/crm`, `/crm-form/*` and `/analytics`, up to 3 businesses and team
+  invitations. Enterprise keeps its existing Desk-based advanced administration,
   Email/WhatsApp configuration, up to 5 businesses and one included custom
   domain.
 - All plan/upgrade links must stay on
@@ -339,14 +341,16 @@ then on; they never need the Desk for team setup.
 3. Invite a new email and confirm the seat counter increases immediately.
 4. Open the emailed link as the invitee, set a password and confirm an active
    **Business Member** row is created for the selected business and role.
-5. Try `/app` and `/api/method/frappe.core.api.user_invitation.invite_by_email`
-   as the Owner: both must return 403. The guest acceptance URL must still work.
-6. Open `/my-card`, `/portal/subscription` and `/analytics`. All three must show
-   the same shared sidebar; the active page is highlighted and no native Desk
-   links appear for the Business Owner.
-7. Sign out and back in, then open `/login` and `/` while signed in. Each must
-   land on `/my-card` without a 403. A direct request to `/app/business-connect`
-   must still return **Not Permitted**.
+5. Try `/app`, `/desk/build` and
+   `/api/method/frappe.core.api.user_invitation.invite_by_email` as the Owner:
+   all must return 403. The guest acceptance URL must still work.
+6. Open `/my-card`, `/portal/subscription`, `/analytics` and
+   `/desk/business-connect`. All must show the OSDuo theme; the portal pages
+   share the same sidebar with a **Business Connect** entry, and no native
+   User/Role administration links appear for the Business Owner.
+7. Sign out and back in. A Business customer must land on
+   `/desk/business-connect`; opening `/login` or `/` while signed in must not
+   produce a 403. A Professional customer must land on `/my-card` instead.
 
 ### Change the plan on an existing instance
 

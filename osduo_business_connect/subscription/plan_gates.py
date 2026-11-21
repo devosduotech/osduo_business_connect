@@ -269,13 +269,22 @@ PUBLIC_API_METHODS = frozenset({
 # Business customer needs outside the CRM product UI and the analytics page.
 CUSTOMER_PORTAL_PAGES = frozenset({"/portal/team", "/portal/subscription"})
 
-# Logged-in Professional/Business users land here, never on the Desk. Frappe
-# v16's /login page sends an already-signed-in System User to
-# get_default_path() -- our single add_to_apps_screen entry resolves to
-# /app/business-connect -- so that automatic redirect is rewritten below.
-# Direct requests to /app or /desk are still blocked with 403 by this module.
+# Business-plan customer roles may open the BC workspace itself, but never the
+# generic Desk or native User administration. Professional stays portal-only.
+# Frappe v16 serves the workspace at /desk/business-connect and still accepts
+# the older /app/business-connect alias; both are normalised below.
 CUSTOMER_PORTAL_HOME = "/my-card"
+CUSTOMER_WORKSPACE_HOME = "/desk/business-connect"
+CUSTOMER_WORKSPACE_PATHS = frozenset({"/app/business-connect", "/desk/business-connect"})
 DESK_PATHS = frozenset({"/app", "/desk"})
+
+
+def _customer_landing(entitlements):
+    """Private landing page for a locked-down customer on this plan."""
+    if entitlements.get("plan_code") == "BUSINESS":
+        return CUSTOMER_WORKSPACE_HOME
+    return CUSTOMER_PORTAL_HOME
+
 
 CUSTOMER_PORTAL_API_METHODS = frozenset({
     "osduo_business_connect.subscription.team_invite.get_team_page_data",
@@ -538,7 +547,7 @@ def _is_locked_down_customer(entitlements, user=None):
 
 
 def set_customer_login_home(login_manager=None):
-    """Frappe ``on_login`` hook: send customer logins to the private portal.
+    """Frappe ``on_login`` hook: send customer logins to their private area.
 
     ``LoginManager.set_user_info`` runs after this hook and reads
     ``frappe.local.flags.home_page`` before Role, Website Settings or the
@@ -549,15 +558,16 @@ def set_customer_login_home(login_manager=None):
     """
     try:
         user = getattr(login_manager, "user", None) or getattr(frappe.session, "user", None)
-        if _is_locked_down_customer(get_entitlements(), user):
-            frappe.flags.home_page = CUSTOMER_PORTAL_HOME
+        ent = get_entitlements()
+        if _is_locked_down_customer(ent, user):
+            frappe.flags.home_page = _customer_landing(ent)
     except Exception:
         # A failed nav preference lookup must never fail the login itself. The
         # request-level gate remains the authoritative security boundary.
         pass
 
 
-def _customer_user_admin_attempt(path, methods, doctypes):
+def _customer_user_admin_attempt(path, methods, doctypes, entitlements=None):
     """Return True for any native User/Role/User Invitation surface.
 
     The allowlist is checked before this helper so the BC wrapper and the
@@ -569,7 +579,13 @@ def _customer_user_admin_attempt(path, methods, doctypes):
     # smuggled in the same request (form_dict.cmd wins at dispatch time).
     if methods and methods <= (CUSTOMER_PORTAL_API_METHODS | CUSTOMER_ALLOWED_INVITE_METHODS):
         return False
-    if path in ("/app", "/desk") or path.startswith(("/app/", "/desk/")):
+    workspace_allowed = bool(
+        entitlements and entitlements.get("plan_code") == "BUSINESS"
+    )
+    is_desk_path = path in ("/app", "/desk") or path.startswith(("/app/", "/desk/"))
+    if is_desk_path and not (
+        workspace_allowed and path in CUSTOMER_WORKSPACE_PATHS
+    ):
         return True
     if doctypes & CUSTOMER_USER_ADMIN_DOCTYPES:
         return True
@@ -772,7 +788,7 @@ def enforce_plan_gates():
     # caller in this request (boot data, error pages, website routing) so a
     # customer never picks up a Desk default workspace.
     if _is_locked_down_customer(ent):
-        frappe.flags.home_page = CUSTOMER_PORTAL_HOME
+        frappe.flags.home_page = _customer_landing(ent)
 
     # Subscription status — never applied to public website/guest-safe APIs.
     if not ent.get("accessible") and _private_surface(path, methods):
@@ -783,19 +799,25 @@ def enforce_plan_gates():
             path,
         )
 
-    # Portal-only customer policy. Professional and Business customers never
-    # see the generic Desk or native User/Role administration. Enterprise keeps
-    # its existing Desk-based advanced administration.
+    # Customer Desk policy. Professional stays portal-only. Business customer
+    # roles may open only the BC workspace; the generic Desk, framework routes
+    # and native User/Role administration stay blocked. Enterprise keeps its
+    # existing Desk-based advanced administration.
     if _is_locked_down_customer(ent) and _customer_user_admin_attempt(
-        path, methods, doctypes
+        path, methods, doctypes, ent
     ):
         plan_name = ent.get("plan_name") or ent.get("plan_code") or "current"
+        destination = (
+            _("Business Connect workspace or portal")
+            if ent.get("plan_code") == "BUSINESS"
+            else _("Business Connect portal")
+        )
         _deny(
             "desk_lockdown",
             _(
                 "The Frappe Desk and native User administration are not available "
-                "on the {0} plan. Use the Business Connect portal instead."
-            ).format(plan_name),
+                "on the {0} plan. Use the {1} instead."
+            ).format(plan_name, destination),
             path,
         )
 
@@ -944,29 +966,34 @@ def advanced_admin_query_conditions(user=None):
 # ---------------------------------------------------------------------------
 # after_request hooks — landing redirects and actionable 403 pages
 # ---------------------------------------------------------------------------
-def _is_desk_path(location):
-    """True for a Desk URL, including an absolute same-site redirect."""
+def _redirect_path(location):
+    """Normalised path from a redirect target, including absolute same-site URLs."""
     try:
         path = (urlparse(location).path or "").rstrip("/") or "/"
     except Exception:
+        return ""
+    return path if path.startswith("/") else "/" + path
+
+
+def _is_desk_path(location):
+    """True for a Desk URL, including an absolute same-site redirect."""
+    path = _redirect_path(location)
+    if not path:
         return False
-    if not path.startswith("/"):
-        path = "/" + path
     if path in DESK_PATHS:
         return True
     return any(path.startswith(prefix + "/") for prefix in DESK_PATHS)
 
 
 def rewrite_customer_desk_redirect(response=None, request=None):
-    """Keep automatic login/root redirects off the Desk for customers.
+    """Keep automatic logins off generic Desk routes for customers.
 
-    An already-signed-in System User who opens ``/login`` (or the site root)
-    is redirected by Frappe v16 to ``get_default_path()``. Our single
-    ``add_to_apps_screen`` entry makes that ``/app/business-connect``, which the
-    request gate correctly answers with 403, producing a redirect loop. The
-    redirect is raised inside the website renderer, so ``before_request``
-    cannot rewrite it. This hook replaces only automatic redirects to Desk
-    paths; direct Desk requests still get their 403.
+    Frappe v16 redirects an already-signed-in System User from ``/login`` to
+    ``get_default_path()``. Our single ``add_to_apps_screen`` entry makes that
+    ``/app/business-connect``. Business customer roles are allowed to use the
+    BC workspace, so that target is normalised to the v16 route instead of
+    being bounced to the portal; every other Desk target is rewritten to the
+    plan's private landing page. Direct Desk requests still get their 403.
     """
     if response is None or getattr(response, "status_code", None) not in (301, 302, 303, 307, 308):
         return
@@ -974,7 +1001,7 @@ def rewrite_customer_desk_redirect(response=None, request=None):
     if headers is None:
         return
     location = headers.get("Location") or ""
-    if not location or not _is_desk_path(location):
+    if not location:
         return
     try:
         ent = get_entitlements()
@@ -983,8 +1010,17 @@ def rewrite_customer_desk_redirect(response=None, request=None):
     if not _is_locked_down_customer(ent):
         return
 
-    headers["Location"] = CUSTOMER_PORTAL_HOME
-    frappe.flags.redirect_location = CUSTOMER_PORTAL_HOME
+    target_path = _redirect_path(location)
+    if target_path in CUSTOMER_WORKSPACE_PATHS and ent.get("plan_code") == "BUSINESS":
+        target = CUSTOMER_WORKSPACE_HOME
+    elif _is_desk_path(location):
+        target = _customer_landing(ent)
+    else:
+        return
+
+    if location != target:
+        headers["Location"] = target
+        frappe.flags.redirect_location = target
 
 
 def render_plan_gate_message(response=None, request=None):
@@ -1004,9 +1040,14 @@ def render_plan_gate_message(response=None, request=None):
     back_label = "Back to login"
     back_url = "/login"
     try:
-        if _is_locked_down_customer(get_entitlements()):
-            back_label = "Back to portal"
-            back_url = CUSTOMER_PORTAL_HOME
+        ent = get_entitlements()
+        if _is_locked_down_customer(ent):
+            back_url = _customer_landing(ent)
+            back_label = (
+                "Back to Business Connect"
+                if ent.get("plan_code") == "BUSINESS"
+                else "Back to portal"
+            )
     except Exception:
         pass
 
