@@ -38,6 +38,18 @@ class TestPWAWiring(unittest.TestCase):
         self.assertIn('base_template_path = "www/sw.js"', sw)
         self.assertIn("no_cache", sw)
 
+    def test_service_worker_cache_revision_invalidates_assets(self):
+        sw = read("www", "sw.py")
+        self.assertIn("SW_CACHE_REVISION", sw)
+        self.assertIn("osduo_business_connect.__version__", sw)
+        self.assertIn(
+            'f"{osduo_business_connect.__version__}-{SW_CACHE_REVISION}"', sw
+        )
+        # The template must derive both cache names from that single key.
+        template = read("www", "sw.js")
+        self.assertIn('const STATIC_CACHE = "bc-static-" + VERSION;', template)
+        self.assertIn('const PAGE_CACHE = "bc-pages-" + VERSION;', template)
+
     def test_manifest_required_fields(self):
         manifest = read("www", "manifest.json")
         for key in ('"name"', '"start_url"', '"scope"', '"display"', '"icons"', '"theme_color"'):
