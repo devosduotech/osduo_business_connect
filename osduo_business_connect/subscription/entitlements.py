@@ -241,9 +241,12 @@ def require_feature(key, label=None):
     ent = get_entitlements()
     plan_name = ent.get("plan_name") or ent["plan_code"]
     display = label or key.replace("_", " ")
-    raise PlanRestrictionError(
+    # frappe.throw (not a bare raise) publishes the text in __server_messages.
+    # v16's API v2 error payload otherwise contains only the exception type.
+    frappe.throw(
         f"{display.capitalize()} is not available on the {plan_name} plan. "
-        f"Upgrade to unlock it: {ent['upgrade_url']}"
+        f"Upgrade to unlock it: {ent['upgrade_url']}",
+        exc=PlanRestrictionError,
     )
 
 
@@ -257,10 +260,11 @@ def enforce_limit(key, current, label=None):
     if limit is None or int(limit) == -1:
         return
     if int(current or 0) >= int(limit):
-        raise PlanRestrictionError(
+        frappe.throw(
             f"{(label or key.replace('_', ' ')).capitalize()} limit reached "
             f"({int(current)} of {int(limit)}). Cancel an existing record or upgrade: "
-            f"{get_entitlements()['upgrade_url']}"
+            f"{get_entitlements()['upgrade_url']}",
+            exc=PlanRestrictionError,
         )
 
 

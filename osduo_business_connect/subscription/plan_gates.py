@@ -449,7 +449,7 @@ def _deny(feature_key, message, path):
     # PermissionError text. Stash ours so the after_request hook can render it.
     # API responses already carry the exception message as JSON.
     frappe.flags.bc_plan_gate_message = str(message)
-    raise frappe.PermissionError(message)
+    frappe.throw(message, exc=frappe.PermissionError)
 
 
 def _log_restriction(feature_key, path, message):

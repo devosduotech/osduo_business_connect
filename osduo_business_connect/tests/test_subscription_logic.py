@@ -135,7 +135,10 @@ class StubEnvironment:
         )
         frappe.ValidationError = type("ValidationError", (Exception,), {})
         frappe.PermissionError = type("PermissionError", (Exception,), {"http_status_code": 403})
-        frappe.throw = lambda msg: (_ for _ in ()).throw(frappe.ValidationError(msg))
+        def throw(msg, exc=None, **kwargs):
+            raise (exc or frappe.ValidationError)(msg)
+
+        frappe.throw = throw
         frappe._ = lambda value: value
         frappe.get_doc = lambda *a, **k: FakeDocument(*a, **k)
         frappe.logger = lambda name=None: types.SimpleNamespace(
@@ -815,6 +818,30 @@ class TestPlanQuotas(unittest.TestCase):
         env.limits.enforce_seat_limit(
             self.member(name="BM-1", user="new@example.com")
         )
+
+    def test_quota_and_gate_errors_publish_message_to_client(self):
+        # v16 API v2 only shows __server_messages from frappe.throw; a bare
+        # `raise` leaves the user with a save that silently fails.
+        env = self.setUp_env("PROFESSIONAL", seats=1)
+        calls = []
+        original = env.frappe.throw
+
+        def capture(msg, exc=None, **kwargs):
+            calls.append((msg, exc))
+            return original(msg, exc=exc, **kwargs)
+
+        env.frappe.throw = capture
+
+        with self.assertRaises(env.entitlements.PlanRestrictionError):
+            env.limits.enforce_seat_limit(self.member())
+        self.assertEqual(calls[-1][1], env.entitlements.PlanRestrictionError)
+        self.assertIn("Seats limit reached (1 of 1)", calls[-1][0])
+
+        env.set_request("/crm")
+        with self.assertRaises(env.frappe.PermissionError):
+            env.plan_gates.enforce_plan_gates()
+        self.assertEqual(calls[-1][1], env.frappe.PermissionError)
+        self.assertIn("CRM is available on the Business plan", calls[-1][0])
 
     def test_controllers_wire_quota_checks(self):
         with open(os.path.join(APP_DIR, "business", "core.py")) as handle:
