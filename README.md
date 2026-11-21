@@ -1,6 +1,6 @@
 # OSDuo Business Connect
 
-**v1.4.0** | **Your digital identity. Your customers. Your growth.**
+**v1.4.1** | **Your digital identity. Your customers. Your growth.**
 
 Business Connect transforms how small businesses and professionals establish their digital presence. Create a stunning business profile, showcase products and services, capture customer enquiries and card exchanges, and install it all as a mobile app — all seamlessly integrated with Frappe CRM.
 
@@ -210,6 +210,46 @@ website-cache clear.
 > Internal planning, marketing and architecture documents are maintained locally and
 > are **not published** in this repository.
 
+### Plan provisioning quick reference
+
+One site = one customer = one Subscription = one plan. Run these commands from
+the bench root with the bench Python environment. Billing is agreed in Aasriva;
+the CLI only mirrors that decision locally. See the
+[Installation Guide](docs/INSTALLATION_GUIDE.md#-site-provisioning-sop-new-customer-site)
+for the full SOP, hostname rules and SMTP setup.
+
+| Situation | Action |
+|---|---|
+| **New site, never provisioned** | Install apps, set `host_name`, then run `provision` **without** `--force`. |
+| **Existing site upgraded to v1.4.x** | Run `bench migrate`; it auto-seeds **Business** only when the site already has business/user data. Verify, then provision manually if no plan was seeded. |
+| **Existing site with a Subscription** | Re-run `provision` with `--force` to change or refresh the plan. This updates the frozen snapshot in place and never purges data. |
+
+```bash
+# Preview any plan change first
+env/bin/python apps/osduo_business_connect/scripts/provision_customer_site.py \
+  --site customer.example.com provision \
+  --plan BUSINESS --seats 5 --dry-run
+
+# Apply to a new/never-provisioned site
+env/bin/python apps/osduo_business_connect/scripts/provision_customer_site.py \
+  --site customer.example.com provision \
+  --plan BUSINESS --seats 5 \
+  --external-ref AASRIVA-ORDER-12345
+
+# Change/refresh an already-provisioned site
+env/bin/python apps/osduo_business_connect/scripts/provision_customer_site.py \
+  --site customer.example.com provision \
+  --plan ENTERPRISE --seats 10 \
+  --external-ref AASRIVA-UPGRADE-12345 \
+  --force
+
+bench --site customer.example.com clear-cache
+```
+
+`--seats` defaults to the plan minimum and values below the minimum are
+rejected. Changing `host_name` with `--force` re-derives printed QR/NFC URLs, so
+only do it after confirming the printed-media policy.
+
 ---
 
 ## Architecture Overview
@@ -286,9 +326,19 @@ repository).
 - [x] Portal-only team invitations, shared private-page sidebar, branded login and
       root forwarding, and a portal-matched BC workspace that survives hard
       refresh (v1.4.0)
+- [x] Plan-provisioning documentation for new/existing sites and pending sidebar
+      text-colour tracking (v1.4.1)
 - [ ] Web push notifications for installed PWAs
 - [ ] Play Store listing via TWA wrappers
 - [ ] Multi-language support
+
+---
+
+## Known Issues
+
+| Issue | Status |
+|---|---|
+| Business Connect workspace sidebar/menu item text colour does not yet visually match `/portal/team` in all browsers. The themed CSS and revisioned assets load; the selected-item colour work is still pending. | Open |
 
 ---
 

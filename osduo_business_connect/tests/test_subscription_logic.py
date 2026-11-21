@@ -2576,7 +2576,7 @@ class TestPortalTeamInvitations(unittest.TestCase):
 
         with open(os.path.join(APP_DIR, "__init__.py")) as handle:
             version = handle.read()
-        self.assertIn('__version__ = "1.4.0"', version)
+        self.assertIn('__version__ = "1.4.1"', version)
 
 
 def env_fieldnames():

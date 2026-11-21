@@ -1,7 +1,7 @@
 # OSDuo Business Connect — User Manual
 
-**Version:** 1.4.0
-**Last Updated:** 18 November 2026
+**Version:** 1.4.1
+**Last Updated:** 21 November 2026
 
 ---
 
@@ -20,6 +20,7 @@
 11. [Mobile App (PWA)](#11-mobile-app-pwa)
 12. [Troubleshooting](#12-troubleshooting)
 13. [FAQ](#13-faq)
+14. [Subscription & Add-ons](#14-subscription--add-ons)
 
 ---
 
@@ -1020,6 +1021,10 @@ rewrite or refresh does not produce a 403. Because the Desk can change routes
 client-side, protected data remains protected by the API and DocType plan gates
 rather than by the URL alone.
 
+> The workspace rail and themed assets load as expected, but the final visual
+> match of the sidebar/menu item text colour with `/portal/team` is still
+> pending. Functionality and the hard-refresh route gate are unaffected.
+
 | Page | Purpose |
 |------|---------|
 | `/desk/business-connect` | Business Connect workspace (Business customer roles, themed like the portal) |
@@ -1095,6 +1100,7 @@ visit — no reinstall. (Bump of the app version rotates the offline cache.)
 | PWA does not install | The site must be served over HTTPS; see §11.5 |
 | Desk **Open** button missing beside Public URL | Enterprise/Desk users: hard-refresh (Ctrl/Cmd + Shift + R). Customers should open the public `/c/<slug>` URL directly; generic Desk routes are intentionally unavailable for customer roles |
 | `/app`, `/desk` or `/desk/build` shows **Not Permitted** | Expected for customer roles. Professional users stay in `/my-card`; Business users can open `/desk/business-connect` plus `/portal/team`, `/portal/subscription`, `/crm` and `/analytics` |
+| BC workspace sidebar/menu item text colour does not visually match `/portal/team` | Known issue — the themed CSS loads, but the final selected-item colour work is still pending. Functionality and route access are unaffected |
 | Invitation email not received | Ask the provider/support to confirm outgoing SMTP is configured for the site and resend the invitation |
 | Video does not play on a product or service page | Check the link is a supported share link — YouTube, Vimeo, Google Drive, Dailymotion, a Nextcloud **single-file** public share (`/s/…`). A Nextcloud **folder** share returns a zip and cannot play, and unsupported or unsafe links are skipped quietly — the page renders no video box rather than a broken one |
 
@@ -1207,6 +1213,23 @@ on Aasriva** link opens the configured upgrade URL.
 - Billed seats and business profiles are shown as *used of cap*. Cancelled businesses are not counted.
 - Each Business Member can have exactly one Digital Card. Changing a card's display name does not create another card.
 - Custom domains expire with the subscription period end. Adding a domain never changes printed QR/NFC URLs or the site's existing hostname.
+
+### 14.1 Who adds or changes the plan
+
+Customers cannot buy, add or change a plan from the portal. After payment is
+agreed in Aasriva, the provider sets the site's plan with the Business Connect
+provisioning CLI. The plan can be `PROFESSIONAL`, `BUSINESS` or `ENTERPRISE`;
+minimum billed seats are 1, 5 and 10 respectively, and the seat cap is the
+higher of the minimum and the ordered seats.
+
+| Site | Provider action |
+|---|---|
+| New site | Install `crm` and `osduo_business_connect`, set the canonical `host_name`, then run `provision` once **without** `--force`. |
+| Existing site upgraded to v1.4.x | Run `bench migrate`; it seeds `BUSINESS` for in-use sites. Verify at `/portal/subscription`. If no plan was seeded, run `provision` without `--force`. |
+| Existing site that already has a plan | Re-run `provision` with `--force` to change or refresh the plan. It updates the frozen snapshot in place and never deletes business, CRM or public data. |
+
+Provider/operator commands and the full pre-flight checks are in the
+[Installation Guide](INSTALLATION_GUIDE.md#plan-setup-on-an-existing-site).
 
 **Request add-on** is a Desk workflow. Enterprise users can open the native
 **Add-on Order** form; Professional/Business customers should contact the

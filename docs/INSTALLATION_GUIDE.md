@@ -3,7 +3,7 @@
 Step-by-step instructions to install, operate, and update **OSDuo Business Connect**
 — from a single-site demo to a multi-tenant SaaS bench serving many customer domains.
 
-Current release: **v1.4.0** (see [RELEASE_NOTES.md](../RELEASE_NOTES.md)).
+Current release: **v1.4.1** (see [RELEASE_NOTES.md](../RELEASE_NOTES.md)).
 
 ---
 
@@ -153,6 +153,20 @@ One site = one customer = one Subscription = one plan. Plan selection is manual:
 there is no checkout/payment/webhook in this platform. Billing happens in Aasriva;
 the CLI below only mirrors the agreed sale locally.
 
+### Which path applies?
+
+| Site state | What to do |
+|---|---|
+| **New site** (just created, never provisioned) | Follow Steps 1–4 below and run `provision` **without** `--force`. |
+| **Existing site upgraded to v1.4.x** | Run `bench migrate` first. The migration seeds `BUSINESS` only when the site already has Business or User data. Verify at `/portal/subscription` or with the console. |
+| **Existing site with no plan after upgrade** | Run the same `provision` command **without** `--force`. |
+| **Existing site that already has a Subscription** | Re-run `provision` with `--force` to change or refresh the plan. See [Plan setup on an existing site](#plan-setup-on-an-existing-site). |
+
+`--force` overwrites the Subscription and frozen entitlement snapshot in place;
+it never purges CRM, public or user data. Keep `--hostname` unset unless you are
+intentionally changing the public origin, because changing it re-derives printed
+QR/NFC URLs.
+
 ### Plans and minimums
 
 | Plan | Price / user / year | Minimum billed seats | Business profiles | Included custom domains |
@@ -243,9 +257,12 @@ Frappe queues outgoing mail, so the scheduler/worker must be running. A failed
 `frappe.sendmail()` call is logged by Business Connect and never rolls back an
 Add-on Order.
 
-### Step 3 — provision the plan
+### Step 3 — provision the plan (new or never-provisioned site)
 
-Run from the bench root, using the bench Python environment:
+Run from the bench root, using the bench Python environment. This is the path
+for a fresh site or an existing site that has no Subscription yet. If the site
+already has a plan, use [Plan setup on an existing site](#plan-setup-on-an-existing-site)
+instead.
 
 ```bash
 # Preview first
@@ -351,7 +368,9 @@ then on; they never need the Desk for team setup.
 6. Open `/my-card`, `/portal/subscription`, `/analytics` and
    `/desk/business-connect`. All must show the OSDuo theme; the portal pages
    share the same sidebar with a **Business Connect** entry, and no native
-   User/Role administration links appear for the Business Owner.
+   User/Role administration links appear for the Business Owner. The themed
+   workspace rail should load; final visual parity of the selected sidebar/menu
+   item text colour with `/portal/team` is still pending.
 7. Sign out and back in. A Business customer must land on
    `/desk/business-connect`; opening `/login` or `/` while signed in must not
    produce a 403. A Professional customer must land on `/my-card` instead.
@@ -359,14 +378,55 @@ then on; they never need the Desk for team setup.
    show the OSDuo split-screen branded page (dark image panel plus the stock
    Frappe sign-in form), not the unbranded Frappe login.
 
-### Change the plan on an existing instance
+### Plan setup on an existing site
 
-The provision CLI is the only supported way to change a site's plan. It uses the
-`Administrator` session internally, so no Desk role is needed. Re-run `provision`
-with `--force`; it updates the Subscription and frozen entitlement snapshot in
-place and never purges data.
+The provision CLI is the only supported way to add or change a site's plan. It
+uses the `Administrator` session internally, so no Desk role is needed.
+
+#### 1. Site upgraded from a pre-subscription version
+
+Run the normal upgrade first. The v1.4 patch seeds `BUSINESS` for in-use sites so
+existing CRM/Analytics users are not locked out. Fresh or empty sites are left
+unprovisioned on purpose and fail closed to Professional.
 
 ```bash
+cd ~/frappe-bench/apps/osduo_business_connect
+git pull
+
+cd ~/frappe-bench
+bench build --app osduo_business_connect
+bench --site customer.example.com migrate
+bench --site customer.example.com clear-cache
+bench --site customer.example.com clear-website-cache
+bench restart
+```
+
+Verify the result at `/portal/subscription`, or from the console:
+
+```bash
+bench --site customer.example.com console
+>>> from osduo_business_connect.subscription.entitlements import get_entitlements
+>>> get_entitlements()["plan_code"], get_entitlements()["limits"]["seat_cap"]
+```
+
+If the site is in use and no plan was seeded, add one with the Step 3 command
+**without** `--force`. Only use `--force` when a plan already exists.
+
+#### 2. Site already has a Subscription
+
+Preview the change, then re-run `provision` with `--force`. It updates the
+Subscription and frozen entitlement snapshot in place and never purges data.
+
+```bash
+# Preview first
+env/bin/python apps/osduo_business_connect/scripts/provision_customer_site.py \
+  --site customer.example.com provision \
+  --plan ENTERPRISE --seats 10 \
+  --external-ref AASRIVA-UPGRADE-12345 \
+  --notes "Upgraded from Business" \
+  --dry-run
+
+# Apply
 env/bin/python apps/osduo_business_connect/scripts/provision_customer_site.py \
   --site customer.example.com provision \
   --plan ENTERPRISE --seats 10 \
@@ -387,7 +447,9 @@ env/bin/python apps/osduo_business_connect/scripts/provision_customer_site.py \
 ```
 
 No CRM/public data is deleted. Existing access is immediately gated by the new
-snapshot; CRM/public records remain intact for a later upgrade.
+snapshot; CRM/public records remain intact for a later upgrade. Changing both
+plan and canonical `host_name` in one forced run re-derives printed QR/NFC URLs,
+so confirm the printed-media policy before doing that.
 
 ### Status changes (provider only)
 

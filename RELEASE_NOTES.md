@@ -1,3 +1,49 @@
+# Release Notes - business_connect (v1.4.1)
+
+**Release Date:** 21 November 2026
+**Version:** v1.4.1 (patch)
+
+A documentation release. It records the supported plan-provisioning procedure
+for new and existing sites and tracks the remaining workspace sidebar text-colour
+work as pending.
+
+## What changed (v1.4.1)
+
+### Documentation
+
+- Added a provisioning quick-reference for new and existing sites to
+  `README.md`.
+- Expanded `docs/INSTALLATION_GUIDE.md` with a decision table, `--dry-run`
+  examples, auto-seeding behaviour on upgrade, and `--force` plan changes.
+- Clarified in `docs/USER_MANUAL.md` that plans are provider-managed and where
+  customers can view their active plan, seats and usage.
+
+### Known issue
+
+- The Business Connect workspace sidebar/menu item text colour is still pending
+  final visual verification. The themed CSS and revisioned assets load, but the
+  selected item's visual match with `/portal/team` is not yet confirmed. The
+  route gate and hard-refresh fix from v1.4.0 are unaffected.
+
+## Upgrade
+
+This is a docs/version-only release. When upgrading from v1.4.0:
+
+```bash
+cd ~/frappe-bench/apps/osduo_business_connect
+git pull
+
+cd ~/frappe-bench
+bench --site <site> clear-cache
+bench --site <site> clear-website-cache
+bench restart
+```
+
+`migrate` and `bench build` are not required for v1.4.1. If upgrading from a
+version older than v1.4.0, follow the v1.4.0 upgrade steps below first.
+
+---
+
 # Release Notes - business_connect (v1.4.0)
 
 **Release Date:** 21 November 2026

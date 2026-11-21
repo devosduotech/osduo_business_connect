@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.4.1 - 21 November 2026
+
+### Documentation
+
+- Documented the supported way to add or change a site's subscription plan for
+  both new and existing sites, including the `--dry-run` preview and the
+  `--force` requirement when a Subscription already exists.
+- Added an operator quick-reference to the README and expanded the User Manual's
+  Subscription section with the provider-managed plan workflow.
+
+### Known issue
+
+- The Business Connect workspace sidebar/menu item text colour has not passed
+  final visual verification. The theme CSS and assets load, but visual parity
+  with `/portal/team` for the selected item remains pending.
+
+### Notes
+
+- Documentation and version-only release: no schema, API or bundled asset
+  changes. Clear the website cache and restart; `migrate` and `bench build` are
+  not required when upgrading from v1.4.0.
+
 ## v1.4.0 - 21 November 2026
 
 ### Subscriptions and customer access
