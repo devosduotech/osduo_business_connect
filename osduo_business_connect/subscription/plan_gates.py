@@ -42,6 +42,7 @@ from osduo_business_connect.subscription.constants import (
     CUSTOMER_ROLES,
     CUSTOMER_USER_ADMIN_DOCTYPES,
     CUSTOMER_WORKSPACE_HOME,
+    CUSTOMER_WORKSPACE_LINK_SLUGS,
     CUSTOMER_WORKSPACE_PATHS,
     IMPORT_EXPORT_DOCTYPES,
     MULTI_BUSINESS_DOCTYPES,
@@ -572,14 +573,18 @@ def _workspace_route_slug(name):
 
 
 def _is_customer_workspace_child_path(path):
-    """True for a public Workspace route nested under the BC workspace shell.
+    """True for a BC-owned route nested under the workspace shell.
 
-    Frappe v16 routes child workspaces as ``/desk/business-connect/<slug>`` or,
-    when the router writes the module shell, ``/desk/<shell>/business-connect/<slug>``.
-    They are part of the same single Desk surface, but arbitrary DocType routes
-    that happen to share the prefix (for example ``.../user``) must stay
-    blocked. Only public Workspace names are accepted, and a lookup failure
-    fails closed.
+    Frappe v16 writes both child Workspaces and the workspace's own DocType
+    shortcuts as ``/desk/business-connect/<slug>`` (or with the module shell,
+    ``/desk/<shell>/business-connect/<slug>``). A hard refresh sends that URL
+    through before_request, while SPA navigation does not, so both forms must
+    be accepted for Business customers.
+
+    Only the shipped BC link slugs and published child Workspaces are accepted;
+    native User/Role routes and unknown children stay blocked. A Workspace
+    lookup failure is not fatal because the shipped slugs are a static
+    allowlist, but it still fails closed for anything not on that list.
     """
     normalized = (path or "").rstrip("/") or "/"
     match = re.match(
@@ -588,6 +593,8 @@ def _is_customer_workspace_child_path(path):
     if not match:
         return False
     slug = unquote(match.group(1)).lower()
+    if slug in CUSTOMER_WORKSPACE_LINK_SLUGS:
+        return True
     try:
         names = frappe.get_all(
             "Workspace",

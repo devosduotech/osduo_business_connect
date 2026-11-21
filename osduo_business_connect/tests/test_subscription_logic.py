@@ -9,6 +9,7 @@ Frappe integration tests are added in phase 5 on a real bench.
 import importlib.util
 import json
 import os
+import re
 import sys
 import tempfile
 import types
@@ -1862,13 +1863,20 @@ class TestPortalTeamInvitations(unittest.TestCase):
                     with self.subTest(role=role, blocked=blocked):
                         self.assert_blocked(env, blocked)
 
-    def test_public_bc_child_workspaces_are_allowed_but_doctypes_are_not(self):
+    def test_bc_workspace_links_survive_a_hard_refresh(self):
         env = self.setUp_env("BUSINESS")
-        env.get_all_rows["Workspace"] = ["Business", "Member"]
+        # With no child Workspace Docs published, the shortcuts shipped in
+        # business_connect.json still have to work. Frappe writes their DocType
+        # routes under the workspace shell, and a refresh sends them through
+        # before_request even though SPA navigation does not.
+        env.get_all_rows["Workspace"] = []
 
         for path in (
             "/desk/business-connect/business",
-            "/desk/business-connect/member",
+            "/desk/business-connect/business-member",
+            "/desk/business-connect/digital-card",
+            "/desk/business-connect/showcase-product",
+            "/desk/business-connect/my-subscription",
             "/desk/business-connect/business/",
             "/app/business-connect/member",
             "/desk/business/business-connect/business",
@@ -1876,8 +1884,11 @@ class TestPortalTeamInvitations(unittest.TestCase):
             with self.subTest(path=path):
                 self.assert_allowed(env, path)
 
-        # A DocType route under the same prefix is not a Workspace and must
-        # stay blocked even though the Desk SPA can reach it client-side.
+        # Published child Workspaces remain supported as well.
+        env.get_all_rows["Workspace"] = ["Business", "Member"]
+        self.assert_allowed(env, "/desk/business-connect/member")
+
+        # Native admin and unknown children must still be blocked on refresh.
         for path in (
             "/desk/business-connect/user",
             "/desk/business-connect/build",
@@ -1888,6 +1899,34 @@ class TestPortalTeamInvitations(unittest.TestCase):
 
         env.set_plan("PROFESSIONAL")
         self.assert_blocked(env, "/desk/business-connect/business")
+
+    def test_workspace_link_slugs_cover_shipped_shortcuts(self):
+        workspace_path = os.path.join(
+            APP_DIR,
+            "business",
+            "workspace",
+            "business_connect",
+            "business_connect.json",
+        )
+        with open(workspace_path) as handle:
+            workspace = json.load(handle)
+
+        from osduo_business_connect.subscription.constants import (
+            CUSTOMER_WORKSPACE_LINK_SLUGS,
+        )
+
+        slugs = set(CUSTOMER_WORKSPACE_LINK_SLUGS)
+        rows = list(workspace.get("links") or []) + list(workspace.get("shortcuts") or [])
+        for row in rows:
+            link_to = row.get("link_to")
+            if not link_to:
+                continue
+            with self.subTest(link_to=link_to):
+                self.assertIn(self._route_slug(link_to), slugs)
+
+    @staticmethod
+    def _route_slug(name):
+        return re.sub(r"[^a-z0-9]+", "-", str(name or "").lower()).strip("-")
 
     def test_rpc_form_cannot_smuggle_core_invite(self):
         env = self.setUp_env()

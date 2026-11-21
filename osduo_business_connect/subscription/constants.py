@@ -208,6 +208,29 @@ CUSTOMER_WORKSPACE_PATHS = frozenset({
     "/desk/business/business-connect",
 })
 
+# One-segment children that may sit under the BC workspace shell. Frappe v16
+# writes the workspace's own DocType shortcuts as
+# /desk/business-connect/<doctype-slug> (for example .../business and
+# .../business-member). A hard refresh sends that URL through before_request,
+# while SPA navigation does not, so the allowlist has to know these slugs.
+# User, Role, User Invitation and unknown children are deliberately absent.
+# Keep in sync with business_connect.json links/shortcuts (asserted in tests).
+CUSTOMER_WORKSPACE_LINK_SLUGS = frozenset({
+    "add-on-order",
+    "bc-theme",
+    "business",
+    "business-member",
+    "contact-exchange",
+    "digital-card",
+    "enquiry",
+    "engagement-event",
+    "member",
+    "my-subscription",
+    "product-category",
+    "showcase-product",
+    "showcase-service",
+})
+
 # Native User / Role DocTypes are never exposed to portal customers. BC keeps
 # its own Business Member DocType as the authorization bridge; invitations are
 # created only through the BC wrapper and Frappe's User Invitation flow.
