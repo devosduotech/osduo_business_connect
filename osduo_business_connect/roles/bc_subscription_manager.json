@@ -1,9 +1,0 @@
-{
-    "role": "BC Subscription Manager",
-    "role_name": "BC Subscription Manager",
-    "description": "Provider-side role for plan, subscription and add-on administration",
-    "is_custom": 1,
-    "is_standard": 0,
-    "desk_access": 1,
-    "app_name": "osduo_business_connect"
-}

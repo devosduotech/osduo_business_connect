@@ -1,3 +1,62 @@
+# Release Notes - business_connect (v1.4.3)
+
+**Release Date:** 23 November 2026
+**Version:** v1.4.3 (patch)
+
+A production-readiness cleanup: closes an unauthenticated quote endpoint, aligns
+the provider role with its documented permissions, and removes code that had no
+runtime entry point. Also corrects stale documentation left from earlier
+releases.
+
+## What changed (v1.4.3)
+
+### Fixed
+
+- `get_addon_quote` now rejects Guest/unauthenticated callers and checks
+  `Add-on Order` read permission where Frappe exposes it. Previously an
+  anonymous caller on an accessible site could read plan code, add-on prices and
+  domain expiry.
+- `BC Subscription Manager` is recognised as the subscription provider for
+  Add-on Order status transitions and invoice attachment. The DocType's
+  `read_only_depends_on` conditions now allow that role as well as Administrator.
+
+### Removed
+
+- Dead modules with no route, hook, whitelist or caller: `utils/security.py`,
+  `enquiry/enquiry_webhook.py`, `enquiry/submit_enquiry_page.py`,
+  `showcase/public_api.py`, the nested `crm_integration/crm_integration` package,
+  the stale UAT harness, and the unused `tests/helpers.py`.
+- Unreferenced `roles/*.json` files — Frappe v16 does not import them and roles
+  are created by `install.py::create_default_roles()`.
+- Legacy alias helpers and unused constants across `business`, `card`,
+  `services`, `crm_integration`, `analytics`, `subscription` and `seo`.
+
+### Documentation
+
+- Removed the stale "sidebar colour pending" known issue (fixed in v1.4.0) from
+  all published docs and the GitHub release body.
+- Corrected the CRM branch, `--hostname` flag, role list, add-on ordering,
+  trial semantics and dead links; removed broken mockup embeds and planned
+  roadmap entries.
+- Narrowed `MANIFEST.in` and tightened `scripts/check_md_links.py`.
+
+### Upgrade
+
+From v1.4.2: pull, clear cache, restart, then run `bench migrate` once to sync
+the Add-on Order read-only conditions. No bundled asset change and no
+`bench build` required.
+
+```bash
+cd ~/connect-bench/apps/osduo_business_connect
+git fetch upstream --tags && git pull --ff-only upstream main
+cd ~/connect-bench
+bench --site <site> clear-cache
+bench --site <site> migrate
+bench restart
+```
+
+---
+
 # Release Notes - business_connect (v1.4.2)
 
 **Release Date:** 22 November 2026
@@ -28,11 +87,6 @@ import the DocTypes correctly.
 - `ImportError: Module import failed for Subscription ... No module named
   'frappe.core.doctype.subscription'` from the provisioning CLI.
 - Subscription DocType rows missing from `tabDocType` after the first migrate.
-
-### Known issue
-
-- The Business Connect workspace sidebar/menu item text colour is still pending
-  final visual verification, as noted in v1.4.1.
 
 ## Upgrade
 
@@ -83,12 +137,11 @@ work as pending.
 - Clarified in `docs/USER_MANUAL.md` that plans are provider-managed and where
   customers can view their active plan, seats and usage.
 
-### Known issue
+### Known issue (historical)
 
-- The Business Connect workspace sidebar/menu item text colour is still pending
-  final visual verification. The themed CSS and revisioned assets load, but the
-  selected item's visual match with `/portal/team` is not yet confirmed. The
-  route gate and hard-refresh fix from v1.4.0 are unaffected.
+- This entry was recorded before final verification. The selected-item colour
+  had already been fixed in v1.4.0 (`8f418ae`) and is covered by
+  `test_desk_sidebar_selected_text_matches_portal`; no work remains.
 
 ## Upgrade
 
@@ -1117,11 +1170,4 @@ All user-facing code has been reviewed against security best practices, with enh
 
 ---
 
-## Known Issues & Future Roadmap
-
-- Some advanced Frappe API features may require additional configuration  
-- Scheduled release for v1.1.0 includes planned improvements to analytics depth and mobile responsiveness  
-
----
-
-**For support:** [Contact Support](/support) | **Development updates:** [GitHub Repository](https://github.com/opencode-team/business_connect) | **Documentation:** [Full API Reference](/docs/api-reference.md)
+**Support:** info@osduotech.com | **Repository:** https://github.com/devosduotech/osduo_business_connect | **Guides:** [Installation Guide](docs/INSTALLATION_GUIDE.md) · [User Manual](docs/USER_MANUAL.md)

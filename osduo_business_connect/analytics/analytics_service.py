@@ -75,20 +75,6 @@ def _get_session_id(request):
     return hashlib.md5(f"{user}:{ip}".encode()).hexdigest()
 
 
-def _get_landing_url(request):
-    """Get the current page URL from the request."""
-    if not request:
-        return None
-    return request.url
-
-
-def _get_referrer(request):
-    """Get the HTTP Referer header from the request."""
-    if not request:
-        return None
-    return request.headers.get("Referer")
-
-
 def _internal_filter(exclude_internal, alias=""):
     """SQL fragment that drops owner/member views when requested.
 

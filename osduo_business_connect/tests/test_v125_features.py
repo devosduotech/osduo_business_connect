@@ -511,11 +511,9 @@ class TestBuyHereAndFeatured(unittest.TestCase):
     def test_listings_order_featured_first(self):
         business_py = read("templates", "pages", "business", "business.py")
         card_py = read("templates", "pages", "card", "card.py")
-        public_api = read("showcase", "public_api.py")
-        for source in (public_api,):
-            self.assertIn('order_by="featured desc, sort_order ASC"', source)
         for source in (business_py, card_py):
             self.assertIn('"featured"', source)
+            self.assertIn('order_by="featured desc, sort_order asc"', source)
 
     def test_featured_badges_are_list_page_only(self):
         """The ★ chip shows on list tiles; detail pages stay clean."""

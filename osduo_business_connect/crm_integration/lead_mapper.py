@@ -132,13 +132,3 @@ def retry_failed_enquiries():
             )
 
     return synced_count
-
-
-def ensure_crm_lead_source():
-    """Ensure 'Business Connect' CRM Lead Source exists."""
-    if not frappe.db.exists("CRM Lead Source", "Business Connect"):
-        frappe.get_doc({
-            "doctype": "CRM Lead Source",
-            "source_name": "Business Connect",
-        }).insert(ignore_permissions=True)
-        frappe.db.commit()

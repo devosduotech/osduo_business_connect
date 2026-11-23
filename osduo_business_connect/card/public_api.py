@@ -123,29 +123,6 @@ def get_public_card(slug):
     return data
 
 
-def get_card_download_url(card_doc, download_type):
-    """
-    Get download URL for card resources (QR, vCard).
-
-    Args:
-        card_doc: Digital Card document
-        download_type: Type of download (qr, vcard)
-
-    Returns:
-        str: Download URL
-    """
-    site_url = frappe.utils.get_url()
-
-    if download_type == "qr":
-        if card_doc.qr_image:
-            return card_doc.qr_image
-        return None
-    elif download_type == "vcard":
-        return f"{site_url}/api/method/osduo_business_connect.card.public_api.download_vcard?slug={card_doc.slug}"
-
-    return None
-
-
 @frappe.whitelist(allow_guest=True)
 def download_vcard(slug):
     """

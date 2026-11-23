@@ -1,6 +1,6 @@
 # OSDuo Business Connect — User Manual
 
-**Version:** 1.4.2
+**Version:** 1.4.3
 **Last Updated:** 22 November 2026
 
 ---
@@ -73,7 +73,6 @@ to load an initial CSV if you need bulk setup.
 
 ### 2.1 Creating a Business Profile
 
-![Business Creation Form](./images/mockup/02_create_business_form.html)
 
 1. The provider creates the first Business during onboarding. Enterprise users
    can also use **Business Connect > Business** in the Desk.
@@ -311,7 +310,6 @@ and §6.4 documents writing an NFC card or tag with that same URL.
 
 ### 4.1 Creating Products
 
-![Create Product](./images/mockup/11_create_product.html)
 
 1. Go to **Business Connect > Showcase Product**
 2. Click **Create New Product**
@@ -329,7 +327,6 @@ and §6.4 documents writing an NFC card or tag with that same URL.
 
 ### 4.2 Product Pricing
 
-![Product Pricing](./images/mockup/12_product_pricing.html)
 
 | Price Display Mode | What Customers See |
 |--------------------|--------------------|
@@ -351,7 +348,6 @@ Fixed Price and Start From — Hidden and Contact need no amount.
 
 ### 4.3 Product Categories
 
-![Product Category](./images/mockup/16_product_category.html)
 
 Categories help organize your products:
 
@@ -368,7 +364,6 @@ Categories help organize your products:
 
 ### 4.4 Product Gallery
 
-![Product Gallery](./images/mockup/13_product_gallery.html)
 
 Add multiple images to showcase your product:
 
@@ -424,7 +419,6 @@ the checkbox is off or no link exists.
 
 ### 4.6 Creating Services
 
-![Create Service](./images/mockup/14_create_service.html)
 
 1. Go to **Business Connect > Showcase Service**
 2. Click **Create New Service**
@@ -531,7 +525,6 @@ Notes:
 
 ### 5.1 Choosing a Template
 
-![Theme Form](./images/mockup/17_theme_form.html)
 
 1. Go to **Business Connect > BC Theme**
 2. Open a theme or create new
@@ -752,7 +745,6 @@ Past exchanges are listed in the desk under **Contact Exchanges**
 
 ### 7.1 Enquiry Forms
 
-![Enquiry Form](./images/mockup/28_enquiry_form.html)
 
 Enquiry forms appear automatically on:
 - Digital card pages
@@ -777,7 +769,6 @@ Enquiry forms appear automatically on:
 
 ### 7.2 Enquiry List
 
-![Enquiry List](./images/mockup/29_enquiry_list.html)
 
 1. Go to **Business Connect > Enquiry**
 2. View all enquiries with filters:
@@ -792,7 +783,6 @@ Enquiry forms appear automatically on:
 
 ### 7.3 Enquiry Detail
 
-![Enquiry Detail](./images/mockup/30_enquiry_detail.html)
 
 Click any enquiry to see:
 - Visitor contact information
@@ -820,7 +810,6 @@ Click any enquiry to see:
 
 ### 7.5 Enquiry Pipeline
 
-![Enquiry Pipeline](./images/mockup/31_enquiry_pipeline.html)
 
 Track your sales funnel:
 - **New** → Fresh enquiries needing response
@@ -835,7 +824,6 @@ Track your sales funnel:
 
 ### 8.1 Overview
 
-![Analytics Dashboard](./images/mockup/32_analytics_dashboard.html)
 
 1. Go to **/analytics** from the desk (requires login)
 2. Select your business from the dropdown
@@ -921,7 +909,6 @@ Status changes sync bidirectionally:
 
 ### 9.4 Custom Fields on CRM Lead
 
-![CRM Lead Detail](./images/mockup/39_crm_lead_detail.html)
 
 | Field | Description |
 |-------|-------------|
@@ -954,6 +941,7 @@ missing.
 | **BC Marketing Manager** | Marketing and content management |
 | **BC CRM User** | CRM integration access |
 | **BC System Manager** | System configuration |
+| **BC Subscription Manager** | Provider-side plan and subscription administration |
 
 ### 10.2 Permission Matrix
 
@@ -1020,10 +1008,6 @@ Desk routes, including `/desk/build` and DocType paths such as
 rewrite or refresh does not produce a 403. Because the Desk can change routes
 client-side, protected data remains protected by the API and DocType plan gates
 rather than by the URL alone.
-
-> The workspace rail and themed assets load as expected, but the final visual
-> match of the sidebar/menu item text colour with `/portal/team` is still
-> pending. Functionality and the hard-refresh route gate are unaffected.
 
 | Page | Purpose |
 |------|---------|
@@ -1100,7 +1084,6 @@ visit — no reinstall. (Bump of the app version rotates the offline cache.)
 | PWA does not install | The site must be served over HTTPS; see §11.5 |
 | Desk **Open** button missing beside Public URL | Enterprise/Desk users: hard-refresh (Ctrl/Cmd + Shift + R). Customers should open the public `/c/<slug>` URL directly; generic Desk routes are intentionally unavailable for customer roles |
 | `/app`, `/desk` or `/desk/build` shows **Not Permitted** | Expected for customer roles. Professional users stay in `/my-card`; Business users can open `/desk/business-connect` plus `/portal/team`, `/portal/subscription`, `/crm` and `/analytics` |
-| BC workspace sidebar/menu item text colour does not visually match `/portal/team` | Known issue — the themed CSS loads, but the final selected-item colour work is still pending. Functionality and route access are unaffected |
 | Invitation email not received | Ask the provider/support to confirm outgoing SMTP is configured for the site and resend the invitation |
 | Video does not play on a product or service page | Check the link is a supported share link — YouTube, Vimeo, Google Drive, Dailymotion, a Nextcloud **single-file** public share (`/s/…`). A Nextcloud **folder** share returns a zip and cannot play, and unsupported or unsafe links are skipped quietly — the page renders no video box rather than a broken one |
 
@@ -1231,8 +1214,9 @@ higher of the minimum and the ordered seats.
 Provider/operator commands and the full pre-flight checks are in the
 [Installation Guide](INSTALLATION_GUIDE.md#plan-setup-on-an-existing-site).
 
-**Request add-on** is a Desk workflow. Enterprise users can open the native
-**Add-on Order** form; Professional/Business customers should contact the
+**Request add-on** is a Desk workflow. Business customers can open **Add-on
+Order** from the Business Connect workspace, and Enterprise users can open the
+native form. Professional customers stay portal-only and should contact the
 provider/support with the add-on they need after confirming payment in Aasriva.
 Available add-ons:
 

@@ -103,9 +103,8 @@ app_include_js = (
 # see that module for why a boot_session hook cannot do it.
 boot_session = "osduo_business_connect.branding.boot_session"
 
-# include js, css files in header of web template
-# NOT using web_include_css — it injects into login/auth pages too.
-# CSS is included directly in each BC page template.
+# web_include_css above is deliberately limited to login.css: page-specific
+# stylesheets are included directly by the BC templates.
 
 # Website route rules
 # ------------------

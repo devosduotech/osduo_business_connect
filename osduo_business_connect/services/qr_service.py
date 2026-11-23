@@ -99,23 +99,3 @@ def generate_qr_code(card_doc):
             title="QR Code Generation Failed"
         )
         frappe.throw(_("Failed to generate QR code"))
-
-
-def get_qr_code_url(card_doc):
-    """
-    Get QR code URL for a Digital Card.
-
-    Args:
-        card_doc: Digital Card document
-
-    Returns:
-        str: QR code image URL or None
-    """
-    if card_doc.qr_image:
-        return card_doc.qr_image
-
-    # Generate QR if enabled
-    if card_doc.qr_enabled:
-        return generate_qr_code(card_doc)
-
-    return None

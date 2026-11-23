@@ -67,9 +67,6 @@ SITEMAP_FILES = {
     "cards": "sitemap-cards.xml",
 }
 
-# The sitemap index itself.
-INDEX_FILE = "sitemap.xml"
-
 # Google's hard limit is 50,000 URLs / 50 MB per sitemap. Warn well before
 # that so chunking can be added before a sitemap is rejected.
 MAX_URLS_PER_SITEMAP = 45000

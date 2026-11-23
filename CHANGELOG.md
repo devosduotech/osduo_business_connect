@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.4.3 - 23 November 2026
+
+### Production cleanup
+
+- Hardened the whitelisted `get_addon_quote` endpoint: anonymous callers are
+  rejected before plan code, add-on pricing or domain expiry is disclosed, and
+  `Add-on Order` read permission is checked when Frappe is available.
+- `BC Subscription Manager` now counts as the subscription provider for Add-on
+  Order workflow transitions and invoice attachment, matching its documented
+  role. The DocType's read-only conditions were updated to match.
+- Removed orphaned code with no route, hook, whitelist or caller:
+  `utils/security.py`, `enquiry/enquiry_webhook.py`,
+  `enquiry/submit_enquiry_page.py`, `showcase/public_api.py`, the nested
+  `crm_integration/crm_integration` package, the unused `roles/*.json` files
+  (roles are created in `install.py`), the stale UAT harness, and a set of
+  unreferenced legacy helpers/constants.
+- Corrected stale docs: sidebar colour issue (fixed in v1.4.0), CRM branch,
+  `--hostname` flag, add-on ordering, trial semantics, role list, dead links and
+  broken mockup embeds. Tightened `MANIFEST.in` and the Markdown link checker.
+
+### Notes
+
+- The v1.4.2 `before_migrate` module-map fix is retained. Frappe v16's own
+  installer uses the same `app_modules` rebuild pattern, and the hook is
+  required on sites whose cached module map predates the `Subscription` module.
+- Upgrade from v1.4.2: pull, clear cache, restart, then run `bench migrate` once
+  to sync the Add-on Order read-only condition. No bundled asset changes.
+
 ## v1.4.2 - 22 November 2026
 
 ### Migration fix
@@ -24,8 +52,6 @@ All notable changes to this project will be documented in this file.
   `bench --site <site> migrate` once.
 - If a migrate already failed with this error, clear the cache and re-run it —
   the failed run left the subscription DocType rows uncreated.
-- The workspace sidebar/menu item text colour remains pending final visual
-  verification (tracked in v1.4.1).
 
 ## v1.4.1 - 21 November 2026
 
@@ -37,11 +63,11 @@ All notable changes to this project will be documented in this file.
 - Added an operator quick-reference to the README and expanded the User Manual's
   Subscription section with the provider-managed plan workflow.
 
-### Known issue
+### Known issue (historical)
 
-- The Business Connect workspace sidebar/menu item text colour has not passed
-  final visual verification. The theme CSS and assets load, but visual parity
-  with `/portal/team` for the selected item remains pending.
+- This entry was recorded before final verification. The selected-item colour
+  had in fact been fixed in v1.4.0 (`8f418ae`) and is covered by
+  `test_desk_sidebar_selected_text_matches_portal`; no work remains.
 
 ### Notes
 
@@ -903,19 +929,8 @@ Upgrade: `bench --site <site> migrate && bench --site <site> clear-cache`
 
 ---
 
-## Development Roadmap
-
-### Next Releases
-- **v1.0.3** (Planned): Mobile responsiveness improvements, advanced analytics depth
-- **v1.1.0** (Planned): New feature set TBD - see the project's local development plan
-
----
-
 ## Support & Resources
 
 - **Full API Reference** — RESTful API documentation (maintained with the app's internal docs)
 - **Development Roadmap** — future feature plans and timelines (maintained locally)
 - **Architecture Decisions** — design choices for the project (maintained locally)
-- Buy CTA now renders **below the Description/About section** with tightened
-  spacing (no double section spacing) for better reading flow, instead of
-  directly under the hero.

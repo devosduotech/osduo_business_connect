@@ -7,7 +7,7 @@ tracked doc must never link to one. Run from the repo root:
 
     python3 scripts/check_md_links.py
 
-Exit 0 = clean, 1 = broken links (excluding a small known-pending allow-list).
+Exit 0 = clean, 1 = broken links.
 """
 import os
 import re
@@ -17,20 +17,12 @@ from collections import defaultdict
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 LINK = re.compile(r"(\[[^\]]*\]\()([^)\s#][^)]*?)(\))")
-SKIP = ("http://", "https://", "mailto:", "tel:", "#", "/")
-
-# Known-pending, pre-existing: mockup screens referenced by the User Manual are
-# placeholders awaiting production screenshots (tracked in the local to-do list).
-KNOWN = {"docs/USER_MANUAL.md": {"mockup"}}
+SKIP = ("http://", "https://", "mailto:", "tel:", "#")
 
 
 def tracked_files():
     out = subprocess.check_output(["git", "-C", ROOT, "ls-files"], text=True)
     return {line for line in out.splitlines() if line}
-
-
-def known(rel, target):
-    return any(k in target for k in KNOWN.get(rel, set()))
 
 
 def main():
@@ -45,7 +37,7 @@ def main():
             if not target or target.startswith(SKIP):
                 continue
             resolved = os.path.relpath(os.path.normpath(os.path.join(base, target)), ROOT)
-            if resolved not in tracked and not known(rel, target):
+            if resolved not in tracked:
                 broken[rel].append(target)
 
     if broken:

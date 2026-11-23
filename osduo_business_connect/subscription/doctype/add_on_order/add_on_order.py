@@ -115,6 +115,34 @@ def derive_addon_values(add_on_code, plan_code=None):
     }
 
 
+def _user_is_provider(user=None):
+    """Administrator and the provider-side subscription manager own the workflow."""
+    user = user or getattr(frappe.session, "user", None)
+    if user == "Administrator":
+        return True
+    get_roles = getattr(frappe, "get_roles", None)
+    roles = get_roles(user) if callable(get_roles) else ()
+    return "BC Subscription Manager" in (roles or ())
+
+
+def _require_addon_order_access():
+    """Reject anonymous/unauthorised callers of the whitelisted quote API.
+
+    ``plan_gates`` only filters this method while the site is inaccessible, so
+    the endpoint must enforce authentication itself. Quote data discloses the
+    site's plan code, add-on pricing and domain expiry. Providers are allowed
+    even though their role is intentionally absent from the customer DocPerms.
+    """
+    user = getattr(frappe.session, "user", None)
+    if not user or user == "Guest":
+        frappe.throw("Not permitted", exc=frappe.PermissionError)
+    if _user_is_provider(user):
+        return
+    has_permission = getattr(frappe, "has_permission", None)
+    if callable(has_permission) and not has_permission("Add-on Order", "read"):
+        frappe.throw("Not permitted", exc=frappe.PermissionError)
+
+
 @frappe.whitelist()
 def get_addon_quote(add_on=None, **kwargs):
     """Server-derived preview for the customer-facing Add-on Order form.
@@ -122,6 +150,7 @@ def get_addon_quote(add_on=None, **kwargs):
     Returns only display metadata and values the controller will re-derive on
     save. It never accepts or returns a client-supplied price.
     """
+    _require_addon_order_access()
     add_on_doc, values = derive_addon_values(add_on)
     is_domain_addon = add_on in (CUSTOM_DOMAIN_ADDON, DOMAIN_REGISTRATION_ADDON)
     requires_attachment = values["billing_type"] == "Actual Cost"
@@ -208,8 +237,8 @@ def send_new_order_notification(doc):
 
 class AddonOrder(Document):
     def before_insert(self):
-        # Customers can only create Requested records. The Administrator is the
-        # provider and may select any workflow status when creating an order.
+        # Customers can only create Requested records. Provider users may
+        # select any workflow status when creating an order.
         # The JSON default is UI-only and is never trusted for customers.
         if not self._is_provider():
             self.status = "Requested"
@@ -277,7 +306,7 @@ class AddonOrder(Document):
         if self.status != "Requested":
             frappe.throw(
                 "Customers can only request add-ons. Status changes are made by "
-                "the Administrator after the order is reviewed.",
+                "the subscription provider after the order is reviewed.",
                 exc=frappe.PermissionError,
             )
 
@@ -288,7 +317,7 @@ class AddonOrder(Document):
         previous_invoice = previous.get("invoice")
         if self.invoice and self.invoice != previous_invoice:
             frappe.throw(
-                "Only the Administrator can attach an Invoice",
+                "Only the subscription provider can attach an Invoice",
                 exc=frappe.PermissionError,
             )
 
@@ -323,10 +352,9 @@ class AddonOrder(Document):
         return self.add_on in (CUSTOM_DOMAIN_ADDON, DOMAIN_REGISTRATION_ADDON)
 
     def _is_provider(self):
-        # Only the site Administrator advances provider-controlled records.
-        # Standard System Manager is reserved for Frappe CRM, and BC roles are
-        # for Business Connect data entry only.
-        return getattr(frappe.session, "user", None) == "Administrator"
+        # Standard System Manager is reserved for Frappe CRM and the remaining
+        # BC roles are customer data-entry roles.
+        return _user_is_provider()
 
     def _previous(self):
         getter = getattr(self, "get_doc_before_save", None)

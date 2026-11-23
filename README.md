@@ -1,6 +1,6 @@
 # OSDuo Business Connect
 
-**v1.4.2** | **Your digital identity. Your customers. Your growth.**
+**v1.4.3** | **Your digital identity. Your customers. Your growth.**
 
 Business Connect transforms how small businesses and professionals establish their digital presence. Create a stunning business profile, showcase products and services, capture customer enquiries and card exchanges, and install it all as a mobile app — all seamlessly integrated with Frappe CRM.
 
@@ -247,8 +247,8 @@ bench --site customer.example.com clear-cache
 ```
 
 `--seats` defaults to the plan minimum and values below the minimum are
-rejected. Changing `host_name` with `--force` re-derives printed QR/NFC URLs, so
-only do it after confirming the printed-media policy.
+rejected. Changing `host_name` with `--hostname … --force` re-derives printed
+QR/NFC URLs, so only do it after confirming the printed-media policy.
 
 ---
 
@@ -326,8 +326,9 @@ repository).
 - [x] Portal-only team invitations, shared private-page sidebar, branded login and
       root forwarding, and a portal-matched BC workspace that survives hard
       refresh (v1.4.0)
-- [x] Plan-provisioning documentation for new/existing sites and pending sidebar
-      text-colour tracking (v1.4.1)
+- [x] Plan-provisioning documentation for new/existing sites (v1.4.1), the
+      first-migrate module-map fix (v1.4.2), and a production-readiness cleanup
+      (v1.4.3)
 - [ ] Web push notifications for installed PWAs
 - [ ] Play Store listing via TWA wrappers
 - [ ] Multi-language support
@@ -336,9 +337,7 @@ repository).
 
 ## Known Issues
 
-| Issue | Status |
-|---|---|
-| Business Connect workspace sidebar/menu item text colour does not yet visually match `/portal/team` in all browsers. The themed CSS and revisioned assets load; the selected-item colour work is still pending. | Open |
+None currently.
 
 ---
 

@@ -230,14 +230,6 @@ def get_plan_code():
     return get_entitlements()["plan_code"]
 
 
-def get_features():
-    return dict(get_entitlements()["features"])
-
-
-def get_limits():
-    return dict(get_entitlements()["limits"])
-
-
 def has_feature(key):
     """True when the current plan includes ``key`` and the site is accessible."""
     ent = get_entitlements()
@@ -276,10 +268,6 @@ def enforce_limit(key, current, label=None):
             f"{get_entitlements()['upgrade_url']}",
             exc=PlanRestrictionError,
         )
-
-
-def is_accessible():
-    return bool(get_entitlements()["accessible"])
 
 
 def get_usage():

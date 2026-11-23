@@ -15,7 +15,6 @@ from osduo_business_connect.business.core import (
     has_permission,
     get_user_businesses,
     get_user_role_in_business,
-    get_business_by_slug,
 )
 
 __all__ = [
@@ -24,5 +23,4 @@ __all__ = [
     "has_permission",
     "get_user_businesses",
     "get_user_role_in_business",
-    "get_business_by_slug",
 ]

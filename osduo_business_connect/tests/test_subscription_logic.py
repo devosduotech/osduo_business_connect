@@ -1079,6 +1079,20 @@ class TestAddOnsAndDomains(unittest.TestCase):
         with self.assertRaises(env.frappe.PermissionError):
             order.validate_status_transition()
 
+    def test_subscription_manager_role_can_advance_addon_order(self):
+        env, _ = self.setUp_env()
+        env.frappe.session.user = "provider@example.com"
+        env.set_roles("BC Subscription Manager")
+        order = env.addon_order.AddonOrder({"name": "ADDON-1", "status": "Approved"})
+        order.get_doc_before_save = lambda: FakeDocument({"status": "Requested"})
+        order.validate_status_transition()  # must not raise
+
+    def test_addon_quote_requires_an_authenticated_user(self):
+        with StubEnvironment() as env:
+            env.frappe.session.user = "Guest"
+            with self.assertRaises(env.frappe.PermissionError):
+                env.addon_order.get_addon_quote("PRIORITY_SUPPORT")
+
     def test_subscription_page_is_read_only_and_has_upgrade_url(self):
         env, _ = self.setUp_env()
         data = env.subscription_page.get_my_subscription()
@@ -1203,7 +1217,7 @@ class TestFinalHardening(unittest.TestCase):
             })
             with self.assertRaises(env.frappe.PermissionError) as ctx:
                 order.validate()
-            self.assertIn("Only the Administrator can attach an Invoice", str(ctx.exception))
+            self.assertIn("Only the subscription provider can attach an Invoice", str(ctx.exception))
 
             env.frappe.session.user = "Administrator"
             order.validate()
@@ -2576,7 +2590,7 @@ class TestPortalTeamInvitations(unittest.TestCase):
 
         with open(os.path.join(APP_DIR, "__init__.py")) as handle:
             version = handle.read()
-        self.assertIn('__version__ = "1.4.2"', version)
+        self.assertIn('__version__ = "1.4.3"', version)
 
 
 def env_fieldnames():

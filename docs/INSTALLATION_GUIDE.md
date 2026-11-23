@@ -3,7 +3,7 @@
 Step-by-step instructions to install, operate, and update **OSDuo Business Connect**
 — from a single-site demo to a multi-tenant SaaS bench serving many customer domains.
 
-Current release: **v1.4.2** (see [RELEASE_NOTES.md](../RELEASE_NOTES.md)).
+Current release: **v1.4.3** (see [RELEASE_NOTES.md](../RELEASE_NOTES.md)).
 
 ---
 
@@ -33,7 +33,7 @@ cd frappe-bench
 bench new-site mysite.local
 
 # 3. Install CRM + Business Connect
-bench get-app https://github.com/frappe/crm.git --branch version-15    # or matching branch
+bench get-app https://github.com/frappe/crm.git --branch version-16
 bench get-app https://github.com/devosduotech/osduo_business_connect.git
 bench --site mysite.local install-app crm osduo_business_connect
 
@@ -46,7 +46,8 @@ bench --site mysite.local migrate
 
 On install the app automatically creates:
 - Roles: `BC Business Owner`, `BC Business Manager`, `BC Business Member`,
-  `BC Marketing Manager`, `BC CRM User`, `BC System Manager`
+  `BC Marketing Manager`, `BC CRM User`, `BC System Manager`,
+  `BC Subscription Manager`
 - Built-in themes: `Default Blue`, `Default Violet`, … (template Modern + color scheme)
 - CRM custom fields (`osduo_business`, `osduo_enquiry`, …) on the Lead doctype
 - Website theme **`OSDuo Business Connect`** (set as the site default) plus
@@ -283,6 +284,11 @@ Options:
 - `--plan PROFESSIONAL|BUSINESS|ENTERPRISE` (required).
 - `--seats N` — defaults to the plan minimum; values below the minimum are rejected.
 - `--status Active` (default) or `--status Trial`.
+- A `Trial` subscription stays accessible until the provider changes its status;
+  `current_period_end` is recorded but does **not** expire the plan automatically.
+  On the end date, change the status with the provider CLI
+  (`provision_customer_site.py --site <site> status Cancelled`) or call
+  `set_status("Cancelled", note="Trial ended")` in the site console.
 - `--hostname https://…` — optional; sets `host_name` at provisioning time.
 - `--start-date YYYY-MM-DD` — defaults to today; period end is start + 365 days.
 - `--external-ref` — reserved Aasriva reference (no payment data stored).
@@ -369,8 +375,7 @@ then on; they never need the Desk for team setup.
    `/desk/business-connect`. All must show the OSDuo theme; the portal pages
    share the same sidebar with a **Business Connect** entry, and no native
    User/Role administration links appear for the Business Owner. The themed
-   workspace rail should load; final visual parity of the selected sidebar/menu
-   item text colour with `/portal/team` is still pending.
+   workspace rail and its portal-matched selected-item colour should load.
 7. Sign out and back in. A Business customer must land on
    `/desk/business-connect`; opening `/login` or `/` while signed in must not
    produce a 403. A Professional customer must land on `/my-card` instead.

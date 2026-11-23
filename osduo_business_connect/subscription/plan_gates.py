@@ -236,18 +236,6 @@ GENERIC_WRITE_METHODS = frozenset({
     "execute_doc_method",
     "savedocs",
 })
-GENERIC_DOCTYPE_METHODS = GENERIC_WRITE_METHODS | frozenset({
-    "frappe.client.get_list",
-    "frappe.client.get_count",
-    "frappe.client.get",
-    "frappe.client.get_value",
-    "frappe.client.has_permission",
-    "frappe.client.get_doc_permissions",
-    "frappe.desk.form.load.getdoc",
-    "frappe.desk.form.load.get_docinfo",
-    "frappe.desk.reportview.get",
-})
-
 # APIs deliberately reachable while a site is inaccessible. Keep this list
 # short: everything else under /api/ fails closed for the status gate.
 PUBLIC_API_METHODS = frozenset({

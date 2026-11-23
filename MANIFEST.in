@@ -1,6 +1,6 @@
 include MANIFEST.in
 include requirements.txt
-include *.md
+include README.md CHANGELOG.md RELEASE_NOTES.md
 include license.txt
 include pyproject.toml
 recursive-include osduo_business_connect *.py

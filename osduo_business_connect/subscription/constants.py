@@ -51,8 +51,6 @@ SUBSCRIPTION_STATUSES = (
     "Cancelled",
 )
 
-PLAN_SOURCES = ("Manual Selection", "Marketplace")
-
 DEFAULT_UPGRADE_URL = (
     "https://www.osduotech.com/solutions/business-connect#section_business-connect-pricing"
 )

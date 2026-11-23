@@ -137,20 +137,6 @@ def get_my_cards_for_user(user=None):
     return result
 
 
-def user_can_manage_business(business, user=None):
-    """True when the user may act on behalf of this business (owner/manager/member)."""
-    if not business:
-        return False
-    if not user:
-        user = frappe.session.user
-    if not user or user == "Guest":
-        return False
-
-    from osduo_business_connect.business.core import get_user_role_in_business
-
-    return bool(get_user_role_in_business(user, business))
-
-
 @frappe.whitelist()
 def get_my_cards():
     """Return the current user's cards (login required)."""

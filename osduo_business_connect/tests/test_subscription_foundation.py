@@ -206,15 +206,13 @@ class TestSubscriptionModuleStructure(unittest.TestCase):
         self.assertNotIn("default", fields["mapping_type"])
         self.assertEqual(fields["amount"]["label"], "Estimated Amount")
         self.assertTrue(fields["amount"].get("description"))
-        self.assertEqual(
-            fields["status"].get("read_only_depends_on"),
-            "eval:frappe.session.user !== 'Administrator'",
+        provider_eval = (
+            "eval:frappe.session.user !== 'Administrator' "
+            "&& !frappe.user.has_role('BC Subscription Manager')"
         )
+        self.assertEqual(fields["status"].get("read_only_depends_on"), provider_eval)
         self.assertEqual(fields["invoice"]["fieldtype"], "Attach")
-        self.assertEqual(
-            fields["invoice"].get("read_only_depends_on"),
-            "eval:frappe.session.user !== 'Administrator'",
-        )
+        self.assertEqual(fields["invoice"].get("read_only_depends_on"), provider_eval)
         self.assertNotIn("vendor_invoice", fields)
         self.assertEqual(fields["documents"]["fieldtype"], "Attach")
 
@@ -231,9 +229,10 @@ class TestSubscriptionModuleStructure(unittest.TestCase):
         self.assertEqual(data["issingle"], 1)
 
     def test_role_and_patch_registered(self):
-        self.assertTrue(
-            os.path.exists(os.path.join(APP_DIR, "roles", "bc_subscription_manager.json"))
-        )
+        # Roles are created programmatically by install.py; the old roles/*.json
+        # files were never imported by Frappe v16 and were removed.
+        install = open(os.path.join(APP_DIR, "install.py")).read()
+        self.assertIn('"BC Subscription Manager"', install)
         patches = open(os.path.join(APP_DIR, "patches.txt")).read()
         self.assertIn("seed_subscription_existing_sites", patches)
         modules = open(os.path.join(APP_DIR, "modules.txt")).read()
