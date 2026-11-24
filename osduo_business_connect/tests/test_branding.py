@@ -132,7 +132,7 @@ class TestBundledBranding(unittest.TestCase):
         # its plain disk cache would otherwise keep serving the old desk JS/CSS.
         # Every app asset URL must carry the shared revision query string.
         hooks = read("hooks.py")
-        self.assertIn('BC_ASSET_REVISION = "2026-11-24-header-contrast"', hooks)
+        self.assertIn('BC_ASSET_REVISION = "2026-11-24-mobile-drawer-sw"', hooks)
         for asset in (
             "css/login.css",
             "js/login-layout.js",
@@ -145,7 +145,7 @@ class TestBundledBranding(unittest.TestCase):
                 hooks,
             )
         self.assertEqual(
-            read("www", "sw.py").count('"2026-11-24-header-contrast"'), 1
+            read("www", "sw.py").count('"2026-11-24-mobile-drawer-sw"'), 1
         )
 
     def test_no_site_files_brand_references(self):
@@ -394,6 +394,22 @@ class TestDeskSupportMenu(unittest.TestCase):
         self.assertIn("--sidebar-select-color: #ffffff;", css)
         self.assertIn('"--sidebar-select-color", "#ffffff"', js)
         self.assertIn("--bc-portal-text: #1e293b;", css)
+
+    def test_desk_mobile_collapsed_sidebar_is_transparent(self):
+        css = read("public", "css", "branding.css")
+        # Frappe v16 fades the collapsed phone drawer by making it transparent.
+        # Our dark rail is !important, so it needs an explicit mobile override;
+        # otherwise a blank slate slab covers two thirds of a phone screen.
+        self.assertIn("@media (max-width: 767px)", css)
+        selector = (
+            "body.bc-customer-workspace .body-sidebar-container:not(.expanded) "
+            ".body-sidebar"
+        )
+        self.assertIn(selector, css)
+        block = css.split(selector, 1)[1].split("}", 1)[0]
+        self.assertIn("background-color: transparent !important;", block)
+        self.assertIn("border-right-color: transparent !important;", block)
+        self.assertIn("pointer-events: none;", block)
 
 
 class TestFrappeHelpRowSweeper(unittest.TestCase):

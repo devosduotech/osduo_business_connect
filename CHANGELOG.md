@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.4.8 - 24 November 2026
+
+### Fixed
+
+- Mobile BC workspace sidebar: Frappe v16 hides the collapsed phone drawer by
+  making it transparent, but our dark rail used `!important` and overrode that,
+  leaving a blank slate slab over the page. The collapsed drawer is now
+  transparent and non-interactive on phones; the dark rail still appears on
+  desktop and whenever the drawer is opened.
+- PWA service worker: range requests return HTTP 206, which the Cache API
+  rejects. Only complete `200` responses are cached now, and cache writes are
+  guarded so a failed write cannot surface as an uncaught promise error.
+
+### Notes
+
+- Asset revision bumped to `2026-11-24-mobile-drawer-sw`. Clear cache and
+  `bench migrate`; `bench build` is not needed when `sites/assets/<app>` is a
+  symlink to the app's `public/` folder.
+
 ## v1.4.7 - 24 November 2026
 
 ### Fixed

@@ -1,3 +1,53 @@
+# Release Notes - business_connect (v1.4.8)
+
+**Release Date:** 24 November 2026
+**Version:** v1.4.8 (patch)
+
+Mobile BC workspace sidebar and PWA cache fixes.
+
+## What changed (v1.4.8)
+
+### Fixed
+
+- On a phone, the collapsed BC workspace sidebar is now invisible again. Frappe
+  v16 turns the Desk sidebar into an overlay drawer and hides the collapsed
+  state with `background: transparent` plus `opacity: 0` on its contents. The
+  BC dark rail rule was `!important` and won that cascade, leaving a blank slate
+  panel over the page. A scoped `@media (max-width: 767px)` rule restores the
+  transparent, non-interactive collapsed drawer; the dark rail still appears on
+  desktop and when the drawer is opened.
+- The service worker no longer tries to cache HTTP 206 Partial Content replies,
+  which the Cache API rejects with `Partial response (status code 206) is
+  unsupported`. Only complete 200 responses are stored, and cache writes are
+  caught so a quota or storage error cannot become an uncaught promise error.
+
+### Upgrade
+
+From v1.4.7: pull, clear cache and run `bench migrate` once per site. The shared
+asset revision is now `2026-11-24-mobile-drawer-sw`, so clients and the service
+worker fetch the new CSS/JS on their next navigation. `bench build` is not
+required when `sites/assets/<app>` links to the app's `public/` folder.
+
+```bash
+cd ~/connect-bench/apps/osduo_business_connect
+git fetch upstream --tags && git pull --ff-only upstream main
+cd ~/connect-bench
+bench --site <site> clear-cache
+bench --site <site> clear-website-cache
+bench --site <site> migrate
+bench restart
+```
+
+## Verification
+
+- 611 offline tests passed, including new mobile-drawer and 206-response
+  regression tests.
+- `python3 -m compileall` passed.
+- CSS split/verify: 653 original rules = 653 emitted rules.
+- No schema, fixture, API, plan-gate or permission changes.
+
+---
+
 # Release Notes - business_connect (v1.4.7)
 
 **Release Date:** 24 November 2026

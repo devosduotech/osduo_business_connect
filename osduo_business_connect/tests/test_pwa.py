@@ -50,6 +50,14 @@ class TestPWAWiring(unittest.TestCase):
         self.assertIn('const STATIC_CACHE = "bc-static-" + VERSION;', template)
         self.assertIn('const PAGE_CACHE = "bc-pages-" + VERSION;', template)
 
+    def test_service_worker_skips_partial_responses(self):
+        sw = read("www", "sw.js")
+        # Cache.put() rejects 206 Partial Content from media range requests.
+        self.assertIn("const isCacheableResponse = (response)", sw)
+        self.assertIn('response.status === 200 && response.type === "basic"', sw)
+        self.assertNotIn("response.ok", sw)
+        self.assertEqual(sw.count("if (isCacheableResponse(response))"), 2)
+
     def test_service_worker_updates_even_in_firefox(self):
         # Firefox keeps the active worker until all its tabs close, so the
         # bootstrap must poll for updates and ask a waiting worker to activate.

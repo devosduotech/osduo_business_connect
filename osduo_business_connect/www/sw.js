@@ -44,6 +44,11 @@ const isPublicPage = (url) =>
 	url.pathname.startsWith("/c/") ||
 	url.pathname === "/offline";
 
+// The Cache API only accepts complete responses. Range requests (for example
+// media seeking) return 206, which must pass through without a cache.put().
+const isCacheableResponse = (response) =>
+	response && response.status === 200 && response.type === "basic";
+
 // Never cached: API responses, private files, and authenticated desk routes.
 const neverCached = (url) =>
 	url.pathname.startsWith("/api/") ||
@@ -72,9 +77,11 @@ async function cacheFirst(request, cacheName) {
 	if (cached) return cached;
 
 	const response = await fetch(request);
-	if (response && response.ok && response.type === "basic") {
-		cache.put(request, response.clone());
-		trimCache(cache, MAX_STATIC_ENTRIES);
+	if (isCacheableResponse(response)) {
+		try {
+			await cache.put(request, response.clone());
+			await trimCache(cache, MAX_STATIC_ENTRIES);
+		} catch (err) {}
 	}
 	return response;
 }
@@ -83,9 +90,11 @@ async function networkFirst(request, cacheName) {
 	const cache = await caches.open(cacheName);
 	try {
 		const response = await fetch(request);
-		if (response && response.ok && response.type === "basic") {
-			cache.put(request, response.clone());
-			trimCache(cache, MAX_PAGE_ENTRIES);
+		if (isCacheableResponse(response)) {
+			try {
+				await cache.put(request, response.clone());
+				await trimCache(cache, MAX_PAGE_ENTRIES);
+			} catch (err) {}
 		}
 		return response;
 	} catch (networkError) {

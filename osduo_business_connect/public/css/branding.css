@@ -358,3 +358,17 @@ body.bc-customer-workspace .sidebar-menu .sidebar-label:hover {
   background-color: #ffffff !important;
   color: var(--bc-portal-text) !important;
 }
+
+/* Frappe v16 turns the phone sidebar into an overlay drawer and hides its
+   collapsed state by making the panel transparent and its contents invisible.
+   The dark rail rule above is !important and was winning, leaving a blank
+   slate slab over the page. Restore Frappe's hidden drawer on small screens;
+   the dark rail still applies on desktop and to an open drawer. */
+@media (max-width: 767px) {
+  body.bc-customer-workspace.sidebar-collapsed .body-sidebar,
+  body.bc-customer-workspace .body-sidebar-container:not(.expanded) .body-sidebar {
+    background-color: transparent !important;
+    border-right-color: transparent !important;
+    pointer-events: none;
+  }
+}
