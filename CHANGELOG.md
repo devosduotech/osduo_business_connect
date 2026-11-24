@@ -33,13 +33,15 @@ All notable changes to this project will be documented in this file.
 - Share & Connect and Contact Exchange now inherit the active card theme:
   surface, border, text, primary fill, radius, typography and shadow come from
   the page's inline `--bc-*` tokens, with section headings matching the other
-  card sections. Card pages keep their existing section surface.
+  card sections. Filled selected buttons and the My Card chip use
+  `--bc-on-primary`, so their labels stay readable. Card pages keep their
+  existing section surface.
 - Migration adds 13 fields across three existing DocTypes and a non-destructive,
   idempotent attribution patch. Historical CRM Leads are not modified.
 
 ### Notes
 
-- Asset and service-worker revision bumped to `2026-11-24-share-connect-ui`. Run
+- Asset and service-worker revision bumped to `2026-11-24-share-connect-ui-contrast`. Run
   `bench migrate` and clear website cache on every site after release approval.
 
 ## v1.4.10 - 24 November 2026

@@ -20,7 +20,7 @@ cache_headers = {"Cache-Control": "no-cache"}
 # Bump this whenever bundled CSS/JS changes but the app version stays fixed.
 # The worker's activate handler deletes every older bc-* cache, so existing
 # clients pick up the new assets on their next navigation.
-SW_CACHE_REVISION = "2026-11-24-share-connect-ui"
+SW_CACHE_REVISION = "2026-11-24-share-connect-ui-contrast"
 
 
 def get_context(context):

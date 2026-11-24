@@ -469,7 +469,9 @@ body.bc-customer-workspace .body-sidebar .item-anchor:focus-visible .sidebar-ite
 .bc-sc-type[aria-pressed="true"] {
   border-color: var(--bc-primary, #0b3d91);
   background: var(--bc-primary-fill, var(--bc-primary, #0b3d91));
-  color: var(--bc-primary-text, #fff);
+  /* --bc-on-primary is the readable label colour on a filled background;
+     the surface text colour would disappear against this fill. */
+  color: var(--bc-on-primary, #fff);
   box-shadow: 0 0 0 3px var(--bc-primary-soft, transparent);
 }
 
@@ -578,7 +580,7 @@ body.bc-customer-workspace .body-sidebar .item-anchor:focus-visible .sidebar-ite
 .bc-my-card-chip {
   border-radius: var(--bc-btn-radius, 999px);
   background: var(--bc-primary-fill, var(--bc-primary, #0b3d91));
-  color: var(--bc-primary-text, #fff);
+  color: var(--bc-on-primary, #fff);
   font-family: var(--bc-font-family, inherit);
 }
 

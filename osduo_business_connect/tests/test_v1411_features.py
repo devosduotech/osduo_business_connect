@@ -263,12 +263,23 @@ class TestCacheSafeReadEndpoints(unittest.TestCase):
             "--bc-text-strong",
             "--bc-primary-fill",
             "--bc-primary-text",
+            "--bc-on-primary",
             "--bc-primary-soft",
             "--bc-radius-sm",
             "--bc-radius-md",
             "--bc-card-shadow",
         ):
             self.assertIn(token, section, token)
+        # A filled primary button needs --bc-on-primary. --bc-primary-text is
+        # designed for primary text on a surface and disappears on the fill.
+        active = section.split('.bc-sc-type[aria-pressed="true"] {', 1)[1]
+        active = active.split("}", 1)[0]
+        self.assertIn("color: var(--bc-on-primary", active)
+        self.assertNotIn("--bc-primary-text", active)
+        chip = section.split(".bc-my-card-chip {", 1)[1].split("}", 1)[0]
+        self.assertIn("color: var(--bc-on-primary", chip)
+        self.assertNotIn("--bc-primary-text", chip)
+
         shell = read("templates", "pages", "parts", "share_connect.html")
         form = read("templates", "pages", "parts", "contact_exchange_form.html")
         self.assertIn("bc-sc-title bc-card-section-title", shell)
@@ -373,8 +384,8 @@ class TestMigrationSafety(unittest.TestCase):
 class TestVersionAndReleaseWiring(unittest.TestCase):
     def test_version_and_revisions_are_bumped(self):
         self.assertIn('__version__ = "1.4.11"', read("__init__.py"))
-        self.assertIn('BC_ASSET_REVISION = "2026-11-24-share-connect-ui"', read("hooks.py"))
-        self.assertIn('"2026-11-24-share-connect-ui"', read("www", "sw.py"))
+        self.assertIn('BC_ASSET_REVISION = "2026-11-24-share-connect-ui-contrast"', read("hooks.py"))
+        self.assertIn('"2026-11-24-share-connect-ui-contrast"', read("www", "sw.py"))
 
     def test_docs_and_release_notes_are_updated(self):
         spec = read("..", "docs", "SHARE_AND_CONNECT_SPEC.md")
