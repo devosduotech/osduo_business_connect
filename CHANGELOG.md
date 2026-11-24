@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.4.4 - 24 November 2026
+
+### Added
+
+- Ship the curated **Business Connect** Desk sidebar as a standard app fixture
+  (`business/sidebar/business_connect/business_connect.json`). Frappe v16 imports
+  it on install/migrate, so every new customer site gets the same v1.4.0 menu
+  instead of a generated sidebar. Offline tests lock the item list and forbid
+  native Desk/admin links.
+
+### Notes
+
+- No schema, API or bundled asset changes. Upgrading from v1.4.3 needs only a
+  cache clear and `bench migrate` so the standard Sidebar document is imported;
+  `bench build` is not required.
+- Sites that already carry a developer-mode copy of this sidebar keep it — the
+  standard fixture is imported only when the record does not exist yet.
+
 ## v1.4.3 - 23 November 2026
 
 ### Production cleanup

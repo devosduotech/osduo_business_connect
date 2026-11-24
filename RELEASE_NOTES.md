@@ -1,3 +1,42 @@
+# Release Notes - business_connect (v1.4.4)
+
+**Release Date:** 24 November 2026
+**Version:** v1.4.4 (patch)
+
+The curated Business Connect Desk sidebar is now a standard part of the app, so
+every new customer site receives the same navigation without developer-mode
+exports or manual setup.
+
+## What changed (v1.4.4)
+
+### Added
+
+- `osduo_business_connect/business/sidebar/business_connect/business_connect.json`
+  is a standard `Sidebar` fixture for the `Business` module. Frappe v16 imports
+  `<app>/<module>/sidebar/<name>/<name>.json` during install/migrate.
+- Offline tests assert the fixture is standard, belongs to this app and module,
+  keeps the 11-item order, and contains no `/app`, `/desk`, `/desk/build` or
+  User/Role/Invitation links.
+
+### Upgrade
+
+From v1.4.3: pull, clear cache and run `bench migrate` once per site to import the
+standard Sidebar document. No bundled asset changes; `bench build` is not needed.
+
+```bash
+cd ~/connect-bench/apps/osduo_business_connect
+git fetch upstream --tags && git pull --ff-only upstream main
+cd ~/connect-bench
+bench --site <site> clear-cache
+bench --site <site> migrate
+bench restart
+```
+
+Existing sites with a locally created sidebar are left as-is; the standard
+fixture is only inserted when that Sidebar does not exist yet.
+
+---
+
 # Release Notes - business_connect (v1.4.3)
 
 **Release Date:** 23 November 2026
