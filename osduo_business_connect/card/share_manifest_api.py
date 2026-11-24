@@ -276,9 +276,17 @@ def get_share_manifest(business=None, page_type=None, document=None):
 
     csrf_token = ""
     if can_record_exchange:
-        session = getattr(frappe.local, "session", None)
-        data = getattr(session, "data", None) if session else None
-        csrf_token = (getattr(data, "csrf_token", None) if data else None) or ""
+        try:
+            from frappe.sessions import get_csrf_token
+
+            csrf_token = get_csrf_token() or ""
+        except Exception:
+            session = getattr(frappe.local, "session", None)
+            data = getattr(session, "data", None) if session else None
+            if isinstance(data, dict):
+                csrf_token = data.get("csrf_token") or ""
+            else:
+                csrf_token = getattr(data, "csrf_token", "") or ""
 
     return {
         "can_record_exchange": bool(can_record_exchange),

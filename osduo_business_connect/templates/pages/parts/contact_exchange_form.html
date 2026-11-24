@@ -92,9 +92,29 @@
         return "Could not save the contact. Please try again.";
     }
 
+    function withTimeout(promise, ms) {
+        var timer;
+        var timeout = new Promise(function (_, reject) {
+            timer = setTimeout(function () {
+                var err = new Error("Request timed out. Please try again.");
+                err.status = 0;
+                reject(err);
+            }, ms);
+        });
+        return Promise.race([promise, timeout]).then(function (value) {
+            clearTimeout(timer);
+            return value;
+        }, function (error) {
+            clearTimeout(timer);
+            throw error;
+        });
+    }
+
     function callWrite(endpoint, args) {
+        var token = (window.frappe && window.frappe.csrf_token) || window.csrf_token || csrfToken || "";
+        var request;
         if (window.frappe && typeof window.frappe.xcall === "function") {
-            return window.frappe.xcall(endpoint, args).then(function (message) {
+            request = window.frappe.xcall(endpoint, args).then(function (message) {
                 return { message: message, status: 200 };
             }).catch(function (error) {
                 var result = new Error(errorText(error) || "Request failed");
@@ -102,27 +122,29 @@
                 result.payload = error;
                 throw result;
             });
-        }
-        var token = (window.frappe && window.frappe.csrf_token) || csrfToken || "";
-        return fetch("/api/method/" + endpoint, {
-            method: "POST",
-            credentials: "same-origin",
-            headers: {
-                "Content-Type": "application/json",
-                "X-Frappe-CSRF-Token": token
-            },
-            body: JSON.stringify(args)
-        }).then(function (response) {
-            return response.json().then(function (body) {
-                if (!response.ok) {
-                    var failure = new Error(parseError(body));
-                    failure.status = response.status;
-                    failure.payload = body;
-                    throw failure;
-                }
-                return { message: body.message, status: response.status };
+        } else {
+            request = fetch("/api/method/" + endpoint, {
+                method: "POST",
+                credentials: "same-origin",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                    "X-Frappe-CSRF-Token": token
+                },
+                body: JSON.stringify(args)
+            }).then(function (response) {
+                return response.json().catch(function () { return {}; }).then(function (body) {
+                    if (!response.ok) {
+                        var failure = new Error(parseError(body) || ("Request failed (" + response.status + ")"));
+                        failure.status = response.status;
+                        failure.payload = body;
+                        throw failure;
+                    }
+                    return { message: body.message, status: response.status };
+                });
             });
-        });
+        }
+        return withTimeout(request, 30000);
     }
 
     function isConflict(error) {
@@ -242,7 +264,8 @@
                     }
                 })
                 .catch(function (error) {
-                    status.textContent = isConflict(error) ? CONFLICT_MESSAGE : parseError(error);
+                    console.error("Share & Connect save failed", error);
+                    status.textContent = isConflict(error) ? CONFLICT_MESSAGE : (parseError(error) || "Could not save the contact. Please try again.");
                     intent.frozen = null;
                     intent.requestId = null;
                     setPending(false);
