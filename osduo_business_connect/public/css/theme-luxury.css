@@ -162,7 +162,7 @@ display: flex;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #0f172a;
+    background: var(--bc-header-bg);
     color: #ffffff;
     text-align: center;
     overflow: hidden;
@@ -336,8 +336,8 @@ box-sizing: border-box;
 
 .bc-prof-band.bc-hero-luxury {
 --bc-hero-overlay: linear-gradient(90deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.7) 60%, rgba(0, 0, 0, 0.5) 100%);
-    background: #0B0B0C;
-    border-bottom: 1px solid #2A2A2A;
+    background: var(--bc-header-bg);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .bc-prof-band.bc-hero-luxury .bc-prof-logo {
@@ -361,8 +361,8 @@ color: #C9A227;
 }
 
 .bc-prof-nav.bc-hero-luxury-nav {
-background: #111111;
-    border-top: 1px solid #2A2A2A;
+background: var(--bc-header-bg);
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .bc-prof-nav.bc-hero-luxury-nav .bc-prof-nav-link {

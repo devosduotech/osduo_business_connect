@@ -191,7 +191,7 @@ width: 80px; height: 80px;
 
 .bc-prof-band.bc-hero-classic {
 --bc-hero-overlay: linear-gradient(90deg, rgba(12, 34, 56, 0.95) 0%, rgba(22, 58, 95, 0.78) 60%, rgba(12, 34, 56, 0.55) 100%);
-    background: linear-gradient(180deg, #0C2238 0%, #163A5F 100%);
+    background: var(--bc-header-bg);
     border-bottom: 4px solid #C9A227;
 }
 
@@ -211,8 +211,8 @@ color: #E7DFC9;
 }
 
 .bc-prof-nav.bc-hero-classic-nav {
-background: #F8F5EC;
-    border-top: 1px solid #E7DFC9;
+background: var(--bc-surface);
+    border-top: 1px solid var(--bc-border-color);
 }
 
 .bc-prof-nav.bc-hero-classic-nav .bc-prof-nav-link {
@@ -221,6 +221,6 @@ color: #334155;
 
 .bc-prof-nav.bc-hero-classic-nav .bc-prof-nav-link:hover,
 .bc-prof-nav.bc-hero-classic-nav .bc-prof-nav-link.active {
-color: #0C2238;
+color: var(--bc-primary);
     border-bottom-color: #C9A227;
 }

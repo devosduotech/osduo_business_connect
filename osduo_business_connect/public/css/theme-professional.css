@@ -369,7 +369,7 @@ border-radius: 6px;
 
 .bc-prof-band.bc-hero-professional {
 --bc-hero-overlay: linear-gradient(90deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.75) 60%, rgba(15, 23, 42, 0.5) 100%);
-    background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+    background: var(--bc-header-bg);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -378,7 +378,7 @@ font-size: 1.9rem;
 }
 
 .bc-prof-nav.bc-hero-professional-nav {
-background: #0F172A;
+background: var(--bc-primary);
 }
 
 @media (max-width: 768px) {

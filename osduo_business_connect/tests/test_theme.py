@@ -235,6 +235,24 @@ class TestThemeColourSelection(unittest.TestCase):
         self.assertIn("--bc-background: #0f172a;", variables)
         self.assertIn("--bc-text: #e2e8f0;", variables)
 
+    def test_header_background_uses_scheme_for_every_template(self):
+        data = self.resolve(self.theme_row(
+            color_scheme="Green", primary_color="#EA580C", accent_color="#FBBF24"
+        ))
+        variables = self.service.get_theme_variables(data)
+        self.assertIn(
+            "--bc-header-bg: linear-gradient(135deg, #EA580C, #FBBF24);", variables
+        )
+        for template, expected in (
+            ("Classic", "linear-gradient(180deg, #EA580C, #FBBF24)"),
+            ("Professional", "#EA580C"),
+            ("Minimal", "#ffffff"),
+            ("Luxury", self.service.darken("#EA580C", 0.62, "#0B0B0C")),
+        ):
+            with self.subTest(template=template):
+                rendered = self.service.get_theme_variables(dict(data, template=template))
+                self.assertIn(f"--bc-header-bg: {expected};", rendered)
+
     def test_controller_keeps_pickers_synced_with_preset(self):
         src = read("showcase", "doctype", "bc_theme", "bc_theme.py")
         self.assertIn("def apply_scheme_colors", src)
@@ -247,6 +265,36 @@ class TestThemeColourSelection(unittest.TestCase):
         self.assertIn("sync_theme_colors()", src)
         after_migrate = src[src.index("def after_migrate()"):]
         self.assertIn("sync_theme_colors()", after_migrate)
+
+
+class TestThemeHeaderBackgroundCss(unittest.TestCase):
+    """Business/card heroes must not carry template-hardcoded header colours."""
+
+    TEMPLATES = ("modern", "minimal", "classic", "luxury", "creative", "professional")
+    STALE_COLOURS = (
+        "#4338CA", "#7C3AED", "#FFFFFF", "#0C2238", "#163A5F",
+        "#0B0B0C", "#BE185D", "#F97316", "#0F172A", "#1E293B",
+    )
+
+    def test_every_business_hero_uses_the_header_variable(self):
+        for template in self.TEMPLATES:
+            with self.subTest(template=template):
+                css = read("public", "css", f"theme-{template}.css")
+                selector = f".bc-prof-band.bc-hero-{template} {{"
+                self.assertIn(selector, css)
+                block = css.split(selector, 1)[1].split("}", 1)[0]
+                self.assertIn("background: var(--bc-header-bg);", block)
+                for stale in self.STALE_COLOURS:
+                    self.assertNotIn(stale, block, stale)
+
+    def test_minimal_and_luxury_nav_follow_the_theme(self):
+        minimal = read("public", "css", "theme-minimal.css")
+        self.assertIn("background: var(--bc-header-bg);", minimal)
+        self.assertIn("color: var(--bc-text);", minimal)
+
+        luxury = read("public", "css", "theme-luxury.css")
+        self.assertIn("background: var(--bc-header-bg);", luxury)
+        self.assertNotIn("background: #0f172a;", luxury)
 
 
 class TestThemeFontSizeWiring(unittest.TestCase):

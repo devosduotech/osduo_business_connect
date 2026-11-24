@@ -388,7 +388,7 @@ min-height: 200px;
 
 .bc-prof-band.bc-hero-creative {
 --bc-hero-overlay: linear-gradient(100deg, rgba(190, 24, 93, 0.92) 0%, rgba(249, 115, 22, 0.64) 65%, rgba(251, 146, 60, 0.4) 100%);
-    background: linear-gradient(120deg, #BE185D 0%, #F97316 100%);
+    background: var(--bc-header-bg);
     border-radius: 0 0 40px 0;
 }
 
@@ -405,10 +405,10 @@ font-size: 2.2rem;
 }
 
 .bc-prof-nav.bc-hero-creative-nav {
-background: #9D174D;
+background: var(--bc-primary);
 }
 
 .bc-prof-nav.bc-hero-creative-nav .bc-prof-nav-link:hover,
 .bc-prof-nav.bc-hero-creative-nav .bc-prof-nav-link.active {
-border-bottom-color: #FDBA74;
+border-bottom-color: var(--bc-accent);
 }

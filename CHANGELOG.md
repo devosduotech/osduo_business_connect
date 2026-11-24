@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.4.6 - 24 November 2026
+
+### Fixed
+
+- Public Business and Digital Card page headers now follow the selected Colour
+  Scheme / colour pickers for every template. Previously each template's CSS
+  hardcoded its own header colour (Modern violet, Minimal white, Creative red,
+  Luxury black, Classic navy, Professional slate), so changing the scheme had no
+  effect on the header. Modern/Creative use a primary→accent gradient, Classic a
+  vertical gradient, Professional the primary colour, Minimal the theme surface
+  and Luxury a darkened tint of the primary. The matching nav bars use theme
+  variables too.
+- Generated theme CSS is rebuilt from `styles/business_connect.src.css`; the
+  split/verify step confirmed all 653 rules are preserved.
+
+### Notes
+
+- Asset revision bumped to `2026-11-24-scheme-header`. Clear cache and
+  `bench migrate`; `bench build` is not needed when `sites/assets/<app>` is a
+  symlink to the app's `public/` folder.
+
 ## v1.4.5 - 24 November 2026
 
 ### Fixed

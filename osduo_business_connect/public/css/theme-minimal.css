@@ -218,9 +218,9 @@ background: var(--bc-background);
 
 .bc-prof-band.bc-hero-minimal {
 --bc-hero-overlay: linear-gradient(90deg, rgba(255, 255, 255, 0.94) 0%, rgba(255, 255, 255, 0.72) 60%, rgba(255, 255, 255, 0.5) 100%);
-    background: #FFFFFF;
-    color: #0F172A;
-    border-bottom: 1px solid #E2E8F0;
+    background: var(--bc-header-bg);
+    color: var(--bc-text);
+    border-bottom: 1px solid var(--bc-border-color);
 }
 
 .bc-prof-band.bc-hero-minimal .bc-prof-logo {
@@ -229,27 +229,27 @@ border: none;
 }
 
 .bc-prof-band.bc-hero-minimal .bc-prof-band-info h1 {
-color: #0F172A;
+color: var(--bc-text);
     font-weight: 600;
     letter-spacing: -0.01em;
 }
 
 .bc-prof-band.bc-hero-minimal .bc-prof-band-tagline {
-color: #64748B;
+color: var(--bc-text-muted);
 }
 
 .bc-prof-nav.bc-hero-minimal-nav {
-background: #FFFFFF;
-    border-top: 1px solid #E2E8F0;
-    border-bottom: 1px solid #E2E8F0;
+background: var(--bc-header-bg);
+    border-top: 1px solid var(--bc-border-color);
+    border-bottom: 1px solid var(--bc-border-color);
 }
 
 .bc-prof-nav.bc-hero-minimal-nav .bc-prof-nav-link {
-color: #475569;
+color: var(--bc-text-muted);
 }
 
 .bc-prof-nav.bc-hero-minimal-nav .bc-prof-nav-link:hover,
 .bc-prof-nav.bc-hero-minimal-nav .bc-prof-nav-link.active {
-color: #0F172A;
-    border-bottom-color: #0F172A;
+color: var(--bc-text);
+    border-bottom-color: var(--bc-primary);
 }

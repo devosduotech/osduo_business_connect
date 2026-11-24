@@ -1,3 +1,40 @@
+# Release Notes - business_connect (v1.4.6)
+
+**Release Date:** 24 November 2026
+**Version:** v1.4.6 (patch)
+
+The public Business and Digital Card page headers now follow the selected colour
+scheme instead of a template-hardcoded colour.
+
+## What changed (v1.4.6)
+
+### Fixed
+
+- Removed hardcoded header colours from all six template hero variants. The
+  header now consumes `--bc-header-bg`, which is derived from the chosen scheme
+  and colour pickers: primary→accent gradient for Modern and Creative, vertical
+  gradient for Classic, primary for Professional, theme surface for Minimal and
+  a darkened primary tint for Luxury. Nav bars follow the same variables.
+- Luxury Digital Card hero uses the same derived header colour.
+
+### Upgrade
+
+From v1.4.5: pull, clear cache and run `bench migrate` once per site. The shared
+asset revision is now `2026-11-24-scheme-header`, so clients and the service
+worker fetch the new CSS on their next navigation. `bench build` is not required
+when `sites/assets/<app>` links to the app's `public/` folder.
+
+```bash
+cd ~/connect-bench/apps/osduo_business_connect
+git fetch upstream --tags && git pull --ff-only upstream main
+cd ~/connect-bench
+bench --site <site> clear-cache
+bench --site <site> migrate
+bench restart
+```
+
+---
+
 # Release Notes - business_connect (v1.4.5)
 
 **Release Date:** 24 November 2026

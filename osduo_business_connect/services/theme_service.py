@@ -418,17 +418,16 @@ def get_theme_variables(theme_data):
     # Border color
     border_color = "#334155" if dark_mode else "#e2e8f0"
 
-    # Header
-    if template == "Luxury":
-        header_bg = "transparent"
-    elif template == "Creative":
-        header_bg = f"linear-gradient(135deg, {gradient_start}, {gradient_end})"
-    elif template == "Modern":
-        header_bg = f"linear-gradient(135deg, {gradient_start}, {gradient_end})"
+    # Header background is derived from the selected scheme/pickers for every
+    # template. The public CSS consumes --bc-header-bg directly, so no template
+    # hardcodes a violet/white/red/black header any more. Minimal keeps a light
+    # surface, Luxury a darkened tint of the chosen primary.
+    if template == "Minimal":
+        header_bg = surface
+    elif template == "Luxury":
+        header_bg = darken(primary, 0.62, "#0B0B0C")
     elif template == "Professional":
         header_bg = primary
-    elif template == "Minimal":
-        header_bg = "transparent"
     elif template == "Classic":
         header_bg = f"linear-gradient(180deg, {gradient_start}, {gradient_end})"
     else:
