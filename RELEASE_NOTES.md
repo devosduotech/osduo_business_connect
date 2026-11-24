@@ -1,3 +1,48 @@
+# Release Notes - business_connect (v1.4.10)
+
+**Release Date:** 24 November 2026
+**Version:** v1.4.10 (patch)
+
+Phone layout fixes for the private Team portal page.
+
+## What changed (v1.4.10)
+
+### Fixed
+
+- `/portal/team` now adapts to phones. The five-column Members table lives in
+  a horizontal scroll region with a 560px minimum width, so names and emails are
+  readable instead of being squeezed into a 360px viewport. KPI cards stack,
+  card padding tightens, and the invite form uses 16px inputs/selects to stop
+  iOS Safari auto-zooming on focus.
+- The shared private-portal chrome also reduces sidebar, top-nav and content
+  spacing below 600px.
+
+### Upgrade
+
+From v1.4.9: pull, clear cache and run `bench migrate` once per site. The shared
+asset revision is now `2026-11-24-team-mobile`, so clients and the service
+worker fetch the new templates/CSS on their next navigation. `bench build` is
+not required when `sites/assets/<app>` links to the app's `public/` folder.
+
+```bash
+cd ~/connect-bench/apps/osduo_business_connect
+git fetch upstream --tags && git pull --ff-only upstream main
+cd ~/connect-bench
+bench --site <site> clear-cache
+bench --site <site> clear-website-cache
+bench --site <site> migrate
+bench restart
+```
+
+## Verification
+
+- 613 offline tests passed, including a new Team-phone layout regression test.
+- `python3 -m compileall` passed.
+- CSS split/verify: 653 original rules = 653 emitted rules.
+- No schema, fixture, API, plan-gate or permission changes.
+
+---
+
 # Release Notes - business_connect (v1.4.9)
 
 **Release Date:** 24 November 2026

@@ -26,12 +26,22 @@
     .bc-team-message.ok { color: #047857; }
     .bc-team-notice { margin-bottom: 1.25rem; padding: 1rem 1.15rem; border-radius: 12px; background: #fff7ed; border: 1px solid #fed7aa; color: #9a3412; font-size: 0.9rem; }
     .bc-team-notice a { color: #9a3412; font-weight: 600; }
+    .bc-team-table-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
     .bc-team-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
     .bc-team-table th, .bc-team-table td { padding: 0.7rem 0.6rem; border-bottom: 1px solid #e2e8f0; text-align: left; }
     .bc-team-table th { color: #64748b; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; }
     .bc-team-empty { padding: 1.5rem 0; color: #64748b; text-align: center; }
     .bc-team-hint { margin: 0.8rem 0 0; color: #64748b; font-size: 0.78rem; line-height: 1.5; }
     @media (max-width: 820px) { .bc-team-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 600px) {
+        .bc-team-head h1 { font-size: 1.4rem; }
+        .bc-team-kpis { gap: 0.5rem; }
+        .bc-team-kpi { flex: 1 1 100%; padding: 0.8rem 0.9rem; }
+        .bc-team-card { padding: 1rem; }
+        .bc-team-field input, .bc-team-field select { font-size: 16px; padding: 0.7rem 0.75rem; }
+        .bc-team-table { min-width: 560px; }
+        .bc-team-table th, .bc-team-table td { padding: 0.6rem 0.5rem; white-space: nowrap; }
+    }
 </style>
 
 {% set t = team or {} %}
@@ -102,20 +112,22 @@
         <div class="bc-team-card">
             <h2>Members</h2>
             {% if t.members %}
-            <table class="bc-team-table">
-                <thead><tr><th>Name</th><th>Email</th><th>Business</th><th>Role</th><th>Status</th></tr></thead>
-                <tbody>
-                {% for m in t.members %}
-                    <tr>
-                        <td>{{ m.person_name | e }}</td>
-                        <td>{{ m.email | e }}</td>
-                        <td>{{ m.business | e }}</td>
-                        <td>{{ m.role | e }}</td>
-                        <td>{{ m.status | e }}</td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+            <div class="bc-team-table-wrap" role="region" aria-label="Team members" tabindex="0">
+                <table class="bc-team-table">
+                    <thead><tr><th>Name</th><th>Email</th><th>Business</th><th>Role</th><th>Status</th></tr></thead>
+                    <tbody>
+                    {% for m in t.members %}
+                        <tr>
+                            <td>{{ m.person_name | e }}</td>
+                            <td>{{ m.email | e }}</td>
+                            <td>{{ m.business | e }}</td>
+                            <td>{{ m.role | e }}</td>
+                            <td>{{ m.status | e }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
             {% else %}
             <div class="bc-team-empty">No team members found for your businesses.</div>
             {% endif %}

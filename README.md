@@ -1,6 +1,6 @@
 # OSDuo Business Connect
 
-**v1.4.9** | **Your digital identity. Your customers. Your growth.**
+**v1.4.10** | **Your digital identity. Your customers. Your growth.**
 
 Business Connect transforms how small businesses and professionals establish their digital presence. Create a stunning business profile, showcase products and services, capture customer enquiries and card exchanges, and install it all as a mobile app — all seamlessly integrated with Frappe CRM.
 
@@ -332,7 +332,8 @@ repository).
       sidebar selection and authoritative theme pickers (v1.4.5),
       scheme-driven public page headers (v1.4.6), readable header text on light
       schemes (v1.4.7), mobile sidebar/PWA cache fixes (v1.4.8), and the
-      touch-hover sidebar fix (v1.4.9)
+      touch-hover sidebar fix (v1.4.9), and the Team portal phone layout
+      (v1.4.10)
 - [ ] Web push notifications for installed PWAs
 - [ ] Play Store listing via TWA wrappers
 - [ ] Multi-language support

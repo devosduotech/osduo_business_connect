@@ -2590,7 +2590,30 @@ class TestPortalTeamInvitations(unittest.TestCase):
 
         with open(os.path.join(APP_DIR, "__init__.py")) as handle:
             version = handle.read()
-        self.assertIn('__version__ = "1.4.9"', version)
+        self.assertIn('__version__ = "1.4.10"', version)
+
+    def test_portal_team_has_phone_layout_and_scrolling_members_table(self):
+        team = os.path.join(APP_DIR, "templates", "pages", "portal", "team.html")
+        sidebar = os.path.join(
+            APP_DIR, "templates", "pages", "parts", "portal_sidebar.html"
+        )
+        with open(team) as handle:
+            source = handle.read()
+        with open(sidebar) as handle:
+            nav = handle.read()
+
+        self.assertIn(".bc-team-table-wrap", source)
+        self.assertIn("overflow-x: auto", source)
+        self.assertIn('aria-label="Team members"', source)
+        self.assertIn('class="bc-team-table"', source)
+        self.assertIn("@media (max-width: 820px)", source)
+        self.assertIn("@media (max-width: 600px)", source)
+        self.assertIn("min-width: 560px", source)
+        # iOS Safari zooms inputs smaller than 16px when they receive focus.
+        self.assertIn("font-size: 16px", source)
+
+        self.assertIn("@media (max-width: 600px)", nav)
+        self.assertIn(".bc-portal-main { padding: 1rem 0.9rem 1.5rem; }", nav)
 
 
 def env_fieldnames():

@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.4.10 - 24 November 2026
+
+### Fixed
+
+- `/portal/team` now has a real phone layout. The Members table scrolls
+  horizontally inside its own region instead of crushing five columns into a
+  360px screen, KPI cards stack one per row, and cards/padding tighten.
+- Form inputs and selects use 16px on phones so iOS Safari does not auto-zoom
+  when an invite field receives focus.
+- The shared private-portal chrome also tightens its top bar and content
+  padding below 600px.
+
+### Notes
+
+- Asset revision bumped to `2026-11-24-team-mobile`. Clear cache and
+  `bench migrate`; `bench build` is not needed when `sites/assets/<app>` is a
+  symlink to the app's `public/` folder.
+
 ## v1.4.9 - 24 November 2026
 
 ### Fixed
