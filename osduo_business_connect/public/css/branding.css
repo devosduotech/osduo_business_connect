@@ -346,17 +346,24 @@ body.bc-customer-workspace .body-sidebar .standard-sidebar-item.active-sidebar .
   font-weight: 600 !important;
 }
 
-/* The same label needs an explicit hover colour for the same reason. */
-body.bc-customer-workspace .body-sidebar .item-anchor:hover .sidebar-item-label,
+/* Focus must work on every device. Touch browsers keep :hover stuck on the
+   last tapped row, so the white hover chip would make e.g. Card Event look
+   permanently selected. Paint hover only where a real pointer can leave it. */
 body.bc-customer-workspace .body-sidebar .item-anchor:focus-visible .sidebar-item-label {
   color: var(--bc-portal-text) !important;
 }
 
-body.bc-customer-workspace .body-sidebar .item-anchor:hover,
-body.bc-customer-workspace .sidebar-menu .sidebar-link:hover,
-body.bc-customer-workspace .sidebar-menu .sidebar-label:hover {
-  background-color: #ffffff !important;
-  color: var(--bc-portal-text) !important;
+@media (hover: hover) {
+  body.bc-customer-workspace .body-sidebar .item-anchor:hover .sidebar-item-label {
+    color: var(--bc-portal-text) !important;
+  }
+
+  body.bc-customer-workspace .body-sidebar .item-anchor:hover,
+  body.bc-customer-workspace .sidebar-menu .sidebar-link:hover,
+  body.bc-customer-workspace .sidebar-menu .sidebar-label:hover {
+    background-color: #ffffff !important;
+    color: var(--bc-portal-text) !important;
+  }
 }
 
 /* Frappe v16 turns the phone sidebar into an overlay drawer and hides its

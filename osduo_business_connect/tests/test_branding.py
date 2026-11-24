@@ -132,7 +132,7 @@ class TestBundledBranding(unittest.TestCase):
         # its plain disk cache would otherwise keep serving the old desk JS/CSS.
         # Every app asset URL must carry the shared revision query string.
         hooks = read("hooks.py")
-        self.assertIn('BC_ASSET_REVISION = "2026-11-24-mobile-drawer-sw"', hooks)
+        self.assertIn('BC_ASSET_REVISION = "2026-11-24-touch-hover"', hooks)
         for asset in (
             "css/login.css",
             "js/login-layout.js",
@@ -145,7 +145,7 @@ class TestBundledBranding(unittest.TestCase):
                 hooks,
             )
         self.assertEqual(
-            read("www", "sw.py").count('"2026-11-24-mobile-drawer-sw"'), 1
+            read("www", "sw.py").count('"2026-11-24-touch-hover"'), 1
         )
 
     def test_no_site_files_brand_references(self):
@@ -410,6 +410,26 @@ class TestDeskSupportMenu(unittest.TestCase):
         self.assertIn("background-color: transparent !important;", block)
         self.assertIn("border-right-color: transparent !important;", block)
         self.assertIn("pointer-events: none;", block)
+
+    def test_desk_hover_chip_is_pointer_only(self):
+        css = read("public", "css", "branding.css")
+        # Touch browsers keep :hover on the last tapped row. If the white chip
+        # is painted there too, Card Event looks permanently selected. Keep the
+        # focus style universal, but gate hover on a real pointing device.
+        media = "@media (hover: hover)"
+        self.assertIn(media, css)
+        focus_selector = (
+            "body.bc-customer-workspace .body-sidebar "
+            ".item-anchor:focus-visible .sidebar-item-label"
+        )
+        hover_selector = (
+            "body.bc-customer-workspace .body-sidebar "
+            ".item-anchor:hover .sidebar-item-label"
+        )
+        self.assertIn(focus_selector, css)
+        self.assertIn(hover_selector, css)
+        self.assertLess(css.index(focus_selector), css.index(media))
+        self.assertLess(css.index(media), css.index(hover_selector))
 
 
 class TestFrappeHelpRowSweeper(unittest.TestCase):

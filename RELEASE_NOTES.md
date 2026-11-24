@@ -1,3 +1,47 @@
+# Release Notes - business_connect (v1.4.9)
+
+**Release Date:** 24 November 2026
+**Version:** v1.4.9 (patch)
+
+Touch devices no longer leave a sidebar row looking permanently selected.
+
+## What changed (v1.4.9)
+
+### Fixed
+
+- On Android/Chrome, `:hover` stays on the last tapped row. The BC Desk sidebar
+  used the same white chip for hover and active state, so after tapping
+  `Card Event` it kept looking selected even while Frappe correctly marked
+  `Home` as `active-sidebar`. Hover styling is now scoped to
+  `@media (hover: hover)`; keyboard focus and the real active row are unchanged
+  on every device.
+
+### Upgrade
+
+From v1.4.8: pull, clear cache and run `bench migrate` once per site. The shared
+asset revision is now `2026-11-24-touch-hover`, so clients and the service
+worker fetch the new CSS on their next navigation. `bench build` is not
+required when `sites/assets/<app>` links to the app's `public/` folder.
+
+```bash
+cd ~/connect-bench/apps/osduo_business_connect
+git fetch upstream --tags && git pull --ff-only upstream main
+cd ~/connect-bench
+bench --site <site> clear-cache
+bench --site <site> clear-website-cache
+bench --site <site> migrate
+bench restart
+```
+
+## Verification
+
+- 612 offline tests passed, including a pointer-only hover regression test.
+- `python3 -m compileall` passed.
+- CSS split/verify: 653 original rules = 653 emitted rules.
+- No schema, fixture, API, plan-gate or permission changes.
+
+---
+
 # Release Notes - business_connect (v1.4.8)
 
 **Release Date:** 24 November 2026

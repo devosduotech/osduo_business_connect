@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.4.9 - 24 November 2026
+
+### Fixed
+
+- Touch devices no longer keep a sidebar row looking permanently selected.
+  Android browsers retain `:hover` on the last tapped item; because our hover
+  style was the same white chip as the active style, `Card Event` could appear
+  selected even though Frappe's `active-sidebar` class was correctly on `Home`.
+  Hover styling is now limited to `@media (hover: hover)`; focus and active
+  styling are unchanged.
+
+### Notes
+
+- Asset revision bumped to `2026-11-24-touch-hover`. Clear cache and
+  `bench migrate`; `bench build` is not needed when `sites/assets/<app>` is a
+  symlink to the app's `public/` folder.
+
 ## v1.4.8 - 24 November 2026
 
 ### Fixed
