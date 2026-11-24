@@ -3,7 +3,7 @@
 Step-by-step instructions to install, operate, and update **OSDuo Business Connect**
 — from a single-site demo to a multi-tenant SaaS bench serving many customer domains.
 
-Current release: **v1.4.6** (see [RELEASE_NOTES.md](../RELEASE_NOTES.md)).
+Current release: **v1.4.7** (see [RELEASE_NOTES.md](../RELEASE_NOTES.md)).
 
 ---
 

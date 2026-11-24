@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.4.7 - 24 November 2026
+
+### Fixed
+
+- Follow-up to v1.4.6: light colour schemes (Yellow, Gold, or any light custom
+  primary) now render **dark** hero/nav text. The template CSS hardcoded white
+  text on `.bc-prof-band`, `.bc-prof-nav`, `.bc-prof-nav-link` and the Classic
+  tagline, so a pale scheme-coloured header had white-on-white text. Those rules
+  now consume `--bc-header-text`, which is derived from the scheme's
+  `on_primary` value.
+- The profile nav bar base colour follows `--bc-primary` instead of a fixed
+  slate. Template-specific nav overrides (Minimal, Classic, Luxury, Creative,
+  Modern, Professional) still apply.
+
+### Notes
+
+- Asset revision bumped to `2026-11-24-header-contrast`. Clear cache and
+  `bench migrate`; `bench build` is not needed when `sites/assets/<app>` is a
+  symlink to the app's `public/` folder.
+
 ## v1.4.6 - 24 November 2026
 
 ### Fixed

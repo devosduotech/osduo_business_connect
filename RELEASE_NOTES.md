@@ -1,3 +1,47 @@
+# Release Notes - business_connect (v1.4.7)
+
+**Release Date:** 24 November 2026
+**Version:** v1.4.7 (patch)
+
+Light colour schemes now render readable dark text on public page headers.
+
+## What changed (v1.4.7)
+
+### Fixed
+
+- Follow-up to v1.4.6: with a light scheme (Yellow, Gold or a light custom
+  primary), the hero and nav bars used to keep white text, producing
+  white-on-light text. `.bc-prof-band`, `.bc-prof-nav`, `.bc-prof-nav-link` and
+  the Classic tagline now use `--bc-header-text`, which follows the scheme's
+  `on_primary` value (dark for light schemes, white for dark ones).
+- The profile nav bar base colour is now `--bc-primary` instead of a fixed
+  slate. Template-specific nav overrides still apply.
+
+### Upgrade
+
+From v1.4.6: pull, clear cache and run `bench migrate` once per site. The shared
+asset revision is now `2026-11-24-header-contrast`, so clients and the service
+worker fetch the new CSS on their next navigation. `bench build` is not required
+when `sites/assets/<app>` links to the app's `public/` folder.
+
+```bash
+cd ~/connect-bench/apps/osduo_business_connect
+git fetch upstream --tags && git pull --ff-only upstream main
+cd ~/connect-bench
+bench --site <site> clear-cache
+bench --site <site> migrate
+bench restart
+```
+
+## Verification
+
+- 609 offline tests passed (including new header-text contrast regression tests).
+- `python3 -m compileall` passed.
+- CSS split/verify: 653 original rules = 653 emitted rules.
+- No schema, fixture, API, plan-gate or permission changes.
+
+---
+
 # Release Notes - business_connect (v1.4.6)
 
 **Release Date:** 24 November 2026

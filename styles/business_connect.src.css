@@ -3085,7 +3085,7 @@ body.bc-lightbox-open {
     position: relative;
     overflow: hidden;
     background: var(--bc-header-bg, #1E293B);
-    color: #FFFFFF;
+    color: var(--bc-header-text, #FFFFFF);
     padding: 2.5rem 0;
 }
 
@@ -3154,7 +3154,7 @@ body.bc-lightbox-open {
 }
 
 .bc-prof-nav {
-    background: #1E293B;
+    background: var(--bc-primary);
     border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -3167,7 +3167,7 @@ body.bc-lightbox-open {
 .bc-prof-nav-link {
     display: inline-block;
     padding: 0.8rem 1rem;
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--bc-header-text, rgba(255, 255, 255, 0.7));
     text-decoration: none;
     font-size: 0.82rem;
     font-weight: 500;
@@ -3177,7 +3177,7 @@ body.bc-lightbox-open {
 
 .bc-prof-nav-link:hover,
 .bc-prof-nav-link.active {
-    color: #FFFFFF;
+    color: var(--bc-header-text, #FFFFFF);
     border-bottom-color: var(--bc-primary);
 }
 
@@ -3279,7 +3279,8 @@ body.bc-lightbox-open {
 }
 
 .bc-prof-band.bc-hero-classic .bc-prof-band-tagline {
-    color: #E7DFC9;
+    color: var(--bc-header-text, #E7DFC9);
+    opacity: 0.82;
 }
 
 .bc-prof-nav.bc-hero-classic-nav {

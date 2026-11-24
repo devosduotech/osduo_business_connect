@@ -207,7 +207,8 @@ font-family: Georgia, "Times New Roman", serif;
 }
 
 .bc-prof-band.bc-hero-classic .bc-prof-band-tagline {
-color: #E7DFC9;
+color: var(--bc-header-text, #E7DFC9);
+    opacity: 0.82;
 }
 
 .bc-prof-nav.bc-hero-classic-nav {

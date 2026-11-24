@@ -132,7 +132,7 @@ class TestBundledBranding(unittest.TestCase):
         # its plain disk cache would otherwise keep serving the old desk JS/CSS.
         # Every app asset URL must carry the shared revision query string.
         hooks = read("hooks.py")
-        self.assertIn('BC_ASSET_REVISION = "2026-11-24-scheme-header"', hooks)
+        self.assertIn('BC_ASSET_REVISION = "2026-11-24-header-contrast"', hooks)
         for asset in (
             "css/login.css",
             "js/login-layout.js",
@@ -145,7 +145,7 @@ class TestBundledBranding(unittest.TestCase):
                 hooks,
             )
         self.assertEqual(
-            read("www", "sw.py").count('"2026-11-24-scheme-header"'), 1
+            read("www", "sw.py").count('"2026-11-24-header-contrast"'), 1
         )
 
     def test_no_site_files_brand_references(self):

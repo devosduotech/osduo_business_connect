@@ -235,6 +235,14 @@ class TestThemeColourSelection(unittest.TestCase):
         self.assertIn("--bc-background: #0f172a;", variables)
         self.assertIn("--bc-text: #e2e8f0;", variables)
 
+    def test_light_scheme_uses_dark_header_text(self):
+        # A yellow header must not keep the old white-on-light text.
+        data = self.resolve(self.theme_row(
+            color_scheme="Yellow", primary_color="#EAB308", accent_color="#FDE047"
+        ))
+        variables = self.service.get_theme_variables(data)
+        self.assertIn("--bc-header-text: #1E293B;", variables)
+
     def test_header_background_uses_scheme_for_every_template(self):
         data = self.resolve(self.theme_row(
             color_scheme="Green", primary_color="#EA580C", accent_color="#FBBF24"
@@ -295,6 +303,17 @@ class TestThemeHeaderBackgroundCss(unittest.TestCase):
         luxury = read("public", "css", "theme-luxury.css")
         self.assertIn("background: var(--bc-header-bg);", luxury)
         self.assertNotIn("background: #0f172a;", luxury)
+
+    def test_header_text_contrast_tracks_the_scheme(self):
+        # Light schemes (Yellow/Gold) must not keep white-on-light hero text.
+        base = read("public", "css", "business_connect.css")
+        for selector in (".bc-prof-band {", ".bc-prof-nav-link {",
+                         ".bc-prof-nav-link:hover,\n.bc-prof-nav-link.active {"):
+            with self.subTest(selector=selector):
+                self.assertIn(selector, base)
+                block = base.split(selector, 1)[1].split("}", 1)[0]
+                self.assertIn("var(--bc-header-text", block)
+        self.assertIn("background: var(--bc-primary);", base)
 
 
 class TestThemeFontSizeWiring(unittest.TestCase):
