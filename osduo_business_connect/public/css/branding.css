@@ -383,8 +383,9 @@ body.bc-customer-workspace .body-sidebar .item-anchor:focus-visible .sidebar-ite
 /* ============================================================
    9. SHARE & CONNECT (public pages)
    ============================================================
-   Deliberately scoped to the three public widgets. The shell is hidden until
-   the authenticated manifest resolves, so guests keep the normal share bar. */
+   Deliberately scoped to the public widgets. The shell is hidden until the
+   authenticated manifest resolves, so guests keep the normal share bar. All
+   colours, spacing and radii come from the page's inline --bc-* theme tokens. */
 .bc-sc[hidden],
 .bc-ce[hidden],
 .bc-sc [hidden] {
@@ -398,11 +399,33 @@ body.bc-customer-workspace .body-sidebar .item-anchor:focus-visible .sidebar-ite
   min-width: 0;
 }
 
+.bc-sc,
+.bc-ce {
+  color: var(--bc-text, inherit);
+  font-family: var(--bc-font-family, inherit);
+  font-size: var(--bc-font-size, 1rem);
+  background: var(--bc-surface, transparent);
+  border: 1px solid var(--bc-border-color, var(--bc-border, transparent));
+  border-radius: var(--bc-radius-md, 12px);
+  box-shadow: var(--bc-card-shadow, none);
+  padding: 1rem 1.15rem;
+}
+
+/* Card pages already provide the themed section surface and padding. */
+.bc-card-shell .bc-sc,
+.bc-card-shell .bc-ce {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
+}
+
 .bc-sc-title,
 .bc-ce-title {
-  margin: 0 0 0.75rem;
-  font-size: 1.15rem;
-  font-weight: 700;
+  margin: 0 0 0.85rem;
+  font-family: var(--bc-display-font, var(--bc-font-family, inherit));
+  color: var(--bc-primary-text, var(--bc-text-strong, #1e293b));
 }
 
 .bc-sc-label,
@@ -412,6 +435,7 @@ body.bc-customer-workspace .body-sidebar .item-anchor:focus-visible .sidebar-ite
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--bc-text-muted, #64748b);
+  font-family: inherit;
 }
 
 .bc-sc-types {
@@ -422,20 +446,31 @@ body.bc-customer-workspace .body-sidebar .item-anchor:focus-visible .sidebar-ite
 }
 
 .bc-sc-type {
-  min-height: 36px;
-  padding: 0.4rem 0.75rem;
-  border: 1px solid var(--bc-border, #d8dee9);
-  border-radius: 999px;
+  min-height: 38px;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid var(--bc-border-color, var(--bc-border, #d8dee9));
+  border-radius: var(--bc-btn-radius, var(--bc-radius-sm, 999px));
   background: var(--bc-surface, #fff);
-  color: var(--bc-text, #1e293b);
+  color: var(--bc-text-strong, var(--bc-text, #1e293b));
+  font-family: inherit;
   font-size: 0.85rem;
+  font-weight: 500;
   cursor: pointer;
+  transition: background-color 0.18s ease, border-color 0.18s ease,
+    color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.bc-sc-type:hover {
+  border-color: var(--bc-primary, #0b3d91);
+  background: var(--bc-primary-soft, var(--bc-primary-tint, transparent));
+  color: var(--bc-primary-text, var(--bc-text-strong, #1e293b));
 }
 
 .bc-sc-type[aria-pressed="true"] {
   border-color: var(--bc-primary, #0b3d91);
-  background: var(--bc-primary, #0b3d91);
-  color: #fff;
+  background: var(--bc-primary-fill, var(--bc-primary, #0b3d91));
+  color: var(--bc-primary-text, #fff);
+  box-shadow: 0 0 0 3px var(--bc-primary-soft, transparent);
 }
 
 .bc-sc-items {
@@ -445,15 +480,25 @@ body.bc-customer-workspace .body-sidebar .item-anchor:focus-visible .sidebar-ite
   min-width: 0;
   min-height: 38px;
   padding: 0.45rem 0.6rem;
-  border: 1px solid var(--bc-border, #d8dee9);
-  border-radius: 8px;
+  border: 1px solid var(--bc-border-color, var(--bc-border, #d8dee9));
+  border-radius: var(--bc-radius-sm, 8px);
   background: var(--bc-surface, #fff);
-  color: var(--bc-text, #1e293b);
+  color: var(--bc-text-strong, var(--bc-text, #1e293b));
+  font-family: inherit;
   font-size: 0.9rem;
 }
 
+.bc-sc-type:focus-visible,
+.bc-sc-items:focus,
+.bc-ce-form input:focus,
+.bc-ce-form select:focus,
+.bc-ce-form textarea:focus {
+  outline: 2px solid var(--bc-primary, #2563eb);
+  outline-offset: 2px;
+}
+
 .bc-sc-qr {
-  margin: 0.75rem 0;
+  margin: 1rem 0 0.5rem;
   text-align: center;
 }
 
@@ -461,10 +506,11 @@ body.bc-customer-workspace .body-sidebar .item-anchor:focus-visible .sidebar-ite
   width: 132px;
   max-width: 60vw;
   height: auto;
-  border: 1px solid var(--bc-border, #e2e8f0);
-  border-radius: 8px;
+  border: 1px solid var(--bc-border-color, var(--bc-border, #e2e8f0));
+  border-radius: var(--bc-radius-sm, 8px);
   background: #fff;
   padding: 6px;
+  box-shadow: var(--bc-card-shadow, none);
 }
 
 .bc-sc-qr p,
@@ -473,6 +519,7 @@ body.bc-customer-workspace .body-sidebar .item-anchor:focus-visible .sidebar-ite
 .bc-ce-sharing {
   font-size: 0.85rem;
   color: var(--bc-text-muted, #64748b);
+  font-family: inherit;
   overflow-wrap: anywhere;
 }
 
@@ -500,6 +547,13 @@ body.bc-customer-workspace .body-sidebar .item-anchor:focus-visible .sidebar-ite
   min-width: 0;
   max-width: 100%;
   box-sizing: border-box;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid var(--bc-border-color, var(--bc-border, #d8dee9));
+  border-radius: var(--bc-radius-sm, 8px);
+  background: var(--bc-surface, #fff);
+  color: var(--bc-text-strong, var(--bc-text, #1e293b));
+  font-family: inherit;
+  font-size: 0.9rem;
 }
 
 .bc-ce-lead {
@@ -517,7 +571,15 @@ body.bc-customer-workspace .body-sidebar .item-anchor:focus-visible .sidebar-ite
 .bc-ce-status {
   min-height: 1.2em;
   font-size: 0.85rem;
+  color: var(--bc-text-muted, #64748b);
   overflow-wrap: anywhere;
+}
+
+.bc-my-card-chip {
+  border-radius: var(--bc-btn-radius, 999px);
+  background: var(--bc-primary-fill, var(--bc-primary, #0b3d91));
+  color: var(--bc-primary-text, #fff);
+  font-family: var(--bc-font-family, inherit);
 }
 
 [data-bc-share-widget] .bc-card-share-link {

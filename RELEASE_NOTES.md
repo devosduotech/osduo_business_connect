@@ -28,6 +28,9 @@ rollout still pending. Not deployed to production.
   creation is recorded, retried safely, and never created for an unchecked box.
 - CRM Lead status (including `converted = 1`) reconciles to both Enquiry and
   Contact Exchange through immediate hooks and a bounded hourly job.
+- Share & Connect and Contact Exchange follow the active card theme through the
+  page's inline `--bc-*` tokens; headings, controls and focus states now match
+  the surrounding sections.
 - Migration adds 13 fields across three existing DocTypes and a simple,
   idempotent, non-destructive attribution patch. Historical CRM Leads are not
   modified.
@@ -35,7 +38,7 @@ rollout still pending. Not deployed to production.
 ### Upgrade (when approved)
 
 `bench migrate` is required on every site. Clear website cache after deploy;
-the shared asset/service-worker revision is `2026-11-24-share-connect`.
+the shared asset/service-worker revision is `2026-11-24-share-connect-ui`.
 `bench build` is only needed when assets are copied files, not symlinks.
 
 ---

@@ -30,12 +30,16 @@ All notable changes to this project will be documented in this file.
   unchecked box.
 - CRM Lead status (including `converted = 1`) reconciles to both Enquiry and
   Contact Exchange through immediate hooks and a bounded hourly job.
+- Share & Connect and Contact Exchange now inherit the active card theme:
+  surface, border, text, primary fill, radius, typography and shadow come from
+  the page's inline `--bc-*` tokens, with section headings matching the other
+  card sections. Card pages keep their existing section surface.
 - Migration adds 13 fields across three existing DocTypes and a non-destructive,
   idempotent attribution patch. Historical CRM Leads are not modified.
 
 ### Notes
 
-- Asset and service-worker revision bumped to `2026-11-24-share-connect`. Run
+- Asset and service-worker revision bumped to `2026-11-24-share-connect-ui`. Run
   `bench migrate` and clear website cache on every site after release approval.
 
 ## v1.4.10 - 24 November 2026

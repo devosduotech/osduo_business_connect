@@ -695,7 +695,7 @@ Notes:
 - v1.2.0+'s service worker cache names are stamped with the app `__version__`, so
   installed PWAs roll themselves forward on the next visit after a version bump.
 - v1.4.8–v1.4.11 stamp assets and the service worker with a shared revision
-  (`2026-11-24-share-connect` in v1.4.11). On Frappe v16 `sites/assets/<app>` is
+  (`2026-11-24-share-connect-ui` in v1.4.11). On Frappe v16 `sites/assets/<app>` is
   usually a symlink to the app's `public/` folder — check with
   `readlink -f sites/assets/osduo_business_connect/css/branding.css`. When it
   resolves inside the app's `public/`, `bench build` is **not** needed; only run

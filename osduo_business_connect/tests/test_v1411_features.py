@@ -253,6 +253,27 @@ class TestCacheSafeReadEndpoints(unittest.TestCase):
         self.assertIn('if kind != "Business" and not document:', manifest)
         self.assertNotIn('frappe.throw(_("Business not found")', manifest)
 
+    def test_share_ui_uses_theme_tokens(self):
+        css = read("public", "css", "branding.css")
+        section = css.split("9. SHARE & CONNECT", 1)[1]
+        for token in (
+            "--bc-font-family",
+            "--bc-surface",
+            "--bc-border-color",
+            "--bc-text-strong",
+            "--bc-primary-fill",
+            "--bc-primary-text",
+            "--bc-primary-soft",
+            "--bc-radius-sm",
+            "--bc-radius-md",
+            "--bc-card-shadow",
+        ):
+            self.assertIn(token, section, token)
+        shell = read("templates", "pages", "parts", "share_connect.html")
+        form = read("templates", "pages", "parts", "contact_exchange_form.html")
+        self.assertIn("bc-sc-title bc-card-section-title", shell)
+        self.assertIn("bc-ce-title bc-card-section-title", form)
+
     def test_qr_contract(self):
         qr = read("card", "qr_api.py")
         self.assertIn("def get_share_qr(doctype=None, name=None):", qr)
@@ -352,8 +373,8 @@ class TestMigrationSafety(unittest.TestCase):
 class TestVersionAndReleaseWiring(unittest.TestCase):
     def test_version_and_revisions_are_bumped(self):
         self.assertIn('__version__ = "1.4.11"', read("__init__.py"))
-        self.assertIn('BC_ASSET_REVISION = "2026-11-24-share-connect"', read("hooks.py"))
-        self.assertIn('"2026-11-24-share-connect"', read("www", "sw.py"))
+        self.assertIn('BC_ASSET_REVISION = "2026-11-24-share-connect-ui"', read("hooks.py"))
+        self.assertIn('"2026-11-24-share-connect-ui"', read("www", "sw.py"))
 
     def test_docs_and_release_notes_are_updated(self):
         spec = read("..", "docs", "SHARE_AND_CONNECT_SPEC.md")
