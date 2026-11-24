@@ -131,7 +131,7 @@ def get_share_qr(doctype=None, name=None):
     # URL digest, so a slug/domain change cannot serve a stale QR.
     url_hash = hashlib.sha256(url.encode("utf-8")).hexdigest()
     cache_key = "share_qr:" + hashlib.sha256(
-        f"{doctype}|{name}|{url_hash}".encode("utf-8")
+        f"{doctype}|{name}|{url_hash}".encode()
     ).hexdigest()
 
     cache = _get_cache()

@@ -55,6 +55,7 @@
         activeType: "",
         canRecordExchange: false,
         sender: null,
+        csrfToken: "",
         businessName: "",
         defaultSender: "",
         by: "",
@@ -333,6 +334,7 @@
                 return item && item.key && item.url && item.type;
             }) : [];
             state.sender = manifest.sender || null;
+            state.csrfToken = manifest.csrf_token || "";
             if (state.sender && state.sender.by_slug) { state.by = state.sender.by_slug; }
 
             // Guests keep the server-rendered share bar: no selector, QR or
@@ -356,6 +358,7 @@
                     can_record_exchange: !!manifest.can_record_exchange,
                     my_card_available: !!manifest.my_card_available,
                     sender: state.sender,
+                    csrf_token: state.csrfToken,
                     items: state.items
                 }
             }));
@@ -390,12 +393,7 @@
     }
 
     window.BCShareConnect = {
-        bindShareBar: bindShareBar,
-        updateShareBar: function (data) {
-            if (data && data.by) { state.by = data.by; }
-            applyShareBar();
-        },
-        getSelection: function () { return state.selected; }
+        bindShareBar: bindShareBar
     };
 
     ready(init);

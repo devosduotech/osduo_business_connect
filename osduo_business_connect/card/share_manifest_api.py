@@ -208,6 +208,9 @@ def get_share_manifest(business=None, page_type=None, document=None):
     if not business_target:
         return _empty_manifest()
 
+    # Normalize to the canonical Business document name. Callers may pass a
+    # slug, but membership, card and showcase lookups are keyed by name.
+    business = business_key
     business_name = _business_name(business_target, business_key)
     user = frappe.session.user if frappe.session else "Guest"
     logged_in = bool(user and user != "Guest")
@@ -271,10 +274,17 @@ def get_share_manifest(business=None, page_type=None, document=None):
     if not any(item["key"] == default_key for item in items):
         default_key = items[0]["key"] if items else ""
 
+    csrf_token = ""
+    if can_record_exchange:
+        session = getattr(frappe.local, "session", None)
+        data = getattr(session, "data", None) if session else None
+        csrf_token = (getattr(data, "csrf_token", None) if data else None) or ""
+
     return {
         "can_record_exchange": bool(can_record_exchange),
         "my_card_available": bool(my_card_name),
         "sender": sender,
         "items": items,
         "default_key": default_key,
+        "csrf_token": csrf_token,
     }

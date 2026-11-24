@@ -15,9 +15,9 @@ import frappe
 
 __all__ = [
     "map_crm_status",
-    "sync_from_crm_lead",
-    "sync_contact_exchange_from_enquiry",
     "reconcile_statuses",
+    "sync_contact_exchange_from_enquiry",
+    "sync_from_crm_lead",
 ]
 
 # CRM Lead status -> Enquiry status is deliberately 1:1 (P1).

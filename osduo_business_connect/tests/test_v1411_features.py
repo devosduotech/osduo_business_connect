@@ -116,6 +116,15 @@ class TestApiContract(unittest.TestCase):
         self.assertIn("Business sharing cannot include a card, product or service reference", self.api)
         self.assertIn("# Legacy compatibility: infer from the single populated typed reference", self.api)
 
+    def test_idempotent_legacy_result_resolves_content_type_by_keywords(self):
+        # Legacy exchange rows have NULL shared_content_type; the idempotent
+        # response builder must not shift card/product/service into the wrong
+        # keyword arguments.
+        self.assertIn(
+            "_resolve_content_type(\n        None, exchange.card, exchange.product, exchange.service\n    )",
+            self.api,
+        )
+
     def test_idempotency_handles_race_and_conflict(self):
         self.assertIn("def _idempotency_key", self.api)
         self.assertIn('sha256(f"{user}:{request_id}"', self.api)
@@ -241,11 +250,16 @@ class TestCacheSafeReadEndpoints(unittest.TestCase):
         self.assertIn('"my_card_available"', manifest)
         self.assertIn('"default_key"', manifest)
         self.assertIn('"items"', manifest)
+        self.assertIn('"csrf_token"', manifest)
+        self.assertIn("csrf_token", manifest)
         self.assertIn("get_user_card_slug", manifest)
         # A stale or guest request must return a safe empty manifest, never a
         # 404 that hides the whole section and leaves no diagnostics.
         self.assertIn("def _business_key(value):", manifest)
         self.assertIn('{"slug": value.lower()}, "name"', manifest)
+        # Callers may pass a Business slug; normalize to the canonical name
+        # before membership, card and showcase lookups.
+        self.assertIn("business = business_key", manifest)
         self.assertIn("def _empty_manifest():", manifest)
         self.assertIn("return _empty_manifest()", manifest)
         # Business has no child document ID, so it must not be skipped by the
@@ -334,14 +348,25 @@ class TestCacheSafeReadEndpoints(unittest.TestCase):
     def test_shell_defers_personalisation_to_the_manifest(self):
         shell = read("templates", "pages", "parts", "share_connect.html")
         for marker in ("data-bc-share-config", "json_for_script", "qrGeneration",
-                       "bc:share-manifest", "can_record_exchange"):
+                       "bc:share-manifest", "can_record_exchange", "bindShareBar"):
             self.assertIn(marker, shell)
+        self.assertIn("csrf_token: state.csrfToken", shell)
+        self.assertNotIn("updateShareBar", shell)
+        self.assertNotIn("getSelection", shell)
+        share_bar = read("templates", "pages", "parts", "share_bar.html")
+        self.assertNotIn("share_qr", share_bar)
+
+    def test_contact_exchange_uses_manifest_csrf_token(self):
+        form = read("templates", "pages", "parts", "contact_exchange_form.html")
+        self.assertIn("detail.csrf_token", form)
+        self.assertIn("csrfToken", form)
+        self.assertIn("X-Frappe-CSRF-Token", form)
         # Read calls are GET-only; frappe.xcall would send POST and be rejected.
+        shell = read("templates", "pages", "parts", "share_connect.html")
         self.assertNotIn("frappe.xcall", shell)
         self.assertIn("fetch(url", shell)
         self.assertIn('method: "GET"', shell)
         self.assertIn('credentials: "same-origin"', shell)
-        form = read("templates", "pages", "parts", "contact_exchange_form.html")
         self.assertIn("hidden>", form)
         self.assertIn("create_enquiry: wantsEnquiry", form)
         self.assertNotIn("enquiry_requested: wantsEnquiry", form)
@@ -383,17 +408,17 @@ class TestMigrationSafety(unittest.TestCase):
 
 class TestVersionAndReleaseWiring(unittest.TestCase):
     def test_version_and_revisions_are_bumped(self):
-        self.assertIn('__version__ = "1.4.11"', read("__init__.py"))
-        self.assertIn('BC_ASSET_REVISION = "2026-11-24-share-connect-ui-contrast"', read("hooks.py"))
-        self.assertIn('"2026-11-24-share-connect-ui-contrast"', read("www", "sw.py"))
+        self.assertIn('__version__ = "1.4.12"', read("__init__.py"))
+        self.assertIn('BC_ASSET_REVISION = "2026-11-24-share-connect-v1412"', read("hooks.py"))
+        self.assertIn('"2026-11-24-share-connect-v1412"', read("www", "sw.py"))
 
     def test_docs_and_release_notes_are_updated(self):
         spec = read("..", "docs", "SHARE_AND_CONNECT_SPEC.md")
         self.assertIn("**Version:** 0.3.1", spec)
         self.assertIn("T44", spec)
         notes = read("..", "RELEASE_NOTES.md")
-        self.assertIn("# Release Notes - business_connect (v1.4.11)", notes)
-        self.assertIn("Tagged as `v1.4.11`", notes)
+        self.assertIn("# Release Notes - business_connect (v1.4.12)", notes)
+        self.assertIn("**Release:** v1.4.12.", notes)
         manual = read("..", "docs", "USER_MANUAL.md")
         self.assertIn("Save as an Enquiry (goes to CRM)", manual)
 

@@ -270,16 +270,7 @@ def resolve_share_target(
     }
 
 
-def _share_target(business, card=None, product=None, service=None, user=None):
-    """Backward-compatible tuple form used by legacy internal callers."""
-    target = resolve_share_target(
-        business,
-        card=card,
-        product=product,
-        service=service,
-        user=user,
-    )
-    return target["title"], target["url"], target["by_slug"], target["member"]
+
 
 
 def build_share_message(content_type, title, business_name, url, sender_name,
@@ -334,10 +325,7 @@ def _build_share_link(channel, phone, email, subject, text, url, by_slug, campai
     return None
 
 
-def _target_kind(card=None, product=None, service=None, shared_content_type=None):
-    """Which public page this exchange came from — also picks Enquiry.source."""
-    kind = _resolve_content_type(shared_content_type, card, product, service).lower()
-    return kind if kind in ENQUIRY_SOURCES else "business"
+
 
 
 def _enquiry_message(exchange):
@@ -427,7 +415,7 @@ def create_enquiry_from_exchange(exchange, kind=None, landing_url=None, commit=F
 
 def _idempotency_key(user, request_id):
     """Stable, user-scoped key for one client submit intent."""
-    return hashlib.sha256(f"{user}:{request_id}".encode("utf-8")).hexdigest()
+    return hashlib.sha256(f"{user}:{request_id}".encode()).hexdigest()
 
 
 def _existing_exchange_by_key(idempotency_key):
@@ -466,7 +454,7 @@ def _result_from_exchange(exchange, idempotent=False):
     """Rebuild a response from a saved Exchange without trusting client URLs."""
     business = exchange.business
     kind = getattr(exchange, "shared_content_type", None) or _resolve_content_type(
-        exchange.card, exchange.product, exchange.service
+        None, exchange.card, exchange.product, exchange.service
     )
     fallback_slug = frappe.db.get_value("Business", business, "slug") or ""
     if kind == "Card" and exchange.card:

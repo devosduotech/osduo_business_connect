@@ -103,7 +103,7 @@
                 throw result;
             });
         }
-        var token = (window.frappe && window.frappe.csrf_token) || "";
+        var token = (window.frappe && window.frappe.csrf_token) || csrfToken || "";
         return fetch("/api/method/" + endpoint, {
             method: "POST",
             credentials: "same-origin",
@@ -141,6 +141,7 @@
         var button = form ? form.querySelector('button[type="submit"]') : null;
         var fields = form ? Array.prototype.slice.call(form.querySelectorAll("input, select, textarea, button")) : [];
         var intent = { requestId: null, frozen: null, pending: false };
+        var csrfToken = "";
 
         function newRequestId() {
             var id = uuidV4();
@@ -161,6 +162,7 @@
 
         document.addEventListener("bc:share-manifest", function (event) {
             var detail = event.detail || {};
+            csrfToken = detail.csrf_token || csrfToken || "";
             root.hidden = !detail.can_record_exchange;
         });
 

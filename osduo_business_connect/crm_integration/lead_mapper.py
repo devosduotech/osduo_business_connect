@@ -208,7 +208,7 @@ def create_lead_from_enquiry(enquiry_doc):
 
     except Exception as e:
         frappe.log_error(
-            message=f"Failed to create CRM Lead from Enquiry {enquiry_doc.name}: {str(e)}",
+            message=f"Failed to create CRM Lead from Enquiry {enquiry_doc.name}: {e!s}",
             title="CRM Lead Creation Failed",
         )
 
@@ -247,7 +247,7 @@ def retry_failed_enquiries():
                 synced_count += 1
         except Exception as e:
             frappe.log_error(
-                message=f"Failed to retry enquiry {enquiry.name}: {str(e)}",
+                message=f"Failed to retry enquiry {enquiry.name}: {e!s}",
                 title="Enquiry Retry Failed",
             )
 

@@ -6,8 +6,6 @@
     share_title  — email subject / native share title
     share_by     — static fallback attribution slug (never user-derived)
     share_ref    — enable standard share UTM (?utm_source=<channel>&utm_medium=share&by=<slug>)
-    share_qr     — optional QR image URL (Share & Connect loads its own lazily)
-    share_qr_alt — optional QR alt text
 
   Dynamic values are escaped with | e. The Share & Connect shell may replace
   hrefs/data attributes at runtime via setAttribute; no innerHTML is used.
@@ -43,13 +41,6 @@
         <span class="bc-card-share-copy">Copy</span>
     </div>
     <div class="bc-copy-toast" style="display:none;">Copied!</div>
-
-    {% if share_qr %}
-    <div class="bc-card-share-qr">
-        <img decoding="async" loading="lazy" src="{{ share_qr | e }}" alt="{{ (share_qr_alt or 'QR code') | e }}">
-        <p>Scan to view</p>
-    </div>
-    {% endif %}
 
     <div class="bc-card-share-buttons">
         <a href="https://wa.me/?text={{ (_share_text ~ ' ' ~ _wa_link) | urlencode | e }}" target="_blank" rel="noopener" class="bc-btn bc-btn-secondary" data-bc-channel="whatsapp">&#128172; WhatsApp</a>

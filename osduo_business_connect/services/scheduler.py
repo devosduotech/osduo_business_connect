@@ -8,7 +8,6 @@ Handles scheduled tasks for OSDuo Business Connect.
 """
 
 import frappe
-from frappe import _
 
 
 def daily_tasks():
@@ -30,7 +29,7 @@ def expire_subscription_domains():
             frappe.logger().info(f"Expired {expired} custom domain mapping(s)")
     except Exception as e:
         frappe.log_error(
-            message=f"Failed to expire domains: {str(e)}",
+            message=f"Failed to expire domains: {e!s}",
             title="Domain Expiry Failed",
         )
 
@@ -58,7 +57,7 @@ def reconcile_share_connect_statuses():
             )
     except Exception as e:
         frappe.log_error(
-            message=f"Failed to reconcile Share & Connect statuses: {str(e)}",
+            message=f"Failed to reconcile Share & Connect statuses: {e!s}",
             title="Share & Connect Status Reconciliation Failed",
         )
 
@@ -76,7 +75,7 @@ def retry_failed_enquiry_creation():
             )
     except Exception as e:
         frappe.log_error(
-            message=f"Failed to recover pending Enquiries: {str(e)}",
+            message=f"Failed to recover pending Enquiries: {e!s}",
             title="Share & Connect Enquiry Recovery Failed",
         )
 
@@ -98,6 +97,6 @@ def retry_pending_enquiries():
             frappe.logger().info(f"Successfully synced {synced_count} enquiries to CRM")
     except Exception as e:
         frappe.log_error(
-            message=f"Failed to retry CRM sync: {str(e)}",
+            message=f"Failed to retry CRM sync: {e!s}",
             title="CRM Sync Retry Failed"
         )

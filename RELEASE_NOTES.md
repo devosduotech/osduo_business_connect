@@ -1,10 +1,22 @@
-# Release Notes - business_connect (v1.4.11)
+# Release Notes - business_connect (v1.4.12)
 
-**Status:** Tagged as `v1.4.11` and pushed to `develop`; UAT and production
-rollout still pending. Not deployed to production.
-**Release:** v1.4.11.
+**Status:** Production release tag. UAT before enabling broadly on production.
+**Release:** v1.4.12.
 
-## Changes (v1.4.11)
+## Changes (v1.4.12)
+
+### Fixed
+
+- **Save & Share CSRF on cached public pages:** authenticated manifest returns a
+  private `csrf_token` for exchange-capable members; the contact form sends it
+  as `X-Frappe-CSRF-Token`.
+- **Manifest slug normalization:** Business slug requests are normalized to the
+  canonical Business name before membership/card/showcase lookups.
+- **Legacy idempotent replay:** NULL `shared_content_type` exchanges rebuild with
+  explicit content-type keyword arguments.
+- Minor dead-code cleanup in Share & Connect paths.
+
+## Changes carried from v1.4.11
 
 ### Added
 
@@ -39,7 +51,7 @@ rollout still pending. Not deployed to production.
 ### Upgrade (when approved)
 
 `bench migrate` is required on every site. Clear website cache after deploy;
-the shared asset/service-worker revision is `2026-11-24-share-connect-ui-contrast`.
+the shared asset/service-worker revision is `2026-11-24-share-connect-v1412`.
 `bench build` is only needed when assets are copied files, not symlinks.
 
 ---

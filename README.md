@@ -1,6 +1,6 @@
 # OSDuo Business Connect
 
-**v1.4.11** | **Your digital identity. Your customers. Your growth.**
+**v1.4.12** | **Your digital identity. Your customers. Your growth.**
 
 Business Connect transforms how small businesses and professionals establish their digital presence. Create a stunning business profile, showcase products and services, capture customer enquiries and card exchanges, and install it all as a mobile app — all seamlessly integrated with Frappe CRM.
 

@@ -677,7 +677,7 @@ never appear on the page's canonical URL, so sharing and indexing stay clean.
 The copied link always uses the canonical domain, never the host you happen to
 be browsing from.
 
-From v1.4.11 the sharing area is called **Share & Connect**. Logged-in members
+From v1.4.11+ the sharing area is called **Share & Connect**. Logged-in members
 also see a **Select what you want to share** chooser above the bar: **My Card**,
 **Business**, **Product** or **Service**. The page you are viewing is selected by
 default. Changing the choice updates the link, QR and message. The contact form
@@ -1140,7 +1140,7 @@ offline cache, so clients and the service worker fetch fresh files together.
 | A tapped sidebar row stays white after navigating away | Fixed in v1.4.9: sticky touch hover no longer paints the selected chip. See §11.5 |
 | Team members table is cramped on a phone | Fixed in v1.4.10: the table scrolls sideways inside its own region and invite fields use 16px. Hard-refresh once if the old layout is cached |
 | Share & Connect form is missing on a public page | Log in as an active Owner/Manager/Member of that business. Guests see only the normal share bar; the form loads after authentication |
-| A repeated Save & Share tap created only one exchange | Expected: v1.4.11 uses a per-intent request ID. Start a new share to create another record |
+| A repeated Save & Share tap created only one exchange | Expected: v1.4.11+ uses a per-intent request ID. Start a new share to create another record |
 | Video does not play on a product or service page | Check the link is a supported share link — YouTube, Vimeo, Google Drive, Dailymotion, a Nextcloud **single-file** public share (`/s/…`). A Nextcloud **folder** share returns a zip and cannot play, and unsupported or unsafe links are skipped quietly — the page renders no video box rather than a broken one |
 
 Anything not listed here — a QR code that won't generate, a public page that won't
@@ -1207,7 +1207,7 @@ A: Each enquiry records its source (Digital Card, Product, Service, QR, Campaign
 A: Yes. Write your public URL to any standard NTAG21x NFC card or tag — a tap opens your digital profile exactly like a QR scan, and the tap lands with the same analytics attribution (see [NFC Cards & Tags](#64-nfc-cards--tags) for choosing, writing and locking tags).
 
 **Q: How can I share my digital business card?**  
-A: Through the personalized public URL, the QR code generated from it, an NFC card or tag, or the share bar on every public page (Copy / WhatsApp / SMS / Email / native share). Every route uses the same canonical URL, so all links stay valid. From v1.4.11, **Share & Connect** also lets a logged-in member switch between My Card, Business, Product and Service before sharing.
+A: Through the personalized public URL, the QR code generated from it, an NFC card or tag, or the share bar on every public page (Copy / WhatsApp / SMS / Email / native share). Every route uses the same canonical URL, so all links stay valid. From v1.4.11+, **Share & Connect** also lets a logged-in member switch between My Card, Business, Product and Service before sharing.
 
 **Q: Can customers contact my business directly?**  
 A: Yes. Every public page offers one-tap channels matching what you filled in: WhatsApp, phone, email and website links, plus the enquiry form.

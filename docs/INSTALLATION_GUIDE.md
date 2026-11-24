@@ -3,7 +3,7 @@
 Step-by-step instructions to install, operate, and update **OSDuo Business Connect**
 — from a single-site demo to a multi-tenant SaaS bench serving many customer domains.
 
-Current release: **v1.4.11** (see [RELEASE_NOTES.md](../RELEASE_NOTES.md)).
+Current release: **v1.4.12** (see [RELEASE_NOTES.md](../RELEASE_NOTES.md)).
 
 ---
 
@@ -695,7 +695,7 @@ Notes:
 - v1.2.0+'s service worker cache names are stamped with the app `__version__`, so
   installed PWAs roll themselves forward on the next visit after a version bump.
 - v1.4.8–v1.4.11 stamp assets and the service worker with a shared revision
-  (`2026-11-24-share-connect-ui-contrast` in v1.4.11). On Frappe v16 `sites/assets/<app>` is
+  (`2026-11-24-share-connect-v1412` in v1.4.12). On Frappe v16 `sites/assets/<app>` is
   usually a symlink to the app's `public/` folder — check with
   `readlink -f sites/assets/osduo_business_connect/css/branding.css`. When it
   resolves inside the app's `public/`, `bench build` is **not** needed; only run

@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.4.12 - 24 November 2026
+
+### Fixed
+
+- **Share & Connect CSRF on cached public pages:** public shells do not carry
+  Frappe boot/CSRF tokens. The authenticated private manifest now returns a
+  `csrf_token` for exchange-capable members, and the contact form uses it for
+  `X-Frappe-CSRF-Token`.
+- **Manifest slug normalization:** manifest requests passing a Business slug are
+  normalized to the canonical Business name before membership, card and showcase
+  lookups.
+- **Legacy idempotent response rebuild:** idempotent replay for legacy exchanges
+  with NULL `shared_content_type` resolves content type with explicit keyword
+  arguments, preventing card/product/service argument shifting.
+- Removed unused private helpers and dead Share & Connect UI fallback paths.
+
+### Notes
+
+- Fresh production release tag for Share & Connect. Asset/service-worker revision
+  is `2026-11-24-share-connect-v1412`. Run `bench migrate` and clear website cache
+  on every site after deploy.
+
 ## v1.4.11 - 24 November 2026
 
 ### Added
@@ -41,7 +63,7 @@ All notable changes to this project will be documented in this file.
 
 ### Notes
 
-- Asset and service-worker revision bumped to `2026-11-24-share-connect-ui-contrast`. Run
+- Asset and service-worker revision bumped to `2026-11-24-share-connect-v1412`. Run
   `bench migrate` and clear website cache on every site after release approval.
 
 ## v1.4.10 - 24 November 2026
