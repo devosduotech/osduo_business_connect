@@ -22,7 +22,8 @@ All notable changes to this project will be documented in this file.
   identity or CSRF tokens. Personalized data is loaded from non-cacheable read
   endpoints.
 - The manifest read returns a safe empty response for guests and stale document
-  IDs instead of a 404, and accepts a Business ID or slug. This keeps the normal
+  IDs instead of a 404, accepts a Business ID or slug, and no longer skips the
+  Business target because it has no child document ID. This keeps the normal
   public share bar working when Share & Connect is not available.
 - Contact Exchange and its Enquiry share one commit boundary with a savepoint.
   Failed Enquiry creation is recorded, retried safely and never created for an

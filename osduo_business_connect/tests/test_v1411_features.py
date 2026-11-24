@@ -248,6 +248,9 @@ class TestCacheSafeReadEndpoints(unittest.TestCase):
         self.assertIn('{"slug": value.lower()}, "name"', manifest)
         self.assertIn("def _empty_manifest():", manifest)
         self.assertIn("return _empty_manifest()", manifest)
+        # Business has no child document ID, so it must not be skipped by the
+        # shared target resolver guard.
+        self.assertIn('if kind != "Business" and not document:', manifest)
         self.assertNotIn('frappe.throw(_("Business not found")', manifest)
 
     def test_qr_contract(self):

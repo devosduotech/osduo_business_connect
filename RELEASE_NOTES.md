@@ -21,8 +21,9 @@ rollout still pending. Not deployed to production.
   loaded from a non-cacheable authenticated endpoint, so cached HTML never
   contains another user's form, sender details or CSRF token.
 - The manifest read returns a safe empty response for guests and stale document
-  IDs instead of a 404, and accepts a Business ID or slug. The normal public
-  share bar keeps working when Share & Connect is unavailable.
+  IDs instead of a 404, accepts a Business ID or slug, and no longer skips the
+  Business target because it has no child document ID. The normal public share
+  bar keeps working when Share & Connect is unavailable.
 - Exchange and Enquiry use one commit boundary with a savepoint; failed Enquiry
   creation is recorded, retried safely, and never created for an unchecked box.
 - CRM Lead status (including `converted = 1`) reconciles to both Enquiry and

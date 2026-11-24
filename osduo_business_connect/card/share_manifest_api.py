@@ -109,7 +109,9 @@ def _item(kind, name, target, label=None, sender_name=None):
 
 def _try_target(resolver, business, kind, document, user=None):
     """Resolve a target, skipping anything unpublished/sluggeless/foreign."""
-    if not document:
+    # Business is identified by the business itself; only typed child targets
+    # need a document ID from the cached shell.
+    if kind != "Business" and not document:
         return None
     field = {"Card": "card", "Product": "product", "Service": "service"}.get(kind)
     kwargs = {field: document} if field else {}
