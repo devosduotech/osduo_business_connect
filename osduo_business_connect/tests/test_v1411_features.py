@@ -242,6 +242,13 @@ class TestCacheSafeReadEndpoints(unittest.TestCase):
         self.assertIn('"default_key"', manifest)
         self.assertIn('"items"', manifest)
         self.assertIn("get_user_card_slug", manifest)
+        # A stale or guest request must return a safe empty manifest, never a
+        # 404 that hides the whole section and leaves no diagnostics.
+        self.assertIn("def _business_key(value):", manifest)
+        self.assertIn('{"slug": value.lower()}, "name"', manifest)
+        self.assertIn("def _empty_manifest():", manifest)
+        self.assertIn("return _empty_manifest()", manifest)
+        self.assertNotIn('frappe.throw(_("Business not found")', manifest)
 
     def test_qr_contract(self):
         qr = read("card", "qr_api.py")

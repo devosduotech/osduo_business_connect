@@ -10,7 +10,6 @@ CSRF token and no client-supplied URLs.
 """
 
 import frappe
-from frappe import _
 
 from osduo_business_connect.utils.roles import is_system_manager
 
@@ -47,6 +46,36 @@ def _page_type(value):
         return None
     normalized = value[:1].upper() + value[1:].lower()
     return normalized if normalized in PAGE_TYPES else None
+
+
+def _business_key(value):
+    """Accept a Business ID or slug from the cached shell.
+
+    The shell carries a document ID, but older cached pages and hand-built
+    requests may carry a slug with different casing. A failed lookup must never
+    turn a public read into a 404.
+    """
+    if not value:
+        return None
+    try:
+        name = frappe.db.get_value("Business", value, "name")
+        if name:
+            return name
+        name = frappe.db.get_value("Business", {"slug": value.lower()}, "name")
+        return name or None
+    except Exception:
+        return None
+
+
+def _empty_manifest():
+    """Safe response for guests and stale/unresolvable document IDs."""
+    return {
+        "can_record_exchange": False,
+        "my_card_available": False,
+        "sender": None,
+        "items": [],
+        "default_key": "",
+    }
 
 
 def _resolve():
@@ -172,11 +201,12 @@ def get_share_manifest(business=None, page_type=None, document=None):
     kind = _page_type(page_type)
 
     resolver = _resolve()
-    business_target = _try_target(resolver, business, "Business", None)
+    business_key = _business_key(business) or business
+    business_target = _try_target(resolver, business_key, "Business", None)
     if not business_target:
-        frappe.throw(_("Business not found"), frappe.DoesNotExistError)
+        return _empty_manifest()
 
-    business_name = _business_name(business_target, business)
+    business_name = _business_name(business_target, business_key)
     user = frappe.session.user if frappe.session else "Guest"
     logged_in = bool(user and user != "Guest")
 
