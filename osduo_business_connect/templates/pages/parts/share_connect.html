@@ -1,0 +1,404 @@
+{# ===== STATIC SHARE & CONNECT SHELL =====
+   Cache-safe: no session values, no recipient data and no CSRF token. The
+   manifest is fetched after load; only the page type and document ID are
+   embedded, using the script-safe serializer from utils/seo.py. #}
+{% set _sc_page_type = share_connect_page_type or '' %}
+{% set _sc_document = share_connect_document or '' %}
+{% set _sc_business_name = business_name or (doc.business_name if doc else '') %}
+{% set _sc_default_sender = (doc.display_name if doc else '') or _sc_business_name %}
+<div class="bc-sc"
+     data-bc-share-connect
+     data-business="{{ (ce_business or (doc.business if doc else '') or '') | e }}"
+     data-business-name="{{ _sc_business_name | e }}"
+     data-default-sender="{{ _sc_default_sender | e }}"
+     hidden>
+    <h3 class="bc-sc-title">Share &amp; Connect</h3>
+
+    <div class="bc-sc-selector">
+        <span class="bc-sc-label" id="bc-sc-select-label">Select what you want to share</span>
+        <div class="bc-sc-types" role="group" aria-labelledby="bc-sc-select-label">
+            <button type="button" class="bc-sc-type" data-bc-sc-type="Card" aria-pressed="false">My Card</button>
+            <button type="button" class="bc-sc-type" data-bc-sc-type="Business" aria-pressed="false">Business</button>
+            <button type="button" class="bc-sc-type" data-bc-sc-type="Product" aria-pressed="false">Product</button>
+            <button type="button" class="bc-sc-type" data-bc-sc-type="Service" aria-pressed="false">Service</button>
+        </div>
+        <label class="bc-sc-item-label" for="bc-sc-items" hidden>Choose an item</label>
+        <select id="bc-sc-items" class="bc-sc-items" data-bc-sc-items aria-label="Select what you want to share" hidden></select>
+    </div>
+
+    <div class="bc-sc-qr" data-bc-sc-qr hidden>
+        <img data-bc-sc-qr-img decoding="async" loading="lazy" alt="QR code">
+        <p>Scan to view <span data-bc-sc-qr-label></span></p>
+    </div>
+
+    <p class="bc-sc-hint" data-bc-sc-hint role="status" aria-live="polite" hidden></p>
+
+    <input type="hidden" data-bc-sc-field="card" value="">
+    <input type="hidden" data-bc-sc-field="product" value="">
+    <input type="hidden" data-bc-sc-field="service" value="">
+
+    <script type="application/json" data-bc-share-config>{{ {"page_type": _sc_page_type, "document": _sc_document} | json_for_script | safe }}</script>
+</div>
+
+<script>
+{% raw %}
+(function () {
+    "use strict";
+
+    var MANIFEST_ENDPOINT = "osduo_business_connect.card.share_manifest_api.get_share_manifest";
+    var QR_ENDPOINT = "osduo_business_connect.card.qr_api.get_share_qr";
+    var widgets = [];
+    var qrGeneration = 0;
+    var state = {
+        items: [],
+        selected: null,
+        activeType: "",
+        canRecordExchange: false,
+        sender: null,
+        businessName: "",
+        defaultSender: "",
+        by: "",
+        shareRef: true,
+        pageType: "",
+        document: "",
+        root: null
+    };
+
+    function ready(fn) {
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", fn);
+        } else {
+            fn();
+        }
+    }
+
+    function unwrap(payload) {
+        if (payload && Object.prototype.hasOwnProperty.call(payload, "message")) {
+            return payload.message;
+        }
+        return payload;
+    }
+
+    function callRead(endpoint, args) {
+        // The read endpoints are GET-only, so use fetch directly. A route-
+        // cached public page must only make safe read calls.
+        var query = new URLSearchParams();
+        Object.keys(args || {}).forEach(function (key) {
+            if (args[key] !== undefined && args[key] !== null && args[key] !== "") {
+                query.append(key, args[key]);
+            }
+        });
+        var url = "/api/method/" + endpoint;
+        if (query.toString()) { url += "?" + query.toString(); }
+        return fetch(url, {
+            method: "GET",
+            credentials: "same-origin",
+            headers: { "Accept": "application/json" }
+        })
+            .then(function (response) {
+                if (!response.ok) { throw new Error("read failed: " + response.status); }
+                return response.json();
+            })
+            .then(unwrap);
+    }
+
+    function setData(element, name, value) {
+        if (element) { element.setAttribute("data-" + name, value == null ? "" : String(value)); }
+    }
+
+    function attributed(url, channel) {
+        if (!url || !state.shareRef) { return url || ""; }
+        var separator = url.indexOf("?") >= 0 ? "&" : "?";
+        var parts = [
+            "utm_source=" + encodeURIComponent(channel),
+            "utm_medium=share"
+        ];
+        if (state.by) { parts.push("by=" + encodeURIComponent(state.by)); }
+        return url + separator + parts.join("&");
+    }
+
+    function messageFor(item) {
+        // The manifest uses build_share_message() from the shared server
+        // contract. The fallback only exists for an older API build.
+        if (item.message) { return item.message; }
+        var senderName = (state.sender && state.sender.name) || state.defaultSender || state.businessName;
+        var businessName = (state.sender && state.sender.business) || state.businessName;
+        return (item.subject || item.label || "Shared item") + "\n\n" + item.url +
+               "\n\nRegards,\n" + senderName + (businessName ? " | " + businessName : "");
+    }
+
+    function applyShareBar() {
+        var item = state.selected;
+        if (!item || !state.canRecordExchange) { return; }
+        var text = messageFor(item);
+        var title = item.subject || item.label || document.title;
+        widgets.forEach(function (widget) {
+            setData(widget, "share-url", item.url);
+            setData(widget, "share-text", text);
+            setData(widget, "share-title", title);
+            setData(widget, "share-by", state.by);
+            setData(widget, "share-ref", state.shareRef ? "1" : "0");
+
+            var copyUrl = attributed(item.url, "copy");
+            var link = widget.querySelector(".bc-card-share-link[data-copy-url]");
+            if (link) {
+                link.setAttribute("data-copy-url", copyUrl);
+                var display = link.querySelector(".bc-card-share-url");
+                if (display) { display.textContent = copyUrl; }
+            }
+
+            var wa = widget.querySelector('[data-bc-channel="whatsapp"]');
+            if (wa) {
+                wa.setAttribute("href", "https://wa.me/?text=" + encodeURIComponent(text + " " + attributed(item.url, "whatsapp")));
+            }
+            var sms = widget.querySelector('[data-bc-channel="sms"]');
+            if (sms) {
+                sms.setAttribute("href", "sms:?body=" + encodeURIComponent(text + " " + attributed(item.url, "sms")));
+            }
+            var email = widget.querySelector('[data-bc-channel="email"]');
+            if (email) {
+                email.setAttribute("href", "mailto:?subject=" + encodeURIComponent(title) +
+                    "&body=" + encodeURIComponent(text + " " + attributed(item.url, "email")));
+            }
+            var native = widget.querySelector("[data-bc-native-share]");
+            if (native) {
+                native.setAttribute("data-title", title);
+                native.setAttribute("data-text", text);
+                native.setAttribute("data-url", attributed(item.url, "whatsapp"));
+            }
+        });
+    }
+
+    function bindShareBar(widget) {
+        if (!widget || widgets.indexOf(widget) >= 0) { return; }
+        widgets.push(widget);
+        if (!state.by) { state.by = widget.getAttribute("data-share-by") || ""; }
+        state.shareRef = widget.getAttribute("data-share-ref") !== "0";
+        if (state.selected) { applyShareBar(); }
+    }
+
+    function loadQR(item) {
+        if (!state.canRecordExchange) { return; }
+        var generation = ++qrGeneration;
+        var box = state.root.querySelector("[data-bc-sc-qr]");
+        var image = state.root.querySelector("[data-bc-sc-qr-img]");
+        var label = state.root.querySelector("[data-bc-sc-qr-label]");
+        if (!box || !image) { return; }
+        box.hidden = true;
+        image.removeAttribute("src");
+        if (label) { label.textContent = item.label || ""; }
+
+        callRead(QR_ENDPOINT, { doctype: item.doctype, name: item.name })
+            .then(function (payload) {
+                if (generation !== qrGeneration) { return; }
+                var result = unwrap(payload) || {};
+                if (result.qr_image) {
+                    image.setAttribute("src", result.qr_image);
+                    image.setAttribute("alt", "QR code for " + (item.label || "selected content"));
+                    box.hidden = false;
+                }
+            })
+            .catch(function () {
+                if (generation === qrGeneration) { box.hidden = true; }
+            });
+    }
+
+    function updateHiddenFields(item) {
+        var fieldMap = { Card: "card", Product: "product", Service: "service" };
+        state.root.querySelectorAll("[data-bc-sc-field]").forEach(function (input) {
+            input.value = "";
+        });
+        var field = fieldMap[item.type];
+        if (field) {
+            var input = state.root.querySelector('[data-bc-sc-field="' + field + '"]');
+            if (input) { input.value = item.name || ""; }
+        }
+    }
+
+    function selectItem(key) {
+        var item = null;
+        for (var i = 0; i < state.items.length; i++) {
+            if (state.items[i].key === key) { item = state.items[i]; break; }
+        }
+        if (!item) { return; }
+        state.selected = item;
+        state.activeType = item.type;
+
+        state.root.querySelectorAll("[data-bc-sc-type]").forEach(function (button) {
+            button.setAttribute("aria-pressed", button.getAttribute("data-bc-sc-type") === item.type ? "true" : "false");
+        });
+        var select = state.root.querySelector("[data-bc-sc-items]");
+        if (select && select.value !== item.key) { select.value = item.key; }
+
+        updateHiddenFields(item);
+        applyShareBar();
+        loadQR(item);
+
+        document.dispatchEvent(new CustomEvent("bc:share-selection", {
+            detail: {
+                type: item.type,
+                doctype: item.doctype,
+                name: item.name,
+                label: item.label,
+                url: item.url,
+                key: item.key
+            }
+        }));
+    }
+
+    function itemsFor(type) {
+        return state.items.filter(function (item) { return item.type === type; });
+    }
+
+    function populateItems(type) {
+        var select = state.root.querySelector("[data-bc-sc-items]");
+        var label = state.root.querySelector(".bc-sc-item-label");
+        if (!select) { return []; }
+        var items = itemsFor(type);
+        while (select.firstChild) { select.removeChild(select.firstChild); }
+        items.forEach(function (item) {
+            var option = document.createElement("option");
+            option.setAttribute("value", item.key);
+            option.textContent = item.label || item.name;
+            select.appendChild(option);
+        });
+        var show = items.length > 1 || ((type === "Product" || type === "Service") && items.length === 1);
+        select.hidden = !show;
+        if (label) { label.hidden = !show; }
+        return items;
+    }
+
+    function renderTypes() {
+        state.root.querySelectorAll("[data-bc-sc-type]").forEach(function (button) {
+            var type = button.getAttribute("data-bc-sc-type");
+            var items = itemsFor(type);
+            if (!items.length) {
+                button.hidden = true;
+                button.disabled = true;
+            } else {
+                button.hidden = false;
+                button.disabled = false;
+            }
+        });
+    }
+
+    function showHint(text) {
+        var hint = state.root.querySelector("[data-bc-sc-hint]");
+        if (!hint) { return; }
+        if (text) {
+            hint.textContent = text;
+            hint.hidden = false;
+        } else {
+            hint.textContent = "";
+            hint.hidden = true;
+        }
+    }
+
+    function init() {
+        state.root = document.querySelector("[data-bc-share-connect]");
+        if (!state.root) { return; }
+
+        var configScript = state.root.querySelector('script[type="application/json"][data-bc-share-config]');
+        var config = {};
+        try {
+            config = JSON.parse(configScript && configScript.textContent ? configScript.textContent : "{}");
+        } catch (ex) {
+            config = {};
+        }
+        state.pageType = config.page_type || "";
+        state.document = config.document || "";
+        state.businessName = state.root.getAttribute("data-business-name") || "";
+        state.defaultSender = state.root.getAttribute("data-default-sender") || "";
+
+        var select = state.root.querySelector("[data-bc-sc-items]");
+        if (select) {
+            select.addEventListener("change", function () { selectItem(select.value); });
+        }
+        state.root.querySelectorAll("[data-bc-sc-type]").forEach(function (button) {
+            button.addEventListener("click", function () {
+                var type = button.getAttribute("data-bc-sc-type");
+                var items = populateItems(type);
+                if (items.length) { selectItem(items[0].key); }
+            });
+        });
+
+        callRead(MANIFEST_ENDPOINT, {
+            business: state.root.getAttribute("data-business") || "",
+            page_type: state.pageType,
+            document: state.document
+        }).then(function (payload) {
+            var manifest = unwrap(payload) || {};
+            state.canRecordExchange = !!manifest.can_record_exchange;
+            state.items = Array.isArray(manifest.items) ? manifest.items.filter(function (item) {
+                return item && item.key && item.url && item.type;
+            }) : [];
+            state.sender = manifest.sender || null;
+            if (state.sender && state.sender.by_slug) { state.by = state.sender.by_slug; }
+
+            // Guests keep the server-rendered share bar: no selector, QR or
+            // message rewrite. The manifest is still fetched so no private
+            // data is ever embedded in the route-cached HTML.
+            state.root.hidden = !state.canRecordExchange;
+            if (!state.canRecordExchange) {
+                document.dispatchEvent(new CustomEvent("bc:share-manifest", {
+                    detail: {
+                        can_record_exchange: false,
+                        my_card_available: false,
+                        sender: null,
+                        items: []
+                    }
+                }));
+                return;
+            }
+
+            document.dispatchEvent(new CustomEvent("bc:share-manifest", {
+                detail: {
+                    can_record_exchange: !!manifest.can_record_exchange,
+                    my_card_available: !!manifest.my_card_available,
+                    sender: state.sender,
+                    items: state.items
+                }
+            }));
+
+            var chip = document.querySelector("[data-bc-my-card-chip]");
+            if (chip) {
+                var hasCard = itemsFor("Card").length > 0;
+                chip.hidden = !hasCard;
+                if (hasCard) { chip.removeAttribute("aria-hidden"); }
+                else { chip.setAttribute("aria-hidden", "true"); }
+            }
+
+            renderTypes();
+            if (!state.items.length) {
+                showHint("Nothing is available to share right now.");
+                return;
+            }
+
+            var defaultKey = manifest.default_key || "";
+            var found = state.items.some(function (item) { return item.key === defaultKey; });
+            if (!found) {
+                defaultKey = state.items[0].key;
+                showHint("This item is not available right now. Choose another item below.");
+            } else {
+                showHint("");
+            }
+            populateItems(itemsFor(defaultKey.split(":")[0]).length ? defaultKey.split(":")[0] : state.items[0].type);
+            selectItem(defaultKey);
+        }).catch(function () {
+            showHint("Sharing options could not be loaded. The normal share buttons still work.");
+        });
+    }
+
+    window.BCShareConnect = {
+        bindShareBar: bindShareBar,
+        updateShareBar: function (data) {
+            if (data && data.by) { state.by = data.by; }
+            applyShareBar();
+        },
+        getSelection: function () { return state.selected; }
+    };
+
+    ready(init);
+})();
+{% endraw %}
+</script>

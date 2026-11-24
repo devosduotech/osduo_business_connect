@@ -35,9 +35,11 @@
     {% for block in seo.get('jsonld') or [] %}<script type="application/ld+json">{{ block | jsonld | safe }}</script>{% endfor %}
     {% if seo.get('preload_image') %}<link rel="preload" as="image" href="{{ seo.get('preload_image') | e }}" fetchpriority="high">{% endif %}
     <link rel="icon" href="{{ bc_favicon or '/assets/osduo_business_connect/images/favicon-256.png' }}" type="image/png">
-    <meta name="csrf-token" content="{{ frappe.session.csrf_token or '' }}">
     <link rel="stylesheet" href="/assets/osduo_business_connect/css/fonts.css">
     <link rel="stylesheet" href="/assets/osduo_business_connect/css/business_connect.css">
+    {#- Share & Connect styles are scoped to .bc-sc / .bc-ce / .bc-share-widget;
+        the rest of this file only targets Desk selectors. -#}
+    <link rel="stylesheet" href="/assets/osduo_business_connect/css/branding.css">
     {#- Per-theme CSS: load only the active theme's ruleset (split_css.py), after
         base so its more-specific .bc-template-* rules still win the cascade. -#}
     {%- set _theme_css = ((template_type or '') | lower | replace(' ', '-')) -%}

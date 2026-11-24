@@ -25,6 +25,7 @@ class ContactExchange(Document):
     def validate(self):
         self.validate_business()
         self.validate_references()
+        self.validate_shared_target()
         self.set_user()
         self.validate_contact()
 
@@ -61,6 +62,54 @@ class ContactExchange(Document):
                 continue
             if not frappe.db.exists(doctype, {"name": name, "business": self.business}):
                 frappe.throw(f"{doctype} does not belong to this business")
+
+    def validate_shared_target(self):
+        """Mirror the API's discriminator rules for direct Desk/REST writes.
+
+        Legacy rows have no discriminator and are left alone. New rows must
+        state exactly one typed reference matching the selected content type.
+        """
+        kind = getattr(self, "shared_content_type", None)
+        if not kind:
+            return
+        if kind not in ("Card", "Business", "Product", "Service"):
+            frappe.throw("Invalid shared content type")
+
+        refs = {"Card": self.card, "Product": self.product, "Service": self.service}
+        populated = [name for name in refs.values() if name]
+        if kind == "Business":
+            if populated:
+                frappe.throw("Business sharing cannot include a card, product or service")
+            fields = ["slug", "status", "public_profile_enabled"]
+            row = frappe.db.get_value(
+                "Business", {"name": self.business}, fields, as_dict=True
+            )
+        elif not refs[kind] or len(populated) != 1 or populated[0] != kind:
+            frappe.throw("Selected content does not match the shared reference")
+        elif kind == "Card":
+            row = frappe.db.get_value(
+                "Digital Card", {"name": self.card, "business": self.business},
+                ["slug", "status", "public_profile_enabled"], as_dict=True,
+            )
+        elif kind == "Product":
+            row = frappe.db.get_value(
+                "Showcase Product", {"name": self.product, "business": self.business},
+                ["slug", "status"], as_dict=True,
+            )
+        else:
+            row = frappe.db.get_value(
+                "Showcase Service", {"name": self.service, "business": self.business},
+                ["slug", "status"], as_dict=True,
+            )
+
+        if not row:
+            frappe.throw("Shared content not found for this business")
+        if not row.get("slug"):
+            frappe.throw("Shared content has no public link yet")
+        if (row.get("status") or "Draft") != "Published":
+            frappe.throw("Shared content is not published")
+        if "public_profile_enabled" in row and not row.get("public_profile_enabled"):
+            frappe.throw("Shared content is not publicly visible")
 
     def set_user(self):
         if not self.user and frappe.session.user and frappe.session.user != "Guest":

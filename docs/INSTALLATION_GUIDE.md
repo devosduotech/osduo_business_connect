@@ -3,7 +3,7 @@
 Step-by-step instructions to install, operate, and update **OSDuo Business Connect**
 — from a single-site demo to a multi-tenant SaaS bench serving many customer domains.
 
-Current release: **v1.4.10** (see [RELEASE_NOTES.md](../RELEASE_NOTES.md)).
+Current release: **v1.4.11** (see [RELEASE_NOTES.md](../RELEASE_NOTES.md)).
 
 ---
 
@@ -694,6 +694,22 @@ Notes:
   `sites/<site>/public/files`.
 - v1.2.0+'s service worker cache names are stamped with the app `__version__`, so
   installed PWAs roll themselves forward on the next visit after a version bump.
+- v1.4.8–v1.4.11 stamp assets and the service worker with a shared revision
+  (`2026-11-24-share-connect` in v1.4.11). On Frappe v16 `sites/assets/<app>` is
+  usually a symlink to the app's `public/` folder — check with
+  `readlink -f sites/assets/osduo_business_connect/css/branding.css`. When it
+  resolves inside the app's `public/`, `bench build` is **not** needed; only run
+  `bench build --app osduo_business_connect` when assets are real copied files.
+  Clear cache and migrate once per site; installed PWAs pick up the new revision
+  on their next visit (close/reopen once if an old cached stylesheet lingers).
+- **v1.4.11 (Share & Connect) requires `bench migrate` on every site.** It adds
+  13 fields across Contact Exchange, Enquiry and CRM Lead, registers a
+  non-destructive attribution backfill patch, and adds two read endpoints
+  (`get_share_manifest`, `get_share_qr`) to the allowlists. Historical CRM Leads
+  are not modified. Run `bench --site <site> clear-website-cache` after deploy
+  so no older cached public HTML survives; the new pages render a static shell
+  and load personalized sharing data through an authenticated, non-cacheable
+  endpoint.
 - `bench migrate` also re-runs `backfill_public_urls()` — after a `host_name` change,
   one migrate is all that's needed to re-stamp `public_url` everywhere.
 - If the site uses a custom **Website Theme**, re-save it (Desk → Website Theme → Save)
@@ -782,9 +798,13 @@ osduo_business_connect` (then `clear-website-cache`). Schema (SEO fields) needs
 | Want to know which origin the app will print into links and QR codes | `bench --site <site> execute osduo_business_connect.utils.urls.describe_canonical_url` — shows the resolved base, the config key it came from, and whether developer mode is on. A scheme-less `host_name` on a public domain is now read as `https://`; loopback/private hosts stay `http://` |
 | Sitemap or `robots.txt` lists `http://<bare-site-name>` instead of the public domain | Only affects **QR/public URLs** if `host_name` is unset — set `"host_name": "https://your.domain"` and migrate. The **sitemap and robots.txt no longer freeze a host**: `/sitemap*.xml` and `/robots.txt` resolve the origin from `host_name` or, failing that, the request host (`X-Forwarded-Proto` aware), so a new tenant subdomain is correct out of the box. After deploying, `bench --site <site> clear-cache && bench --site <site> clear-website-cache` |
 | OSDuo fields not visible on the CRM Lead page (they exist in Customize Form) | Frappe CRM renders the Lead form from its own saved layout. `bench --site <site> migrate` runs `ensure_crm_fields_layout()`, which appends the "OSDuo Attribution" section to `CRM Lead-Side Panel` (idempotent). If a layout builder was used by hand, re-run migrate after any layout change that removed them |
+| Share & Connect form shows one member's details to another user | Deploy v1.4.11, run `bench --site <site> migrate`, then `clear-website-cache` and `clear-cache`. Public HTML must contain no CSRF token or sender identity; verify with member A, member B and a guest on one cached route |
 | Login page unstyled / giant icons after Frappe upgrade | Stale Website Theme CSS — re-save the theme in Desk, `bench build`, hard-refresh |
 | Logo/favicon missing after upgrade | `bench migrate` (applies bundled branding), then `bench clear-cache`; do **not** upload logo files to `public/files` |
 | PWA not installable | Needs HTTPS (or `localhost`); check `/manifest.json` & `/sw.js` return 200; DevTools → Application → Manifest errors |
+| Console shows `Failed to execute 'put' on 'Cache': Partial response (status code 206) is unsupported` | Fixed in v1.4.8: only complete HTTP 200 responses are cached and writes are guarded. Pull the latest `main`, clear cache and migrate; clients may need one PWA close/reopen |
+| Dark sidebar slab covers the page on a phone, or a tapped row stays selected | v1.4.8 collapsed-drawer fix and v1.4.9 pointer-only hover fix. Confirm assets resolve from the app's `public/` and clear cache/migrate. Hover styling is scoped to `@media (hover: hover)` |
+| `/portal/team` table cramped or invite fields zoom on iOS | v1.4.10 phone layout: table scrolls in its own region and inputs are 16px. Hard-refresh once after deploy |
 | `migrate` fails on CRM custom fields | Ensure the `crm` app is installed on the same site before Business Connect |
 | `migrate` fails with `LinkValidationError: Could not find Primary Color / Text Color / Page Background Color` | An older Website Theme still links to legacy `Color` labels after a Frappe upgrade. Business Connect repairs broken theme colour links in a `before_migrate` hook; pull the latest `develop` and re-run `bench --site <site> migrate`. Valid custom colours are untouched |
 | Permission oddities (submit/cancel greyed out) | User needs the role bit **and** an active Business Member row (Owner/Manager/Marketing for submit; Owner for cancel/amend) |

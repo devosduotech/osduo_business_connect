@@ -1,6 +1,6 @@
 # OSDuo Business Connect
 
-**v1.4.10** | **Your digital identity. Your customers. Your growth.**
+**v1.4.11** | **Your digital identity. Your customers. Your growth.**
 
 Business Connect transforms how small businesses and professionals establish their digital presence. Create a stunning business profile, showcase products and services, capture customer enquiries and card exchanges, and install it all as a mobile app — all seamlessly integrated with Frappe CRM.
 
@@ -17,6 +17,7 @@ Business Connect transforms how small businesses and professionals establish the
 | **Lead Generation** | Enquiry forms and card exchanges that auto-create Enquiries, then CRM leads with full tracking |
 | **Contact Exchange** | Owner records who a card/business/product was shared with at events — saved as an Enquiry, appears in CRM with the message context |
 | **Universal Share Bar** | Copy / WhatsApp / SMS / Email / native share on every public page, tagged with standard `utm_*` + sharer; canonical URLs stay parameter-free |
+| **Share & Connect** | Choose card/business/product/service on the public page, get a server-derived URL and QR, and optionally record the recipient as an Enquiry with CRM attribution |
 | **My Card** | `/my-card` lists your published cards with one-tap Open, plus desk navbar / analytics entry points and an Open button beside Public URL in the desk forms |
 | **Desk Support Links** | User Manual, Support Email and Support Portal in the Desk avatar and header menus; built-in Frappe help links removed |
 | **Analytics Dashboard** | Real-time engagement metrics — visits, scans, top cards, visitor mix, enquiry pipeline |
@@ -97,6 +98,11 @@ Analytics Dashboard updates with real-time metrics
   (API and desk traffic never cached), automatic update roll-forward
 - `/offline` — branded fallback page
 - Android install prompt + iOS "Add to Home Screen" guidance on the login app entry
+- Complete-response-only caching (no partial/206 writes), with a shared asset revision
+  so clients and the service worker roll forward together
+- Phone layouts for the private area: the themed BC workspace opens as a dark drawer
+  with only the current page highlighted, and `/portal/team` scrolls its members table
+  sideways instead of crushing columns (v1.4.8–v1.4.10)
 - Details: see the **Mobile App (PWA)** section of the [User Manual](docs/USER_MANUAL.md)
 
 ### Sharing, Attribution & My Card (v1.2.5, UTM since v1.3.1)
@@ -332,8 +338,10 @@ repository).
       sidebar selection and authoritative theme pickers (v1.4.5),
       scheme-driven public page headers (v1.4.6), readable header text on light
       schemes (v1.4.7), mobile sidebar/PWA cache fixes (v1.4.8), and the
-      touch-hover sidebar fix (v1.4.9), and the Team portal phone layout
-      (v1.4.10)
+      touch-hover sidebar fix (v1.4.9), the Team portal phone layout
+      (v1.4.10), and Share & Connect with cache-safe public pages, request-ID
+      idempotency, failed-Enquiry recovery and full CRM status reconciliation
+      (v1.4.11)
 - [ ] Web push notifications for installed PWAs
 - [ ] Play Store listing via TWA wrappers
 - [ ] Multi-language support

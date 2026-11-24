@@ -63,6 +63,12 @@
    "options": "Showcase Service"
   },
   {
+   "fieldname": "shared_content_type",
+   "fieldtype": "Select",
+   "label": "Shared Content Type",
+   "options": "Card\nBusiness\nProduct\nService"
+  },
+  {
    "fieldname": "section_recipient",
    "fieldtype": "Section Break",
    "label": "Recipient"
@@ -180,6 +186,36 @@
    "options": "Enquiry",
    "read_only": 1,
    "description": "Created automatically from this exchange; the CRM Lead is linked on the Enquiry."
+  },
+  {
+   "fieldname": "request_id",
+   "fieldtype": "Data",
+   "label": "Request ID",
+   "read_only": 1,
+   "set_only_once": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "idempotency_key",
+   "fieldtype": "Data",
+   "label": "Idempotency Key",
+   "read_only": 1,
+   "set_only_once": 1,
+   "no_copy": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "enquiry_error",
+   "fieldtype": "Small Text",
+   "label": "Enquiry Error",
+   "read_only": 1
+  },
+  {
+   "fieldname": "enquiry_requested",
+   "fieldtype": "Check",
+   "label": "Enquiry Requested",
+   "default": 0,
+   "read_only": 1
   }
  ],
  "permissions": [

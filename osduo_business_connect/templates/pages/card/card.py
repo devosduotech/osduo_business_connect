@@ -53,17 +53,12 @@ def get_context(context):
     context.share_title = doc.get("display_name") or doc.get("name") or "Digital Card"
     context.share_text = f"{context.share_title} — Digital Business Card"
     context.share_ref = True
-    if doc.get("qr_enabled") and doc.get("qr_image"):
-        context.share_qr = doc.qr_image
-        context.share_qr_alt = f"QR code for {context.share_title}"
 
-    # My Card chip — only for people who belong to this business.
-    from ....business.core import get_user_role_in_business
-    context.show_my_card = bool(
-        frappe.session.user != "Guest"
-        and doc.get("business")
-        and get_user_role_in_business(frappe.session.user, doc.business)
-    )
+    # Static Share & Connect shell inputs. Permission, sender identity, QR and
+    # contact-form visibility are resolved after load by the manifest endpoint
+    # so this route stays cacheable across users.
+    context.share_connect_page_type = "Card"
+    context.share_connect_document = doc.name
 
     # Contact Exchange context
     context.ce_business = doc.get("business")

@@ -37,7 +37,48 @@ def expire_subscription_domains():
 
 def hourly_tasks():
     """Run hourly tasks."""
-    pass
+    # CRM Lead is authoritative when linked; conversions can bypass doc hooks,
+    # so reconcile both Enquiry and Contact Exchange status on a bounded batch.
+    reconcile_share_connect_statuses()
+    # Recover Exchanges whose Enquiry creation failed. This is separate from
+    # the daily CRM Lead retry handled by retry_pending_enquiries().
+    retry_failed_enquiry_creation()
+
+
+def reconcile_share_connect_statuses():
+    """Hourly bounded status reconciliation for linked CRM Leads."""
+    try:
+        from osduo_business_connect.crm_integration.status_reconciliation import (
+            reconcile_statuses,
+        )
+        updated = reconcile_statuses(limit=200)
+        if updated:
+            frappe.logger().info(
+                f"Reconciled {updated} Share & Connect status record(s)"
+            )
+    except Exception as e:
+        frappe.log_error(
+            message=f"Failed to reconcile Share & Connect statuses: {str(e)}",
+            title="Share & Connect Status Reconciliation Failed",
+        )
+
+
+def retry_failed_enquiry_creation():
+    """Retry Enquiry creation for requested-but-failed Contact Exchanges."""
+    try:
+        from osduo_business_connect.card.enquiry_recovery import (
+            retry_failed_enquiry_creation as retry,
+        )
+        recovered = retry(limit=100)
+        if recovered:
+            frappe.logger().info(
+                f"Recovered {recovered} failed Share & Connect Enquiry creation(s)"
+            )
+    except Exception as e:
+        frappe.log_error(
+            message=f"Failed to recover pending Enquiries: {str(e)}",
+            title="Share & Connect Enquiry Recovery Failed",
+        )
 
 
 def weekly_tasks():

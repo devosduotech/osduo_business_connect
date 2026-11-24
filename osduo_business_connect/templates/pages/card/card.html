@@ -120,9 +120,9 @@
             </form>
         </div>
 
-        {# ===== SHARE SECTION ===== #}
+        {# ===== SHARE & CONNECT SECTION ===== #}
         <div class="bc-card-section bc-card-share">
-            <h2 class="bc-card-section-title">Share Card</h2>
+            {% include "osduo_business_connect/templates/pages/parts/share_connect.html" %}
             {% include "osduo_business_connect/templates/pages/parts/my_card_chip.html" %}
             {% include "osduo_business_connect/templates/pages/parts/share_bar.html" %}
             {% include "osduo_business_connect/templates/pages/parts/contact_exchange_form.html" %}
@@ -141,8 +141,6 @@
     <input type="hidden" name="referrer" value="">
 </form>
 
-<div id="bc-csrf-token" data-token="{{ frappe.session.csrf_token or frappe.session.data.csrf_token or '' }}" style="display:none;"></div>
-
 {% raw %}
 <script>
 (function () {
@@ -154,11 +152,9 @@
         var form = document.getElementById('bc-crm-context');
         var params = new URLSearchParams(window.location.search);
         var campaign = params.get('utm_campaign') || params.get('campaign') || '';
-        var csrfEl = document.getElementById('bc-csrf-token');
         var ctx = {
             business: '',
             card: '',
-            csrf_token: csrfEl ? (csrfEl.getAttribute('data-token') || '') : '',
             landing_url: window.location.href,
             campaign: campaign,
             referrer: document.referrer || ''
@@ -185,7 +181,6 @@
             business: context.business,
             event_type: eventType,
             card: context.card,
-            csrf_token: context.csrf_token,
             campaign: context.campaign,
             landing_url: context.landing_url,
             referrer: context.referrer
@@ -228,6 +223,40 @@
         sendEvent(eventType, extra);
     });
 
+    function submitEnquiry(args) {
+        var endpoint = 'osduo_business_connect.enquiry.public_enquiry_api.submit_enquiry';
+        if (window.frappe && typeof window.frappe.xcall === 'function') {
+            return window.frappe.xcall(endpoint, args);
+        }
+        var token = (window.frappe && window.frappe.csrf_token) || '';
+        return fetch('/api/method/' + endpoint, {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Frappe-CSRF-Token': token
+            },
+            body: JSON.stringify(args)
+        }).then(function (r) { return r.json(); })
+          .then(function (body) {
+              if (!body.message) { throw new Error(serverMessage(body)); }
+              return body.message;
+          });
+    }
+
+    function serverMessage(body) {
+        if (body && body._server_messages) {
+            try {
+                var rows = JSON.parse(body._server_messages);
+                if (rows.length) {
+                    var first = typeof rows[0] === 'string' ? JSON.parse(rows[0]) : rows[0];
+                    if (first && first.message) { return first.message; }
+                }
+            } catch (ex) {}
+        }
+        return 'Error sending message';
+    }
+
     var enquiryForm = document.getElementById('card-enquiry-form');
     if (enquiryForm) {
         enquiryForm.addEventListener('submit', function (e) {
@@ -237,47 +266,33 @@
             var original = btn ? btn.textContent : '';
             if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; }
             var fd = new FormData(form);
-            var csrfToken = document.getElementById('bc-csrf-token');
-            csrfToken = csrfToken ? (csrfToken.getAttribute('data-token') || '') : '';
 
-            fetch('/api/method/osduo_business_connect.enquiry.public_enquiry_api.submit_enquiry', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Frappe-CSRF-Token': csrfToken
-                },
-                body: JSON.stringify({
-                    business_slug: fd.get('business_slug'),
-                    visitor_data: JSON.stringify({
-                        name: fd.get('visitor_name'),
-                        email: fd.get('visitor_email'),
-                        phone: fd.get('visitor_phone'),
-                        message: fd.get('message')
-                    }),
-                    source: 'Digital Card',
-                    references: JSON.stringify({
-                        card: fd.get('card'),
-                        campaign: context.campaign
-                    })
+            submitEnquiry({
+                business_slug: fd.get('business_slug'),
+                visitor_data: JSON.stringify({
+                    name: fd.get('visitor_name'),
+                    email: fd.get('visitor_email'),
+                    phone: fd.get('visitor_phone'),
+                    message: fd.get('message')
+                }),
+                source: 'Digital Card',
+                references: JSON.stringify({
+                    card: fd.get('card'),
+                    campaign: context.campaign
                 })
             })
-            .then(function (r) { return r.json(); })
             .then(function (result) {
-                if (result.message && result.message.name) {
+                if (result && result.name) {
                     // enquiry_submitted is recorded once by create_enquiry() on
                     // the server, for every submission path. Do not beacon it here.
                     form.innerHTML = '<div class="bc-form-success"><h3>Message Sent!</h3><p>Thank you. We will get back to you soon.</p></div>';
                 } else {
-                    var msg = 'Error sending message';
-                    if (result._server_messages) {
-                        try { msg = JSON.parse(result._server_messages)[0].message; } catch (ex) {}
-                    }
-                    window.alert(msg);
+                    window.alert('Error sending message');
                     if (btn) { btn.disabled = false; btn.textContent = original; }
                 }
             })
-            .catch(function () {
-                window.alert('Error sending message');
+            .catch(function (error) {
+                window.alert(error && error.message ? error.message : 'Error sending message');
                 if (btn) { btn.disabled = false; btn.textContent = original; }
             });
         });

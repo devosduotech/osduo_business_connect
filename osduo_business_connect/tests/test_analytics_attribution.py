@@ -79,7 +79,7 @@ class TestEventAsCampaign(unittest.TestCase):
     def test_contact_exchange_campaign_and_share_link(self):
         source = read("card", "contact_exchange_api.py")
         self.assertIn("campaign=event_name or channel", source)
-        self.assertIn("campaign=event_name,", source)
+        self.assertIn("campaign=event_name or channel,", source)
         self.assertIn("def _attributed_url(url, channel, by_slug, campaign=None):", source)
 
     def test_view_events_read_inbound_campaign(self):

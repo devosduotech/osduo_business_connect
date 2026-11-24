@@ -9,3 +9,4 @@ osduo_business_connect.patches.v1_2.crm_lead_notes_backfill
 
 [post_model_sync]
 osduo_business_connect.patches.v1_4.seed_subscription_existing_sites
+osduo_business_connect.patches.v1_4.contact_exchange_attribution_backfill

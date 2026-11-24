@@ -250,6 +250,11 @@ PUBLIC_API_METHODS = frozenset({
     "osduo_business_connect.card.public_api.get_public_card",
     "osduo_business_connect.card.public_api.download_vcard",
     "osduo_business_connect.analytics.analytics_service.log_event",
+    # Share & Connect read endpoints are guest-safe: they never expose the
+    # contact form, sender identity or any session-specific value. Responses
+    # are explicitly non-cacheable inside the endpoint.
+    "osduo_business_connect.card.share_manifest_api.get_share_manifest",
+    "osduo_business_connect.card.qr_api.get_share_qr",
     "osduo_business_connect.pwa.get_app_icon",
     # The invitation link is emailed to a guest; acceptance must stay reachable
     # even while a site is Suspended so pending invites can be completed.
@@ -281,6 +286,8 @@ CUSTOMER_PORTAL_API_METHODS = frozenset({
     "osduo_business_connect.card.my_card.get_my_cards",
     "osduo_business_connect.card.contact_exchange_api.record_contact_exchange",
     "osduo_business_connect.card.contact_exchange_api.get_contact_exchanges",
+    "osduo_business_connect.card.share_manifest_api.get_share_manifest",
+    "osduo_business_connect.card.qr_api.get_share_qr",
     "osduo_business_connect.subscription.doctype.add_on_order.add_on_order.get_addon_quote",
     "osduo_business_connect.subscription.doctype.add_on_master.add_on_master.get_orderable_addons",
 })

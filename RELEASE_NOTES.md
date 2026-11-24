@@ -1,3 +1,41 @@
+# Release Notes - business_connect (v1.4.11)
+
+**Status:** Tagged as `v1.4.11` and pushed to `develop`; UAT and production
+rollout still pending. Not deployed to production.
+**Release:** v1.4.11.
+
+## Changes (v1.4.11)
+
+### Added
+
+- **Share & Connect** on card, business, product and service pages: an
+  authenticated content chooser, server-derived URLs, lazy server-side QR for
+  all four content types, and fixed neutral share messages.
+- Contact capture records the selected content type and preserves the sender
+  identity; the CRM Lead receives five additional attribution fields.
+- Request-ID idempotency prevents duplicate saves from double taps and retries.
+
+### Changed / strengthened
+
+- Public pages now render a cache-safe shell only. Personalized sharing data is
+  loaded from a non-cacheable authenticated endpoint, so cached HTML never
+  contains another user's form, sender details or CSRF token.
+- Exchange and Enquiry use one commit boundary with a savepoint; failed Enquiry
+  creation is recorded, retried safely, and never created for an unchecked box.
+- CRM Lead status (including `converted = 1`) reconciles to both Enquiry and
+  Contact Exchange through immediate hooks and a bounded hourly job.
+- Migration adds 13 fields across three existing DocTypes and a simple,
+  idempotent, non-destructive attribution patch. Historical CRM Leads are not
+  modified.
+
+### Upgrade (when approved)
+
+`bench migrate` is required on every site. Clear website cache after deploy;
+the shared asset/service-worker revision is `2026-11-24-share-connect`.
+`bench build` is only needed when assets are copied files, not symlinks.
+
+---
+
 # Release Notes - business_connect (v1.4.10)
 
 **Release Date:** 24 November 2026

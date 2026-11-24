@@ -99,6 +99,24 @@ def jsonld(obj):
     return json.dumps(obj, ensure_ascii=True, separators=(",", ":")).replace("<", "\\u003c")
 
 
+def json_for_script(value):
+    """Serialise ``value`` for embedding inside an HTML ``<script>`` block.
+
+    This is a generic companion to :func:`jsonld`: compact JSON,
+    ``ensure_ascii=True``, with every character that could terminate or alter a
+    script element escaped. ``jsonld()`` and ``build_seo()`` are intentionally
+    untouched — existing JSON-LD output stays byte-for-byte unchanged.
+    """
+    text = json.dumps(value, ensure_ascii=True, separators=(",", ":"))
+    return (
+        text.replace("&", "\\u0026")
+        .replace("<", "\\u003c")
+        .replace(">", "\\u003e")
+        .replace("\u2028", "\\u2028")
+        .replace("\u2029", "\\u2029")
+    )
+
+
 def is_login_path(path):
     """True for the site root and ``/login`` (``home_page = "login"``).
 

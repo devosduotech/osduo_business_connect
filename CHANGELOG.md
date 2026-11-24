@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.4.11 - 24 November 2026
+
+### Added
+
+- Share & Connect on card, business, product and service public pages: a
+  cache-safe static shell, authenticated content manifest, typed content
+  selector, lazy server-side QR for all four content types and fixed neutral
+  share messages.
+- Contact Exchange records the selected content type and preserves the
+  authenticated sender. The Enquiry carries origin, reverse Exchange link and
+  sender attribution; CRM Lead receives five structured Share & Connect fields.
+- Request-ID idempotency with unique-key collision recovery, conflicting-payload
+  rejection and a frozen client submit intent.
+
+### Changed / strengthened
+
+- Public route HTML no longer contains session-derived form visibility, sender
+  identity or CSRF tokens. Personalized data is loaded from non-cacheable read
+  endpoints.
+- Contact Exchange and its Enquiry share one commit boundary with a savepoint.
+  Failed Enquiry creation is recorded, retried safely and never created for an
+  unchecked box.
+- CRM Lead status (including `converted = 1`) reconciles to both Enquiry and
+  Contact Exchange through immediate hooks and a bounded hourly job.
+- Migration adds 13 fields across three existing DocTypes and a non-destructive,
+  idempotent attribution patch. Historical CRM Leads are not modified.
+
+### Notes
+
+- Asset and service-worker revision bumped to `2026-11-24-share-connect`. Run
+  `bench migrate` and clear website cache on every site after release approval.
+
 ## v1.4.10 - 24 November 2026
 
 ### Fixed

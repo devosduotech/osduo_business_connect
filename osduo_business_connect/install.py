@@ -25,6 +25,11 @@ OSDUO_CRM_FIELDNAMES = (
     "osduo_source",
     "osduo_landing_url",
     "osduo_notes",
+    "osduo_shared_content_type",
+    "osduo_shared_by",
+    "osduo_share_channel",
+    "osduo_share_event",
+    "osduo_enquiry_origin",
 )
 
 
@@ -144,6 +149,49 @@ def create_crm_custom_fields():
             "read_only": 1,
             "description": "Message captured on the Enquiry (website form message or the "
             "event/channel context of a shared card)",
+        },
+        {
+            "fieldname": "osduo_shared_content_type",
+            "fieldtype": "Select",
+            "label": "OSDuo Shared Content Type",
+            "options": "Card\nBusiness\nProduct\nService",
+            "insert_after": "osduo_notes",
+            "read_only": 1,
+            "description": "Type of content shared from OSDuo (managed by Business Connect)",
+        },
+        {
+            "fieldname": "osduo_shared_by",
+            "fieldtype": "Link",
+            "label": "OSDuo Shared By",
+            "options": "User",
+            "insert_after": "osduo_shared_content_type",
+            "read_only": 1,
+            "description": "OSDuo user who shared this content (managed by Business Connect)",
+        },
+        {
+            "fieldname": "osduo_share_channel",
+            "fieldtype": "Data",
+            "label": "OSDuo Share Channel",
+            "insert_after": "osduo_shared_by",
+            "read_only": 1,
+            "description": "Channel used to share the content (managed by Business Connect)",
+        },
+        {
+            "fieldname": "osduo_share_event",
+            "fieldtype": "Data",
+            "label": "OSDuo Share Event",
+            "insert_after": "osduo_share_channel",
+            "read_only": 1,
+            "description": "Event or meeting associated with the share (managed by Business Connect)",
+        },
+        {
+            "fieldname": "osduo_enquiry_origin",
+            "fieldtype": "Select",
+            "label": "OSDuo Enquiry Origin",
+            "options": "Website Form\nContact Exchange\nUnknown",
+            "insert_after": "osduo_share_event",
+            "read_only": 1,
+            "description": "How the originating OSDuo Enquiry was created (managed by Business Connect)",
         },
     ]
 
@@ -326,6 +374,30 @@ def _integrate_osduo_section(sections):
     missing = [fn for fn in OSDUO_CRM_FIELDNAMES if fn not in _fields_in_use(sections)]
     if not missing:
         return sections, False
+
+    # Reuse the section created by an earlier release instead of appending a
+    # second one with the same name when new attribution fields arrive.
+    existing = next((s for s in sections if s.get("name") == "osduo_attribution"), None)
+    if existing:
+        if "columns" not in existing and isinstance(existing.get("fields"), list):
+            existing["fields"] = existing["fields"] + missing
+        else:
+            columns = existing.get("columns") or []
+            target = next(
+                (
+                    column for column in columns
+                    if isinstance(column, dict) and isinstance(column.get("fields"), list)
+                ),
+                None,
+            )
+            if target:
+                target["fields"] = target["fields"] + missing
+            else:
+                existing.setdefault("columns", []).append({
+                    "name": "osduo_attribution_column",
+                    "fields": list(missing),
+                })
+        return sections, True
 
     last = next((s for s in reversed(sections) if s.get("name") != "contacts_section"), None)
     legacy_shape = bool(last and "columns" not in last and last.get("fields"))
@@ -726,6 +798,11 @@ def migrate_crm_custom_fields():
         "osduo_campaign": {"read_only": 1, "unique": 0},
         "osduo_source": {"read_only": 1, "unique": 0},
         "osduo_landing_url": {"read_only": 1, "unique": 0},
+        "osduo_shared_content_type": {"read_only": 1, "unique": 0},
+        "osduo_shared_by": {"read_only": 1, "unique": 0},
+        "osduo_share_channel": {"read_only": 1, "unique": 0},
+        "osduo_share_event": {"read_only": 1, "unique": 0},
+        "osduo_enquiry_origin": {"read_only": 1, "unique": 0},
     }
 
     # Deduplicate osduo_enquiry before enforcing uniqueness.

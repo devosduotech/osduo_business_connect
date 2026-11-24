@@ -158,10 +158,10 @@
     </div>
     {% endif %}
 
-    {# ===== SHARE ===== #}
+    {# ===== SHARE & CONNECT ===== #}
     <div class="bc-section">
         <div class="bc-reading">
-            <h2 class="bc-section-title">Share</h2>
+            {% include "osduo_business_connect/templates/pages/parts/share_connect.html" %}
             {% include "osduo_business_connect/templates/pages/parts/my_card_chip.html" %}
             {% include "osduo_business_connect/templates/pages/parts/share_bar.html" %}
             {% include "osduo_business_connect/templates/pages/parts/contact_exchange_form.html" %}
@@ -198,6 +198,40 @@
     checkMobile();
     window.addEventListener('resize', checkMobile);
 
+    function submitEnquiry(args) {
+        var endpoint = 'osduo_business_connect.enquiry.public_enquiry_api.submit_enquiry';
+        if (window.frappe && typeof window.frappe.xcall === 'function') {
+            return window.frappe.xcall(endpoint, args);
+        }
+        var token = (window.frappe && window.frappe.csrf_token) || '';
+        return fetch('/api/method/' + endpoint, {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Frappe-CSRF-Token': token,
+            },
+            body: JSON.stringify(args),
+        }).then(function(r) { return r.json(); })
+          .then(function(body) {
+              if (!body.message) { throw new Error(serverMessage(body)); }
+              return body.message;
+          });
+    }
+
+    function serverMessage(body) {
+        if (body && body._server_messages) {
+            try {
+                var rows = JSON.parse(body._server_messages);
+                if (rows.length) {
+                    var first = typeof rows[0] === 'string' ? JSON.parse(rows[0]) : rows[0];
+                    if (first && first.message) { return first.message; }
+                }
+            } catch (ex) {}
+        }
+        return 'Error sending message';
+    }
+
     var form = document.getElementById('product-enquiry-form');
     if (form) {
         form.addEventListener('submit', function(e) {
@@ -206,44 +240,31 @@
             btn.disabled = true;
             btn.textContent = 'Sending...';
             var fd = new FormData(form);
-            var csrfToken = document.getElementById('bc-csrf-token').getAttribute('data-token') || '';
 
-            fetch('/api/method/osduo_business_connect.enquiry.public_enquiry_api.submit_enquiry', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Frappe-CSRF-Token': csrfToken,
-                },
-                body: JSON.stringify({
-                    business_slug: fd.get('business_slug'),
-                    visitor_data: JSON.stringify({
-                        name: fd.get('visitor_name'),
-                        email: fd.get('visitor_email'),
-                        phone: fd.get('visitor_phone'),
-                        message: fd.get('message'),
-                    }),
-                    source: fd.get('source'),
-                    references: JSON.stringify({
-                        product: fd.get('product'),
-                    }),
+            submitEnquiry({
+                business_slug: fd.get('business_slug'),
+                visitor_data: JSON.stringify({
+                    name: fd.get('visitor_name'),
+                    email: fd.get('visitor_email'),
+                    phone: fd.get('visitor_phone'),
+                    message: fd.get('message'),
+                }),
+                source: fd.get('source'),
+                references: JSON.stringify({
+                    product: fd.get('product'),
                 }),
             })
-            .then(function(r) { return r.json(); })
             .then(function(result) {
-                if (result.message && result.message.name) {
+                if (result && result.name) {
                     form.innerHTML = '<div style="text-align:center;padding:1.25rem;"><h3 style="margin:0 0 0.4rem;">Message Sent!</h3><p style="color: var(--bc-text-faint);font-size:0.9rem;">Thank you. We will get back to you soon.</p></div>';
                 } else {
-                    var msg = 'Error sending message';
-                    if (result._server_messages) {
-                        try { msg = JSON.parse(result._server_messages)[0].message; } catch(ex) {}
-                    }
-                    alert(msg);
+                    alert('Error sending message');
                     btn.disabled = false;
                     btn.textContent = 'Send Message';
                 }
             })
-            .catch(function() {
-                alert('Error sending message');
+            .catch(function(error) {
+                alert(error && error.message ? error.message : 'Error sending message');
                 btn.disabled = false;
                 btn.textContent = 'Send Message';
             });
@@ -252,5 +273,4 @@
 })();
 </script>
 {% endraw %}
-<div id="bc-csrf-token" data-token="{{ frappe.session.csrf_token or frappe.session.data.csrf_token or '' }}" style="display:none;"></div>
 {%- endblock -%}

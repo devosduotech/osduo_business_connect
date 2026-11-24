@@ -257,16 +257,23 @@ class TestContactExchange(unittest.TestCase):
         self.assertIn('"contact_exchanged"', self.api)
 
     def test_form_is_login_gated(self):
+        # v1.4.11: the cached HTML stays stateless. The authenticated manifest
+        # decides whether this hidden form is revealed for the current user.
         form = read("templates", "pages", "parts", "contact_exchange_form.html")
-        self.assertIn("{% if show_my_card %}", form)
+        self.assertNotIn("{% if show_my_card %}", form)
+        self.assertIn("data-bc-contact-exchange", form)
+        self.assertIn("hidden>", form)
+        self.assertIn("can_record_exchange", form)
         self.assertIn("record_contact_exchange", form)
 
     def test_form_offers_the_enquiry_option(self):
         form = read("templates", "pages", "parts", "contact_exchange_form.html")
-        self.assertIn('name="create_enquiry" value="1" checked', form)
-        self.assertIn("create_enquiry: data.get(\"create_enquiry\") ? 1 : 0", form)
+        self.assertIn('name="enquiry_requested" value="1" checked', form)
+        self.assertIn("wantsEnquiry", form)
+        self.assertIn("create_enquiry: wantsEnquiry", form)
+        self.assertNotIn("enquiry_requested: wantsEnquiry", form)
         self.assertNotIn("create_lead", form)
-        self.assertIn("result.message.enquiry", form)
+        self.assertIn("message.enquiry", form)
 
 
 class TestShareAttribution(unittest.TestCase):

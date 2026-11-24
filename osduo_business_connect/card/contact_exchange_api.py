@@ -8,8 +8,13 @@ Records the recipient of a shared card / business / product / service and
 returns a pre-addressed share link for the chosen channel. Login-only: the
 sender is always the authenticated owner/member, so the recipient contact is
 voluntarily entered by them — never read from WhatsApp, SMS or email apps.
+
+Share & Connect (v1.4.11) additions are deliberately backward-compatible:
+``shared_content_type`` and ``request_id`` are optional trailing arguments and
+historical callers keep the original positional order.
 """
 
+import hashlib
 import re
 from urllib.parse import quote
 
@@ -39,6 +44,35 @@ ENQUIRY_SOURCES = {
 }
 DEFAULT_ENQUIRY_SOURCE = "Business Profile"
 
+CONTENT_TYPES = ("Card", "Business", "Product", "Service")
+CONTENT_TYPE_FIELDS = {
+    "Card": "card",
+    "Product": "product",
+    "Service": "service",
+}
+CONTENT_TYPE_DOCTYPES = {
+    "Card": "Digital Card",
+    "Product": "Showcase Product",
+    "Service": "Showcase Service",
+}
+
+# Fixed, neutral templates. No "As discussed" / "Nice connecting" phrasing.
+MESSAGE_BODIES = {
+    "Card": "Please find my digital business card below.",
+    "Business": "Please find our business profile, products and services at the link below.",
+    "Product": "Please find the details of {title} from {business_name}.\n\n"
+               "Feel free to contact me for further information.",
+    "Service": "Please find the details of our {title} offering.\n\n"
+               "Feel free to contact me for further information.",
+}
+
+RESULT_FIELDS = (
+    "name", "business", "card", "product", "service", "shared_content_type",
+    "recipient_name", "recipient_phone", "recipient_email", "recipient_company",
+    "channel", "event_name", "notes", "status", "user", "member",
+    "linked_enquiry", "enquiry_requested", "enquiry_error",
+)
+
 
 def _require_login():
     if not frappe.session.user or frappe.session.user == "Guest":
@@ -50,6 +84,11 @@ def _clean(value, max_length=255):
         return None
     value = str(value).strip()
     return value[:max_length] if value else None
+
+
+def _has_field(doc, fieldname):
+    meta = getattr(doc, "meta", None)
+    return bool(meta and hasattr(meta, "has_field") and meta.has_field(fieldname))
 
 
 def _require_shareable(row, label):
@@ -66,11 +105,78 @@ def _require_shareable(row, label):
         frappe.throw(_("{0} is not publicly visible").format(label), frappe.ValidationError)
 
 
-def _share_target(business, card=None, product=None, service=None, user=None):
-    """Return (title, canonical_url, by_slug, member) for the shared item.
+def _normalize_content_type(value):
+    value = _clean(value, 20)
+    if not value:
+        return None
+    normalized = value[:1].upper() + value[1:].lower()
+    if normalized not in CONTENT_TYPES:
+        frappe.throw(_("Invalid shared content type"), frappe.ValidationError)
+    return normalized
 
-    ``by_slug`` names who shared it, so it prefers the acting user's own card
-    and only falls back to the page's slug when they have no card.
+
+def _resolve_content_type(shared_content_type, card=None, product=None, service=None):
+    """Return the explicit content type and enforce one matching typed link.
+
+    New discriminator-aware requests must contain exactly one typed reference
+    matching the selected content type (Business carries none). Legacy callers
+    that omit the discriminator keep the original card > product > service
+    precedence so existing integrations are not broken.
+    """
+    explicit = _normalize_content_type(shared_content_type)
+    refs = {"Card": card, "Product": product, "Service": service}
+    populated = [kind for kind, value in refs.items() if value]
+
+    if explicit:
+        selected = refs.get(explicit)
+        if explicit == "Business":
+            if populated:
+                frappe.throw(
+                    _("Business sharing cannot include a card, product or service reference"),
+                    frappe.ValidationError,
+                )
+        elif not selected:
+            frappe.throw(
+                _("{0} was selected but no document was supplied").format(explicit),
+                frappe.ValidationError,
+            )
+        elif len(populated) != 1 or populated[0] != explicit:
+            frappe.throw(
+                _("Selected content does not match the supplied document"),
+                frappe.ValidationError,
+            )
+        return explicit
+
+    # Legacy compatibility: infer from the single populated typed reference.
+    if card and product and service:
+        return "Card"
+    if card and product:
+        return "Card"
+    if card and service:
+        return "Card"
+    if product and service:
+        return "Product"
+    if card:
+        return "Card"
+    if product:
+        return "Product"
+    if service:
+        return "Service"
+    return "Business"
+
+
+def resolve_share_target(
+    business,
+    card=None,
+    product=None,
+    service=None,
+    shared_content_type=None,
+    user=None,
+):
+    """Resolve a shareable target to a single, server-derived public URL.
+
+    Returns a plain dict so the manifest endpoint, QR endpoint and write API
+    all derive URLs the same way. Client-built URLs are never trusted.
     """
     business_row = frappe.db.get_value(
         "Business",
@@ -82,11 +188,14 @@ def _share_target(business, card=None, product=None, service=None, user=None):
         frappe.throw(_("Business not found"), frappe.DoesNotExistError)
     _require_shareable(business_row, _("Business"))
 
-    # ?by= is meant to name the person who shared the link, so their own card
-    # wins; the page slug below is only the fallback for people without a card.
+    kind = _resolve_content_type(shared_content_type, card, product, service)
+    business_name = business_row.business_name or business_row.name
+
+    # ?by= names the person who shared the link. Their own card wins; the page
+    # slug is only the fallback for people without a card of their own.
     sharer = get_user_card_slug(business, user)
 
-    if card:
+    if kind == "Card":
         row = frappe.db.get_value(
             "Digital Card",
             {"name": card, "business": business},
@@ -96,14 +205,18 @@ def _share_target(business, card=None, product=None, service=None, user=None):
         if not row:
             frappe.throw(_("Digital Card not found for this business"), frappe.DoesNotExistError)
         _require_shareable(row, _("Digital Card"))
-        return (
-            row.display_name or row.name,
-            get_card_public_url(row.slug),
-            sharer or row.slug,
-            row.member,
-        )
+        url = get_card_public_url(row.slug)
+        return {
+            "content_type": kind,
+            "title": row.display_name or row.name,
+            "url": url,
+            "public_url": url,
+            "by_slug": sharer or row.slug,
+            "member": row.member,
+            "business_name": business_name,
+        }
 
-    if product:
+    if kind == "Product":
         row = frappe.db.get_value(
             "Showcase Product",
             {"name": product, "business": business},
@@ -113,14 +226,18 @@ def _share_target(business, card=None, product=None, service=None, user=None):
         if not row:
             frappe.throw(_("Product not found for this business"), frappe.DoesNotExistError)
         _require_shareable(row, _("Product"))
-        return (
-            row.product_name or row.name,
-            f"{get_business_public_url(business_row.slug)}/products/{row.slug}",
-            sharer or business_row.slug,
-            None,
-        )
+        url = f"{get_business_public_url(business_row.slug)}/products/{row.slug}"
+        return {
+            "content_type": kind,
+            "title": row.product_name or row.name,
+            "url": url,
+            "public_url": url,
+            "by_slug": sharer or business_row.slug,
+            "member": None,
+            "business_name": business_name,
+        }
 
-    if service:
+    if kind == "Service":
         row = frappe.db.get_value(
             "Showcase Service",
             {"name": service, "business": business},
@@ -130,19 +247,55 @@ def _share_target(business, card=None, product=None, service=None, user=None):
         if not row:
             frappe.throw(_("Service not found for this business"), frappe.DoesNotExistError)
         _require_shareable(row, _("Service"))
-        return (
-            row.service_name or row.name,
-            f"{get_business_public_url(business_row.slug)}/services/{row.slug}",
-            sharer or business_row.slug,
-            None,
-        )
+        url = f"{get_business_public_url(business_row.slug)}/services/{row.slug}"
+        return {
+            "content_type": kind,
+            "title": row.service_name or row.name,
+            "url": url,
+            "public_url": url,
+            "by_slug": sharer or business_row.slug,
+            "member": None,
+            "business_name": business_name,
+        }
 
-    return (
-        business_row.business_name or business_row.name,
-        get_business_public_url(business_row.slug),
-        sharer or business_row.slug,
-        None,
+    url = get_business_public_url(business_row.slug)
+    return {
+        "content_type": "Business",
+        "title": business_name,
+        "url": url,
+        "public_url": url,
+        "by_slug": sharer or business_row.slug,
+        "member": None,
+        "business_name": business_name,
+    }
+
+
+def _share_target(business, card=None, product=None, service=None, user=None):
+    """Backward-compatible tuple form used by legacy internal callers."""
+    target = resolve_share_target(
+        business,
+        card=card,
+        product=product,
+        service=service,
+        user=user,
     )
+    return target["title"], target["url"], target["by_slug"], target["member"]
+
+
+def build_share_message(content_type, title, business_name, url, sender_name,
+                        recipient_name=None):
+    """Return (subject, body) for the fixed Share & Connect templates."""
+    kind = _normalize_content_type(content_type) or "Business"
+    body = MESSAGE_BODIES.get(kind, MESSAGE_BODIES["Business"]).format(
+        title=title or "",
+        business_name=business_name or "",
+    )
+    greeting = f"Hi {recipient_name},\n\n" if recipient_name else ""
+    sender = sender_name or business_name or "OSDuo Business Connect"
+    signature = f"Regards,\n{sender} | {business_name or sender}"
+    text = f"{greeting}{body}\n\n{url}\n\n{signature}"
+    subject = f"{title or 'Shared item'} — OSDuo Business Connect"
+    return subject, text
 
 
 def _attributed_url(url, channel, by_slug, campaign=None):
@@ -181,20 +334,18 @@ def _build_share_link(channel, phone, email, subject, text, url, by_slug, campai
     return None
 
 
-def _target_kind(card=None, product=None, service=None):
+def _target_kind(card=None, product=None, service=None, shared_content_type=None):
     """Which public page this exchange came from — also picks Enquiry.source."""
-    if card:
-        return "card"
-    if product:
-        return "product"
-    if service:
-        return "service"
-    return "business"
+    kind = _resolve_content_type(shared_content_type, card, product, service).lower()
+    return kind if kind in ENQUIRY_SOURCES else "business"
 
 
 def _enquiry_message(exchange):
     """Human-readable note for the Enquiry timeline."""
-    lines = [f"Contact exchanged via {exchange.channel}."]
+    lines = ["Contact exchanged via {0}.".format(exchange.channel or "In-person")]
+    content_type = getattr(exchange, "shared_content_type", None)
+    if content_type:
+        lines.append(f"Shared: {content_type}")
     if exchange.event_name:
         lines.append(f"Event / meeting: {exchange.event_name}")
     if exchange.notes:
@@ -202,17 +353,24 @@ def _enquiry_message(exchange):
     return "\n".join(lines)
 
 
-def create_enquiry_from_exchange(exchange, kind, landing_url=None):
+def create_enquiry_from_exchange(exchange, kind=None, landing_url=None, commit=False,
+                                 shared_content_type=None, reraise=False):
     """Record the exchanged contact as an **Enquiry**.
 
     This goes through the same service the public "Send an Enquiry" form uses
     (``enquiry.enquiry_service.create_enquiry``), so an exhibition card
     exchange gets identical validation, the same ``enquiry_submitted``
     analytics event and the same automatic CRM Lead sync as a web form
-    submission. Never blocks the exchange itself.
+    submission. Never blocks the exchange itself unless ``reraise=True`` is
+    requested by the caller that owns the savepoint.
     """
     try:
         from osduo_business_connect.enquiry.enquiry_service import create_enquiry
+
+        source_key = (kind or "").lower()
+        if source_key not in ENQUIRY_SOURCES:
+            source_key = (shared_content_type or "").lower()
+        source = ENQUIRY_SOURCES.get(source_key, DEFAULT_ENQUIRY_SOURCE)
 
         # A web request always has this list; keep it safe outside one.
         frappe.local.message_log = getattr(frappe.local, "message_log", None) or []
@@ -228,14 +386,18 @@ def create_enquiry_from_exchange(exchange, kind, landing_url=None):
                 "consent": 0,
                 "consent_text": "Contact given to the business directly; not a web form submission.",
             },
-            source=ENQUIRY_SOURCES.get(kind, DEFAULT_ENQUIRY_SOURCE),
+            source=source,
             references={
                 "card": exchange.card,
                 "product": exchange.product,
                 "service": exchange.service,
                 "campaign": exchange.event_name,
                 "landing_url": landing_url,
+                "enquiry_origin": "Contact Exchange",
+                "contact_exchange": exchange.name,
+                "shared_by": exchange.user,
             },
+            commit=commit,
         )
 
         # Enquiry adds desk-oriented advisories (visitor consent, no email or
@@ -246,14 +408,133 @@ def create_enquiry_from_exchange(exchange, kind, landing_url=None):
 
         enquiry_name = result.get("name") if isinstance(result, dict) else result
         if enquiry_name:
-            exchange.db_set("linked_enquiry", enquiry_name, update_modified=False)
+            if _has_field(exchange, "linked_enquiry"):
+                exchange.db_set("linked_enquiry", enquiry_name, update_modified=False)
+            if _has_field(exchange, "enquiry_error"):
+                exchange.db_set("enquiry_error", None, update_modified=False)
         return enquiry_name
     except Exception as exc:
         frappe.log_error(
             title="Contact Exchange Enquiry Failed",
-            message=f"Exchange {exchange.name}: {exc}",
+            message=f"Exchange {getattr(exchange, 'name', '?')}: {exc}",
         )
+        if not reraise and _has_field(exchange, "enquiry_error"):
+            exchange.db_set("enquiry_error", str(exc)[:500], update_modified=False)
+        if reraise:
+            raise
         return None
+
+
+def _idempotency_key(user, request_id):
+    """Stable, user-scoped key for one client submit intent."""
+    return hashlib.sha256(f"{user}:{request_id}".encode("utf-8")).hexdigest()
+
+
+def _existing_exchange_by_key(idempotency_key):
+    if not idempotency_key:
+        return None
+    rows = frappe.get_all(
+        "Contact Exchange",
+        filters={"idempotency_key": idempotency_key},
+        fields=list(RESULT_FIELDS),
+        limit=1,
+    )
+    return rows[0] if rows else None
+
+
+def _payload_matches(exchange, payload):
+    """Detect a reused request ID with a different submit intent."""
+    for field in (
+        "business", "card", "product", "service", "shared_content_type",
+        "recipient_name", "recipient_phone", "recipient_email", "recipient_company",
+        "channel", "event_name", "notes",
+    ):
+        existing = getattr(exchange, field, None) or None
+        incoming = payload.get(field) or None
+        if existing != incoming:
+            return False
+    wants = bool(payload.get("enquiry_requested"))
+    return bool(getattr(exchange, "enquiry_requested", 0)) == wants
+
+
+def _conflict():
+    frappe.local.response["http_status_code"] = 409
+    frappe.throw(_("This request ID was already used for a different share"), frappe.ValidationError)
+
+
+def _result_from_exchange(exchange, idempotent=False):
+    """Rebuild a response from a saved Exchange without trusting client URLs."""
+    business = exchange.business
+    kind = getattr(exchange, "shared_content_type", None) or _resolve_content_type(
+        exchange.card, exchange.product, exchange.service
+    )
+    fallback_slug = frappe.db.get_value("Business", business, "slug") or ""
+    if kind == "Card" and exchange.card:
+        row = frappe.db.get_value(
+            "Digital Card", {"name": exchange.card, "business": business}, "slug"
+        )
+        public_url = get_card_public_url(row) if row else get_business_public_url(fallback_slug)
+    elif kind == "Product" and exchange.product:
+        row = frappe.db.get_value(
+            "Showcase Product", {"name": exchange.product, "business": business}, "slug"
+        )
+        public_url = (
+            f"{get_business_public_url(fallback_slug)}/products/{row}"
+            if row else get_business_public_url(fallback_slug)
+        )
+    elif kind == "Service" and exchange.service:
+        row = frappe.db.get_value(
+            "Showcase Service", {"name": exchange.service, "business": business}, "slug"
+        )
+        public_url = (
+            f"{get_business_public_url(fallback_slug)}/services/{row}"
+            if row else get_business_public_url(fallback_slug)
+        )
+    else:
+        public_url = get_business_public_url(fallback_slug)
+
+    by_slug = get_user_card_slug(business, exchange.user) or fallback_slug
+    business_name = frappe.db.get_value("Business", business, "business_name") or business
+    label_field = {
+        "Card": "display_name",
+        "Product": "product_name",
+        "Service": "service_name",
+    }.get(kind)
+    doc_name = {
+        "Card": exchange.card,
+        "Product": exchange.product,
+        "Service": exchange.service,
+    }.get(kind)
+    title = business_name
+    if label_field and doc_name:
+        title = frappe.db.get_value(
+            CONTENT_TYPE_DOCTYPES.get(kind), doc_name, label_field
+        ) or business_name
+    sender_name = frappe.db.get_value("User", exchange.user, "full_name") or exchange.user
+    subject, text = build_share_message(
+        kind, title, business_name, public_url, sender_name,
+        recipient_name=getattr(exchange, "recipient_name", None),
+    )
+    share_link = _build_share_link(
+        exchange.channel,
+        exchange.recipient_phone,
+        exchange.recipient_email,
+        subject,
+        text,
+        public_url,
+        by_slug,
+        campaign=exchange.event_name,
+    )
+    return {
+        "name": exchange.name,
+        "channel": exchange.channel,
+        "share_url": share_link,
+        "public_url": public_url,
+        "enquiry": getattr(exchange, "linked_enquiry", None),
+        "content_type": kind,
+        "idempotent": bool(idempotent),
+        "request_id": getattr(exchange, "request_id", None),
+    }
 
 
 @frappe.whitelist()
@@ -270,13 +551,15 @@ def record_contact_exchange(
     event_name=None,
     notes=None,
     create_enquiry=1,
+    shared_content_type=None,
+    request_id=None,
 ):
     """Save a contact exchange and return the pre-addressed share link.
 
-    The caller must be an active member of the business. Every exchange is also
-    recorded as an **Enquiry** (``create_enquiry=0`` opts out), so card contacts
-    captured at an event follow the same pipeline as the public enquiry form and
-    reach CRM through it.
+    The caller must be an active member of the business. An Enquiry (and CRM
+    Lead) is created only when ``create_enquiry`` is selected; the Exchange is
+    always saved and survives an Enquiry failure. ``request_id`` gives UI
+    retries an idempotent key without changing the legacy positional API.
     """
     _require_login()
 
@@ -284,6 +567,8 @@ def record_contact_exchange(
     card = _clean(card, 140)
     product = _clean(product, 140)
     service = _clean(service, 140)
+    shared_content_type = _normalize_content_type(shared_content_type)
+    request_id = _clean(request_id, 64)
     recipient_name = _clean(recipient_name, 140)
     recipient_phone = _clean(recipient_phone, 40)
     recipient_email = _clean(recipient_email, 140)
@@ -314,38 +599,105 @@ def record_contact_exchange(
         if not get_user_role_in_business(frappe.session.user, business):
             frappe.throw(_("You do not have access to this business"), frappe.PermissionError)
 
-    title, public_url, by_slug, card_member = _share_target(
-        business, card=card, product=product, service=service
-    )
-    subject = f"{title} — OSDuo Business Connect"
-    text = f"Sharing {title}:"
+    wants_enquiry = str(create_enquiry).lower() not in ("0", "false", "no", "off", "")
+    payload = {
+        "business": business,
+        "card": card,
+        "product": product,
+        "service": service,
+        "shared_content_type": shared_content_type,
+        "recipient_name": recipient_name,
+        "recipient_phone": recipient_phone,
+        "recipient_email": recipient_email,
+        "recipient_company": recipient_company,
+        "channel": channel,
+        "event_name": event_name,
+        "notes": notes,
+        "enquiry_requested": 1 if wants_enquiry else 0,
+    }
 
-    exchange = frappe.get_doc(
-        {
-            "doctype": "Contact Exchange",
-            "business": business,
-            "card": card,
-            "product": product,
-            "service": service,
-            "member": card_member,
-            "user": frappe.session.user,
-            "recipient_name": recipient_name,
-            "recipient_phone": recipient_phone,
-            "recipient_email": recipient_email,
-            "recipient_company": recipient_company,
-            "channel": channel,
-            "event_name": event_name,
-            "notes": notes,
-            "status": "New",
-        }
-    )
-    exchange.insert(ignore_permissions=True)
+    key = _idempotency_key(frappe.session.user, request_id) if request_id else None
+    if key:
+        existing = _existing_exchange_by_key(key)
+        if existing:
+            if not _payload_matches(existing, payload):
+                _conflict()
+            return _result_from_exchange(existing, idempotent=True)
 
-    kind = _target_kind(card, product, service)
+    target = resolve_share_target(
+        business,
+        card=card,
+        product=product,
+        service=service,
+        shared_content_type=shared_content_type,
+        user=frappe.session.user,
+    )
+
+    exchange = frappe.get_doc({
+        "doctype": "Contact Exchange",
+        "business": business,
+        "card": card,
+        "product": product,
+        "service": service,
+        "member": target["member"],
+        "user": frappe.session.user,
+        "recipient_name": recipient_name,
+        "recipient_phone": recipient_phone,
+        "recipient_email": recipient_email,
+        "recipient_company": recipient_company,
+        "channel": channel,
+        "event_name": event_name,
+        "notes": notes,
+        "status": "New",
+    })
+    if _has_field(exchange, "shared_content_type"):
+        exchange.shared_content_type = target["content_type"]
+    if _has_field(exchange, "request_id"):
+        exchange.request_id = request_id
+    if _has_field(exchange, "idempotency_key"):
+        exchange.idempotency_key = key
+    if _has_field(exchange, "enquiry_requested"):
+        exchange.enquiry_requested = 1 if wants_enquiry else 0
+
+    try:
+        exchange.insert(ignore_permissions=True)
+    except Exception:
+        # A concurrent request may have won the unique-key race. Recover the
+        # original row instead of creating a second Exchange.
+        if key:
+            existing = _existing_exchange_by_key(key)
+            if existing:
+                if not _payload_matches(existing, payload):
+                    _conflict()
+                return _result_from_exchange(existing, idempotent=True)
+        raise
+
     enquiry_name = None
-    if str(create_enquiry).lower() not in ("0", "false", "no", "off", ""):
-        enquiry_name = create_enquiry_from_exchange(exchange, kind, landing_url=public_url)
+    if wants_enquiry:
+        savepoint = "ce_enquiry_" + re.sub(r"[^0-9a-zA-Z_]", "_", exchange.name)
+        frappe.db.sql(f"SAVEPOINT `{savepoint}`")
+        try:
+            enquiry_name = create_enquiry_from_exchange(
+                exchange,
+                kind=target["content_type"],
+                landing_url=target["url"],
+                commit=False,
+                shared_content_type=target["content_type"],
+                reraise=True,
+            )
+        except Exception as exc:
+            frappe.db.sql(f"ROLLBACK TO SAVEPOINT `{savepoint}`")
+            enquiry_name = None
+            if _has_field(exchange, "enquiry_error"):
+                frappe.db.set_value(
+                    "Contact Exchange", exchange.name, "enquiry_error",
+                    str(exc)[:500], update_modified=False,
+                )
+        finally:
+            frappe.db.sql(f"RELEASE SAVEPOINT `{savepoint}`")
 
+    # One commit boundary for the Exchange and its Enquiry. The daily recovery
+    # job retries Exchanges whose Enquiry creation failed.
     frappe.db.commit()
 
     # Funnel signal: this business recorded a contact exchange.
@@ -369,24 +721,10 @@ def record_contact_exchange(
     except Exception:
         frappe.log_error(title="Contact Exchange analytics failed")
 
-    share_link = _build_share_link(
-        channel,
-        exchange.recipient_phone,
-        exchange.recipient_email,
-        subject,
-        text,
-        public_url,
-        by_slug,
-        campaign=event_name,
-    )
-
-    return {
-        "name": exchange.name,
-        "channel": channel,
-        "share_url": share_link,
-        "public_url": public_url,
-        "enquiry": enquiry_name,
-    }
+    result = _result_from_exchange(exchange, idempotent=False)
+    if enquiry_name:
+        result["enquiry"] = enquiry_name
+    return result
 
 
 @frappe.whitelist()
@@ -403,16 +741,22 @@ def get_contact_exchanges(business=None, limit=20):
             "name",
             "business",
             "card",
+            "product",
+            "service",
+            "shared_content_type",
             "recipient_name",
             "recipient_phone",
             "recipient_email",
             "recipient_company",
             "channel",
             "event_name",
+            "notes",
             "status",
             "exchanged_at",
             "user",
             "linked_enquiry",
+            "enquiry_requested",
+            "enquiry_error",
         ],
         order_by="exchanged_at desc",
         limit=int(limit or 20),

@@ -379,3 +379,178 @@ body.bc-customer-workspace .body-sidebar .item-anchor:focus-visible .sidebar-ite
     pointer-events: none;
   }
 }
+
+/* ============================================================
+   9. SHARE & CONNECT (public pages)
+   ============================================================
+   Deliberately scoped to the three public widgets. The shell is hidden until
+   the authenticated manifest resolves, so guests keep the normal share bar. */
+.bc-sc[hidden],
+.bc-ce[hidden],
+.bc-sc [hidden] {
+  display: none !important;
+}
+
+.bc-sc,
+.bc-ce,
+.bc-share-widget {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.bc-sc-title,
+.bc-ce-title {
+  margin: 0 0 0.75rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.bc-sc-label,
+.bc-sc-item-label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--bc-text-muted, #64748b);
+}
+
+.bc-sc-types {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.65rem;
+}
+
+.bc-sc-type {
+  min-height: 36px;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--bc-border, #d8dee9);
+  border-radius: 999px;
+  background: var(--bc-surface, #fff);
+  color: var(--bc-text, #1e293b);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.bc-sc-type[aria-pressed="true"] {
+  border-color: var(--bc-primary, #0b3d91);
+  background: var(--bc-primary, #0b3d91);
+  color: #fff;
+}
+
+.bc-sc-items {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 38px;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--bc-border, #d8dee9);
+  border-radius: 8px;
+  background: var(--bc-surface, #fff);
+  color: var(--bc-text, #1e293b);
+  font-size: 0.9rem;
+}
+
+.bc-sc-qr {
+  margin: 0.75rem 0;
+  text-align: center;
+}
+
+.bc-sc-qr img {
+  width: 132px;
+  max-width: 60vw;
+  height: auto;
+  border: 1px solid var(--bc-border, #e2e8f0);
+  border-radius: 8px;
+  background: #fff;
+  padding: 6px;
+}
+
+.bc-sc-qr p,
+.bc-sc-hint,
+.bc-ce-hint,
+.bc-ce-sharing {
+  font-size: 0.85rem;
+  color: var(--bc-text-muted, #64748b);
+  overflow-wrap: anywhere;
+}
+
+.bc-sc-hint {
+  margin: 0.5rem 0 0;
+}
+
+.bc-ce-form {
+  display: grid;
+  gap: 0.6rem;
+  max-width: 100%;
+}
+
+.bc-ce-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.bc-ce-form input,
+.bc-ce-form select,
+.bc-ce-form textarea {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.bc-ce-lead {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  font-size: 0.85rem;
+}
+
+.bc-ce-lead input {
+  width: auto;
+  margin-top: 0.15rem;
+}
+
+.bc-ce-status {
+  min-height: 1.2em;
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
+}
+
+[data-bc-share-widget] .bc-card-share-link {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 480px) {
+  .bc-sc-types {
+    gap: 0.3rem;
+  }
+
+  .bc-sc-type {
+    flex: 1 1 calc(50% - 0.3rem);
+    min-width: 0;
+    padding: 0.4rem 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  .bc-ce-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .bc-sc-qr img {
+    width: 116px;
+  }
+}
+
+@media (max-width: 360px) {
+  .bc-sc-type {
+    flex-basis: 100%;
+  }
+
+  .bc-sc-items {
+    font-size: 0.85rem;
+  }
+}

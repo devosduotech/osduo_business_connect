@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 import frappe
 
 from ....analytics.tracking import capture_analytics_context, track_event
-from ....card.my_card import get_user_card_slug
 from ....seo import jsonld
 from ....services.theme_service import (
     get_business_theme,
@@ -121,19 +120,17 @@ def get_context(context):
         ],
     )
 
-    # Share — attributed to the card of whoever is sharing, when they have one.
+    # Share — only the route's public slug may be embedded in cached HTML.
     context.share_url = get_business_public_url(doc.get("slug"))
-    context.share_by = get_user_card_slug(doc.name) or doc.get("slug")
+    context.share_by = doc.get("slug")
     context.share_title = doc.get("business_name") or doc.get("name")
     context.share_text = f"Check out {context.share_title} — Business Profile"
     context.share_ref = True
 
-    # My Card chip — only for people who belong to this business.
-    from ....business.core import get_user_role_in_business
-    context.show_my_card = bool(
-        frappe.session.user != "Guest"
-        and get_user_role_in_business(frappe.session.user, doc.name)
-    )
+    # Static Share & Connect shell inputs. The manifest endpoint resolves the
+    # current user's card and permissions after page load.
+    context.share_connect_page_type = "Business"
+    context.share_connect_document = doc.name
 
     # Contact Exchange context
     context.ce_business = doc.name

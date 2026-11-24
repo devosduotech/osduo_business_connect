@@ -162,6 +162,13 @@ appears as a pending reservation in the portal.
 > **BC System Manager** and **BC Subscription Manager** are never offered in
 > the team invite form. Only the Business Owner can invite teammates.
 
+**On a phone:** the Team page adapts to the screen. KPI cards stack one per
+row, and the Members table scrolls sideways inside its own region so names and
+emails stay readable instead of being squeezed into five narrow columns. Invite
+inputs use a full 16px font so iOS Safari does not zoom the whole page when you
+tap a field. The four invite roles and seat behaviour are exactly the same as on
+desktop.
+
 ### 2.5 Page Visibility Settings
 
 Control what appears on your public product and service pages:
@@ -668,8 +675,14 @@ Share links carry standard `utm_source=<channel>&utm_medium=share` (and
 and who shared it. These `utm_*` tags are ignored by Google Search Console and
 never appear on the page's canonical URL, so sharing and indexing stay clean.
 The copied link always uses the canonical domain, never the host you happen to
-be browsing from. The Share & Save Contact form below the bar is styled to match
-the public "Send a Message" form, with large tap targets on phones.
+be browsing from.
+
+From v1.4.11 the sharing area is called **Share & Connect**. Logged-in members
+also see a **Select what you want to share** chooser above the bar: **My Card**,
+**Business**, **Product** or **Service**. The page you are viewing is selected by
+default. Changing the choice updates the link, QR and message. The contact form
+is loaded only after authentication, so cached public pages never contain one
+person's details or a CSRF token meant for another visitor.
 
 ### 6.4 NFC Cards & Tags
 
@@ -716,25 +729,33 @@ see every published card that belongs to you. **Open Card** launches it with
 `?utm_source=mycard&utm_medium=share`, so your own visits are labelled correctly
 in analytics.
 
-### 6.6 Contact Exchange (login only)
+### 6.6 Share & Save Contact (login only)
 
-When you share your card at an exhibition, show or meeting, record who you gave
+When you share something at an exhibition, show or meeting, record who you gave
 it to:
 
-1. Open your card, business, product or service page while **logged in**.
+1. Open a card, business, product or service page while **logged in**, then use
+   **Select what you want to share** to confirm the item. The form shows
+   **Sharing: <item>** so you cannot record the wrong target.
 2. Fill in **Share & Save Contact**: recipient name, company, mobile, email,
    channel (WhatsApp / SMS / Email / In person), event/meeting and notes.
-3. The contact is saved **as an Enquiry** — the same record and pipeline as the
-   public "Send an Enquiry" form — so it appears under **Enquiries** and a CRM
-   Lead is created automatically through the standard sync. Untick
-   **Save as an Enquiry** if you only want to record the exchange without creating
-   an enquiry.
+3. Leave **Save as an Enquiry (goes to CRM)** checked to create an Enquiry — the
+   same record and pipeline as the public "Send a Message" form — so it appears
+   under **Enquiries** and a CRM Lead is created through the standard sync.
+   Untick it if you only want to record the exchange without creating an
+   Enquiry or Lead.
 4. Choose **Save & Share** — the app saves the exchange and opens the chosen
-   channel pre-addressed to the recipient.
+   channel pre-addressed to the recipient. A repeated tap or a slow-network
+   retry cannot create a second exchange; a new share starts a fresh intent.
 
 Only the business owner and active members see this form. Recipient details are
 entered by you; the app never tries to read them out of WhatsApp, SMS or email,
 because those apps do not expose that information to a browser.
+
+The **user** who saved the exchange is the sender. The card shown on the target
+record is the item that was shared, and `by=` uses your own card slug when you
+have one. If Enquiry creation fails, the exchange is still saved; the failure is
+recorded and retried safely in the background.
 
 Past exchanges are listed in the desk under **Contact Exchanges**
 (Engagement section of the Business Connect workspace).
@@ -893,19 +914,26 @@ When a customer submits an enquiry on a team member's card, the CRM Lead is auto
 
 **Chain:** Digital Card → Business Member → User account
 
+For a **Share & Save Contact** exchange the sender is the logged-in user, so the
+CRM Lead is assigned to that eligible sender instead of the owner of the shared
+card. Website enquiries keep the card-owner assignment above.
+
 ### 9.3 Status Sync
 
-Status changes sync bidirectionally:
+CRM Lead is authoritative when linked. `converted = 1` wins even if the Lead
+status text is stale. Status changes update the Enquiry and the linked Contact
+Exchange; an hourly reconciliation also catches bulk edits and conversions that
+bypass document hooks.
 
-| CRM Lead Status | Enquiry Status |
-|-----------------|----------------|
-| New | New |
-| Contacted | Contacted |
-| Nurture | Nurture |
-| Qualified | Qualified |
-| Converted | Converted |
-| Unqualified | Unqualified |
-| Junk | Junk |
+| CRM Lead Status | Enquiry Status | Contact Exchange Status |
+|-----------------|----------------|--------------------------|
+| New | New | New |
+| Contacted | Contacted | Contacted |
+| Nurture | Nurture | Contacted |
+| Qualified | Qualified | Qualified |
+| Converted | Converted | Converted |
+| Unqualified | Unqualified | Archived |
+| Junk | Junk | Archived |
 
 ### 9.4 Custom Fields on CRM Lead
 
@@ -921,6 +949,11 @@ Status changes sync bidirectionally:
 | OSDuo Campaign | Campaign tracking code (or the event/meeting name for shared contacts) |
 | OSDuo Landing URL | The page where enquiry was submitted |
 | OSDuo Message | Message copied from the enquiry — website-form message or the channel/event notes of a Share & Save Contact exchange |
+| OSDuo Shared Content Type | Card, Business, Product or Service selected in Share & Connect |
+| OSDuo Shared By | The logged-in sender who saved the exchange |
+| OSDuo Share Channel | WhatsApp, SMS, Email or In-person |
+| OSDuo Share Event | Exhibition / event / meeting name, when entered |
+| OSDuo Enquiry Origin | Website Form, Contact Exchange or Unknown |
 
 All of these are added to the **CRM Lead side panel automatically** as an
 "OSDuo Attribution" section — no per-site manual layout work. If you edited the
@@ -1032,6 +1065,14 @@ After sign-in, Professional customers land on `/my-card`; Business customer
 roles land on `/desk/business-connect`. Direct requests to generic Desk routes
 such as `/app`, `/desk` and `/desk/build` still show **Not Permitted**.
 
+**On mobile:** the themed BC workspace opens as a drawer from the navbar button.
+Its dark rail and white selected chip are shown only for Business customer
+roles; provider, Administrator and Enterprise users keep the standard light
+Frappe Desk. When the drawer is closed the page fills the screen — no dark
+panel remains over the content. Only the page you are actually on is shown as
+the selected chip: tapping another row does not leave it looking selected on a
+touch screen.
+
 ---
 
 ## 11. Mobile App (PWA)
@@ -1060,18 +1101,28 @@ own name, icon, and data.
 - Anything requiring data — logins, enquiries, desk edits — shows the branded
   **offline page** until you reconnect
 - API/desk traffic is never cached, so you always see live data when online
+- Only complete responses are stored. Partial (HTTP 206) responses are skipped,
+  so a paged asset can never corrupt the offline cache
 
 ### 11.4 Updates
 
 App updates deploy server-side; installed apps pick them up automatically on the next
-visit — no reinstall. (Bump of the app version rotates the offline cache.)
+visit — no reinstall. The app version and a shared asset revision rotate the
+offline cache, so clients and the service worker fetch fresh files together.
+
+> If an installed PWA still shows old CSS or an old sidebar after an upgrade,
+> **close the app fully and reopen it once**. A desktop browser may need one
+> hard-refresh (Ctrl/Cmd + Shift + R). Signing out and back in also refreshes
+> the themed Desk workspace.
 
 ### 11.5 PWA troubleshooting
 
 | Symptom | Fix |
 |---|---|
 | Chrome shows no Install prompt | The site must be served over HTTPS; also make sure you are not in a private/incognito window |
-| App still shows old content after an upgrade | Hard-refresh once — the offline cache rotates on the next visit |
+| App still shows old content after an upgrade | Close the installed app and reopen it once; on desktop, hard-refresh once — the offline cache rotates on the next visit |
+| Console shows `Partial response (status code 206) is unsupported` | Fixed in v1.4.8: only complete HTTP 200 responses are cached. Update to the latest version; no action needed on the site |
+| A tapped sidebar row stays white on a phone | Fixed in v1.4.9: hover styling is limited to devices with a real pointer. Only the current page is highlighted on touch screens |
 | The app misbehaves in other ways | Contact support — see the [Support](#support) section |
 
 ---
@@ -1085,6 +1136,11 @@ visit — no reinstall. (Bump of the app version rotates the offline cache.)
 | Desk **Open** button missing beside Public URL | Enterprise/Desk users: hard-refresh (Ctrl/Cmd + Shift + R). Customers should open the public `/c/<slug>` URL directly; generic Desk routes are intentionally unavailable for customer roles |
 | `/app`, `/desk` or `/desk/build` shows **Not Permitted** | Expected for customer roles. Professional users stay in `/my-card`; Business users can open `/desk/business-connect` plus `/portal/team`, `/portal/subscription`, `/crm` and `/analytics` |
 | Invitation email not received | Ask the provider/support to confirm outgoing SMTP is configured for the site and resend the invitation |
+| Dark panel covers the page on a phone at `/desk/business-connect` | Fixed in v1.4.8: when the sidebar is collapsed it is transparent and non-interactive. Tap the navbar button to open the dark drawer; hard-refresh once if a cached stylesheet persists |
+| A tapped sidebar row stays white after navigating away | Fixed in v1.4.9: sticky touch hover no longer paints the selected chip. See §11.5 |
+| Team members table is cramped on a phone | Fixed in v1.4.10: the table scrolls sideways inside its own region and invite fields use 16px. Hard-refresh once if the old layout is cached |
+| Share & Connect form is missing on a public page | Log in as an active Owner/Manager/Member of that business. Guests see only the normal share bar; the form loads after authentication |
+| A repeated Save & Share tap created only one exchange | Expected: v1.4.11 uses a per-intent request ID. Start a new share to create another record |
 | Video does not play on a product or service page | Check the link is a supported share link — YouTube, Vimeo, Google Drive, Dailymotion, a Nextcloud **single-file** public share (`/s/…`). A Nextcloud **folder** share returns a zip and cannot play, and unsupported or unsafe links are skipped quietly — the page renders no video box rather than a broken one |
 
 Anything not listed here — a QR code that won't generate, a public page that won't
@@ -1151,7 +1207,7 @@ A: Each enquiry records its source (Digital Card, Product, Service, QR, Campaign
 A: Yes. Write your public URL to any standard NTAG21x NFC card or tag — a tap opens your digital profile exactly like a QR scan, and the tap lands with the same analytics attribution (see [NFC Cards & Tags](#64-nfc-cards--tags) for choosing, writing and locking tags).
 
 **Q: How can I share my digital business card?**  
-A: Through the personalized public URL, the QR code generated from it, an NFC card or tag, or the share bar on every public page (Copy / WhatsApp / SMS / Email / native share). Every route uses the same canonical URL, so all links stay valid.
+A: Through the personalized public URL, the QR code generated from it, an NFC card or tag, or the share bar on every public page (Copy / WhatsApp / SMS / Email / native share). Every route uses the same canonical URL, so all links stay valid. From v1.4.11, **Share & Connect** also lets a logged-in member switch between My Card, Business, Product and Service before sharing.
 
 **Q: Can customers contact my business directly?**  
 A: Yes. Every public page offers one-tap channels matching what you filled in: WhatsApp, phone, email and website links, plus the enquiry form.
@@ -1163,7 +1219,7 @@ A: Yes. It supports individual professionals, consultants, entrepreneurs, small 
 A: Yes. Choose from the professional theme templates (BC Theme: layout, color schemes, dark mode, custom colors) to match your brand. New businesses start on the bundled default theme, and per-site branding (logo, favicon) comes built-in.
 
 **Q: Is the platform mobile-friendly?**  
-A: Yes. Every public page is designed for smartphones, tablets and desktops — and the whole site installs as your branded PWA (see [Mobile App (PWA)](#11-mobile-app-pwa)).
+A: Yes. Every public page is designed for smartphones, tablets and desktops — and the whole site installs as your branded PWA (see [Mobile App (PWA)](#11-mobile-app-pwa)). The private Team page and themed Business Connect workspace also have phone layouts: the Team members table scrolls sideways, and the workspace opens as a dark drawer from the navbar button with only the current page highlighted.
 
 **Q: How much does OSDuo Business Connect cost?**  
 A: Refer to https://www.osduotech.com/solutions/business-connect#section_business-connect-pricing for plan and pricing details.

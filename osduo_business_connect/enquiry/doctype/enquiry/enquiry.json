@@ -51,6 +51,12 @@
       "in_standard_filter": 1
     },
     {
+      "fieldname": "enquiry_origin",
+      "fieldtype": "Select",
+      "label": "Enquiry Origin",
+      "options": "Website Form\nContact Exchange\nUnknown"
+    },
+    {
       "fieldname": "campaign",
       "fieldtype": "Data",
       "label": "Campaign"
@@ -91,6 +97,20 @@
       "fieldtype": "Link",
       "label": "Service",
       "options": "Showcase Service"
+    },
+    {
+      "fieldname": "contact_exchange",
+      "fieldtype": "Link",
+      "label": "Contact Exchange",
+      "options": "Contact Exchange",
+      "read_only": 1
+    },
+    {
+      "fieldname": "shared_by",
+      "fieldtype": "Link",
+      "label": "Shared By",
+      "options": "User",
+      "read_only": 1
     },
     {
       "fieldname": "section_visitor",

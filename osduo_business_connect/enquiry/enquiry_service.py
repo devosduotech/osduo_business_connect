@@ -10,7 +10,8 @@ This module handles enquiry-related operations for businesses.
 import frappe
 
 
-def create_enquiry(business_name, visitor_data, source="Other", references=None):
+def create_enquiry(business_name, visitor_data, source="Other", references=None,
+                   commit=True):
     """
     Create a new enquiry.
 
@@ -18,7 +19,11 @@ def create_enquiry(business_name, visitor_data, source="Other", references=None)
         business_name: Business name
         visitor_data: Dict with visitor information
         source: Enquiry source
-        references: Dict with optional card/product/service references
+        references: Dict with optional card/product/service references and
+            Share & Connect attribution (enquiry_origin, contact_exchange,
+            shared_by)
+        commit: Keep True for public form callers. Internal callers that need a
+            single transaction boundary (Contact Exchange) pass False.
 
     Returns:
         dict: Created enquiry data
@@ -66,7 +71,8 @@ def create_enquiry(business_name, visitor_data, source="Other", references=None)
             frappe.throw("Service not found or not published")
 
     # Create enquiry
-    enquiry = frappe.get_doc({
+    references = references or {}
+    enquiry_data = {
         "doctype": "Enquiry",
         "business": business_name,
         "visitor_name": visitor_data.get("name"),
@@ -76,19 +82,39 @@ def create_enquiry(business_name, visitor_data, source="Other", references=None)
         "message": visitor_data.get("message"),
         "source": source,
         "status": "New",
-        "campaign": references.get("campaign") if references else None,
-        "landing_url": references.get("landing_url") if references else None,
-        "card": references.get("card") if references else None,
-        "product": references.get("product") if references else None,
-        "service": references.get("service") if references else None,
+        "campaign": references.get("campaign"),
+        "landing_url": references.get("landing_url"),
+        "card": references.get("card"),
+        "product": references.get("product"),
+        "service": references.get("service"),
         "consent": visitor_data.get("consent", 0),
         "consent_text": visitor_data.get("consent_text"),
         "submitted_at": frappe.utils.now_datetime(),
-    })
+    }
 
-    # Insert enquiry
+    # Attribution is explicit: public web forms are Website Form, Contact
+    # Exchange callers pass Contact Exchange plus the reverse link/sender.
+    # Guard the fields so older installs without the v1.4.11 schema keep working.
+    meta = None
+    if hasattr(frappe, "get_meta"):
+        try:
+            meta = frappe.get_meta("Enquiry")
+        except Exception:
+            meta = None
+    if meta is None or not hasattr(meta, "has_field") or meta.has_field("enquiry_origin"):
+        enquiry_data["enquiry_origin"] = references.get("enquiry_origin") or "Website Form"
+    if meta is None or not hasattr(meta, "has_field") or meta.has_field("contact_exchange"):
+        enquiry_data["contact_exchange"] = references.get("contact_exchange")
+    if meta is None or not hasattr(meta, "has_field") or meta.has_field("shared_by"):
+        enquiry_data["shared_by"] = references.get("shared_by")
+
+    enquiry = frappe.get_doc(enquiry_data)
+
+    # Insert enquiry. Contact Exchange owns the commit boundary so an Enquiry
+    # failure can be rolled back to a savepoint without losing the Exchange.
     enquiry.insert(ignore_permissions=True)
-    frappe.db.commit()
+    if commit:
+        frappe.db.commit()
 
     # Track event with page references
     track_enquiry_event(

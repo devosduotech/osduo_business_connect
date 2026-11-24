@@ -42,7 +42,21 @@ class Enquiry(Document):
         self.set_submitted_at()
 
     def on_update(self):
-        """Post-save operations — trigger CRM sync."""
+        """Post-save operations — reconcile status and trigger CRM sync."""
+        # CRM Lead is authoritative when linked, but an unlinked Enquiry still
+        # drives any linked Contact Exchange status. This runs outside the
+        # CRM-sync-only branch because status can change without crm_lead.
+        try:
+            from osduo_business_connect.crm_integration.status_reconciliation import (
+                sync_contact_exchange_from_enquiry,
+            )
+            sync_contact_exchange_from_enquiry(self.name)
+        except Exception as e:
+            frappe.log_error(
+                title="Contact Exchange Status Sync Failed",
+                message=f"Enquiry {self.name}: {str(e)}",
+            )
+
         if self.status == "New" and not self.crm_lead:
             try:
                 from osduo_business_connect.crm_integration.crm_sync import enqueue_sync
