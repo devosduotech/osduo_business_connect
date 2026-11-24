@@ -414,7 +414,7 @@ function add_my_card_link() {
     target.style.setProperty("--desk-sidebar-bg", BC_PORTAL_RAIL);
     target.style.setProperty("--surface-sidebar", BC_PORTAL_RAIL);
     target.style.setProperty("--border-color", BC_PORTAL_BORDER);
-    target.style.setProperty("--sidebar-select-color", "rgba(255, 255, 255, 0.10)");
+    target.style.setProperty("--sidebar-select-color", "#ffffff");
   }
 
   function apply_bc_workspace_colors() {

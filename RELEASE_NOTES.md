@@ -1,3 +1,41 @@
+# Release Notes - business_connect (v1.4.5)
+
+**Release Date:** 24 November 2026
+**Version:** v1.4.5 (patch)
+
+Two white-label polish fixes found during final test-site review: readable
+sidebar selection on the customer BC workspace, and theme pickers that actually
+drive the rendered colours for preset schemes.
+
+## What changed (v1.4.5)
+
+### Fixed
+
+- Selected and hovered BC workspace sidebar rows now use dark portal text on a
+  white chip. The previous white-on-white combination made the current item
+  unreadable. The nested v16 `.sidebar-item-label` is covered too.
+- `BC Theme` `background_color` and `font_color` are honoured for all preset
+  schemes (Blue, Green, ...), not just `Custom`. Blank pickers still fall back
+  to the template default; `dark_mode` still overrides both pickers.
+
+### Upgrade
+
+From v1.4.4: pull, clear cache and run `bench migrate` once per site. The shared
+asset revision is now `2026-11-24-sidebar-contrast`, so existing clients and the
+service worker pick up the new CSS/JS on their next navigation. `bench build` is
+not required.
+
+```bash
+cd ~/connect-bench/apps/osduo_business_connect
+git fetch upstream --tags && git pull --ff-only upstream main
+cd ~/connect-bench
+bench --site <site> clear-cache
+bench --site <site> migrate
+bench restart
+```
+
+---
+
 # Release Notes - business_connect (v1.4.4)
 
 **Release Date:** 24 November 2026

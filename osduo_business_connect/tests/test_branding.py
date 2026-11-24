@@ -132,7 +132,7 @@ class TestBundledBranding(unittest.TestCase):
         # its plain disk cache would otherwise keep serving the old desk JS/CSS.
         # Every app asset URL must carry the shared revision query string.
         hooks = read("hooks.py")
-        self.assertIn('BC_ASSET_REVISION = "2026-11-21-selected-menu"', hooks)
+        self.assertIn('BC_ASSET_REVISION = "2026-11-24-sidebar-contrast"', hooks)
         for asset in (
             "css/login.css",
             "js/login-layout.js",
@@ -145,7 +145,7 @@ class TestBundledBranding(unittest.TestCase):
                 hooks,
             )
         self.assertEqual(
-            read("www", "sw.py").count('"2026-11-21-selected-menu"'), 1
+            read("www", "sw.py").count('"2026-11-24-sidebar-contrast"'), 1
         )
 
     def test_no_site_files_brand_references(self):
@@ -345,31 +345,55 @@ class TestDeskSupportMenu(unittest.TestCase):
         self.assertIn("display: none", css)
         self.assertNotIn("opacity: 0.5", css)
 
-    def test_desk_sidebar_selected_text_matches_portal(self):
-        portal = read("templates", "pages", "parts", "portal_sidebar.html")
+    def test_desk_sidebar_selected_and_hover_use_dark_text_on_white(self):
         css = read("public", "css", "branding.css")
+        js = read("public", "js", "branding.js")
 
-        # /portal/team's selected link is white and semibold.
-        self.assertIn(".bc-portal-link.active", portal)
-        self.assertIn("color: #fff; font-weight: 600; }", portal)
+        # The selected row is a white chip. Its text must be the dark portal
+        # colour: white-on-white made the current item unreadable.
+        row_selector = (
+            "body.bc-customer-workspace .body-sidebar "
+            ".standard-sidebar-item.active-sidebar .item-anchor,"
+        )
+        self.assertIn(row_selector, css)
+        row_block = css.split(row_selector, 1)[1].split("}", 1)[0]
+        self.assertIn("background-color: #ffffff !important;", row_block)
+        self.assertIn("color: var(--bc-portal-text) !important;", row_block)
+        self.assertNotIn("color: #fff !important;", row_block)
 
-        # v16 renders the visible label in a nested span. The muted
-        # !important rule above would otherwise keep a selected label grey,
-        # so the active label needs the portal values set explicitly.
+        # v16 keeps the visible text in a nested span. The muted !important
+        # rule above would otherwise keep the label grey, so set it explicitly
+        # along with the portal's semibold weight.
         active_selector = (
             "body.bc-customer-workspace .body-sidebar "
             ".standard-sidebar-item.active-sidebar .sidebar-item-label {"
         )
         self.assertIn(active_selector, css)
         active_block = css.split(active_selector, 1)[1].split("}", 1)[0]
-        self.assertIn("color: #fff !important;", active_block)
+        self.assertIn("color: var(--bc-portal-text) !important;", active_block)
         self.assertIn("font-weight: 600 !important;", active_block)
+        self.assertNotIn("color: #fff !important;", active_block)
 
         # Hover has the same nested-label inheritance trap.
-        self.assertIn(
-            "body.bc-customer-workspace .body-sidebar .item-anchor:hover .sidebar-item-label",
-            css,
+        hover_selector = (
+            "body.bc-customer-workspace .body-sidebar .item-anchor:hover .sidebar-item-label"
         )
+        self.assertIn(hover_selector, css)
+        hover_block = css.split(hover_selector, 1)[1].split("}", 1)[0]
+        self.assertIn("color: var(--bc-portal-text) !important;", hover_block)
+
+        hover_row_selector = (
+            "body.bc-customer-workspace .body-sidebar .item-anchor:hover,"
+        )
+        self.assertIn(hover_row_selector, css)
+        hover_row_block = css.split(hover_row_selector, 1)[1].split("}", 1)[0]
+        self.assertIn("background-color: #ffffff !important;", hover_row_block)
+        self.assertIn("color: var(--bc-portal-text) !important;", hover_row_block)
+
+        # Keep Frappe's own active-state background consistent with the chip.
+        self.assertIn("--sidebar-select-color: #ffffff;", css)
+        self.assertIn('"--sidebar-select-color", "#ffffff"', js)
+        self.assertIn("--bc-portal-text: #1e293b;", css)
 
 
 class TestFrappeHelpRowSweeper(unittest.TestCase):

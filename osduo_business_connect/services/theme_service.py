@@ -279,8 +279,12 @@ def get_theme_data(theme_name):
         "accent": accent,
         "gradient_start": primary,
         "gradient_end": accent,
-        "background": palette.get("background") or theme_data.background_color or "#F8FAFC",
-        "font_color": palette.get("font_color") or theme_data.font_color or "#1E293B",
+        # The stored pickers win for every scheme; the palette is only a
+        # fallback for themes saved before these fields were exposed. Keep an
+        # unset picker empty so get_theme_variables can apply the template
+        # default for that layout.
+        "background": theme_data.background_color or palette.get("background"),
+        "font_color": theme_data.font_color or palette.get("font_color"),
     }
 
     return {
@@ -295,8 +299,8 @@ def get_theme_data(theme_name):
         "accent_color": scheme_colors["accent"],
         "gradient_start": scheme_colors["gradient_start"],
         "gradient_end": scheme_colors["gradient_end"],
-        "background_color": scheme_colors.get("background", "#F8FAFC"),
-        "font_color": scheme_colors.get("font_color", "#1E293B"),
+        "background_color": scheme_colors.get("background"),
+        "font_color": scheme_colors.get("font_color"),
         "button_style": theme_data.button_style or "Filled",
         "font_family": theme_data.font_family or "System Default",
         "font_size": theme_data.font_size or "Default",
@@ -359,7 +363,6 @@ def get_theme_variables(theme_data):
     font_family_raw = theme_data.get("font_family") or "System Default"
     font_family = FONT_FAMILY_MAP.get(font_family_raw, FONT_FAMILY_MAP["System Default"])
     font_size = get_root_font_size(theme_data)
-    color_scheme = theme_data.get("color_scheme", "Blue")
     dark_mode = theme_data.get("dark_mode", False)
 
     # Card elevation — derived from template
@@ -381,20 +384,25 @@ def get_theme_variables(theme_data):
     btn_radius_map = {"Filled": card_radius, "Outline": card_radius, "Rounded": "8px", "Pill": "999px"}
     btn_radius = btn_radius_map.get(button_style, card_radius)
 
-    # Background — dark mode or template-based
+    # Background and text: the stored Colour pickers are authoritative for
+    # every scheme, not just Custom. Template defaults are the fallback for
+    # older themes where the pickers were never set. An explicit dark_mode
+    # toggle still wins so the rest of the dark palette stays consistent.
+    picked_background = theme_data.get("background_color")
+    picked_text = theme_data.get("font_color")
+
     if dark_mode:
         background = "#0f172a"
-    elif color_scheme == "Custom":
-        background = theme_data.get("background_color", "#F8FAFC")
+    elif picked_background:
+        background = picked_background
     else:
         bg_map = {"Minimal": "#ffffff", "Luxury": "#0f172a", "Creative": "#fafafa"}
         background = bg_map.get(template, "#f8fafc")
 
-    # Text color
     if dark_mode:
         text_color = "#e2e8f0"
-    elif color_scheme == "Custom":
-        text_color = theme_data.get("font_color", "#1E293B")
+    elif picked_text:
+        text_color = picked_text
     else:
         text_color = "#0f172a" if template == "Luxury" else "#1e293b"
 

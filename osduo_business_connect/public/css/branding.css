@@ -187,7 +187,7 @@ body.bc-customer-workspace {
   --border-color: var(--bc-portal-border);
   --heading-color: var(--bc-portal-text);
   --text-color: var(--bc-portal-text);
-  --sidebar-select-color: rgba(255, 255, 255, 0.1);
+  --sidebar-select-color: #ffffff;
 }
 
 /* Canvas: the portal uses a slate rail and a pale page behind white cards. */
@@ -325,32 +325,36 @@ body.bc-customer-workspace .sidebar-menu .sidebar-label {
   color: #cbd5e1 !important;
 }
 
-body.bc-customer-workspace .standard-sidebar-item.active-sidebar .item-anchor,
+/* Selected and hovered rows are white chips on the dark rail. Their text must
+   switch to the dark portal colour at the same time — leaving it white made
+   the selected item unreadable. The .body-sidebar qualifier raises specificity
+   above Frappe's own active-state rules. */
+body.bc-customer-workspace .body-sidebar .standard-sidebar-item.active-sidebar .item-anchor,
 body.bc-customer-workspace .sidebar-menu .sidebar-label.active,
 body.bc-customer-workspace .sidebar-menu .sidebar-link.active {
-  background-color: rgba(255, 255, 255, 0.1) !important;
+  background-color: #ffffff !important;
   border-left: 3px solid var(--bc-portal-accent) !important;
   border-radius: 8px !important;
-  color: #fff !important;
+  color: var(--bc-portal-text) !important;
 }
 
 /* v16 keeps the visible text in a nested .sidebar-item-label. The muted rule
-   above uses !important, so inheritance cannot turn that label white when its
-   row becomes active. Match .bc-portal-link.active explicitly: white, semibold. */
+   above uses !important, so inheritance cannot darken that label when its row
+   becomes active. Set it explicitly, including the portal's semibold weight. */
 body.bc-customer-workspace .body-sidebar .standard-sidebar-item.active-sidebar .sidebar-item-label {
-  color: #fff !important;
+  color: var(--bc-portal-text) !important;
   font-weight: 600 !important;
 }
 
 /* The same label needs an explicit hover colour for the same reason. */
 body.bc-customer-workspace .body-sidebar .item-anchor:hover .sidebar-item-label,
 body.bc-customer-workspace .body-sidebar .item-anchor:focus-visible .sidebar-item-label {
-  color: #fff !important;
+  color: var(--bc-portal-text) !important;
 }
 
 body.bc-customer-workspace .body-sidebar .item-anchor:hover,
 body.bc-customer-workspace .sidebar-menu .sidebar-link:hover,
 body.bc-customer-workspace .sidebar-menu .sidebar-label:hover {
-  background-color: rgba(255, 255, 255, 0.06) !important;
-  color: #fff !important;
+  background-color: #ffffff !important;
+  color: var(--bc-portal-text) !important;
 }

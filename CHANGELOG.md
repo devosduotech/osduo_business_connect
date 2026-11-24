@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.4.5 - 24 November 2026
+
+### Fixed
+
+- BC workspace sidebar: the selected and hovered menu row is now a white chip
+  with **dark** portal text. Previously the row's white background was paired
+  with white text, making the current item unreadable. Applies to the nested
+  v16 `.sidebar-item-label` as well as the row itself, and keeps Frappe's own
+  `--sidebar-select-color` in sync.
+- BC Theme `background_color` and `font_color` pickers are now authoritative for
+  **every** colour scheme, not only `Custom`. If either picker is blank the
+  template default still applies. An explicit `dark_mode` toggle continues to
+  win so the rest of the dark palette stays consistent.
+
+### Notes
+
+- Bundled desk CSS/JS changed: the shared asset revision was bumped to
+  `2026-11-24-sidebar-contrast`. Clear cache and run `bench migrate`; browsers
+  and the service worker will then fetch the new assets. `bench build` is not
+  required.
+
 ## v1.4.4 - 24 November 2026
 
 ### Added

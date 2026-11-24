@@ -203,6 +203,38 @@ class TestThemeColourSelection(unittest.TestCase):
         self.assertEqual(data["primary_color"], "#123456")
         self.assertEqual(data["accent_color"], "#ABCDEF")
 
+    def test_preset_scheme_honours_background_and_font_pickers(self):
+        # Colour pickers are authoritative for every scheme, not only Custom.
+        data = self.resolve(self.theme_row(
+            color_scheme="Green",
+            background_color="#FFF4E5",
+            font_color="#4A2C10",
+        ))
+        self.assertEqual(data["background_color"], "#FFF4E5")
+        self.assertEqual(data["font_color"], "#4A2C10")
+        variables = self.service.get_theme_variables(data)
+        self.assertIn("--bc-background: #FFF4E5;", variables)
+        self.assertIn("--bc-text: #4A2C10;", variables)
+        self.assertIn("--bc-text-strong: #4A2C10;", variables)
+
+    def test_blank_pickers_fall_back_to_template_defaults(self):
+        data = self.resolve(self.theme_row(
+            color_scheme="Blue", template="Minimal",
+            background_color=None, font_color=None,
+        ))
+        self.assertIsNone(data["background_color"])
+        variables = self.service.get_theme_variables(data)
+        self.assertIn("--bc-background: #ffffff;", variables)
+        self.assertIn("--bc-text: #1e293b;", variables)
+
+    def test_dark_mode_still_overrides_the_pickers(self):
+        data = self.resolve(self.theme_row(
+            background_color="#FFF4E5", font_color="#4A2C10", dark_mode=1,
+        ))
+        variables = self.service.get_theme_variables(data)
+        self.assertIn("--bc-background: #0f172a;", variables)
+        self.assertIn("--bc-text: #e2e8f0;", variables)
+
     def test_controller_keeps_pickers_synced_with_preset(self):
         src = read("showcase", "doctype", "bc_theme", "bc_theme.py")
         self.assertIn("def apply_scheme_colors", src)
