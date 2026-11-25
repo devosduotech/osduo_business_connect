@@ -15,6 +15,12 @@
     if (!form) { return; }
     var endpoint = '/api/method/osduo_business_connect.analytics.analytics_service.log_event';
 
+    var csrfToken = (window.frappe && window.frappe.csrf_token) || window.csrf_token || '';
+    document.addEventListener('bc:share-manifest', function (event) {
+        var detail = event.detail || {};
+        if (detail.csrf_token) { csrfToken = detail.csrf_token; }
+    });
+
     function sendEvent(eventType) {
         var ctx = {
             business: form.elements['business'].value || '',
@@ -24,8 +30,8 @@
             landing_url: window.location.href,
             referrer: document.referrer || ''
         };
-        var csrfToken = (window.frappe && window.frappe.csrf_token) || window.csrf_token || '';
-        if (csrfToken) { ctx.csrf_token = csrfToken; }
+        var token = csrfToken || (window.frappe && window.frappe.csrf_token) || window.csrf_token || '';
+        if (token) { ctx.csrf_token = token; }
         var body = new URLSearchParams();
         Object.keys(ctx).forEach(function (k) {
             if (ctx[k]) { body.append(k, ctx[k]); }
@@ -34,7 +40,7 @@
             navigator.sendBeacon(endpoint, body);
         } else {
             var headers = { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' };
-            if (csrfToken) { headers['X-Frappe-CSRF-Token'] = csrfToken; }
+            if (token) { headers['X-Frappe-CSRF-Token'] = token; }
             fetch(endpoint, {
                 method: 'POST',
                 headers: headers,

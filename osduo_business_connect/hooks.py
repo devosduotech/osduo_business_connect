@@ -362,6 +362,12 @@ permission_query_conditions.update({
 
 before_install = "osduo_business_connect.install.before_install"
 after_install = "osduo_business_connect.install.after_install"
+
+# Public analytics beacon is guest-safe and rate-limited; cached public pages
+# may not have a Frappe boot CSRF token.
+csrf_exempt = [
+    "osduo_business_connect.analytics.analytics_service.log_event",
+]
 # Runs before schema updates: rebuild the module map so DocTypes in modules added
 # after install are synced on the first migrate, then repair legacy Website Theme
 # colour links before Frappe's own after_migrate hook re-saves the active theme.

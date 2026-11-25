@@ -176,6 +176,12 @@
 
     var context = getContext();
 
+    var csrfToken = (window.frappe && window.frappe.csrf_token) || window.csrf_token || '';
+    document.addEventListener('bc:share-manifest', function (event) {
+        var detail = event.detail || {};
+        if (detail.csrf_token) { csrfToken = detail.csrf_token; }
+    });
+
     function sendEvent(eventType, extra) {
         var payload = {
             business: context.business,
@@ -188,8 +194,8 @@
         if (extra) {
             Object.keys(extra).forEach(function (key) { payload[key] = extra[key]; });
         }
-        var csrfToken = (window.frappe && window.frappe.csrf_token) || window.csrf_token || '';
-        if (csrfToken) { payload.csrf_token = csrfToken; }
+        var token = csrfToken || (window.frappe && window.frappe.csrf_token) || window.csrf_token || '';
+        if (token) { payload.csrf_token = token; }
         var params = new URLSearchParams();
         Object.keys(payload).forEach(function (key) {
             if (payload[key] !== undefined && payload[key] !== null) {
@@ -200,7 +206,7 @@
             navigator.sendBeacon(EVENT_ENDPOINT, params);
         } else {
             var headers = { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' };
-            if (csrfToken) { headers['X-Frappe-CSRF-Token'] = csrfToken; }
+            if (token) { headers['X-Frappe-CSRF-Token'] = token; }
             fetch(EVENT_ENDPOINT, {
                 method: 'POST',
                 headers: headers,
