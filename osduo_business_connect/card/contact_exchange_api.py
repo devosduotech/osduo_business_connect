@@ -397,9 +397,15 @@ def create_enquiry_from_exchange(exchange, kind=None, landing_url=None, commit=F
         enquiry_name = result.get("name") if isinstance(result, dict) else result
         if enquiry_name:
             if _has_field(exchange, "linked_enquiry"):
-                exchange.db_set("linked_enquiry", enquiry_name, update_modified=False)
+                frappe.db.set_value(
+                    "Contact Exchange", exchange.name, "linked_enquiry",
+                    enquiry_name, update_modified=False,
+                )
             if _has_field(exchange, "enquiry_error"):
-                exchange.db_set("enquiry_error", None, update_modified=False)
+                frappe.db.set_value(
+                    "Contact Exchange", exchange.name, "enquiry_error",
+                    None, update_modified=False,
+                )
         return enquiry_name
     except Exception as exc:
         frappe.log_error(
@@ -407,7 +413,10 @@ def create_enquiry_from_exchange(exchange, kind=None, landing_url=None, commit=F
             message=f"Exchange {getattr(exchange, 'name', '?')}: {exc}",
         )
         if not reraise and _has_field(exchange, "enquiry_error"):
-            exchange.db_set("enquiry_error", str(exc)[:500], update_modified=False)
+            frappe.db.set_value(
+                "Contact Exchange", exchange.name, "enquiry_error",
+                str(exc)[:500], update_modified=False,
+            )
         if reraise:
             raise
         return None
@@ -688,6 +697,10 @@ def record_contact_exchange(
 
     # One commit boundary for the Exchange and its Enquiry. The daily recovery
     # job retries Exchanges whose Enquiry creation failed.
+    if _has_field(exchange, "linked_enquiry"):
+        exchange.linked_enquiry = enquiry_name
+    if _has_field(exchange, "enquiry_error") and enquiry_name:
+        exchange.enquiry_error = None
     frappe.db.commit()
 
     # Funnel signal: this business recorded a contact exchange.

@@ -214,7 +214,10 @@ class TestContactExchange(unittest.TestCase):
         )
         self.assertIn("def create_enquiry_from_exchange", self.api)
         self.assertIn("create_enquiry=1", self.api)
-        self.assertIn('exchange.db_set("linked_enquiry"', self.api)
+        self.assertTrue(
+            'exchange.db_set("linked_enquiry"' in self.api
+            or 'frappe.db.set_value(' in self.api and '"linked_enquiry"' in self.api
+        )
 
         enquiry_fields = {f["fieldname"]: f for f in
                           load_json("enquiry", "doctype", "enquiry", "enquiry.json")["fields"]}
