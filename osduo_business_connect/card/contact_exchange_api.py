@@ -685,9 +685,17 @@ def record_contact_exchange(
                 shared_content_type=target["content_type"],
                 reraise=True,
             )
-            frappe.db.release_savepoint(savepoint)
+            try:
+                frappe.db.release_savepoint(savepoint)
+            except Exception:
+                # Internal Enquiry/CRM commits may have already released it.
+                pass
         except Exception as exc:
-            frappe.db.rollback(save_point=savepoint)
+            try:
+                frappe.db.rollback(save_point=savepoint)
+            except Exception:
+                # Savepoint may be gone if an internal commit already happened.
+                pass
             enquiry_name = None
             if _has_field(exchange, "enquiry_error"):
                 frappe.db.set_value(
