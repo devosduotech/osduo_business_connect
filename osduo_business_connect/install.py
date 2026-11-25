@@ -762,6 +762,22 @@ BUSINESS_CONNECT_SIDEBAR_ITEMS = (
     },
 )
 
+BUSINESS_CONNECT_SIDEBAR_ICONS = {
+    "Home": "house",
+    "Business": "briefcase",
+    "Member": "users",
+    "Digital Card": "id-card",
+    "My Card": "user",
+    "Product": "package",
+    "Service": "wrench",
+    "Categories": "tags",
+    "Enquiry": "messages-square",
+    "Contact Exchanges": "phone",
+    "Theme": "palette",
+    "Card Event": "activity",
+    "Team": "users-round",
+}
+
 
 def ensure_business_connect_sidebar_items():
     """Ensure the v16 Sidebar document carries the Share & Connect links."""
@@ -793,6 +809,12 @@ def ensure_business_connect_sidebar_items():
         doc.append("items", row)
         existing_keys.add(key)
         changed = True
+
+    for row in doc.items:
+        icon = BUSINESS_CONNECT_SIDEBAR_ICONS.get(row.label)
+        if icon and row.icon != icon:
+            row.icon = icon
+            changed = True
 
     if not changed:
         return

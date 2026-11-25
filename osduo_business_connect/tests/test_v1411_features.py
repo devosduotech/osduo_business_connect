@@ -417,6 +417,8 @@ class TestCacheSafeReadEndpoints(unittest.TestCase):
         self.assertIn("ensure_business_connect_workspace_shortcuts()", install)
         self.assertIn("ensure_business_connect_sidebar_links()", install)
         self.assertIn("ensure_business_connect_sidebar_items()", install)
+        self.assertIn('"Home": "house"', install)
+        self.assertIn('"Team": "users-round"', install)
 
     def test_serializer_neutralises_script_breakout(self):
         payload = {"title": "</script><script>alert(1)</script>\u2028&>"}

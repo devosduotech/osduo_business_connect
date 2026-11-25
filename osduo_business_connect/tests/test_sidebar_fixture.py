@@ -37,6 +37,22 @@ EXPECTED_LINKS = (
     ("Team", "URL", None, "/portal/team"),
 )
 
+EXPECTED_ICONS = {
+    "Home": "house",
+    "Business": "briefcase",
+    "Member": "users",
+    "Digital Card": "id-card",
+    "My Card": "user",
+    "Product": "package",
+    "Service": "wrench",
+    "Categories": "tags",
+    "Enquiry": "messages-square",
+    "Contact Exchanges": "phone",
+    "Theme": "palette",
+    "Card Event": "activity",
+    "Team": "users-round",
+}
+
 
 class TestBusinessConnectSidebarFixture(unittest.TestCase):
     @classmethod
@@ -65,6 +81,11 @@ class TestBusinessConnectSidebarFixture(unittest.TestCase):
             self.assertEqual(item["type"], "Link")
             self.assertEqual(item["hidden"], 0)
             self.assertEqual(item["open_in_new_tab"], 1)
+
+    def test_every_item_has_a_distinct_icon(self):
+        actual = {item["label"]: item["icon"] for item in self.sidebar["items"]}
+        self.assertEqual(actual, EXPECTED_ICONS)
+        self.assertEqual(len(set(actual.values())), len(actual))
 
     def test_no_native_desk_or_admin_links(self):
         blocked_routes = {"/app", "/desk", "/desk/build"}
