@@ -621,12 +621,15 @@ def record_contact_exchange(
         user=frappe.session.user,
     )
 
+    # Normalize refs to the resolved target type. The client may carry stale
+    # hidden-field values; the server-resolved target is authoritative.
+    resolved_kind = target.get("content_type")
     exchange = frappe.get_doc({
         "doctype": "Contact Exchange",
         "business": business,
-        "card": card,
-        "product": product,
-        "service": service,
+        "card": card if resolved_kind == "Card" else None,
+        "product": product if resolved_kind == "Product" else None,
+        "service": service if resolved_kind == "Service" else None,
         "member": target["member"],
         "user": frappe.session.user,
         "recipient_name": recipient_name,
