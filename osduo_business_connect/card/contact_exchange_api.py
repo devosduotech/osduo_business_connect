@@ -666,7 +666,7 @@ def record_contact_exchange(
     enquiry_name = None
     if wants_enquiry:
         savepoint = "ce_enquiry_" + re.sub(r"[^0-9a-zA-Z_]", "_", exchange.name)
-        frappe.db.sql(f"SAVEPOINT `{savepoint}`")
+        frappe.db.savepoint(savepoint)
         try:
             enquiry_name = create_enquiry_from_exchange(
                 exchange,
@@ -676,16 +676,15 @@ def record_contact_exchange(
                 shared_content_type=target["content_type"],
                 reraise=True,
             )
+            frappe.db.release_savepoint(savepoint)
         except Exception as exc:
-            frappe.db.sql(f"ROLLBACK TO SAVEPOINT `{savepoint}`")
+            frappe.db.rollback(save_point=savepoint)
             enquiry_name = None
             if _has_field(exchange, "enquiry_error"):
                 frappe.db.set_value(
                     "Contact Exchange", exchange.name, "enquiry_error",
                     str(exc)[:500], update_modified=False,
                 )
-        finally:
-            frappe.db.sql(f"RELEASE SAVEPOINT `{savepoint}`")
 
     # One commit boundary for the Exchange and its Enquiry. The daily recovery
     # job retries Exchanges whose Enquiry creation failed.

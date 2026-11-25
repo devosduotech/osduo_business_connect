@@ -135,9 +135,9 @@ class TestApiContract(unittest.TestCase):
         self.assertIn("return _result_from_exchange(existing, idempotent=True)", self.api)
 
     def test_transaction_boundary_keeps_exchange(self):
-        self.assertIn("SAVEPOINT `{savepoint}`", self.api)
-        self.assertIn("ROLLBACK TO SAVEPOINT `{savepoint}`", self.api)
-        self.assertIn("RELEASE SAVEPOINT `{savepoint}`", self.api)
+        self.assertIn("frappe.db.savepoint(savepoint)", self.api)
+        self.assertIn("frappe.db.rollback(save_point=savepoint)", self.api)
+        self.assertIn("frappe.db.release_savepoint(savepoint)", self.api)
         self.assertIn("frappe.db.commit()", self.api)
         self.assertIn("Exception:", self.api)
         self.assertIn("str(exc)[:500]", self.api)
