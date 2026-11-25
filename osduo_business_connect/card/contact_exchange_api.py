@@ -304,7 +304,10 @@ def _attributed_url(url, channel, by_slug, campaign=None):
 
 def _build_share_link(channel, phone, email, subject, text, url, by_slug, campaign=None):
     linked_url = _attributed_url(url, channel, by_slug, campaign=campaign)
-    message = f"{text} {linked_url}".strip()
+    if url and url in text:
+        message = text.replace(url, linked_url)
+    else:
+        message = f"{text}\n\n{linked_url}".strip()
 
     if channel == "WhatsApp":
         digits = re.sub(r"[^0-9]", "", phone or "")
