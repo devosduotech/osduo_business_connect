@@ -586,7 +586,157 @@ def after_migrate():
     apply_branding_settings()
     backfill_public_urls()
     remove_doctype_ux_customizations()
+    ensure_business_connect_workspace_shortcuts()
+    ensure_business_connect_sidebar_links()
     seed_subscription_masters()
+
+
+# Business Connect desk shortcuts. These are enforced after every migrate so
+# existing sites receive them even when a custom Workspace delta shadows the
+# app-shipped JSON.
+BUSINESS_CONNECT_PAGE_SHORTCUTS = (
+    {
+        "block_id": "sc_my_card",
+        "label": "My Card",
+        "type": "URL",
+        "url": "/my-card",
+    },
+    {
+        "block_id": "sc_contact_exchanges",
+        "label": "Contact Exchanges",
+        "type": "DocType",
+        "link_to": "Contact Exchange",
+        "doc_view": "List",
+        "stats_filter": "[]",
+    },
+)
+
+BUSINESS_CONNECT_SIDEBAR_LINKS = (
+    {
+        "name": "My Card",
+        "label": "My Card",
+        "title": "My Card",
+        "type": "URL",
+        "external_link": "/my-card",
+        "icon": "user",
+        "sequence_id": 1.0,
+    },
+    {
+        "name": "Contact Exchanges",
+        "label": "Contact Exchanges",
+        "title": "Contact Exchanges",
+        "type": "Link",
+        "link_type": "DocType",
+        "link_to": "Contact Exchange",
+        "icon": "phone",
+        "sequence_id": 2.0,
+    },
+)
+
+
+def ensure_business_connect_workspace_shortcuts():
+    """Ensure My Card and Contact Exchanges appear on the Workspace page."""
+    workspace_name = "Business Connect"
+    if not frappe.db.exists("Workspace", workspace_name):
+        return
+
+    existing = frappe.get_all(
+        "Workspace Shortcut",
+        filters={
+            "parent": workspace_name,
+            "parenttype": "Workspace",
+            "parentfield": "shortcuts",
+        },
+        fields=["label", "idx"],
+    )
+    labels = {row.get("label") for row in existing}
+    next_idx = max([int(row.get("idx") or 0) for row in existing] or [0]) + 1
+
+    for item in BUSINESS_CONNECT_PAGE_SHORTCUTS:
+        if item["label"] in labels:
+            continue
+        row = frappe.get_doc({
+            "doctype": "Workspace Shortcut",
+            "parent": workspace_name,
+            "parenttype": "Workspace",
+            "parentfield": "shortcuts",
+            "idx": next_idx,
+            "label": item["label"],
+            "type": item["type"],
+            "color": "Grey",
+        })
+        if item["type"] == "URL":
+            row.url = item["url"]
+        else:
+            row.link_to = item["link_to"]
+            row.doc_view = item.get("doc_view")
+            row.stats_filter = item.get("stats_filter", "[]")
+        row.insert(ignore_permissions=True)
+        next_idx += 1
+
+    content_raw = frappe.db.get_value("Workspace", workspace_name, "content") or "[]"
+    try:
+        content = frappe.parse_json(content_raw) or []
+    except Exception:
+        content = []
+    block_ids = {block.get("id") for block in content if isinstance(block, dict)}
+    changed = False
+    for item in BUSINESS_CONNECT_PAGE_SHORTCUTS:
+        if item["block_id"] in block_ids:
+            continue
+        content.append({
+            "id": item["block_id"],
+            "type": "shortcut",
+            "data": {"shortcut_name": item["label"], "col": 3},
+        })
+        changed = True
+    if changed:
+        frappe.db.set_value(
+            "Workspace", workspace_name, "content",
+            json.dumps(content, separators=(",", ":")),
+            update_modified=False,
+        )
+
+
+def ensure_business_connect_sidebar_links():
+    """Ensure My Card and Contact Exchanges are visible in the module sidebar."""
+    for item in BUSINESS_CONNECT_SIDEBAR_LINKS:
+        values = {
+            "doctype": "Workspace",
+            "app": "osduo_business_connect",
+            "module": "Business",
+            "label": item["label"],
+            "title": item["title"],
+            "type": item["type"],
+            "icon": item["icon"],
+            "sequence_id": item["sequence_id"],
+            "public": 1,
+            "is_hidden": 0,
+            "standard": 1,
+        }
+        if item["type"] == "URL":
+            values["external_link"] = item["external_link"]
+        else:
+            values["link_type"] = item["link_type"]
+            values["link_to"] = item["link_to"]
+
+        existing = frappe.db.exists("Workspace", item["name"])
+        if not existing:
+            frappe.get_doc(values).insert(
+                ignore_permissions=True, ignore_if_duplicate=True
+            )
+            continue
+
+        current = frappe.get_doc("Workspace", item["name"])
+        changed = False
+        for fieldname, value in values.items():
+            if fieldname == "doctype":
+                continue
+            if current.get(fieldname) != value:
+                current.set(fieldname, value)
+                changed = True
+        if changed:
+            current.save(ignore_permissions=True)
 
 
 def seed_subscription_masters():

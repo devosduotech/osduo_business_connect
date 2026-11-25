@@ -389,6 +389,21 @@ class TestCacheSafeReadEndpoints(unittest.TestCase):
         self.assertIn("Contact Exchanges", workspace["content"])
         self.assertGreater(workspace["modified"], "2026-11-25 00:00:00")
 
+        my_card = load_json("business", "workspace", "my_card", "my_card.json")
+        self.assertEqual(my_card["type"], "URL")
+        self.assertEqual(my_card["external_link"], "/my-card")
+        contact_exchanges = load_json(
+            "business", "workspace", "contact_exchanges", "contact_exchanges.json"
+        )
+        self.assertEqual(contact_exchanges["type"], "Link")
+        self.assertEqual(contact_exchanges["link_to"], "Contact Exchange")
+
+        install = read("install.py")
+        self.assertIn("def ensure_business_connect_workspace_shortcuts", install)
+        self.assertIn("def ensure_business_connect_sidebar_links", install)
+        self.assertIn("ensure_business_connect_workspace_shortcuts()", install)
+        self.assertIn("ensure_business_connect_sidebar_links()", install)
+
     def test_serializer_neutralises_script_breakout(self):
         payload = {"title": "</script><script>alert(1)</script>\u2028&>"}
         encoded = json_for_script(payload)
