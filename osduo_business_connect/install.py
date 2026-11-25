@@ -588,6 +588,7 @@ def after_migrate():
     remove_doctype_ux_customizations()
     ensure_business_connect_workspace_shortcuts()
     ensure_business_connect_sidebar_links()
+    ensure_business_connect_sidebar_items()
     seed_subscription_masters()
 
 
@@ -737,6 +738,74 @@ def ensure_business_connect_sidebar_links():
                 changed = True
         if changed:
             current.save(ignore_permissions=True)
+
+
+# Frappe v16 draws the Business module from the shipped Sidebar document, not
+# from Workspace records. These are the two Share & Connect entries that must
+# exist in that document's items table.
+BUSINESS_CONNECT_SIDEBAR_ITEMS = (
+    {
+        "label": "My Card",
+        "type": "Link",
+        "link_type": "URL",
+        "url": "/my-card",
+        "icon": "user",
+        "open_in_new_tab": 1,
+    },
+    {
+        "label": "Contact Exchanges",
+        "type": "Link",
+        "link_type": "DocType",
+        "link_to": "Contact Exchange",
+        "icon": "phone",
+        "open_in_new_tab": 1,
+    },
+)
+
+
+def ensure_business_connect_sidebar_items():
+    """Ensure the v16 Sidebar document carries the Share & Connect links."""
+    sidebar_name = "Business Connect"
+    if not frappe.db.exists("Sidebar", sidebar_name):
+        return
+
+    from frappe.desk.doctype.sidebar.sidebar import item_key
+
+    doc = frappe.get_doc("Sidebar", sidebar_name)
+    existing_keys = {item_key(row) for row in doc.items}
+    changed = False
+
+    for item in BUSINESS_CONNECT_SIDEBAR_ITEMS:
+        row = {
+            "added": 0,
+            "child": 0,
+            "collapsible": 1,
+            "hidden": 0,
+            "indent": 0,
+            "is_default_module": 0,
+            "keep_closed": 0,
+            "show_arrow": 0,
+            **item,
+        }
+        key = item_key(row)
+        if key in existing_keys:
+            continue
+        doc.append("items", row)
+        existing_keys.add(key)
+        changed = True
+
+    if not changed:
+        return
+
+    was_in_migrate = frappe.flags.in_migrate
+    frappe.flags.in_migrate = True
+    try:
+        doc.save(ignore_permissions=True)
+    finally:
+        frappe.flags.in_migrate = was_in_migrate
+
+    # A Sidebar save does not invalidate the desk boot payload on its own.
+    frappe.cache.delete_key("bootinfo")
 
 
 def seed_subscription_masters():

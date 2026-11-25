@@ -398,11 +398,25 @@ class TestCacheSafeReadEndpoints(unittest.TestCase):
         self.assertEqual(contact_exchanges["type"], "Link")
         self.assertEqual(contact_exchanges["link_to"], "Contact Exchange")
 
+        sidebar = load_json(
+            "business", "sidebar", "business_connect", "business_connect.json"
+        )
+        sidebar_items = {item["label"]: item for item in sidebar["items"]}
+        self.assertIn("My Card", sidebar_items)
+        self.assertEqual(sidebar_items["My Card"]["link_type"], "URL")
+        self.assertEqual(sidebar_items["My Card"]["url"], "/my-card")
+        self.assertIn("Contact Exchanges", sidebar_items)
+        self.assertEqual(sidebar_items["Contact Exchanges"]["link_type"], "DocType")
+        self.assertEqual(sidebar_items["Contact Exchanges"]["link_to"], "Contact Exchange")
+        self.assertGreater(sidebar["modified"], "2026-11-25 00:00:00")
+
         install = read("install.py")
         self.assertIn("def ensure_business_connect_workspace_shortcuts", install)
         self.assertIn("def ensure_business_connect_sidebar_links", install)
+        self.assertIn("def ensure_business_connect_sidebar_items", install)
         self.assertIn("ensure_business_connect_workspace_shortcuts()", install)
         self.assertIn("ensure_business_connect_sidebar_links()", install)
+        self.assertIn("ensure_business_connect_sidebar_items()", install)
 
     def test_serializer_neutralises_script_breakout(self):
         payload = {"title": "</script><script>alert(1)</script>\u2028&>"}
