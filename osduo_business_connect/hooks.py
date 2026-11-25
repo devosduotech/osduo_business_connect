@@ -15,7 +15,7 @@ from osduo_business_connect.subscription.constants import (
 # cache lifetimes; a plain path means Firefox can keep an old desk JS/CSS even
 # after a deploy when service workers are unavailable (e.g. plain HTTP). Bump
 # this string with each asset change so every browser requests a fresh URL.
-BC_ASSET_REVISION = "2026-11-24-share-connect-v1412"
+BC_ASSET_REVISION = "2026-11-25-share-connect-v1413"
 
 # Branding Configuration — single source of truth
 # ------------------------------------------------

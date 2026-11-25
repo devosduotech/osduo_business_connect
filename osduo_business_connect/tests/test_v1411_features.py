@@ -457,17 +457,17 @@ class TestMigrationSafety(unittest.TestCase):
 
 class TestVersionAndReleaseWiring(unittest.TestCase):
     def test_version_and_revisions_are_bumped(self):
-        self.assertIn('__version__ = "1.4.12"', read("__init__.py"))
-        self.assertIn('BC_ASSET_REVISION = "2026-11-24-share-connect-v1412"', read("hooks.py"))
-        self.assertIn('"2026-11-24-share-connect-v1412"', read("www", "sw.py"))
+        self.assertIn('__version__ = "1.4.13"', read("__init__.py"))
+        self.assertIn('BC_ASSET_REVISION = "2026-11-25-share-connect-v1413"', read("hooks.py"))
+        self.assertIn('"2026-11-25-share-connect-v1413"', read("www", "sw.py"))
 
     def test_docs_and_release_notes_are_updated(self):
         spec = read("..", "docs", "SHARE_AND_CONNECT_SPEC.md")
         self.assertIn("**Version:** 0.3.1", spec)
         self.assertIn("T44", spec)
         notes = read("..", "RELEASE_NOTES.md")
-        self.assertIn("# Release Notes - business_connect (v1.4.12)", notes)
-        self.assertIn("**Release:** v1.4.12.", notes)
+        self.assertIn("# Release Notes - business_connect (v1.4.13)", notes)
+        self.assertIn("**Release:** v1.4.13.", notes)
         manual = read("..", "docs", "USER_MANUAL.md")
         self.assertIn("Save as an Enquiry (goes to CRM)", manual)
 

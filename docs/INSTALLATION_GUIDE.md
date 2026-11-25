@@ -3,7 +3,7 @@
 Step-by-step instructions to install, operate, and update **OSDuo Business Connect**
 — from a single-site demo to a multi-tenant SaaS bench serving many customer domains.
 
-Current release: **v1.4.12** (see [RELEASE_NOTES.md](../RELEASE_NOTES.md)).
+Current release: **v1.4.13** (see [RELEASE_NOTES.md](../RELEASE_NOTES.md)).
 
 ---
 
@@ -694,14 +694,19 @@ Notes:
   `sites/<site>/public/files`.
 - v1.2.0+'s service worker cache names are stamped with the app `__version__`, so
   installed PWAs roll themselves forward on the next visit after a version bump.
-- v1.4.8–v1.4.11 stamp assets and the service worker with a shared revision
-  (`2026-11-24-share-connect-v1412` in v1.4.12). On Frappe v16 `sites/assets/<app>` is
+- v1.4.8–v1.4.13 stamp assets and the service worker with a shared revision
+  (`2026-11-25-share-connect-v1413` in v1.4.13). On Frappe v16 `sites/assets/<app>` is
   usually a symlink to the app's `public/` folder — check with
   `readlink -f sites/assets/osduo_business_connect/css/branding.css`. When it
   resolves inside the app's `public/`, `bench build` is **not** needed; only run
   `bench build --app osduo_business_connect` when assets are real copied files.
   Clear cache and migrate once per site; installed PWAs pick up the new revision
   on their next visit (close/reopen once if an old cached stylesheet lingers).
+- **v1.4.13 requires `bench migrate` on every site.** It re-applies the Business
+  Workspace shortcuts, the v16 Sidebar items and the distinct shortcut icons.
+  Sites upgraded from an earlier v16 layout should remove any stale
+  `Custom Sidebar` rows for module `Business` after migrate; those rows override
+  the shipped sidebar order and icons in the Desk boot payload.
 - **v1.4.11 (Share & Connect) requires `bench migrate` on every site.** It adds
   13 fields across Contact Exchange, Enquiry and CRM Lead, registers a
   non-destructive attribution backfill patch, and adds two read endpoints

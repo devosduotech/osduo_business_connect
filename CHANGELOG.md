@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.4.13 - 25 November 2026
+
+### Fixed
+
+- **Save & Share stability:** fixed CSRF token retrieval and `csrfToken`
+  reference errors, stale resolved-target references, savepoint release/rollback
+  500s, and long submits now fail visibly with error logging instead of hanging.
+- **Analytics beacon:** `log_event` now accepts the authenticated CSRF token as
+  a fallback while remaining exempt for beacon-style requests.
+- **Share messages:** the attributed URL is generated once, so WhatsApp, SMS
+  and email messages no longer contain a duplicated link.
+- **Mobile numbers:** the recipient phone code defaults to India (`+91`), uses
+  ISO labels, strips duplicate prefixes, sends the full number to WhatsApp/SMS,
+  and lays out the code and number fields in a two-column grid.
+- **Desk navigation:** `My Card` and `Contact Exchanges` are present in both the
+  Business Workspace and the v16 Sidebar, with distinct Lucide icons for every
+  Business shortcut. Idempotent `after_migrate` helpers re-apply them on
+  existing sites.
+
+### Notes
+
+- Fresh production release tag carrying all post-`v1.4.12` hotfixes.
+- Asset/service-worker revision is `2026-11-25-share-connect-v1413`.
+- No positional API change: `shared_content_type` and `request_id` remain
+  trailing optional arguments; manifest and QR signatures are unchanged.
+- Sites with older `Custom Sidebar` overrides for the `Business` module should
+  reset/remove them after migrate so the shipped sidebar order and icons apply.
+
 ## v1.4.12 - 24 November 2026
 
 ### Fixed

@@ -1,3 +1,45 @@
+# Release Notes - business_connect (v1.4.13)
+
+**Status:** Production release tag.
+**Release:** v1.4.13.
+
+## Changes (v1.4.13)
+
+### Fixed
+
+- **Save & Share stability:** CSRF token retrieval and `csrfToken` reference
+  errors, stale resolved-target references, savepoint release/rollback 500s,
+  and long submits now fail visibly with error logging instead of hanging.
+- **Analytics beacon:** `log_event` accepts the authenticated CSRF token as a
+  fallback while staying exempt for beacon-style requests.
+- **Share messages:** the attributed URL is generated once, removing duplicate
+  links from WhatsApp, SMS and email messages.
+- **Mobile numbers:** the recipient phone code defaults to India (`+91`), uses
+  ISO labels, strips duplicate prefixes, sends the full number to WhatsApp/SMS,
+  and uses a two-column code/number layout.
+- **Desk navigation:** `My Card` and `Contact Exchanges` are in the Business
+  Workspace and the v16 Sidebar, with distinct Lucide icons for every Business
+  shortcut. Idempotent `after_migrate` helpers re-apply them on existing sites.
+
+### Compatibility
+
+- No positional API changes: `shared_content_type` and `request_id` remain
+  trailing optional arguments; manifest and QR signatures are unchanged.
+- No new DocType, module or public write API.
+
+### Upgrade
+
+Pull `main` at tag `v1.4.13`, run `bench migrate` once per site, clear site and
+website caches, restart, then hard-refresh Desk. If the Business sidebar still
+shows an older order or generic `list` icons, remove stale `Custom Sidebar`
+rows for module `Business` after migrate; those override the shipped Sidebar
+document in Frappe v16 boot data.
+
+Asset/service-worker revision: `2026-11-25-share-connect-v1413`. `bench build`
+is only needed when assets are copied files, not symlinks.
+
+---
+
 # Release Notes - business_connect (v1.4.12)
 
 **Status:** Production release tag. UAT before enabling broadly on production.

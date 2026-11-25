@@ -2590,7 +2590,7 @@ class TestPortalTeamInvitations(unittest.TestCase):
 
         with open(os.path.join(APP_DIR, "__init__.py")) as handle:
             version = handle.read()
-        self.assertIn('__version__ = "1.4.12"', version)
+        self.assertIn('__version__ = "1.4.13"', version)
 
     def test_portal_team_has_phone_layout_and_scrolling_members_table(self):
         team = os.path.join(APP_DIR, "templates", "pages", "portal", "team.html")
