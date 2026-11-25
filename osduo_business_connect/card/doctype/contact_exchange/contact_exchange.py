@@ -76,7 +76,7 @@ class ContactExchange(Document):
             frappe.throw("Invalid shared content type")
 
         refs = {"Card": self.card, "Product": self.product, "Service": self.service}
-        populated = [name for name in refs.values() if name]
+        populated = [name for name, value in refs.items() if value]
         if kind == "Business":
             if populated:
                 frappe.throw("Business sharing cannot include a card, product or service")
@@ -84,7 +84,7 @@ class ContactExchange(Document):
             row = frappe.db.get_value(
                 "Business", {"name": self.business}, fields, as_dict=True
             )
-        elif not refs[kind] or len(populated) != 1 or populated[0] != kind:
+        elif not refs.get(kind) or len(populated) != 1 or populated[0] != kind:
             frappe.throw("Selected content does not match the shared reference")
         elif kind == "Card":
             row = frappe.db.get_value(
