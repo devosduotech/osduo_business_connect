@@ -371,6 +371,24 @@ class TestCacheSafeReadEndpoints(unittest.TestCase):
         self.assertIn("create_enquiry: wantsEnquiry", form)
         self.assertNotIn("enquiry_requested: wantsEnquiry", form)
 
+    def test_contact_form_defaults_to_india_country_code(self):
+        form = read("templates", "pages", "parts", "contact_exchange_form.html")
+        self.assertIn('name="recipient_phone_code"', form)
+        self.assertIn('<option value="+91" selected>IN +91</option>', form)
+        self.assertIn('var phoneCode = (data.get("recipient_phone_code") || "+91").trim();', form)
+        self.assertIn("phoneCode + phoneLocal", form)
+
+    def test_workspace_has_default_share_and_connect_shortcuts(self):
+        workspace = load_json(
+            "business", "workspace", "business_connect", "business_connect.json"
+        )
+        labels = {item["label"] for item in workspace["shortcuts"]}
+        self.assertIn("My Card", labels)
+        self.assertIn("Contact Exchanges", labels)
+        self.assertIn("My Card", workspace["content"])
+        self.assertIn("Contact Exchanges", workspace["content"])
+        self.assertGreater(workspace["modified"], "2026-11-25 00:00:00")
+
     def test_serializer_neutralises_script_breakout(self):
         payload = {"title": "</script><script>alert(1)</script>\u2028&>"}
         encoded = json_for_script(payload)

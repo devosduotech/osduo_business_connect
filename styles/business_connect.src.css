@@ -1045,8 +1045,23 @@
 }
 
 .bc-ce-row {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
     width: 100%;
+}
+
+.bc-ce-row-phone {
+    grid-template-columns: 110px minmax(0, 1fr) minmax(0, 1fr);
+}
+
+@media (max-width: 640px) {
+    .bc-ce-row-phone {
+        grid-template-columns: 110px minmax(0, 1fr);
+    }
+    .bc-ce-row-phone input[type="email"] {
+        grid-column: 1 / -1;
+    }
 }
 
 .bc-ce-row input,

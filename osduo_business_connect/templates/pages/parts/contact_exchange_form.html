@@ -16,8 +16,22 @@
             <input type="text" name="recipient_name" placeholder="Recipient name" autocomplete="name" required>
             <input type="text" name="recipient_company" placeholder="Company (optional)" autocomplete="organization">
         </div>
-        <div class="bc-ce-row">
-            <input type="tel" name="recipient_phone" placeholder="Mobile number" autocomplete="tel">
+        <div class="bc-ce-row bc-ce-row-phone">
+            <select name="recipient_phone_code" aria-label="Country code">
+                <option value="+91" selected>IN +91</option>
+                <option value="+1">US/CA +1</option>
+                <option value="+44">UK +44</option>
+                <option value="+61">AU +61</option>
+                <option value="+65">SG +65</option>
+                <option value="+971">UAE +971</option>
+                <option value="+966">SA +966</option>
+                <option value="+974">QA +974</option>
+                <option value="+968">OM +968</option>
+                <option value="+60">MY +60</option>
+                <option value="+49">DE +49</option>
+                <option value="+33">FR +33</option>
+            </select>
+            <input type="tel" name="recipient_phone" placeholder="Mobile number" autocomplete="tel-national" inputmode="tel">
             <input type="email" name="recipient_email" placeholder="Email address" autocomplete="email">
         </div>
         <div class="bc-ce-row">
@@ -208,7 +222,9 @@
 
             var data = new FormData(form);
             var channel = data.get("channel") || "In-person";
-            var phone = (data.get("recipient_phone") || "").trim();
+            var phoneCode = (data.get("recipient_phone_code") || "+91").trim();
+            var phoneLocal = (data.get("recipient_phone") || "").trim().replace(/^\+?91[-\s]*/, "");
+            var phone = phoneLocal ? (phoneCode + phoneLocal) : "";
             var email = (data.get("recipient_email") || "").trim();
             var phoneDigits = phone.replace(/[^0-9]/g, "");
 
