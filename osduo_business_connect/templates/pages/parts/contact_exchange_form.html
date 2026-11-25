@@ -110,7 +110,7 @@
         });
     }
 
-    function callWrite(endpoint, args) {
+    function callWrite(endpoint, args, csrfToken) {
         var token = (window.frappe && window.frappe.csrf_token) || window.csrf_token || csrfToken || "";
         var request;
         if (window.frappe && typeof window.frappe.xcall === "function") {
@@ -243,7 +243,7 @@
             setPending(true);
             status.textContent = "Saving…";
 
-            callWrite(ENDPOINT, Object.assign({}, intent.frozen, { create_enquiry: wantsEnquiry }))
+            callWrite(ENDPOINT, Object.assign({}, intent.frozen, { create_enquiry: wantsEnquiry }), csrfToken)
                 .then(function (result) {
                     var message = result && result.message ? result.message : {};
                     if (!message.name) {
