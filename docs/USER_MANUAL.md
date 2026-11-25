@@ -684,6 +684,10 @@ default. Changing the choice updates the link, QR and message. The contact form
 is loaded only after authentication, so cached public pages never contain one
 person's details or a CSRF token meant for another visitor.
 
+From v1.4.13, the URL placed in WhatsApp, SMS and email messages is generated
+once, so a message contains a single link. Slow or failed submissions now show
+an error you can retry instead of waiting indefinitely.
+
 ### 6.4 NFC Cards & Tags
 
 Anything a QR code can do, an NFC card or tag can do too — and a tap feels more
@@ -739,6 +743,8 @@ it to:
    **Sharing: <item>** so you cannot record the wrong target.
 2. Fill in **Share & Save Contact**: recipient name, company, mobile, email,
    channel (WhatsApp / SMS / Email / In person), event/meeting and notes.
+   The mobile country code starts at India (`+91`) and can be changed; the full
+   code and number go to WhatsApp/SMS, and duplicate prefixes are removed.
 3. Leave **Save as an Enquiry (goes to CRM)** checked to create an Enquiry — the
    same record and pipeline as the public "Send a Message" form — so it appears
    under **Enquiries** and a CRM Lead is created through the standard sync.
@@ -747,6 +753,7 @@ it to:
 4. Choose **Save & Share** — the app saves the exchange and opens the chosen
    channel pre-addressed to the recipient. A repeated tap or a slow-network
    retry cannot create a second exchange; a new share starts a fresh intent.
+   If the server or network fails, the form reports the error so you can retry.
 
 Only the business owner and active members see this form. Recipient details are
 entered by you; the app never tries to read them out of WhatsApp, SMS or email,
@@ -757,8 +764,10 @@ record is the item that was shared, and `by=` uses your own card slug when you
 have one. If Enquiry creation fails, the exchange is still saved; the failure is
 recorded and retried safely in the background.
 
-Past exchanges are listed in the desk under **Contact Exchanges**
-(Engagement section of the Business Connect workspace).
+Past exchanges are listed in the desk under **Contact Exchanges** (Contact
+Exchange documents, in the Engagement section of the Business Connect
+workspace). The **Card Event** sidebar entry opens Engagement Event records.
+From v1.4.13, every Business shortcut has its own icon.
 
 ---
 
@@ -1051,6 +1060,15 @@ rather than by the URL alone.
 | `/crm`, `/crm-form/*` | Frappe CRM (Business only, plan-gated) |
 | `/analytics` | Analytics dashboard (Business only) |
 
+From v1.4.13 the Business Connect Desk sidebar shows these shortcuts, in
+order: **Home**, **Business**, **Member**, **Digital Card**, **My Card**,
+**Product**, **Service**, **Categories**, **Enquiry**, **Contact Exchanges**,
+**Theme**, **Card Event** and **Team**. Each has its own icon; **Card Event**
+opens Engagement Event records, and **Team** opens `/portal/team`. If an older
+site still shows labels such as **Showcase Product** or generic `list` icons,
+ask the provider to reset stale `Custom Sidebar` overrides — see the
+[Installation Guide](INSTALLATION_GUIDE.md#-troubleshooting).
+
 All private portal pages share the same left sidebar. It shows only the
 sections included in your plan, plus a **Business Connect** entry for Business
 customer roles. Provider users and Enterprise sites also see **Advanced admin**;
@@ -1109,6 +1127,7 @@ own name, icon, and data.
 App updates deploy server-side; installed apps pick them up automatically on the next
 visit — no reinstall. The app version and a shared asset revision rotate the
 offline cache, so clients and the service worker fetch fresh files together.
+From v1.4.13 the shared revision is `2026-11-25-share-connect-v1413`.
 
 > If an installed PWA still shows old CSS or an old sidebar after an upgrade,
 > **close the app fully and reopen it once**. A desktop browser may need one
@@ -1141,6 +1160,10 @@ offline cache, so clients and the service worker fetch fresh files together.
 | Team members table is cramped on a phone | Fixed in v1.4.10: the table scrolls sideways inside its own region and invite fields use 16px. Hard-refresh once if the old layout is cached |
 | Share & Connect form is missing on a public page | Log in as an active Owner/Manager/Member of that business. Guests see only the normal share bar; the form loads after authentication |
 | A repeated Save & Share tap created only one exchange | Expected: v1.4.11+ uses a per-intent request ID. Start a new share to create another record |
+| Save & Share stays pending or shows a 500 | Fixed in v1.4.13: long or failed submits now report a visible error you can retry. If it repeats, check the network and contact support with the error text |
+| WhatsApp or SMS message contains the same link twice | Fixed in v1.4.13: the attributed URL is generated once. Hard-refresh once if a cached page still shows the old message |
+| Recipient mobile field does not start with `+91` | v1.4.13 defaults the country code to India and strips duplicate prefixes. Hard-refresh once, then choose another country code if needed |
+| Business Desk sidebar has the wrong order, old labels or generic `list` icons | Provider/admin action: check the site's `Custom Sidebar` overrides for module `Business` as described in the Installation Guide. A normal browser refresh is not enough if the server resolves stale overrides |
 | Video does not play on a product or service page | Check the link is a supported share link — YouTube, Vimeo, Google Drive, Dailymotion, a Nextcloud **single-file** public share (`/s/…`). A Nextcloud **folder** share returns a zip and cannot play, and unsupported or unsafe links are skipped quietly — the page renders no video box rather than a broken one |
 
 Anything not listed here — a QR code that won't generate, a public page that won't
@@ -1208,6 +1231,9 @@ A: Yes. Write your public URL to any standard NTAG21x NFC card or tag — a tap 
 
 **Q: How can I share my digital business card?**  
 A: Through the personalized public URL, the QR code generated from it, an NFC card or tag, or the share bar on every public page (Copy / WhatsApp / SMS / Email / native share). Every route uses the same canonical URL, so all links stay valid. From v1.4.11+, **Share & Connect** also lets a logged-in member switch between My Card, Business, Product and Service before sharing.
+
+**Q: Can I record who received a shared card or product?**<br>
+A: Yes. While logged in, use **Share & Save Contact** on a card, business, product or service page. The recipient country code defaults to `+91`, repeated taps cannot create duplicate records, and saved exchanges appear under **Contact Exchanges** in Desk.
 
 **Q: Can customers contact my business directly?**  
 A: Yes. Every public page offers one-tap channels matching what you filled in: WhatsApp, phone, email and website links, plus the enquiry form.

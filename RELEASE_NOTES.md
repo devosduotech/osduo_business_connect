@@ -38,6 +38,15 @@ document in Frappe v16 boot data.
 Asset/service-worker revision: `2026-11-25-share-connect-v1413`. `bench build`
 is only needed when assets are copied files, not symlinks.
 
+### Production verification
+
+Tag `v1.4.13` was pulled to `beadazzled.connect`, `osduo.connect` and
+`trimaster.connect`; `bench migrate`, cache clears and restarts completed on
+25 November 2026. After stale `Custom Sidebar` rows for module `Business` were
+removed, the expected sidebar order was confirmed on all three sites; the
+icon/order mismatch previously reported on `osduo.connect` was confirmed fixed.
+No code rollback or extra schema change was needed.
+
 ---
 
 # Release Notes - business_connect (v1.4.12)

@@ -675,6 +675,7 @@ git fetch && git pull origin main        # release branch; or develop on staging
 # migrate is REQUIRED whenever DocType JSON changed (v1.2.0 and v1.2.8 included such changes; v1.2.8 also removes legacy Customize Form records for the BC doctypes)
 bench --site all migrate
 bench --site all clear-cache
+bench --site all clear-website-cache      # required after Share & Connect changes
 bench build --app osduo_business_connect   # only if assets/JS changed & not dev mode
 bench restart
 ```
@@ -704,9 +705,11 @@ Notes:
   on their next visit (close/reopen once if an old cached stylesheet lingers).
 - **v1.4.13 requires `bench migrate` on every site.** It re-applies the Business
   Workspace shortcuts, the v16 Sidebar items and the distinct shortcut icons.
-  Sites upgraded from an earlier v16 layout should remove any stale
-  `Custom Sidebar` rows for module `Business` after migrate; those rows override
-  the shipped sidebar order and icons in the Desk boot payload.
+  This release was verified on `beadazzled.connect`, `osduo.connect` and
+  `trimaster.connect`. Sites upgraded from an earlier v16 layout should check
+  for stale `Custom Sidebar` rows for module `Business` after migrate; those
+  rows override the shipped sidebar order and icons in the Desk boot payload.
+  See the verification steps below.
 - **v1.4.11 (Share & Connect) requires `bench migrate` on every site.** It adds
   13 fields across Contact Exchange, Enquiry and CRM Lead, registers a
   non-destructive attribution backfill patch, and adds two read endpoints
@@ -719,6 +722,69 @@ Notes:
   one migrate is all that's needed to re-stamp `public_url` everywhere.
 - If the site uses a custom **Website Theme**, re-save it (Desk → Website Theme → Save)
   or simply migrate after a Frappe upgrade so its compiled CSS is regenerated.
+
+#### v1.4.13 Business sidebar verification
+
+After migrate and cache clear, open Desk in a fresh or private browser window
+and check what Frappe actually resolves for the user:
+
+```bash
+bench --site <site> console
+```
+
+```python
+from frappe.desk.doctype.sidebar.sidebar import resolve_sidebar
+s = resolve_sidebar("Business Connect", frappe.session.user)
+[(i.get("label"), i.get("icon")) for i in s.items]
+```
+
+Expected labels and icons, in order:
+
+```text
+Home/house, Business/briefcase, Member/users, Digital Card/id-card,
+My Card/user, Product/package, Service/wrench, Categories/tags,
+Enquiry/messages-square, Contact Exchanges/phone, Theme/palette,
+Card Event/activity, Team/users-round
+```
+
+The same list should appear in the browser console:
+
+```js
+JSON.stringify(
+  frappe.boot.module_sidebars["Business Connect"]?.items.map(i => [i.label, i.icon])
+)
+```
+
+If the server output is correct but the browser is stale, log out and back in,
+then hard-refresh. If the server output itself is wrong, check for override
+layers:
+
+```python
+frappe.get_all(
+    "Custom Sidebar",
+    filters={"module": "Business"},
+    fields=["name", "user", "modified"],
+)
+```
+
+Take a site backup first. If those rows are **not** an intentional
+site-specific customization, remove them in the same console and commit
+explicitly — `bench console` rolls back uncommitted writes on exit:
+
+```python
+for name in frappe.get_all("Custom Sidebar", filters={"module": "Business"}, pluck="name"):
+    frappe.delete_doc("Custom Sidebar", name, ignore_permissions=True)
+
+frappe.db.commit()
+```
+
+Then clear caches and restart:
+
+```bash
+bench --site <site> clear-cache
+bench --site <site> clear-website-cache
+bench restart
+```
 
 ---
 
@@ -810,6 +876,7 @@ osduo_business_connect` (then `clear-website-cache`). Schema (SEO fields) needs
 | Console shows `Failed to execute 'put' on 'Cache': Partial response (status code 206) is unsupported` | Fixed in v1.4.8: only complete HTTP 200 responses are cached and writes are guarded. Pull the latest `main`, clear cache and migrate; clients may need one PWA close/reopen |
 | Dark sidebar slab covers the page on a phone, or a tapped row stays selected | v1.4.8 collapsed-drawer fix and v1.4.9 pointer-only hover fix. Confirm assets resolve from the app's `public/` and clear cache/migrate. Hover styling is scoped to `@media (hover: hover)` |
 | `/portal/team` table cramped or invite fields zoom on iOS | v1.4.10 phone layout: table scrolls in its own region and inputs are 16px. Hard-refresh once after deploy |
+| Business Desk sidebar shows an older order, old labels such as **Showcase Product**, or generic `list` icons after v1.4.13 | Follow **v1.4.13 Business sidebar verification** above. Stale `Custom Sidebar` rows for module `Business` override the shipped Sidebar document; a browser refresh alone will not fix them. Remove only unintended overrides, then clear cache and restart |
 | `migrate` fails on CRM custom fields | Ensure the `crm` app is installed on the same site before Business Connect |
 | `migrate` fails with `LinkValidationError: Could not find Primary Color / Text Color / Page Background Color` | An older Website Theme still links to legacy `Color` labels after a Frappe upgrade. Business Connect repairs broken theme colour links in a `before_migrate` hook; pull the latest `develop` and re-run `bench --site <site> migrate`. Valid custom colours are untouched |
 | Permission oddities (submit/cancel greyed out) | User needs the role bit **and** an active Business Member row (Owner/Manager/Marketing for submit; Owner for cancel/amend) |

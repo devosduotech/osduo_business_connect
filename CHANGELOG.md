@@ -29,6 +29,9 @@ All notable changes to this project will be documented in this file.
   trailing optional arguments; manifest and QR signatures are unchanged.
 - Sites with older `Custom Sidebar` overrides for the `Business` module should
   reset/remove them after migrate so the shipped sidebar order and icons apply.
+- Verified in production on `beadazzled.connect`, `osduo.connect` and
+  `trimaster.connect` at tag `v1.4.13`; stale `Custom Sidebar` overrides were
+  removed where they replaced the shipped sidebar order and icons.
 
 ## v1.4.12 - 24 November 2026
 

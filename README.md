@@ -188,6 +188,13 @@ cd ~/connect-bench && bench restart
 bench --site <site> clear-website-cache
 ```
 
+> **v1.4.13 note:** this release requires a one-time `bench migrate` on every
+> site to re-apply the Business Workspace shortcuts, the v16 Sidebar items and
+> their distinct icons. After clearing caches, verify the Business Connect
+> sidebar in a fresh browser window. If it keeps an older order or generic
+> `list` icons, follow the v1.4.13 sidebar verification steps in the
+> [Installation Guide](docs/INSTALLATION_GUIDE.md#-troubleshooting).
+
 ### Update the test / staging server
 
 ```bash
@@ -341,7 +348,8 @@ repository).
       touch-hover sidebar fix (v1.4.9), the Team portal phone layout
       (v1.4.10), and Share & Connect with cache-safe public pages, request-ID
       idempotency, failed-Enquiry recovery and full CRM status reconciliation
-      (v1.4.11, hardened in v1.4.12 and v1.4.13)
+      (v1.4.11, hardened in v1.4.12 and v1.4.13); v1.4.13 also added My Card
+      and Contact Exchanges to the Desk with distinct sidebar icons
 - [ ] Web push notifications for installed PWAs
 - [ ] Play Store listing via TWA wrappers
 - [ ] Multi-language support
